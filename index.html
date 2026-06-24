@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Arsenal Dashboard (public)</title>
+<style>
+  :root{
+    --bg:#070a10; --bg2:#0b111b; --card:#101826; --card2:#0c1320;
+    --glass:rgba(18,27,42,.55); --glass2:rgba(255,255,255,.025); --gbrd:rgba(255,255,255,.07);
+    --ink:#eef3fb; --mut:#8b97ab; --dim:#5a6678; --line:rgba(255,255,255,.06);
+    --green:#2ee66e; --amber:#ffb52e; --red:#ff4d5e; --blue:#4d8dff; --grey:#6b7280;
+    --green-g:rgba(46,230,110,.5); --amber-g:rgba(255,181,46,.5); --red-g:rgba(255,77,94,.5);
+    --red-d:#3a151a; --amber-d:#3a2c0c;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"JetBrains Mono","Roboto Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-text-size-adjust:100%;font-variant-numeric:tabular-nums}
+  body{position:relative;min-height:100vh;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(58% 38% at 12% -2%, rgba(77,141,255,.12), transparent 60%),
+      radial-gradient(48% 32% at 102% 8%, rgba(46,230,110,.07), transparent 60%),
+      radial-gradient(60% 40% at 50% 102%, rgba(255,77,94,.06), transparent 60%);}
+  .wrap{max-width:640px;margin:0 auto;padding:18px 16px 48px}
+  .head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  h1{font-size:18px;font-weight:700;margin:0;letter-spacing:.2px;
+     background:linear-gradient(90deg,#eaf1ff,#9fb6d9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .head .meta{font-size:11px;color:var(--dim)}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  /* top-level Futures | Stocks toggle */
+  .topbar{display:flex;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--gbrd);border-radius:16px;padding:6px;gap:6px;margin-bottom:18px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .toptab{flex:1;text-align:center;padding:16px 6px;border-radius:12px;color:var(--mut);font-weight:700;font-size:16px;
+          cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);letter-spacing:.3px}
+  .toptab.active{background:linear-gradient(180deg,rgba(77,141,255,.20),rgba(77,141,255,.05));color:#fff;
+    box-shadow:0 0 0 1px rgba(77,141,255,.4),0 6px 22px rgba(77,141,255,.28)}
+  /* shared sub-nav tabs */
+  .tabs{display:flex;flex-wrap:wrap;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid var(--gbrd);border-radius:14px;padding:5px;gap:5px;margin-bottom:14px}
+  .tab{flex:1 1 auto;text-align:center;padding:12px 8px;border-radius:10px;color:var(--mut);font-weight:650;font-size:14px;
+       cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);white-space:nowrap}
+  .tab.active{background:rgba(255,255,255,.07);color:#fff;box-shadow:inset 0 0 0 1px var(--gbrd),0 2px 12px rgba(0,0,0,.3)}
+  /* legend */
+  .legend{margin:0 0 14px;border:1px solid var(--gbrd);border-radius:13px;background:var(--glass);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden}
+  .legend>summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:11.5px;color:var(--mut);font-weight:650;letter-spacing:.3px}
+  .legend>summary::-webkit-details-marker{display:none}
+  .legend .lgbody{padding:2px 14px 13px;display:flex;flex-wrap:wrap;gap:9px 16px}
+  .legend .li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
+  .legend .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+  /* shared banners / cards / footer */
+  .banner{padding:13px 15px;border-radius:14px;font-weight:650;margin-bottom:14px;font-size:13.5px;display:none;border:1px solid transparent;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .banner.stale{background:rgba(255,77,94,.15);color:#ffd9de;border-color:rgba(255,77,94,.55);box-shadow:0 0 26px rgba(255,77,94,.2)}
+  .banner.recon{background:rgba(255,181,46,.13);color:#ffe6b3;border-color:rgba(255,181,46,.45);box-shadow:0 0 22px rgba(255,181,46,.15)}
+  .banner.err{background:rgba(255,77,94,.15);color:#ffd9de;border-color:rgba(255,77,94,.55)}
+  .card{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--gbrd);border-radius:var(--r);padding:16px;margin-bottom:14px;
+    box-shadow:0 8px 28px rgba(0,0,0,.35);animation:rise .38s cubic-bezier(.22,1,.36,1) both}
+  .card h2{font-size:11.5px;margin:0 0 11px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+  .disc{color:var(--dim);font-size:11px;font-style:italic;margin-top:14px;line-height:1.55}
+  .foot{color:var(--dim);font-size:10.5px;margin-top:9px}
+  .loading{color:var(--mut);font-size:13px;padding:34px 0;text-align:center}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  /* ───────── FUTURES view ───────── */
+  #fut .hero{background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--gbrd);
+    border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 14px 44px rgba(0,0,0,.45);animation:rise .4s cubic-bezier(.22,1,.36,1) both}
+  #fut .nm{font-size:12.5px;color:var(--mut);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  #fut .px{font-family:var(--mono);font-size:46px;font-weight:600;letter-spacing:-1.5px;line-height:1;margin:7px 0 3px}
+  #fut .chg{font-family:var(--mono);font-size:16px;font-weight:600;margin-left:4px}
+  #fut .chg.up{color:var(--green)} #fut .chg.dn{color:var(--red)}
+  #fut .pill{display:inline-flex;align-items:center;gap:7px;margin-top:11px;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(255,255,255,.04);border:1px solid var(--gbrd)}
+  #fut .pdot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 10px currentColor}
+  #fut .src{font-size:11px;color:var(--dim);margin-top:9px}
+  #fut .meters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-top:18px}
+  #fut .meter{background:var(--glass2);border:1px solid var(--gbrd);border-radius:15px;padding:14px 8px;text-align:center;
+    transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,border-color .3s}
+  #fut .meter .lab{font-size:11px;letter-spacing:.7px;color:var(--mut);font-weight:600}
+  #fut .meter .val{font-family:var(--mono);font-size:29px;font-weight:600;margin-top:4px;letter-spacing:-1.5px;transition:text-shadow .3s}
+  #fut .meter .track{height:8px;border-radius:6px;background:rgba(0,0,0,.5);margin-top:11px;overflow:hidden}
+  #fut .meter .fill{height:100%;width:0;border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  #fut .m-long .val{color:var(--green)} #fut .m-long .fill{background:linear-gradient(90deg,#1aa850,var(--green));box-shadow:0 0 12px var(--green-g)}
+  #fut .m-hold .val{color:var(--amber)} #fut .m-hold .fill{background:linear-gradient(90deg,#c78410,var(--amber));box-shadow:0 0 12px var(--amber-g)}
+  #fut .m-short .val{color:var(--red)} #fut .m-short .fill{background:linear-gradient(90deg,#c22b3a,var(--red));box-shadow:0 0 12px var(--red-g)}
+  #fut .meter.dominant{transform:translateY(-3px)}
+  #fut .m-long.dominant{border-color:rgba(46,230,110,.45);box-shadow:0 0 0 1px var(--green-g),0 10px 32px var(--green-g)} #fut .m-long.dominant .val{text-shadow:0 0 20px var(--green-g)}
+  #fut .m-hold.dominant{border-color:rgba(255,181,46,.45);box-shadow:0 0 0 1px var(--amber-g),0 10px 32px var(--amber-g)} #fut .m-hold.dominant .val{text-shadow:0 0 20px var(--amber-g)}
+  #fut .m-short.dominant{border-color:rgba(255,77,94,.45);box-shadow:0 0 0 1px var(--red-g),0 10px 32px var(--red-g)} #fut .m-short.dominant .val{text-shadow:0 0 20px var(--red-g)}
+  #fut td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  #fut tr:last-child td{border-bottom:none}
+  #fut .sname{font-weight:650} #fut .smeta{color:var(--dim);font-size:11.5px;margin-top:2px;font-family:var(--mono)}
+  #fut .reason{color:var(--mut);font-size:11.5px;margin-top:2px;line-height:1.4}
+  #fut .v{font-weight:750;font-size:13.5px} #fut .v-LONG{color:var(--green)} #fut .v-HOLD{color:var(--amber)} #fut .v-SHORT{color:var(--red)} #fut .v-NA{color:var(--dim)}
+  #fut tr.na{opacity:.4} #fut tr.na .v-NA{font-style:italic}
+  #fut .zone{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:9px 2px;border-bottom:1px solid var(--line)}
+  #fut .zone:last-child{border-bottom:none} #fut .zone b{font-family:var(--mono)}
+  #fut .tag{font-size:10px;color:var(--dim);border:1px solid var(--gbrd);border-radius:6px;padding:2px 6px;margin-left:8px}
+  #fut .zmut{color:var(--dim);font-size:12.5px;font-family:var(--mono)}
+  #fut .sc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  #fut .scol{background:var(--glass2);border:1px solid var(--gbrd);border-radius:13px;padding:12px 10px}
+  #fut .scol.muted{opacity:.5} #fut .scol h3{margin:0 0 8px;font-size:15px;font-weight:700;text-align:center;font-family:var(--mono)}
+  #fut .scol .nlab{text-align:center;font-size:11px;color:var(--mut);margin-bottom:9px}
+  #fut .srow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--mut)} #fut .srow b{color:var(--ink);font-weight:650;font-family:var(--mono)}
+  #fut .ntag{display:block;text-align:center;font-size:9.5px;color:var(--amber);margin-top:9px}
+  #fut .scbasis{font-size:10.5px;color:var(--dim);margin-top:10px;line-height:1.45}
+  #fut .news{font-size:12.5px;color:var(--ink);line-height:1.5} #fut .news .date{color:var(--dim);font-weight:600}
+  /* ───────── STOCKS view ───────── */
+  #stk .posture{display:inline-block;margin:0 0 14px;padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
+    background:rgba(255,181,46,.1);border:1px solid rgba(255,181,46,.4);color:var(--amber);box-shadow:0 0 22px rgba(255,181,46,.14)}
+  #stk th{text-align:left;font-size:10px;color:var(--mut);font-weight:600;padding:5px 6px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.4px}
+  #stk td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  #stk tr:last-child td{border-bottom:none} #stk td:nth-child(2),#stk td:nth-child(4){font-family:var(--mono)}
+  #stk .secttl{font-size:13px;color:var(--mut);font-weight:700;margin:2px 0 10px;text-transform:uppercase;letter-spacing:.5px}
+  #stk .noact{font-size:12px;color:var(--dim);font-style:italic;margin:2px 0}
+  #stk .pick{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 2px;border-bottom:1px solid var(--line)}
+  #stk .pick:last-child{border-bottom:none}
+  #stk .pk-tk{font-weight:750;font-size:15.5px} #stk .pk-meta{font-size:11.5px;color:var(--mut);margin-top:3px;line-height:1.45;font-family:var(--mono)}
+  #stk .pk-note{font-size:11px;color:var(--dim);margin-top:3px;font-style:italic}
+  #stk .badge{font-size:10px;font-weight:750;padding:4px 9px;border-radius:7px;white-space:nowrap;letter-spacing:.3px;border:1px solid transparent}
+  #stk .b-NEW{background:rgba(46,230,110,.14);color:#7ff0b0;border-color:rgba(46,230,110,.35)}
+  #stk .b-CARRIED{background:rgba(77,141,255,.14);color:#9cc3ff;border-color:rgba(77,141,255,.35)}
+  #stk .b-OPEN{background:rgba(255,181,46,.14);color:#ffd98a;border-color:rgba(255,181,46,.38)}
+  #stk .b-EXPIRED{background:rgba(140,150,165,.12);color:#9aa3b0;border-color:rgba(140,150,165,.25)}
+  #stk .b-RE-PRICED{background:rgba(170,110,255,.14);color:#d6a8ff;border-color:rgba(170,110,255,.35)}
+  #stk .needs{font-size:10px;color:var(--amber);font-weight:650}
+  #stk .sc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+  #stk .scol{background:var(--glass2);border:1px solid var(--gbrd);border-radius:13px;padding:12px 11px}
+  #stk .scol.muted{opacity:.55} #stk .scol h3{margin:0 0 8px;font-size:13px;font-weight:750;text-align:center;letter-spacing:.3px}
+  #stk .srow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--mut)} #stk .srow b{color:var(--ink);font-weight:650;font-family:var(--mono)}
+  #stk .ntag{display:block;text-align:center;font-size:9.5px;color:var(--amber);margin-top:8px}
+  #stk .ctx{font-size:12.5px;color:var(--ink);line-height:1.5} #stk .ctx .date{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>Arsenal Dashboard</h1><span class="meta">refresh 60s</span></div>
+  <div class="topbar" id="topbar">
+    <div class="toptab active" data-v="futures">Futures</div>
+    <div class="toptab" data-v="stocks">Stocks</div>
+  </div>
+
+  <div id="fut">
+    <div class="tabs" id="fut-tabs"></div>
+    <details class="legend" open><summary>＋ legend</summary><div class="lgbody">
+      <span class="li"><span class="dot" style="background:var(--green)"></span>internals live</span>
+      <span class="li"><span class="dot" style="background:var(--amber)"></span>STALE — structure only</span>
+      <span class="li"><span class="dot" style="background:var(--dim)"></span>N/A — equity breadth only</span>
+      <span class="li"><b style="color:var(--amber)">n&lt;30</b>&nbsp;= descriptive, not yet validated</span>
+      <span class="li">glowing meter = dominant read</span>
+    </div></details>
+    <div id="fut-banner" class="banner"></div>
+    <div id="fut-content"><div class="loading">Loading…</div></div>
+    <p class="disc" id="fut-disc"></p>
+    <p class="foot" id="fut-foot"></p>
+  </div>
+
+  <div id="stk" hidden>
+    <div id="stk-posture"></div>
+    <div class="tabs" id="stk-tabs"></div>
+    <details class="legend" open><summary>＋ legend — pick states</summary><div class="lgbody">
+      <span class="li"><span class="badge b-NEW">NEW</span>first seen today</span>
+      <span class="li"><span class="badge b-CARRIED">CARRIED</span>persisting · day N</span>
+      <span class="li"><span class="badge b-OPEN">OPEN</span>triggered · tracking</span>
+      <span class="li"><span class="badge b-EXPIRED">EXPIRED</span>dropped, never triggered</span>
+      <span class="li"><span class="badge b-RE-PRICED">RE-PRICED</span>entry moved &gt;0.5%</span>
+      <span class="li"><b style="color:var(--amber)">n&lt;MIN</b>&nbsp;= descriptive, not validated</span>
+    </div></details>
+    <div id="stk-banner" class="banner"></div>
+    <div id="stk-content"><div class="loading">Loading…</div></div>
+    <p class="disc" id="stk-disc"></p>
+    <p class="foot" id="stk-foot"></p>
+  </div>
+</div>
+<script>
+/* PUBLIC display build — NO credential of any kind. Reads the PUBLIC repo's raw URLs
+   unauthenticated (Contents are public). Safe to serve via GitHub Pages. */
+const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dashboard-public/main/";
+
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const ageMin=iso=>{const t=Date.parse((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
+function banner(id,cls,txt){const b=document.getElementById(id);if(!txt){b.style.display="none";return;}
+  b.className="banner "+cls;b.textContent=txt;b.style.display="block";}
+async function ghFetch(file){
+  const r=await fetch(API_BASE+file+"?t="+Date.now(),{cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+const tokenReady=()=>true;
+
+/* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
+const Futures = (function(){
+  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"}];
+  const STALE_MIN=10;
+  let current="ES"; const lastData={}; let summary=null;
+  const tsOf=d=>d.pushed_at||d.timestamp||"";
+  const pct=v=>v==null?"–":(Math.round(v*1000)/10)+"%";
+  const num=v=>v==null?"–":v;
+
+  function buildTabs(){
+    document.getElementById("fut-tabs").innerHTML=INSTR.map(i=>'<div class="tab'+(i.key===current?" active":"")+'" data-k="'+i.key+'">'+i.label+'</div>').join("");
+    document.querySelectorAll("#fut-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();
+      if(lastData[current]) render(lastData[current],false); else document.getElementById("fut-content").innerHTML='<div class="loading">Loading…</div>'; load();});
+  }
+  function scorecardPanel(sym){
+    if(!summary||!summary.instruments||!summary.instruments[sym]) return "";
+    const th=summary.instruments[sym].thresholds||{}, order=(summary.thresholds||[70,85,100]);
+    let cols="";
+    order.forEach(t=>{const c=th[String(t)]||{}, immature=(c.matured_n||0)<30;
+      cols+='<div class="scol'+(immature?" muted":"")+'"><h3>'+t+'%</h3>'
+        +'<div class="nlab">matured '+num(c.matured_n!=null?c.matured_n:0)+' · open '+num(c.n_open!=null?c.n_open:0)+'</div>'
+        +'<div class="srow"><span>win</span><b>'+pct(c.win_rate)+'</b></div>'
+        +'<div class="srow"><span>expect</span><b>'+(c.expectancy_per_trade==null?"–":c.expectancy_per_trade)+'</b></div>'
+        +'<div class="srow"><span>T1 hit</span><b>'+pct(c.t1_hit_rate)+'</b></div>'
+        +'<div class="srow"><span>T2 hit</span><b>'+pct(c.t2_hit_rate)+'</b></div>'
+        +'<div class="srow"><span>stopout</span><b>'+pct(c.stopout_rate)+'</b></div>'
+        +'<div class="srow"><span>PF</span><b>'+(c.profit_factor==null?"–":c.profit_factor)+'</b></div>'
+        +(immature?'<span class="ntag">n&lt;30 · descriptive</span>':'<span class="ntag" style="color:var(--green)">n≥30</span>')+'</div>';});
+    return '<div class="card"><h2>Paper scorecard (simulated)</h2><div class="sc">'+cols+'</div><div class="scbasis">'+esc(summary.basis||"")+'</div></div>';
+  }
+  function render(d,reconnecting){
+    const age=ageMin(tsOf(d));
+    if(reconnecting) banner("fut-banner","recon","⟳ Reconnecting — last good verdict ("+(age==null?"?":Math.round(age))+" min old)");
+    else if(age!=null&&age>STALE_MIN) banner("fut-banner","stale","⚠ STALE — verdict "+Math.round(age)+" min old. Not live.");
+    else banner("fut-banner","",null);
+    let pc,pt;
+    if(d.internals_applicable===false){pc="var(--dim)";pt="internals N/A — equity breadth only";}
+    else if(d.internals_fresh){pc="var(--green)";pt="internals live"+(d.internals_age_s!=null?" · "+d.internals_age_s+"s":"");}
+    else{pc="var(--amber)";pt="internals STALE — structure only";}
+    const price=(d.price!=null?d.price:d.es_price), change=(d.change!=null?d.change:d.es_change);
+    let chg=""; if(change!=null){const up=change>=0;chg=' <span class="chg '+(up?"up":"dn")+'">'+(up?"+":"")+esc(change)+'</span>';}
+    const L=Number(d.long_pct)||0,H=Number(d.hold_pct)||0,S=Number(d.short_pct)||0;
+    let sig="";(d.signals||[]).forEach(s=>{const na=s.verdict==="N/A";
+      sig+='<tr class="'+(na?"na":"")+'"><td><div class="sname">'+esc(s.name)+'</div><div class="smeta">'+esc(s.pillar)+' · conf '+esc(s.confidence)+'</div><div class="reason">'+esc(s.reason)+'</div></td>'
+        +'<td style="text-align:right;white-space:nowrap"><span class="v v-'+esc(s.verdict)+'">'+esc(s.verdict)+'</span></td></tr>';});
+    let zones="";(d.confluence_zones||[]).forEach(z=>{zones+='<div class="zone"><span>'+esc(z.method)+' '+esc(z.label)+' @ <b>'+esc(z.price)+'</b> <span class="zmut">(Δ'+esc(z.dist)+')</span></span><span class="tag">'+esc(z.vp_timeframe||"?")+'</span></div>';});
+    if(!zones) zones='<div class="zone zmut">no level within tolerance of price</div>';
+    let news=""; const si=(summary&&summary.instruments&&summary.instruments[current])?summary.instruments[current]:null;
+    const ntext=(si&&si.newsletter_context)||d.newsletter_context||"", ndate=(si&&si.context_date)||"";
+    if(ntext) news='<div class="card"><h2>Newsletter cross-check</h2><div class="news">'+esc(ntext)+(ndate?' <span class="date">(as of '+esc(ndate)+')</span>':'')+'</div></div>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
+        +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+'</div>'
+        +(d.structure_source?'<div class="src">structure: '+esc(d.structure_source)+'</div>':'')
+        +'<div class="meters">'
+        +'<div class="meter m-long'+(L>=H&&L>=S&&L>0?" dominant":"")+'"><div class="lab">LONG</div><div class="val">'+L+'%</div><div class="track"><div class="fill" style="width:'+L+'%"></div></div></div>'
+        +'<div class="meter m-hold'+(H>=L&&H>=S&&H>0?" dominant":"")+'"><div class="lab">HOLD</div><div class="val">'+H+'%</div><div class="track"><div class="fill" style="width:'+H+'%"></div></div></div>'
+        +'<div class="meter m-short'+(S>=L&&S>=H&&S>0?" dominant":"")+'"><div class="lab">SHORT</div><div class="val">'+S+'%</div><div class="track"><div class="fill" style="width:'+S+'%"></div></div></div>'
+        +'</div></div>'
+      +scorecardPanel(current)
+      +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
+      +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news;
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
+    document.getElementById("fut-foot").textContent="updated "+local+" · config "+esc(d.config_hash)+" · refresh "+esc(d.update_freq_seconds)+"s";
+  }
+  async function load(){
+    if(!tokenReady()){banner("fut-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
+    const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
+    ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
+    try{const d=await ghFetch(file); lastData[want]=d; if(current===want) render(d,false);}
+    catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
+      if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
+  }
+  return {init:buildTabs, load};
+})();
+
+/* ════════════ STOCKS module (stock_dashboard.json) ════════════ */
+const Stocks = (function(){
+  const STALE_MIN=60;
+  const SECTIONS=[{key:"convergence",label:"Convergence"},{key:"minervini",label:"Minervini"},{key:"top_setups",label:"Top Setups"},{key:"context",label:"Context"}];
+  let current="convergence", data=null;
+  const pctt=v=>v==null?"–":Math.round(v)+"%";
+  function buildTabs(){
+    document.getElementById("stk-tabs").innerHTML=SECTIONS.map(s=>'<div class="tab'+(s.key===current?" active":"")+'" data-k="'+s.key+'">'+s.label+'</div>').join("");
+    document.querySelectorAll("#stk-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();if(data)renderSection();});
+  }
+  function scCol(title,c,min){
+    if(!c) return '<div class="scol muted"><h3>'+title+'</h3><div class="srow"><span>no picks</span><b>–</b></div></div>';
+    const immature=(c.status&&/insufficient|forward/.test(c.status))||c.sample_n==null||c.sample_n<min;
+    return '<div class="scol'+(immature?" muted":"")+'"><h3>'+title+'</h3>'
+      +'<div class="srow"><span>n</span><b>'+(c.n!=null?c.n:"–")+'</b></div>'
+      +'<div class="srow"><span>triggered</span><b>'+(c.triggered_n!=null?c.triggered_n:"–")+'</b></div>'
+      +'<div class="srow"><span>sample</span><b>'+(c.sample_n!=null?c.sample_n:"–")+'</b></div>'
+      +'<div class="srow"><span>win</span><b>'+pctt(c.win_rate)+'</b></div>'
+      +'<div class="srow"><span>avg</span><b>'+(c.avg==null?"–":(c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")+'</b></div>'
+      +(immature?'<span class="ntag">'+esc(c.status||("n<"+min+" · descriptive"))+'</span>':'')+'</div>';
+  }
+  function pickRow(p){
+    const lv=p.needs_levels?'<span class="needs">needs levels</span>':'entry '+esc(p.entry)+' · stop '+esc(p.stop)+' · T1 '+esc(p.t1);
+    const rp=p.repriced_from?(' · re-priced from '+esc(p.repriced_from)):'';
+    const day=(p.state==="CARRIED")?(' day '+p.day_n):'';
+    return '<div class="pick"><div><div class="pk-tk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.direction)+'</span></div>'
+      +'<div class="pk-meta">'+lv+' · '+esc(p.conviction||"")+' · '+esc(p.pillars||"")+' · '+esc(p.status||"")+' · trig '+esc(p.trigger_status)+'/'+esc(p.outcome)+rp+'</div>'
+      +(p.note?'<div class="pk-note">'+esc(p.note)+'</div>':'')+'</div><span class="badge b-'+esc(p.state)+'">'+esc(p.state)+esc(day)+'</span></div>';
+  }
+  function engineRows(top5){
+    if(!top5||!top5.length) return '<tr><td colspan="5" style="color:var(--dim)">no engine ledger for this section</td></tr>';
+    return top5.map(p=>'<tr><td style="font-weight:700">'+esc(p.ticker)+'</td><td>'+esc(p.entry)+'</td><td>'+esc(p.conviction)+'</td><td>'+esc(p.score)+'</td><td>'+esc(p.trigger_status)+'/'+esc(p.outcome)+'</td></tr>').join("");
+  }
+  function renderSection(){
+    const min=data.min_triggered||20;
+    if(current==="context"){
+      const na=data.sections_no_actionable||{};
+      let nah=Object.keys(na).map(k=>'<div class="noact">• '+esc(k)+': '+esc(na[k])+'</div>').join("")||'<div class="noact">—</div>';
+      document.getElementById("stk-content").innerHTML=
+        '<div class="card"><h2>Posture</h2><div class="ctx">'+esc(data.posture||"–")+' <span class="date">(as of '+esc(data.date)+')</span></div></div>'
+        +'<div class="card"><h2>No actionable today</h2>'+nah+'</div>'
+        +'<div class="card"><h2>Ingest summary</h2><div class="ctx">'+Object.entries(data.ingest_summary||{}).map(([k,v])=>esc(k)+': '+esc(v)).join(' · ')+'</div></div>';
+      return;
+    }
+    const sec=(data.sections||{})[current]||{};
+    if(sec.error){document.getElementById("stk-content").innerHTML='<div class="card"><h2>'+esc(current)+'</h2><div class="noact">section error: '+esc(sec.error)+'</div></div>';return;}
+    const curated=(sec.curated||[]);
+    const curatedHtml=curated.length?curated.map(pickRow).join(""):'<div class="noact">no curated picks in this section today</div>';
+    document.getElementById("stk-content").innerHTML=
+      '<div class="card"><div class="secttl">Claude curated</div>'+curatedHtml+'</div>'
+      +'<div class="card"><div class="secttl">Engine top 5</div><table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table></div>'
+      +'<div class="card"><h2>Scorecard — curated vs engine</h2><div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div></div>';
+  }
+  function render(){
+    const age=ageMin(data.generated_at);
+    if(age!=null&&age>STALE_MIN) banner("stk-banner","stale","⚠ STALE — dashboard "+Math.round(age)+" min old. Not live."); else banner("stk-banner","",null);
+    document.getElementById("stk-posture").innerHTML=data.posture?'<span class="posture">'+esc(data.posture)+' · '+esc(data.date)+'</span>':'';
+    buildTabs(); renderSection();
+    document.getElementById("stk-disc").textContent=data.disclaimer||"";
+    const ms=Date.parse(data.generated_at||""),local=isNaN(ms)?data.generated_at:new Date(ms).toLocaleString();
+    document.getElementById("stk-foot").textContent="updated "+local+" · MIN_TRIGGERED "+esc(data.min_triggered)+" · MIN_MATURED "+esc(data.min_matured);
+  }
+  async function load(){
+    if(!tokenReady()){banner("stk-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
+    try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
+    catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
+      if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
+  }
+  return {init:buildTabs, load};
+})();
+
+/* ════════════ top-level view switch ════════════ */
+let view="futures";
+function showView(v){
+  view=v;
+  document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
+  document.getElementById("fut").hidden=(v!=="futures");
+  document.getElementById("stk").hidden=(v!=="stocks");
+  (v==="futures"?Futures:Stocks).load();   // fetch only the active view
+}
+document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
+Futures.init(); Stocks.init();
+showView("futures");
+setInterval(()=>{ (view==="futures"?Futures:Stocks).load(); }, 60000);  // refresh ACTIVE only
+</script>
+</body>
+</html>
