@@ -101,6 +101,11 @@
   #fut .meters.flat{opacity:.4;filter:grayscale(.62)}
   #fut .meters.flat .meter{box-shadow:none;transform:none;border-color:var(--gbrd)}
   #fut .meters.flat .val{text-shadow:none}
+  #fut .tfsub{display:flex;gap:5px;background:var(--bg2);border:1px solid var(--gbrd);border-radius:11px;padding:4px;margin:2px 0 4px}
+  #fut .tftab{flex:1;text-align:center;padding:9px 4px;border-radius:8px;color:var(--mut);font-weight:700;font-size:12.5px;cursor:pointer;transition:all .18s}
+  #fut .tftab.active{background:rgba(255,255,255,.07);color:#fff;box-shadow:inset 0 0 0 1px var(--gbrd)}
+  #fut .tftab.primary{color:#9cc3ff} #fut .tftab.primary.active{color:#cfe0ff;box-shadow:inset 0 0 0 1px rgba(77,141,255,.45)}
+  #fut .secttl{font-size:11px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:2px 0 6px}
   #fut .m-long.dominant{border-color:rgba(46,230,110,.45);box-shadow:0 0 0 1px var(--green-g),0 10px 32px var(--green-g)} #fut .m-long.dominant .val{text-shadow:0 0 20px var(--green-g)}
   #fut .m-hold.dominant{border-color:rgba(255,181,46,.45);box-shadow:0 0 0 1px var(--amber-g),0 10px 32px var(--amber-g)} #fut .m-hold.dominant .val{text-shadow:0 0 20px var(--amber-g)}
   #fut .m-short.dominant{border-color:rgba(255,77,94,.45);box-shadow:0 0 0 1px var(--red-g),0 10px 32px var(--red-g)} #fut .m-short.dominant .val{text-shadow:0 0 20px var(--red-g)}
@@ -190,7 +195,7 @@
   </div>
 </div>
 <script>
-/* PUBLIC display build — NO credential. Reads the PUBLIC repo raw URLs unauthenticated. */
+/* PUBLIC display build — NO credential. Reads PUBLIC repo raw URLs. */
 const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dashboard-public/main/";
 
 const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
@@ -230,8 +235,32 @@ function futuresSessionOpen(){
 const Futures = (function(){
   const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"}];
   const STALE_MIN=10;
-  let current="ES"; const lastData={}; let summary=null;
+  let current="ES"; const lastData={}; let summary=null; let futTF=null;
   const tsOf=d=>d.pushed_at||d.timestamp||"";
+  function tfPanel(d){
+    const tfs=d.timeframes||{}, prim=d.primary_timeframe||"15m", order=["5m","15m","60m","daily"];
+    const sel=(futTF&&tfs[futTF])?futTF:prim;
+    const tabs=order.map(k=>'<div class="tftab'+(k===sel?" active":"")+(k===prim?" primary":"")+'" data-tf="'+k+'">'+k+(k===prim?" ★":"")+'</div>').join("");
+    const t=tfs[sel]||{}, st=t.state||"dark", live=(st==="live");
+    const stChip=live?'<span class="chip live">● LIVE</span>':st==="dark"?'<span class="chip dark">○ DARK</span>':st==="closed"?'<span class="chip closed">○ CLOSED</span>':'<span class="chip frozen">⚠ FROZEN</span>';
+    const L=Number(t.long_pct)||0,H=Number(t.hold_pct)||0,S=Number(t.short_pct)||0,mx=Math.max(L,H,S);
+    const meters='<div class="meters'+(live?"":" flat")+'">'+[["long",L],["hold",H],["short",S]].map(([m,v])=>
+      '<div class="meter m-'+m+(live&&v===mx&&v>0?" dominant":"")+'"><div class="lab">'+m.toUpperCase()+'</div><div class="val">'+v+'%</div><div class="track"><div class="fill" style="width:'+v+'%"></div></div></div>').join("")+'</div>';
+    let sig="";(t.signals||[]).forEach(s=>{const na=s.verdict==="N/A";sig+='<tr class="'+(na?"na":"")+'"><td><b>'+esc(s.name)+'</b> <span class="smeta">conf '+esc(s.confidence)+'</span></td><td style="text-align:right"><span class="v v-'+esc(s.verdict)+'">'+esc(s.verdict)+'</span></td></tr>';});
+    let zones="";(t.confluence_zones||[]).forEach(z=>{zones+='<div class="zone"><span>'+esc(z.method)+' '+esc(z.label)+' @ '+esc(z.price)+'</span><span class="tag">'+esc(z.vp_timeframe||sel)+'</span></div>';});
+    if(!zones)zones='<div class="zone zmut">no level within tolerance</div>';
+    let sc="";const ets=(summary&&summary.es_timeframes&&summary.es_timeframes.tracks)?summary.es_timeframes.tracks[sel]:null;
+    if(ets)sc='<div class="sc">'+["70","85","100"].map(th=>{const c=ets[th]||{},im=(c.matured_n||0)<30;
+      return '<div class="scol'+(im?" muted":"")+'"><h3>'+th+'%</h3><div class="srow"><span>matured</span><b>'+(c.matured_n!=null?c.matured_n:0)+'</b></div><div class="srow"><span>open</span><b>'+(c.n_open!=null?c.n_open:0)+'</b></div><div class="srow"><span>win</span><b>'+(c.win_rate==null?"–":c.win_rate+"%")+'</b></div>'+(im?'<span class="ntag">n&lt;30</span>':'')+'</div>';}).join("")+'</div>';
+    const note=(summary&&summary.es_timeframes)?('<div class="scbasis">'+esc(summary.es_timeframes.note||"")+'</div>'):'';
+    const plabel=(sel===prim)?" — primary / decision":"";
+    return '<div class="card"><h2>ES timeframes</h2><div class="tfsub">'+tabs+'</div>'
+      +'<div style="margin:8px 0 2px">'+stChip+' <span class="src">'+esc(sel)+esc(plabel)+' · struct '+(t.structure_fresh?"live":"stale/NA")+'</span></div>'
+      +meters
+      +'<div class="secttl" style="margin-top:13px">Signals</div><table>'+sig+'</table>'
+      +'<div class="secttl" style="margin-top:11px">Confluence ('+esc(sel)+')</div>'+zones
+      +'<div class="secttl" style="margin-top:13px">Scorecard track ('+esc(sel)+')</div>'+sc+note+'</div>';
+  }
   const pct=v=>v==null?"–":(Math.round(v*1000)/10)+"%";
   const num=v=>v==null?"–":v;
 
@@ -298,6 +327,7 @@ const Futures = (function(){
         +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
         +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+'</div>'
         +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
+        +'<span class="pill2">tf: '+(d.internals_applicable===false?"daily swing (fallback)":(esc(d.primary_timeframe||"15m")+" (decision)"))+'</span>'
         +(d.structure_source?'<div class="src">structure: '+esc(d.structure_source)+'</div>':'')
         +(isLive?'':'<div class="meternote" style="color:'+(state==="frozen"?"#ff6b76":(state==="dark"?"var(--amber)":"var(--mut)"))+'">'+(state==="dark"?"NO LIVE READ — last structural context only":(state==="frozen"?"FROZEN — DO NOT TRADE":(state==="closed"?"MARKET CLOSED — last context":"RECONNECTING — last good")))+'</div>')
         +'<div class="meters'+(isLive?"":" flat")+'">'
@@ -307,7 +337,9 @@ const Futures = (function(){
         +'</div></div>'
       +scorecardPanel(current)
       +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
-      +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news;
+      +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news
+      +(current==="ES"&&d.timeframes?tfPanel(d):"");
+    document.querySelectorAll("#fut-content .tftab").forEach(el=>el.onclick=()=>{futTF=el.getAttribute("data-tf");render(d,false);});
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
     const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="updated "+local+" · config "+esc(d.config_hash)+" · refresh "+esc(d.update_freq_seconds)+"s";
