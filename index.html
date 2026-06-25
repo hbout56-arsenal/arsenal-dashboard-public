@@ -343,7 +343,40 @@ const Futures = (function(){
     document.getElementById("fut-foot").textContent="EMA updated "+local;
   }
   const STALE_MIN=10;
-  let current="ES"; const lastData={}; let summary=null; let futTF=null;
+  let current="ES"; const lastData={}; let summary=null; let futTF=null; let gcclEma=null;
+  /* ── GC/CL EMA on Polygon DELAYED (Dispatch 14) — NON-VOTING, DELAYED tag everywhere ── */
+  function gcclEmaPanel(instKey){
+    if(!gcclEma||!gcclEma.instruments) return "";
+    const x=gcclEma.instruments[instKey]; if(!x) return "";
+    const tag=esc(gcclEma.delay_tag||"DELAYED ~10-15min (Polygon futures)");
+    if(!x.available) return '<div class="card"><h2>EMA — '+esc(instKey)+' <span class="gmut" style="font-weight:400">· '+tag+'</span></h2>'
+      +'<div class="emaline gmut">○ DARK — Polygon returned no '+esc(instKey)+' bars</div></div>';
+    // feed badge: DELAYED = normal (greenish), frozen = amber alarm
+    const fs=String(x.feed_status||"delayed");
+    const badge=fs==="frozen"
+      ? '<span class="chip frozen">⚠ STALE — delayed feed not advancing</span>'
+      : '<span class="chip live" style="background:#1f3a2a;color:#7fd99a;border-color:#2f5a40">◷ '+tag+' (normal)</span>';
+    const order=["15m","30m","60m","daily"];
+    const lines=order.map(tf=>{
+      const s=(x.timeframes||{})[tf]; if(!s) return "";
+      if(!s.available) return '<div class="emaline gmut">'+tf+': ○ '+esc(s.state||"dark")+' — '+esc(s.note||"")+'</div>';
+      const arrow=s["9>21"]?'9&gt;21 ▲':'9&lt;21 ▼';
+      const filt=s.filtered_dir
+        ? '<b class="gok">FILTERED '+esc(s.filtered_dir)+' ✓</b> <span class="gmut">tested-for-edge</span>'
+        : '<span class="gwarn">filtered-out</span> <span class="gmut">— '+esc(s.htf_trend)+' disagrees</span>';
+      const fz=s.state==="frozen"?' <span class="gwarn">[STALE]</span>':'';
+      return '<div class="emaline">'+tf+': '+arrow+' · '+filt+' <span class="gmut">· raw '+esc(s.raw_dir)+' (control) · bar '+esc(s.bar_ts)+fz+'</span></div>';
+    }).join("");
+    const tk=x.tracks_summary||{};
+    const sc='<details class="research"><summary>▸ research detail — '+esc(instKey)+' 16-track NET-POINTS scorecard (RAW control + FILTERED)</summary>'
+      +'<div class="gmut" style="margin:6px 0">'+tag+' · NET POINTS (GC and CL not comparable — different $/point) · NON-VOTING (weight 0)</div>'
+      +'<table style="margin-top:6px"><tr><th>track</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+      +Object.entries(tk).map(([t,c])=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("")
+      +'</table><div class="scbasis">'+esc(x.note||"")+'</div></details>';
+    return '<div class="card"><h2>EMA — '+esc(instKey)+' ('+esc(x.ticker||"")+') &nbsp;'+badge+'</h2>'
+      +'<div class="emanote">'+tag+' — context, NOT a live trigger. Price breaking the stop is the trigger, not the EMA cross. SIMULATED · n&lt;30 · lean '+esc(x.context_lean)+'</div>'
+      +lines+'<div class="emanote">FILTERED = cross + higher-TF trend gate (tested-for-edge). RAW = cross-only control.</div>'+sc+'</div>';
+  }
   const tsOf=d=>d.pushed_at||d.timestamp||"";
   const fmtN=v=>v==null?"–":Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
   const SIMNOTE="SIMULATED guidance — not a signal. Price breaking the stop level is the trigger, not the meter %. n<30, unvalidated.";
@@ -464,7 +497,8 @@ const Futures = (function(){
       +scorecardPanel(current)
       +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
       +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news
-      +(current==="ES"&&d.timeframes?tfPanel(d):"");
+      +(current==="ES"&&d.timeframes?tfPanel(d):"")
+      +((current==="GC"||current==="CL")?gcclEmaPanel(current):"");
     document.querySelectorAll("#fut-content .tftab").forEach(el=>el.onclick=()=>{futTF=el.getAttribute("data-tf");render(d,false);});
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
     const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
@@ -474,6 +508,7 @@ const Futures = (function(){
     if(!tokenReady()){banner("fut-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
     const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
+    if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
     try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):render(d,false);}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
@@ -486,8 +521,33 @@ const Futures = (function(){
 const Stocks = (function(){
   const STALE_MIN=60;
   const SECTIONS=[{key:"convergence",label:"Convergence"},{key:"minervini",label:"Minervini"},{key:"top_setups",label:"Top Setups"},{key:"context",label:"Context"}];
-  let current="convergence", data=null;
+  let current="convergence", data=null, emaStk=null;
   const pctt=v=>v==null?"–":Math.round(v)+"%";
+  /* ── stocks-daily EMA context (Dispatch 13) — NON-VOTING, display join by ticker ── */
+  function emaStkStale(){ if(!emaStk) return true; const h=(emaStk.stale_after_hours||25); const a=ageMin(emaStk.generated_at); return a!=null&&a>h*60; }
+  function emaLinePick(tk){
+    if(!emaStk) return "";
+    const dark=String(emaStk.feed_status||"").toUpperCase().startsWith("DARK");
+    if(dark||emaStkStale()) return '<div class="emaline gmut">EMA daily context — feed '+(dark?'dark':'stale')+', not shown</div>';
+    const s=(emaStk.by_ticker||{})[tk];
+    if(!s) return "";                                   // ticker not in EMA universe
+    if(!s.available) return '<div class="emaline gmut">EMA daily: ○ '+esc(s.reason||"no data")+'</div>';
+    const arrow=s["9>21"]?'9&gt;21 ▲':'9&lt;21 ▼';
+    const filt=s.filtered_dir
+      ? '<b class="gok">FILTERED '+esc(s.filtered_dir)+' ✓</b> <span class="gmut">tested-for-edge</span>'
+      : '<span class="gwarn">filtered-out</span> <span class="gmut">— '+esc(s.regime)+'</span>';
+    return '<div class="emaline">EMA daily: '+arrow+' · '+filt+' <span class="gmut">· raw '+esc(s.raw_dir)+' (control)</span></div>';
+  }
+  function emaStkResearch(){
+    if(!emaStk||!emaStk.tracks_summary) return "";
+    const dark=String(emaStk.feed_status||"").toUpperCase().startsWith("DARK");
+    const rows=Object.entries(emaStk.tracks_summary).map(([t,c])=>{const im=(c.n_matured||0)<30;
+      return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td>'+esc(c.n_symbols!=null?c.n_symbols:'–')+'</td><td><b>'+(c.net_pct_expectancy==null?'–':esc(c.net_pct_expectancy)+'%')+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("");
+    return '<details class="research"><summary>▸ research detail — stocks-daily EMA 4-track scorecard (NET-%, RAW control + FILTERED)</summary>'
+      +'<div class="gmut" style="margin:6px 0">'+(dark?'⚠ feed dark — last good table · ':'')+'metric = NET % (price-normalized so symbols are comparable) · NON-VOTING context (weight 0)</div>'
+      +'<table style="margin-top:6px"><tr><th>track</th><th>n</th><th>sym</th><th>net%/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'+rows
+      +'</table><div class="scbasis">'+esc(emaStk.note||"")+' · n&lt;30 = descriptive only.</div></details>';
+  }
   function buildTabs(){
     document.getElementById("stk-tabs").innerHTML=SECTIONS.map(s=>'<div class="tab'+(s.key===current?" active":"")+'" data-k="'+s.key+'">'+s.label+'</div>').join("");
     document.querySelectorAll("#stk-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();if(data)renderSection();});
@@ -526,7 +586,8 @@ const Stocks = (function(){
     return '<div class="pick"><div><div class="pk-tk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.direction)+'</span></div>'
       +'<div class="pk-meta">'+lv+' · '+esc(p.conviction||"")+' · '+esc(p.pillars||"")+' · '+esc(p.status||"")+' · trig '+esc(p.trigger_status)+'/'+esc(p.outcome)+rp+'</div>'
       +(p.note?'<div class="pk-note">'+esc(p.note)+'</div>':'')+'</div><span class="badge b-'+esc(p.state)+'">'+esc(p.state)+esc(day)+'</span></div>'
-      +'<div class="statwin" style="margin:-2px 0 10px">'+paperRowPick(p,frozen)+(MT.has(p.ticker)?MT.row(p.ticker,null):MT.btn(p.ticker))+'</div>';
+      +'<div class="statwin" style="margin:-2px 0 10px">'+paperRowPick(p,frozen)+(MT.has(p.ticker)?MT.row(p.ticker,null):MT.btn(p.ticker))+'</div>'
+      +emaLinePick(p.ticker);
   }
   function engineRows(top5){
     if(!top5||!top5.length) return '<tr><td colspan="5" style="color:var(--dim)">no engine ledger for this section</td></tr>';
@@ -551,7 +612,8 @@ const Stocks = (function(){
     document.getElementById("stk-content").innerHTML=
       '<div class="card"><div class="secttl">Claude curated</div>'+curatedHtml+'</div>'
       +'<div class="card"><div class="secttl">Engine top 5</div><table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table></div>'
-      +'<div class="card"><h2>Scorecard — curated vs engine</h2><div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div></div>';
+      +'<div class="card"><h2>Scorecard — curated vs engine</h2><div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div></div>'
+      +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'');
   }
   function render(){
     const age=ageMin(data.generated_at);
@@ -566,6 +628,7 @@ const Stocks = (function(){
   }
   async function load(){
     if(!tokenReady()){banner("stk-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
+    ghFetch("ema_stocks_state.json").then(s=>{emaStk=s; if(data) renderSection();}).catch(()=>{});  // non-voting context (best-effort)
     try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
     catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
