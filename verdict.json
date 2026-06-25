@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-25T03:02:02",
+  "timestamp": "2026-06-25T03:07:46",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -8,7 +8,7 @@
   "price": 7426.75,
   "change": null,
   "internals_fresh": false,
-  "internals_age_s": 39754,
+  "internals_age_s": 40098,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -276,9 +276,9 @@
     "daily": {
       "timeframe": "daily",
       "long_pct": 0.0,
-      "hold_pct": 0.0,
-      "short_pct": 100.0,
-      "price": 7472,
+      "hold_pct": 90.0,
+      "short_pct": 10.0,
+      "price": 7483.25,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -288,9 +288,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "price 7472.00 not at any VP/fib level (\u00b10.1%)"
+          "verdict": "SHORT",
+          "confidence": 30.0,
+          "reason": "price 7483.25 at 1-method confluence (VP) near 7485.54 (resistance)"
         },
         {
           "name": "Breadth",
@@ -309,9 +309,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "SHORT",
+          "verdict": "LONG",
           "confidence": 45.0,
-          "reason": "price 7472.00 < prior_close 7477.50 (daily fallback)"
+          "reason": "price 7483.25 > prior_close 7477.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -335,7 +335,15 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [],
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7485.54,
+          "dist": 2.29,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
       "vp_available": true,
       "fib_available": true
     }
