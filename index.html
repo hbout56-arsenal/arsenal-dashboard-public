@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>Arsenal Dashboard (public)</title>
+<title>Arsenal Dashboard</title>
 <style>
   :root{
     --bg:#070a10; --bg2:#0b111b; --card:#101826; --card2:#0c1320;
@@ -70,6 +70,24 @@
   .foot{color:var(--dim);font-size:10.5px;margin-top:9px}
   .loading{color:var(--mut);font-size:13px;padding:34px 0;text-align:center}
   table{width:100%;border-collapse:collapse;font-size:13px}
+  /* trade status window (shared) */
+  .statwin{margin:0 0 12px}
+  .statrow{font-size:12.5px;line-height:1.5;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--gbrd);margin-bottom:7px;font-family:var(--mono)}
+  .statrow.grey{color:var(--mut);font-style:italic;font-family:var(--sans)}
+  .statrow.paper{border-left-width:3px}
+  .statrow.mine{border-color:rgba(77,141,255,.4);background:rgba(77,141,255,.07)}
+  .ptag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:var(--mut);border:1px solid var(--gbrd);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
+  .mtag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#9cc3ff;background:rgba(77,141,255,.18);border:1px solid rgba(77,141,255,.45);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
+  .mtagnote{font-size:10px;color:var(--dim);font-style:italic;margin-top:3px;font-family:var(--sans)}
+  .addmine{display:inline-block;font-size:11.5px;font-weight:700;color:#9cc3ff;border:1px solid rgba(77,141,255,.4);border-radius:9px;padding:7px 12px;cursor:pointer;margin-bottom:7px}
+  .closebtn{font-size:10.5px;color:var(--red);cursor:pointer;border:1px solid rgba(255,77,94,.4);border-radius:6px;padding:1px 7px;margin-left:6px;font-family:var(--sans)}
+  /* EMA simplified lines + research expander */
+  .emaline{font-size:13px;line-height:1.55;padding:7px 0;border-bottom:1px solid var(--line);font-family:var(--sans)}
+  .emaline:last-child{border-bottom:none}
+  .emanote{font-size:11px;color:var(--dim);margin-top:8px;font-style:italic}
+  .research{margin-top:12px}
+  .research>summary{cursor:pointer;font-size:12px;color:var(--mut);font-weight:700;padding:8px 0;list-style:none}
+  .research>summary::-webkit-details-marker{display:none}
   /* ───────── FUTURES view ───────── */
   #fut .hero{background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--gbrd);
     border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 14px 44px rgba(0,0,0,.45);animation:rise .4s cubic-bezier(.22,1,.36,1) both}
@@ -237,6 +255,49 @@ function futuresSessionOpen(){
   return false;
 }
 
+/* ── MY-TRADE (in-page state; no backend/localStorage) + trade status window (surfacing only) ── */
+const MT=(function(){
+  const T={};
+  function set(k){
+    const side=(prompt("Your side for "+k+" — LONG or SHORT:","LONG")||"").toUpperCase().trim();
+    if(side!=="LONG"&&side!=="SHORT") return;
+    const entry=parseFloat(prompt("Entry price:",""));if(isNaN(entry))return;
+    const stop=parseFloat(prompt("Stop price (optional):",""));
+    const t1v=prompt("T1 (optional):","");const t1=t1v?parseFloat(t1v):null;
+    const t2v=prompt("T2 (optional):","");const t2=t2v?parseFloat(t2v):null;
+    T[k]={side,entry,stop:isNaN(stop)?null:stop,t1:(t1&&!isNaN(t1))?t1:null,t2:(t2&&!isNaN(t2))?t2:null,since:new Date().toLocaleTimeString()};
+    if(window.redraw)window.redraw();
+  }
+  function close(k){delete T[k];if(window.redraw)window.redraw();}
+  function has(k){return !!T[k];}
+  function row(k,px){
+    const t=T[k];if(!t)return"";
+    const dc=t.side==="LONG"?"var(--green)":"var(--red)";let pl="";
+    if(px!=null&&!isNaN(px)){const pts=(t.side==="LONG"?(px-t.entry):(t.entry-px));const pct=t.entry?pts/t.entry*100:null;const up=pts>=0;
+      pl=' · now '+px+' · <span style="color:'+(up?"var(--green)":"var(--red)")+'">'+(up?"+":"")+pts.toFixed(2)+(pct!=null?" ("+(up?"+":"")+pct.toFixed(2)+"%)":"")+'</span>';}
+    return '<div class="statrow mine"><span class="mtag">MINE</span><b style="color:'+dc+'">'+t.side+'</b> since '+esc(t.since)+' · entry '+esc(t.entry)+(t.stop!=null?' · stop '+esc(t.stop):'')+(t.t1?' · T1 '+esc(t.t1):'')+pl
+      +' <span class="closebtn" onclick="MT.close(\''+k+'\')">close</span>'
+      +'<div class="mtagnote">self-marked, tracking only — not linked to any broker · in-page (survives auto-refresh; resets on full reload)</div></div>';
+  }
+  function btn(k){return MT.has(k)?"":'<span class="addmine" onclick="MT.set(\''+k+'\')">+ I\'m in this</span>';}
+  return {set,close,has,row,btn};
+})();
+window.MT=MT;
+function paperRowFut(d,dark){
+  if(dark) return '<div class="statrow grey">feed dark — paper status unknown</div>';
+  const g=d.guidance, px=(d.price!=null?d.price:d.es_price);
+  if(!g||!g.active){const z=(d.confluence_zones&&d.confluence_zones[0]);
+    return '<div class="statrow grey">No active paper setup · watching '+(z?esc(z.method)+' '+esc(z.price):'structure')+'</div>';}
+  const dc=g.direction==="LONG"?"var(--green)":"var(--red)";let net="",status="pre-T1 · working";
+  if(px!=null){const pts=(g.direction==="LONG"?(px-g.entry):(g.entry-px));const up=pts>=0;
+    net=' · now '+px+' · <span style="color:'+(up?"var(--green)":"var(--red)")+'">'+(up?"+":"")+pts.toFixed(2)+' pts</span>';
+    const pastT1=(g.direction==="LONG"?px>=g.t1:px<=g.t1),breached=(g.direction==="LONG"?px<=g.stop:px>=g.stop);
+    status=breached?'<span style="color:var(--red)">stop breached</span>':(pastT1?'<span style="color:var(--green)">at/past T1</span>':'pre-T1 · working');}
+  return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+esc(g.stop_basis)+')'+(g.coarse?' · daily-coarse':'')+' · T1 '+esc(g.t1)+' · T2 '+esc(g.t2)+net+' · '+status
+    +'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the meter % · n&lt;30</div></div>';
+}
+function statusWindowFut(k,d,dark){const px=(d.price!=null?d.price:d.es_price);return '<div class="statwin">'+paperRowFut(d,dark)+(MT.has(k)?MT.row(k,px):MT.btn(k))+'</div>';}
+
 /* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
 const Futures = (function(){
   const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"}];
@@ -244,25 +305,39 @@ const Futures = (function(){
     const dark=String(d.feed_status||"").toUpperCase().startsWith("DARK");
     if(dark) banner("fut-banner","dark","○ EMA DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No EMA signal — context only.");
     else banner("fut-banner","",null);
-    const tfCard=(tf,s)=>{
-      if(!s||!s.available) return '<div class="card"><h2>'+tf+' EMA</h2><div class="zmut">○ DARK — '+esc((s&&s.reason)||"unavailable")+'</div></div>';
-      const chip=s.state==="live"?'<span class="chip live">● LIVE</span>':s.state==="frozen"?'<span class="chip frozen">⚠ FROZEN</span>':'<span class="chip dark">○ DARK</span>';
-      return '<div class="card"><h2>'+tf+' EMA &nbsp;'+chip+'</h2>'
-        +'<div class="gline">close '+esc(s.close)+' · 9 '+esc(s.ema9)+' / 21 '+esc(s.ema21)+' '+(s["9>21"]?'<span class="gok">9&gt;21 ▲</span>':'<span class="gwarn">9&lt;21 ▼</span>')+'</div>'
-        +'<div class="gline">20 '+esc(s.ema20)+' / 50 '+esc(s.ema50)+' '+(s["20>50"]?'<span class="gok">20&gt;50 ▲</span>':'<span class="gwarn">20&lt;50 ▼</span>')+(s.trend_up!=null?' · 15m trend '+(s.trend_up?'<span class="gok">up</span>':'<span class="gwarn">down</span>'):'')+'</div>'
-        +'<div class="gline gmut">bar '+esc(s.bar_ts)+' · atr '+esc(s.atr)+'</div></div>';
-    };
-    let guid="";const g=d.live_signal;
-    if(g){const dc=g.direction==="LONG"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?'<span class="gok">structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
-      guid='<div class="card guid"><h2>EMA signal — guidance ('+esc(g.track)+')</h2><div class="gline" style="color:'+dc+'"><b>'+esc(g.direction)+'</b> @ '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')</div><div class="gtag">SIMULATED — price breaking the stop is the trigger, not the EMA cross. n&lt;30, descriptive.</div></div>';}
+    const T=d.timeframes||{}, s15=T["15m"];
+    const trendUp=(s15&&s15.available)?s15.trend_up:null;   // FILTERED gate = 15m trend agreement
+    function aline(tf,pair){
+      const s=T[tf], lbl="EMA "+pair[0]+"/"+pair[1]+" "+tf;
+      if(!s||!s.available) return '<div class="emaline gmut">'+lbl+': ○ DARK — no intraday data</div>';
+      const bull=(pair[0]===9?s["9>21"]:s["20>50"])===true, dir=bull?"LONG":"SHORT";
+      const reg=pair[0]===9?(bull?'9&gt;21 ▲':'9&lt;21 ▼'):(bull?'20&gt;50 ▲':'20&lt;50 ▼');
+      let filt;
+      if(trendUp==null) filt='<span class="gmut">15m trend unknown — filter N/A</span>';
+      else if((bull&&trendUp)||(!bull&&!trendUp)) filt='<b class="gok">FILTERED '+dir+' ✓</b> <span class="gmut">(passed 15m trend gate)</span>';
+      else filt='<span class="gwarn">filtered out</span> <span class="gmut">— 15m trend '+(trendUp?'up':'down')+' disagrees</span>';
+      return '<div class="emaline">'+lbl+': '+reg+' · '+filt+'</div>';
+    }
+    const lines=[aline("5m",[9,21]),aline("15m",[9,21]),aline("5m",[20,50]),aline("15m",[20,50])].join("");
+    // FILTERED live signal -> trade-status PAPER row (same status window as everything else)
+    const g=d.live_signal;
+    const paper = dark ? '<div class="statrow grey">feed dark — paper status unknown</div>'
+      : g ? (function(){const dc=g.direction==="LONG"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?"structure":"⚠ ATR-fallback";
+          return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> '+esc(g.track)+' · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.coarse?' · daily-coarse':'')+'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the EMA cross · n&lt;30</div></div>';})()
+      : '<div class="statrow grey">No active EMA paper setup · no FILTERED signal live</div>';
+    const statwin='<div class="statwin">'+paper+(MT.has("EMA")?MT.row("EMA",null):MT.btn("EMA"))+'</div>';
     const tk=d.tracks_summary||{};
-    const sc='<div class="card"><h2>EMA 8-track scorecard — NET POINTS</h2><table><tr><th>track</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+    const sc='<details class="research"><summary>▸ research detail — 8-track NET-POINTS scorecard (RAW control + FILTERED)</summary>'
+      +'<table style="margin-top:8px"><tr><th>track</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
       +Object.entries(tk).map(([t,c])=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("")
-      +'</table><div class="scbasis">'+esc(d.note||"")+'</div></div>';
+      +'</table><div class="scbasis">'+esc(d.note||"")+' · multiple-comparison caveat: 8 parallel tracks — best-of-8 is in-sample, not out-of-sample. n&lt;30 = descriptive only.</div></details>';
     document.getElementById("fut-content").innerHTML=
       '<div class="hero"><div class="nm">ES EMA system · context lean '+esc(d.context_lean)+'</div>'
-        +'<div class="src">SIMULATED · descriptive · NET-POINTS metric · trigger = price breaking the stop, not the cross</div></div>'
-      +tfCard("5m",d.timeframes&&d.timeframes["5m"])+tfCard("15m",d.timeframes&&d.timeframes["15m"])+guid+sc;
+        +'<div class="src">SIMULATED · NET-POINTS · FILTERED = tested-for-edge · RAW = control · trigger = price breaking the stop</div>'
+        +statwin+'</div>'
+      +'<div class="card"><h2>EMA signals — FILTERED (tested-for-edge) vs RAW (control)</h2>'+lines
+        +'<div class="emanote">FILTERED = cross + 15m-trend gate (the version tested for edge). RAW = cross-only control — tracked under research detail.</div></div>'
+      +sc;
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
     const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="EMA updated "+local;
@@ -378,6 +453,7 @@ const Futures = (function(){
         +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
         +'<span class="pill2">tf: '+(d.internals_applicable===false?"daily swing (fallback)":(esc(d.primary_timeframe||"15m")+" (decision)"))+'</span>'
         +(d.structure_source?'<div class="src">structure: '+esc(d.structure_source)+'</div>':'')
+        +statusWindowFut(current,d,!isLive)
         +(isLive?'':'<div class="meternote" style="color:'+(state==="frozen"?"#ff6b76":(state==="dark"?"var(--amber)":"var(--mut)"))+'">'+(state==="dark"?"NO LIVE READ — last structural context only":(state==="frozen"?"FROZEN — DO NOT TRADE":(state==="closed"?"MARKET CLOSED — last context":"RECONNECTING — last good")))+'</div>')
         +'<div class="meters'+(isLive?"":" flat")+'">'
         +'<div class="meter m-long'+(isLive&&L>=H&&L>=S&&L>0?" dominant":"")+'"><div class="lab">LONG</div><div class="val">'+L+'%</div><div class="track"><div class="fill" style="width:'+L+'%"></div></div></div>'
@@ -402,7 +478,8 @@ const Futures = (function(){
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
   }
-  return {init:buildTabs, load};
+  function redraw(){ if(lastData[current]){ current==="EMA"?renderEMA(lastData[current]):render(lastData[current],false);} }
+  return {init:buildTabs, load, redraw};
 })();
 
 /* ════════════ STOCKS module (stock_dashboard.json) ════════════ */
@@ -426,13 +503,30 @@ const Stocks = (function(){
       +'<div class="srow"><span>avg</span><b>'+(c.avg==null?"–":(c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")+'</b></div>'
       +(immature?'<span class="ntag">'+esc(c.status||("n<"+min+" · descriptive"))+'</span>':'')+'</div>';
   }
-  function pickRow(p){
+  function paperRowPick(p,frozen){
+    if(frozen) return '<div class="statrow grey">feed frozen — status unknown</div>';
+    const dc=/SHORT/i.test(p.direction||"")?"var(--red)":"var(--green)";
+    const oc=String(p.outcome||"").toUpperCase(), tg=String(p.trigger_status||"").toUpperCase();
+    let st;
+    if(oc.indexOf("T1")>=0) st='<span style="color:var(--green)">T1 hit</span>';
+    else if(oc.indexOf("STOP")>=0) st='<span style="color:var(--red)">stopped</span>';
+    else if(oc.indexOf("T2")>=0||oc.indexOf("TARGET")>=0) st='<span style="color:var(--green)">target hit</span>';
+    else if(tg.indexOf("TRIG")>=0) st='triggered · open';
+    else if(p.needs_levels) st='watching · needs levels';
+    else st='watching · pre-trigger';
+    const lv=p.needs_levels?'':' · entry '+esc(p.entry)+(p.stop?' · stop '+esc(p.stop):'')+(p.t1?' · T1 '+esc(p.t1):'');
+    const dayc=(p.state==="CARRIED"&&p.day_n!=null)?' · day '+esc(p.day_n):'';
+    return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span>'+st+dayc+lv
+      +'<div class="mtagnote">SIMULATED/tracked · price is the trigger, not the pick · n&lt;MIN</div></div>';
+  }
+  function pickRow(p,frozen){
     const lv=p.needs_levels?'<span class="needs">needs levels</span>':'entry '+esc(p.entry)+' · stop '+esc(p.stop)+' · T1 '+esc(p.t1);
     const rp=p.repriced_from?(' · re-priced from '+esc(p.repriced_from)):'';
     const day=(p.state==="CARRIED")?(' day '+p.day_n):'';
     return '<div class="pick"><div><div class="pk-tk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.direction)+'</span></div>'
       +'<div class="pk-meta">'+lv+' · '+esc(p.conviction||"")+' · '+esc(p.pillars||"")+' · '+esc(p.status||"")+' · trig '+esc(p.trigger_status)+'/'+esc(p.outcome)+rp+'</div>'
-      +(p.note?'<div class="pk-note">'+esc(p.note)+'</div>':'')+'</div><span class="badge b-'+esc(p.state)+'">'+esc(p.state)+esc(day)+'</span></div>';
+      +(p.note?'<div class="pk-note">'+esc(p.note)+'</div>':'')+'</div><span class="badge b-'+esc(p.state)+'">'+esc(p.state)+esc(day)+'</span></div>'
+      +'<div class="statwin" style="margin:-2px 0 10px">'+paperRowPick(p,frozen)+(MT.has(p.ticker)?MT.row(p.ticker,null):MT.btn(p.ticker))+'</div>';
   }
   function engineRows(top5){
     if(!top5||!top5.length) return '<tr><td colspan="5" style="color:var(--dim)">no engine ledger for this section</td></tr>';
@@ -451,8 +545,9 @@ const Stocks = (function(){
     }
     const sec=(data.sections||{})[current]||{};
     if(sec.error){document.getElementById("stk-content").innerHTML='<div class="card"><h2>'+esc(current)+'</h2><div class="noact">section error: '+esc(sec.error)+'</div></div>';return;}
+    const fage=ageMin(data.generated_at), frozen=(fage!=null&&fage>STOCK_FREEZE_MIN);
     const curated=(sec.curated||[]);
-    const curatedHtml=curated.length?curated.map(pickRow).join(""):'<div class="noact">no curated picks in this section today</div>';
+    const curatedHtml=curated.length?curated.map(p=>pickRow(p,frozen)).join(""):'<div class="noact">no curated picks in this section today</div>';
     document.getElementById("stk-content").innerHTML=
       '<div class="card"><div class="secttl">Claude curated</div>'+curatedHtml+'</div>'
       +'<div class="card"><div class="secttl">Engine top 5</div><table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table></div>'
@@ -475,11 +570,14 @@ const Stocks = (function(){
     catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
   }
-  return {init:buildTabs, load};
+  function redraw(){ if(data) renderSection(); }
+  return {init:buildTabs, load, redraw};
 })();
 
 /* ════════════ top-level view switch ════════════ */
 let view="futures";
+function redraw(){ view==="futures"?Futures.redraw():Stocks.redraw(); }
+window.redraw=redraw;
 function showView(v){
   view=v;
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
