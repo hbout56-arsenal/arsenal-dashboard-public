@@ -101,6 +101,12 @@
   #fut .meters.flat{opacity:.4;filter:grayscale(.62)}
   #fut .meters.flat .meter{box-shadow:none;transform:none;border-color:var(--gbrd)}
   #fut .meters.flat .val{text-shadow:none}
+  #fut .card.guid{border-color:rgba(77,141,255,.28);box-shadow:0 0 22px rgba(77,141,255,.1),0 8px 28px rgba(0,0,0,.35)}
+  #fut .gline{font-size:14px;font-weight:650;margin:3px 0;font-family:var(--mono);letter-spacing:-.2px}
+  #fut .gline.gmut{color:var(--mut);font-weight:400;font-size:12px;font-family:var(--sans)}
+  #fut .gline.gwarn{color:var(--amber);font-weight:650;font-family:var(--sans)}
+  #fut .gok{color:var(--green);font-weight:750} #fut .gwarn{color:var(--amber);font-weight:750}
+  #fut .gtag{font-size:11px;color:var(--dim);font-style:italic;margin-top:10px;line-height:1.5}
   #fut .tfsub{display:flex;gap:5px;background:var(--bg2);border:1px solid var(--gbrd);border-radius:11px;padding:4px;margin:2px 0 4px}
   #fut .tftab{flex:1;text-align:center;padding:9px 4px;border-radius:8px;color:var(--mut);font-weight:700;font-size:12.5px;cursor:pointer;transition:all .18s}
   #fut .tftab.active{background:rgba(255,255,255,.07);color:#fff;box-shadow:inset 0 0 0 1px var(--gbrd)}
@@ -237,6 +243,22 @@ const Futures = (function(){
   const STALE_MIN=10;
   let current="ES"; const lastData={}; let summary=null; let futTF=null;
   const tsOf=d=>d.pushed_at||d.timestamp||"";
+  const fmtN=v=>v==null?"–":Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
+  const SIMNOTE="SIMULATED guidance — not a signal. Price breaking the stop level is the trigger, not the meter %. n<30, unvalidated.";
+  function guidanceBlock(d, isLive){
+    const g=d.guidance;
+    if(!g||!g.active||!isLive) return "";          // no block on inactive / DARK / stale (D7 discipline)
+    if(g.levels_incomplete) return '<div class="card guid"><h2>Guidance — '+esc(g.threshold)+'% threshold</h2>'
+      +'<div class="gline gwarn">⚠ '+esc(g.note||"no clean levels — structure incomplete")+'</div>'
+      +'<div class="gtag">'+esc(SIMNOTE)+'</div></div>';
+    const dc=g.direction==="LONG"?"var(--green)":"var(--red)";
+    const sb=g.stop_basis==="structure"?'<span class="gok">structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
+    const coarse=g.coarse?'<div class="gline gwarn">⚠ daily-fallback levels — coarse, context only</div>':'';
+    return '<div class="card guid"><h2>Guidance — '+esc(g.threshold)+'% threshold</h2>'
+      +'<div class="gline" style="color:'+dc+'"><b>'+esc(g.direction)+'</b> @ '+fmtN(g.entry)+' · stop '+fmtN(g.stop)+' ('+sb+') · T1 '+fmtN(g.t1)+' · T2 '+fmtN(g.t2)+' · R:R '+esc(g.rr)+'</div>'
+      +'<div class="gline gmut">targets: '+esc(g.target_basis==="confluence"?"confluence":"r-multiple")+'</div>'+coarse
+      +'<div class="gtag">'+esc(SIMNOTE)+'</div></div>';
+  }
   function tfPanel(d){
     const tfs=d.timeframes||{}, prim=d.primary_timeframe||"15m", order=["5m","15m","60m","daily"];
     const sel=(futTF&&tfs[futTF])?futTF:prim;
@@ -335,6 +357,7 @@ const Futures = (function(){
         +'<div class="meter m-hold'+(isLive&&H>=L&&H>=S&&H>0?" dominant":"")+'"><div class="lab">HOLD</div><div class="val">'+H+'%</div><div class="track"><div class="fill" style="width:'+H+'%"></div></div></div>'
         +'<div class="meter m-short'+(isLive&&S>=L&&S>=H&&S>0?" dominant":"")+'"><div class="lab">SHORT</div><div class="val">'+S+'%</div><div class="track"><div class="fill" style="width:'+S+'%"></div></div></div>'
         +'</div></div>'
+      +guidanceBlock(d,isLive)
       +scorecardPanel(current)
       +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
       +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news
