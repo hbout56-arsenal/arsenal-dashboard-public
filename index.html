@@ -239,7 +239,34 @@ function futuresSessionOpen(){
 
 /* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
 const Futures = (function(){
-  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"}];
+  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"}];
+  function renderEMA(d){
+    const dark=String(d.feed_status||"").toUpperCase().startsWith("DARK");
+    if(dark) banner("fut-banner","dark","○ EMA DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No EMA signal — context only.");
+    else banner("fut-banner","",null);
+    const tfCard=(tf,s)=>{
+      if(!s||!s.available) return '<div class="card"><h2>'+tf+' EMA</h2><div class="zmut">○ DARK — '+esc((s&&s.reason)||"unavailable")+'</div></div>';
+      const chip=s.state==="live"?'<span class="chip live">● LIVE</span>':s.state==="frozen"?'<span class="chip frozen">⚠ FROZEN</span>':'<span class="chip dark">○ DARK</span>';
+      return '<div class="card"><h2>'+tf+' EMA &nbsp;'+chip+'</h2>'
+        +'<div class="gline">close '+esc(s.close)+' · 9 '+esc(s.ema9)+' / 21 '+esc(s.ema21)+' '+(s["9>21"]?'<span class="gok">9&gt;21 ▲</span>':'<span class="gwarn">9&lt;21 ▼</span>')+'</div>'
+        +'<div class="gline">20 '+esc(s.ema20)+' / 50 '+esc(s.ema50)+' '+(s["20>50"]?'<span class="gok">20&gt;50 ▲</span>':'<span class="gwarn">20&lt;50 ▼</span>')+(s.trend_up!=null?' · 15m trend '+(s.trend_up?'<span class="gok">up</span>':'<span class="gwarn">down</span>'):'')+'</div>'
+        +'<div class="gline gmut">bar '+esc(s.bar_ts)+' · atr '+esc(s.atr)+'</div></div>';
+    };
+    let guid="";const g=d.live_signal;
+    if(g){const dc=g.direction==="LONG"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?'<span class="gok">structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
+      guid='<div class="card guid"><h2>EMA signal — guidance ('+esc(g.track)+')</h2><div class="gline" style="color:'+dc+'"><b>'+esc(g.direction)+'</b> @ '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')</div><div class="gtag">SIMULATED — price breaking the stop is the trigger, not the EMA cross. n&lt;30, descriptive.</div></div>';}
+    const tk=d.tracks_summary||{};
+    const sc='<div class="card"><h2>EMA 8-track scorecard — NET POINTS</h2><table><tr><th>track</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+      +Object.entries(tk).map(([t,c])=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("")
+      +'</table><div class="scbasis">'+esc(d.note||"")+'</div></div>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">ES EMA system · context lean '+esc(d.context_lean)+'</div>'
+        +'<div class="src">SIMULATED · descriptive · NET-POINTS metric · trigger = price breaking the stop, not the cross</div></div>'
+      +tfCard("5m",d.timeframes&&d.timeframes["5m"])+tfCard("15m",d.timeframes&&d.timeframes["15m"])+guid+sc;
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    document.getElementById("fut-foot").textContent="EMA updated "+local;
+  }
   const STALE_MIN=10;
   let current="ES"; const lastData={}; let summary=null; let futTF=null;
   const tsOf=d=>d.pushed_at||d.timestamp||"";
@@ -289,7 +316,7 @@ const Futures = (function(){
   function buildTabs(){
     document.getElementById("fut-tabs").innerHTML=INSTR.map(i=>'<div class="tab'+(i.key===current?" active":"")+'" data-k="'+i.key+'">'+i.label+'</div>').join("");
     document.querySelectorAll("#fut-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();
-      if(lastData[current]) render(lastData[current],false); else document.getElementById("fut-content").innerHTML='<div class="loading">Loading…</div>'; load();});
+      if(lastData[current]){current==="EMA"?renderEMA(lastData[current]):render(lastData[current],false);} else document.getElementById("fut-content").innerHTML='<div class="loading">Loading…</div>'; load();});
   }
   function scorecardPanel(sym){
     if(!summary||!summary.instruments||!summary.instruments[sym]) return "";
@@ -371,7 +398,7 @@ const Futures = (function(){
     if(!tokenReady()){banner("fut-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
     const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
-    try{const d=await ghFetch(file); lastData[want]=d; if(current===want) render(d,false);}
+    try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):render(d,false);}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
   }
