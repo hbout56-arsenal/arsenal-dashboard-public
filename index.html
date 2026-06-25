@@ -58,6 +58,10 @@
   .banner.stale{background:rgba(255,77,94,.15);color:#ffd9de;border-color:rgba(255,77,94,.55);box-shadow:0 0 26px rgba(255,77,94,.2)}
   .banner.recon{background:rgba(255,181,46,.13);color:#ffe6b3;border-color:rgba(255,181,46,.45);box-shadow:0 0 22px rgba(255,181,46,.15)}
   .banner.err{background:rgba(255,77,94,.15);color:#ffd9de;border-color:rgba(255,77,94,.55)}
+  .banner.frozen{background:rgba(255,40,55,.22);color:#ffe2e5;border-color:rgba(255,77,94,.9);font-size:15px;font-weight:800;padding:16px 16px;animation:fz 1.5s ease-in-out infinite}
+  @keyframes fz{0%,100%{box-shadow:0 0 26px rgba(255,40,55,.30)}50%{box-shadow:0 0 48px rgba(255,40,55,.62)}}
+  .banner.dark{background:rgba(255,181,46,.14);color:#ffe6b3;border-color:rgba(255,181,46,.6);box-shadow:0 0 22px rgba(255,181,46,.15);font-weight:750}
+  .banner.closed{background:rgba(140,150,165,.13);color:#d2d9e3;border-color:rgba(140,150,165,.42)}
   .card{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
     border:1px solid var(--gbrd);border-radius:var(--r);padding:16px;margin-bottom:14px;
     box-shadow:0 8px 28px rgba(0,0,0,.35);animation:rise .38s cubic-bezier(.22,1,.36,1) both}
@@ -87,6 +91,16 @@
   #fut .m-hold .val{color:var(--amber)} #fut .m-hold .fill{background:linear-gradient(90deg,#c78410,var(--amber));box-shadow:0 0 12px var(--amber-g)}
   #fut .m-short .val{color:var(--red)} #fut .m-short .fill{background:linear-gradient(90deg,#c22b3a,var(--red));box-shadow:0 0 12px var(--red-g)}
   #fut .meter.dominant{transform:translateY(-3px)}
+  #fut .chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:999px;border:1px solid transparent;vertical-align:middle}
+  #fut .chip.live{background:rgba(46,230,110,.16);color:#7ff0b0;border-color:rgba(46,230,110,.55);box-shadow:0 0 14px rgba(46,230,110,.3)}
+  #fut .chip.dark{background:rgba(255,181,46,.16);color:#ffd98a;border-color:rgba(255,181,46,.55)}
+  #fut .chip.frozen{background:rgba(255,40,55,.2);color:#ffd9de;border-color:rgba(255,77,94,.75)}
+  #fut .chip.closed{background:rgba(140,150,165,.14);color:#d2d9e3;border-color:rgba(140,150,165,.42)}
+  #fut .pill2{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--mut);margin-left:10px}
+  #fut .meternote{text-align:center;font-size:11.5px;font-weight:800;letter-spacing:.5px;margin:16px 0 -2px}
+  #fut .meters.flat{opacity:.4;filter:grayscale(.62)}
+  #fut .meters.flat .meter{box-shadow:none;transform:none;border-color:var(--gbrd)}
+  #fut .meters.flat .val{text-shadow:none}
   #fut .m-long.dominant{border-color:rgba(46,230,110,.45);box-shadow:0 0 0 1px var(--green-g),0 10px 32px var(--green-g)} #fut .m-long.dominant .val{text-shadow:0 0 20px var(--green-g)}
   #fut .m-hold.dominant{border-color:rgba(255,181,46,.45);box-shadow:0 0 0 1px var(--amber-g),0 10px 32px var(--amber-g)} #fut .m-hold.dominant .val{text-shadow:0 0 20px var(--amber-g)}
   #fut .m-short.dominant{border-color:rgba(255,77,94,.45);box-shadow:0 0 0 1px var(--red-g),0 10px 32px var(--red-g)} #fut .m-short.dominant .val{text-shadow:0 0 20px var(--red-g)}
@@ -176,8 +190,7 @@
   </div>
 </div>
 <script>
-/* PUBLIC display build — NO credential of any kind. Reads the PUBLIC repo's raw URLs
-   unauthenticated (Contents are public). Safe to serve via GitHub Pages. */
+/* PUBLIC display build — NO credential. Reads the PUBLIC repo raw URLs unauthenticated. */
 const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dashboard-public/main/";
 
 const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
@@ -190,6 +203,28 @@ async function ghFetch(file){
   return r.json();
 }
 const tokenReady=()=>true;
+const FREEZE_MIN=15;          // futures: feed older than this (in-session) => FROZEN
+const STOCK_FREEZE_MIN=1500;  // stocks are daily-cadence; flag only if a daily run was missed (~25h)
+/* current ET weekday(1=Mon..7=Sun)+HHMM, tz-correct regardless of phone tz */
+function etNow(){
+  try{
+    const wd={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7};
+    const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+    let dow=null,h="0",m="0";
+    p.forEach(x=>{if(x.type==="weekday")dow=wd[x.value];if(x.type==="hour")h=x.value;if(x.type==="minute")m=x.value;});
+    if(h==="24")h="0";
+    return {dow,hm:parseInt(h,10)*100+parseInt(m,10)};
+  }catch(e){return null;}
+}
+/* full futures session: Sun 18:00 -> Fri 17:00 ET, daily 17:00-18:00 break off (mirrors run_verdicts.sh) */
+function futuresSessionOpen(){
+  const e=etNow(); if(!e||e.dow==null) return true;   // unknown -> assume open => default FROZEN, not calm
+  const {dow,hm}=e;
+  if(dow>=1&&dow<=4) return hm<1700||hm>=1800;
+  if(dow===5) return hm<1700;
+  if(dow===7) return hm>=1800;
+  return false;
+}
 
 /* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
 const Futures = (function(){
@@ -223,13 +258,30 @@ const Futures = (function(){
   }
   function render(d,reconnecting){
     const age=ageMin(tsOf(d));
-    if(reconnecting) banner("fut-banner","recon","⟳ Reconnecting — last good verdict ("+(age==null?"?":Math.round(age))+" min old)");
-    else if(age!=null&&age>STALE_MIN) banner("fut-banner","stale","⚠ STALE — verdict "+Math.round(age)+" min old. Not live.");
+    const ts0=tsOf(d), tms0=Date.parse((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
+    // ── FROZEN / DARK / LIVE honesty layer ──
+    const hasLive=(d.signals||[]).some(s=>Number(s.confidence)>0);   // >=1 signal actually voted (conf>0)
+    let state;
+    if(reconnecting) state="recon";
+    else if(age==null||age>FREEZE_MIN) state=(age!=null&&!futuresSessionOpen())?"closed":"frozen";
+    else if(!hasLive) state="dark";                                  // fresh, but every signal abstained
+    else state="live";
+    if(state==="frozen") banner("fut-banner","frozen","⚠ FEED FROZEN — last update "+tstr+" ("+(age==null?"?":Math.round(age))+" min ago). Data may be stale. DO NOT TRADE THIS.");
+    else if(state==="closed") banner("fut-banner","closed","○ SESSION CLOSED — last update "+tstr+". Futures reopen Sun 18:00 ET (daily 17:00–18:00 ET break).");
+    else if(state==="dark") banner("fut-banner","dark","○ DARK — no live signals this session (internals + structure unavailable). Meter is NOT actionable — last structural context only.");
+    else if(state==="recon") banner("fut-banner","recon","⟳ Reconnecting — last good verdict ("+(age==null?"?":Math.round(age))+" min old).");
     else banner("fut-banner","",null);
+    const isLive=(state==="live");
     let pc,pt;
     if(d.internals_applicable===false){pc="var(--dim)";pt="internals N/A — equity breadth only";}
     else if(d.internals_fresh){pc="var(--green)";pt="internals live"+(d.internals_age_s!=null?" · "+d.internals_age_s+"s":"");}
     else{pc="var(--amber)";pt="internals STALE — structure only";}
+    const sfresh=(d.structure_fresh===true);
+    const chip = isLive?'<span class="chip live">● LIVE</span>'
+      : state==="dark"?'<span class="chip dark">○ DARK</span>'
+      : state==="closed"?'<span class="chip closed">○ CLOSED</span>'
+      : state==="recon"?'<span class="chip dark">⟳ RECONNECT</span>'
+      : '<span class="chip frozen">⚠ FROZEN</span>';
     const price=(d.price!=null?d.price:d.es_price), change=(d.change!=null?d.change:d.es_change);
     let chg=""; if(change!=null){const up=change>=0;chg=' <span class="chg '+(up?"up":"dn")+'">'+(up?"+":"")+esc(change)+'</span>';}
     const L=Number(d.long_pct)||0,H=Number(d.hold_pct)||0,S=Number(d.short_pct)||0;
@@ -242,13 +294,16 @@ const Futures = (function(){
     const ntext=(si&&si.newsletter_context)||d.newsletter_context||"", ndate=(si&&si.context_date)||"";
     if(ntext) news='<div class="card"><h2>Newsletter cross-check</h2><div class="news">'+esc(ntext)+(ndate?' <span class="date">(as of '+esc(ndate)+')</span>':'')+'</div></div>';
     document.getElementById("fut-content").innerHTML=
-      '<div class="hero"><div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
+      '<div class="hero"><div style="margin-bottom:9px">'+chip+'</div>'
+        +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
         +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+'</div>'
+        +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
         +(d.structure_source?'<div class="src">structure: '+esc(d.structure_source)+'</div>':'')
-        +'<div class="meters">'
-        +'<div class="meter m-long'+(L>=H&&L>=S&&L>0?" dominant":"")+'"><div class="lab">LONG</div><div class="val">'+L+'%</div><div class="track"><div class="fill" style="width:'+L+'%"></div></div></div>'
-        +'<div class="meter m-hold'+(H>=L&&H>=S&&H>0?" dominant":"")+'"><div class="lab">HOLD</div><div class="val">'+H+'%</div><div class="track"><div class="fill" style="width:'+H+'%"></div></div></div>'
-        +'<div class="meter m-short'+(S>=L&&S>=H&&S>0?" dominant":"")+'"><div class="lab">SHORT</div><div class="val">'+S+'%</div><div class="track"><div class="fill" style="width:'+S+'%"></div></div></div>'
+        +(isLive?'':'<div class="meternote" style="color:'+(state==="frozen"?"#ff6b76":(state==="dark"?"var(--amber)":"var(--mut)"))+'">'+(state==="dark"?"NO LIVE READ — last structural context only":(state==="frozen"?"FROZEN — DO NOT TRADE":(state==="closed"?"MARKET CLOSED — last context":"RECONNECTING — last good")))+'</div>')
+        +'<div class="meters'+(isLive?"":" flat")+'">'
+        +'<div class="meter m-long'+(isLive&&L>=H&&L>=S&&L>0?" dominant":"")+'"><div class="lab">LONG</div><div class="val">'+L+'%</div><div class="track"><div class="fill" style="width:'+L+'%"></div></div></div>'
+        +'<div class="meter m-hold'+(isLive&&H>=L&&H>=S&&H>0?" dominant":"")+'"><div class="lab">HOLD</div><div class="val">'+H+'%</div><div class="track"><div class="fill" style="width:'+H+'%"></div></div></div>'
+        +'<div class="meter m-short'+(isLive&&S>=L&&S>=H&&S>0?" dominant":"")+'"><div class="lab">SHORT</div><div class="val">'+S+'%</div><div class="track"><div class="fill" style="width:'+S+'%"></div></div></div>'
         +'</div></div>'
       +scorecardPanel(current)
       +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
@@ -323,7 +378,9 @@ const Stocks = (function(){
   }
   function render(){
     const age=ageMin(data.generated_at);
-    if(age!=null&&age>STALE_MIN) banner("stk-banner","stale","⚠ STALE — dashboard "+Math.round(age)+" min old. Not live."); else banner("stk-banner","",null);
+    if(age!=null&&age>STOCK_FREEZE_MIN){const ms=Date.parse((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
+      banner("stk-banner","frozen","⚠ FEED FROZEN — last daily update "+ds+" ("+Math.round(age/60)+"h ago). The daily producer may have missed a run.");}
+    else banner("stk-banner","",null);
     document.getElementById("stk-posture").innerHTML=data.posture?'<span class="posture">'+esc(data.posture)+' · '+esc(data.date)+'</span>':'';
     buildTabs(); renderSection();
     document.getElementById("stk-disc").textContent=data.disclaimer||"";
