@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T16:18:00",
+  "generated_at": "2026-06-26T17:01:08",
   "recipient": "hbout56@gmail.com (self-only)",
   "metric_note": "every source SIMULATED / non-voting / n<30-honest; price breaking the level is the trigger",
   "collision_check": "each source uses a DEDICATED dedup state file (1 writer each, verified); engine feed/*_state.json are display feeds, a separate namespace",
@@ -9,54 +9,54 @@
       "system": "Verdict threshold",
       "instrument": "ES",
       "script": "verdict_threshold_alert.py",
-      "state_file": "(none \u2014 compose-only, not wired)",
-      "enable_env": "(none)",
+      "state_file": "verdict_threshold_alert_state.json",
+      "enable_env": "VERDICT_ALERTS_ENABLED",
       "default_on": false,
-      "wired": false,
-      "on_now": false,
+      "wired": true,
+      "on_now": true,
       "rate_cap": "n/a",
-      "dedup": "n/a",
+      "dedup": "symbol+direction+threshold+entry",
       "timeframes": "decision/primary TF only (single guidance block; no per-TF 5m/60m/daily guidance)",
-      "dark_delayed": "reads echoed guidance; inactive => no alert",
-      "status": "GAP: compose-only, not wired to run_verdicts.sh, OFF",
-      "wiring_plan": "call verdict_threshold_alert per-symbol after verdict_scorer in run_verdicts.sh; add a dedicated verdict_threshold_alert_state.json + VERDICT_ALERTS_ENABLED=1 + email creds",
-      "last_activity": null
+      "dark_delayed": "freshness gate (<=15min) + guidance.active; stale/dark => no alert; coarse daily-fallback labeled",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
+      "wiring_plan": "(deployed)",
+      "last_activity": "2026-06-26T16:51"
     },
     {
       "id": "verdict_threshold_GC",
       "system": "Verdict threshold",
       "instrument": "GC",
       "script": "verdict_threshold_alert.py",
-      "state_file": "(none \u2014 compose-only, not wired)",
-      "enable_env": "(none)",
+      "state_file": "verdict_threshold_alert_state.json",
+      "enable_env": "VERDICT_ALERTS_ENABLED",
       "default_on": false,
-      "wired": false,
-      "on_now": false,
+      "wired": true,
+      "on_now": true,
       "rate_cap": "n/a",
-      "dedup": "n/a",
+      "dedup": "symbol+direction+threshold+entry",
       "timeframes": "decision TF only",
-      "dark_delayed": "inactive => no alert",
-      "status": "GAP: compose-only, not wired, OFF",
-      "wiring_plan": "same as ES via run_verdicts.sh",
-      "last_activity": null
+      "dark_delayed": "freshness gate (<=15min) + guidance.active; stale/dark => no alert; coarse daily-fallback labeled",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
+      "wiring_plan": "(deployed)",
+      "last_activity": "2026-06-26T16:51"
     },
     {
       "id": "verdict_threshold_CL",
       "system": "Verdict threshold",
       "instrument": "CL",
       "script": "verdict_threshold_alert.py",
-      "state_file": "(none \u2014 compose-only, not wired)",
-      "enable_env": "(none)",
+      "state_file": "verdict_threshold_alert_state.json",
+      "enable_env": "VERDICT_ALERTS_ENABLED",
       "default_on": false,
-      "wired": false,
-      "on_now": false,
+      "wired": true,
+      "on_now": true,
       "rate_cap": "n/a",
-      "dedup": "n/a",
+      "dedup": "symbol+direction+threshold+entry",
       "timeframes": "decision TF only",
-      "dark_delayed": "inactive => no alert",
-      "status": "GAP: compose-only, not wired, OFF",
-      "wiring_plan": "same as ES via run_verdicts.sh",
-      "last_activity": null
+      "dark_delayed": "freshness gate (<=15min) + guidance.active; stale/dark => no alert; coarse daily-fallback labeled",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
+      "wiring_plan": "(deployed)",
+      "last_activity": "2026-06-26T16:51"
     },
     {
       "id": "ema_es",
@@ -72,7 +72,7 @@
       "dedup": "track+entry",
       "timeframes": "5m/15m 9/21 & 20/50 FILTERED (live_signal)",
       "dark_delayed": "DARK => no alert (engine writes DARK)",
-      "status": "ON: wired via run_ema.sh, EMA_ALERTS_ENABLED=1 + email creds (Dispatch 22 deploy)",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
       "wiring_plan": "(deployed)",
       "last_activity": null
     },
@@ -90,7 +90,7 @@
       "dedup": "inst+tf+entry",
       "timeframes": "15m/30m/60m/daily FILTERED",
       "dark_delayed": "ALWAYS carries DELAYED ~10-15min tag; dark => no alert",
-      "status": "ON: wired via run_ema_gccl.sh, EMA_GCCL_ALERTS_ENABLED=1 + email creds (Dispatch 22 deploy)",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
       "wiring_plan": "(deployed)",
       "last_activity": "2026-06-26T16:33"
     },
@@ -108,7 +108,7 @@
       "dedup": "ticker+entry",
       "timeframes": "daily 9/21 FILTERED per ticker",
       "dark_delayed": "stale/dark => no alert",
-      "status": "ON: wired via run_ema_stocks.sh, EMA_STOCKS_ALERTS_ENABLED=1 + email creds (Dispatch 22 deploy)",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
       "wiring_plan": "(deployed)",
       "last_activity": null
     },
@@ -126,7 +126,7 @@
       "dedup": "dir+gap+entry",
       "timeframes": "5m/15m FILTERED live_setup",
       "dark_delayed": "DARK/FROZEN => no alert",
-      "status": "ON: wired via run_fvg.sh, FVG_ALERTS_ENABLED=1 + email creds (Dispatch 22 deploy)",
+      "status": "ON: wired via run_*.sh wrapper + *_ALERTS_ENABLED=1 (verified in loaded launchd memory); honors alert_prefs",
       "wiring_plan": "(deployed)",
       "last_activity": null
     },
@@ -220,5 +220,6 @@
       "wiring_plan": "(already wired)",
       "last_activity": "2026-06-26T16:01"
     }
-  ]
+  ],
+  "wiring_note": "all setup senders wired+armed via run_*.sh wrappers (engine THEN alert) with *_ALERTS_ENABLED=1; alert_prefs.json is the live on/off control"
 }
