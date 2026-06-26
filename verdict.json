@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T01:30:10",
+  "timestamp": "2026-06-26T01:36:11",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -8,7 +8,7 @@
   "price": 7421.25,
   "change": null,
   "internals_fresh": false,
-  "internals_age_s": 33932,
+  "internals_age_s": 34293,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -91,22 +91,22 @@
   "timeframes": {
     "5m": {
       "timeframe": "5m",
-      "long_pct": 0.0,
-      "hold_pct": 100.0,
+      "long_pct": 10.0,
+      "hold_pct": 90.0,
       "short_pct": 0.0,
-      "price": null,
+      "price": 7378.75,
       "internals_fresh": false,
-      "structure_fresh": false,
-      "structure_source": "IQFeed @ES# 5m unavailable (VM down/off-hrs)",
-      "state": "dark",
-      "bar_age_min": null,
+      "structure_fresh": true,
+      "structure_source": "IQFeed @ES# 5m (in-guest)",
+      "state": "live",
+      "bar_age_min": 11.2,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "no price"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7378.75 at 1-method confluence (VP) near 7376.33 (support)"
         },
         {
           "name": "Breadth",
@@ -125,9 +125,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "structure unavailable"
+          "verdict": "SHORT",
+          "confidence": 45.0,
+          "reason": "price 7378.75 < prior_close 7428.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -151,28 +151,43 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [],
-      "vp_available": false,
-      "fib_available": false
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7376.33,
+          "dist": -2.42,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7372.86,
+          "dist": -5.89,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
+      "vp_available": true,
+      "fib_available": true
     },
     "15m": {
       "timeframe": "15m",
-      "long_pct": 0.0,
-      "hold_pct": 100.0,
+      "long_pct": 100.0,
+      "hold_pct": 0.0,
       "short_pct": 0.0,
-      "price": null,
+      "price": 7378.75,
       "internals_fresh": false,
       "structure_fresh": false,
-      "structure_source": "IQFeed @ES# 15m unavailable (VM down/off-hrs)",
-      "state": "dark",
-      "bar_age_min": null,
+      "structure_source": "IQFeed @ES# 15m (in-guest)",
+      "state": "live",
+      "bar_age_min": 21.2,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "no price"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7378.75 at 1-method confluence (VP) near 7378.40 (support)"
         },
         {
           "name": "Breadth",
@@ -217,28 +232,43 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [],
-      "vp_available": false,
-      "fib_available": false
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7378.4,
+          "dist": -0.35,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7373.7,
+          "dist": -5.05,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
+      "vp_available": true,
+      "fib_available": true
     },
     "60m": {
       "timeframe": "60m",
       "long_pct": 0.0,
       "hold_pct": 100.0,
       "short_pct": 0.0,
-      "price": null,
+      "price": 7380.75,
       "internals_fresh": false,
       "structure_fresh": false,
-      "structure_source": "IQFeed @ES# 60m unavailable (VM down/off-hrs)",
-      "state": "dark",
-      "bar_age_min": null,
+      "structure_source": "IQFeed @ES# 60m (in-guest)",
+      "state": "frozen",
+      "bar_age_min": 36.2,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "no price"
+          "reason": "price 7380.75 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -284,8 +314,8 @@
         }
       ],
       "confluence_zones": [],
-      "vp_available": false,
-      "fib_available": false
+      "vp_available": true,
+      "fib_available": true
     },
     "daily": {
       "timeframe": "daily",
