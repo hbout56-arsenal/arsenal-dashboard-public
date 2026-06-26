@@ -386,11 +386,19 @@ const Futures = (function(){
   }
   function fvgScore(d){
     const t=d.tracks_summary||{};
-    const row=(name,c,ctl)=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.6':'1')+'"><td style="font-family:var(--mono)">'+name+(ctl?' <span class="gmut">(control)</span>':' <span class="gok">(tested-for-edge)</span>')+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';};
-    return '<details class="research"><summary>▸ research detail — RAW vs FILTERED NET-POINTS scorecard</summary>'
+    const row=(name,c,tag)=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.6':'1')+'"><td style="font-family:var(--mono)">'+name+' '+tag+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';};
+    // OFF_KILLZONE track is ICT-only — gate all 3-track additions behind its presence so the shared
+    // FVG panel (RAW/FILTERED only) renders byte-identical to before.
+    const hasOff=t.OFF_KILLZONE!=null;
+    const F=t.FILTERED||{},O=t.OFF_KILLZONE||{},fx=F.net_points_expectancy,ox=O.net_points_expectancy;
+    const filtTag=hasOff?'<span class="gok">(tested-for-edge · in-KZ)</span>':'<span class="gok">(tested-for-edge)</span>';
+    const offRow=hasOff?row("OFF_KILLZONE",O,'<span class="gmut">(control · off-KZ)</span>'):"";
+    const sbs=hasOff?'<div class="scbasis" style="margin-top:6px">side-by-side (killzone time-filter): FILTERED (in-KZ) <b>'+(fx==null?'–':esc(fx))+'</b> net/trade (n='+esc(F.n_matured||0)+') vs OFF_KILLZONE (off-KZ) <b>'+(ox==null?'–':esc(ox))+'</b> net/trade (n='+esc(O.n_matured||0)+'). '+esc(d.off_killzone_note||"")+'</div>':"";
+    const sumLab=hasOff?'RAW vs FILTERED vs OFF_KILLZONE NET-POINTS scorecard (3 tracks)':'RAW vs FILTERED NET-POINTS scorecard';
+    return '<details class="research"><summary>▸ research detail — '+sumLab+'</summary>'
       +'<table style="margin-top:6px"><tr><th>mode</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
-      +row("RAW",t.RAW||{},true)+row("FILTERED",t.FILTERED||{},false)
-      +'</table><div class="scbasis">'+esc(d.note||"")+' · n&lt;30 = descriptive only.</div></details>';
+      +row("RAW",t.RAW||{},'<span class="gmut">(control)</span>')+row("FILTERED",F,filtTag)+offRow
+      +'</table>'+sbs+'<div class="scbasis">'+esc(d.note||"")+' · n&lt;30 = descriptive only.</div></details>';
   }
   /* ── ICT sequenced-chain panel (ICT dispatch) — a step out of order = no setup ── */
   function renderICT(d){
@@ -403,7 +411,7 @@ const Futures = (function(){
     if(dark){
       document.getElementById("fut-content").innerHTML='<div class="hero"><div class="nm">ES ICT — sequenced chain</div>'
         +'<div class="src">○ DARK — IQFeed @ES# unavailable. Chain needs live tape; nothing shown (no fabricated sweeps/setups).</div></div>'
-        +'<div class="card"><h2>2-mode scorecard (last good)</h2>'+fvgScore(d)+'</div>';
+        +'<div class="card"><h2>3-track scorecard (last good)</h2>'+fvgScore(d)+'</div>';
       document.getElementById("fut-disc").textContent=d.disclaimer||""; document.getElementById("fut-foot").textContent=""; return;
     }
     const pools=(d.untapped_pools_near||[]).map(p=>{const c=p.kind==="buy-side"?"var(--red)":"var(--green)";
@@ -420,6 +428,18 @@ const Futures = (function(){
         +'<div class="seqtrace" style="margin:8px 0;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'+trace+'</div>'
         +'<div class="gtag">price breaking the swept wick is the trigger/invalidation, not the pattern. SIMULATED · n&lt;30 · '+(g.filtered?'all gates passed in sequence':'control — failed a FILTERED gate')+'</div></div>';
     } else setup='<div class="card"><h2>ICT setup</h2><div class="emaline gmut">no live chain (needs sweep → MSS → FVG-in-OTE in sequence). A step out of order = no setup.</div></div>';
+    /* ── OFF-KILLZONE control box (NEW) — visually distinct (dashed slate), scored separately, NON-VOTING ── */
+    const ob=d.off_killzone_setup; let offbox;
+    if(ob){const oc=ob.dir==="bull"?"var(--green)":"var(--red)";const osb=ob.stop_basis==="structure"?'wick/structure':'⚠ ATR-fallback';
+      const otrace=(ob.trace||[]).map(t=>'<div class="gline" style="font-family:var(--mono);font-size:12px">'+esc(t)+'</div>').join("");
+      offbox='<div class="card" style="border:1px dashed var(--mut);background:rgba(120,124,160,.06)"><h2>OFF-KILLZONE <span class="gmut">(control)</span></h2>'
+        +'<div class="gtag" style="margin-bottom:6px">OFF-KILLZONE CONTROL — scored separately, tests whether killzone timing matters. NOT a trade rec.</div>'
+        +'<div class="gline" style="color:'+oc+'"><b>'+esc(ob.dir).toUpperCase()+'</b> @ '+esc(ob.entry)+' · stop '+esc(ob.stop)+' ('+esc(osb)+') · T1 '+esc(ob.t1)+' (1R '+esc(ob.R)+')'+(ob.t2?' · T2 '+esc(ob.t2)+' (next pool)':' · T2 next pool/EMA')+'</div>'
+        +'<div class="seqtrace" style="margin:8px 0;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'+otrace+'</div>'
+        +'<div class="gtag">SIMULATED · n&lt;30 · NON-VOTING · full ICT sequence fired OUTSIDE all killzone windows ('+esc((ob.entry_ts||"").slice(11,16))+' ET). Measures whether the killzone time-filter adds edge — does NOT feed the verdict meter.</div></div>';
+    } else offbox='<div class="card" style="border:1px dashed var(--mut);background:rgba(120,124,160,.06)"><h2>OFF-KILLZONE <span class="gmut">(control)</span></h2>'
+        +'<div class="gtag" style="margin-bottom:6px">OFF-KILLZONE CONTROL — scored separately, tests whether killzone timing matters.</div>'
+        +'<div class="emaline gmut">no off-killzone full sequence yet — control measurement only, not a trade rec.</div></div>';
     document.getElementById("fut-content").innerHTML=
       '<div class="hero"><div class="nm">ES ICT — sequenced chain <span class="chip live">● LIVE</span></div>'
         +'<div class="px" style="font-size:26px">'+esc(d.price)+'</div>'
@@ -428,7 +448,8 @@ const Futures = (function(){
       +'<div class="card"><h2>Untapped liquidity pools near price</h2>'+pools+'</div>'
       +'<div class="card"><h2>Structure</h2>'+swept+mss+'</div>'
       +setup
-      +'<div class="card"><h2>2-mode scorecard</h2>'+fvgScore(d)+'</div>';
+      +offbox
+      +'<div class="card"><h2>3-track scorecard</h2>'+fvgScore(d)+'</div>';
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
     const ms2=Date.parse(d.generated_at||""),local=isNaN(ms2)?d.generated_at:new Date(ms2).toLocaleString();
     document.getElementById("fut-foot").textContent="ICT updated "+local+" · last bar "+esc(d.last_bar_ts||"");
