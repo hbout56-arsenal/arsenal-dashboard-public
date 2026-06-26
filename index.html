@@ -428,18 +428,23 @@ const Futures = (function(){
         +'<div class="seqtrace" style="margin:8px 0;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'+trace+'</div>'
         +'<div class="gtag">price breaking the swept wick is the trigger/invalidation, not the pattern. SIMULATED · n&lt;30 · '+(g.filtered?'all gates passed in sequence':'control — failed a FILTERED gate')+'</div></div>';
     } else setup='<div class="card"><h2>ICT setup</h2><div class="emaline gmut">no live chain (needs sweep → MSS → FVG-in-OTE in sequence). A step out of order = no setup.</div></div>';
-    /* ── OFF-KILLZONE control box (NEW) — visually distinct (dashed slate), scored separately, NON-VOTING ── */
+    /* ── OFF-WINDOW STUDY / CONTROL box (Dispatch 18) — live guidance card for tape study; logs to
+       the OFF_KILLZONE track scored SEPARATELY, NON-VOTING. Dashed slate + grey chip so it's never
+       mistaken for the in-killzone +setup. ── */
     const ob=d.off_killzone_setup; let offbox;
+    const OFFLABEL=(ob&&ob.label)||"STUDY / CONTROL — off-window, NOT a validated setup (n<30). Killzone timing unproven on our data. For tape observation. Price breaking the swept wick is the trigger, not the pattern. SIMULATED.";
     if(ob){const oc=ob.dir==="bull"?"var(--green)":"var(--red)";const osb=ob.stop_basis==="structure"?'wick/structure':'⚠ ATR-fallback';
       const otrace=(ob.trace||[]).map(t=>'<div class="gline" style="font-family:var(--mono);font-size:12px">'+esc(t)+'</div>').join("");
-      offbox='<div class="card" style="border:1px dashed var(--mut);background:rgba(120,124,160,.06)"><h2>OFF-KILLZONE <span class="gmut">(control)</span></h2>'
-        +'<div class="gtag" style="margin-bottom:6px">OFF-KILLZONE CONTROL — scored separately, tests whether killzone timing matters. NOT a trade rec.</div>'
+      const rr2=(ob.rr_t2!=null)?(' · 1:'+esc(ob.rr_t2)+' (T2)'):'';
+      offbox='<div class="card" style="border:1px dashed var(--mut);background:rgba(120,124,160,.06)"><h2>OFF-WINDOW <span class="gmut">(STUDY / control)</span> <span class="chip" style="background:#2a2a32;color:#c9c9d6;border-color:#444">◐ off-window sequence</span></h2>'
+        +'<div class="gtag" style="margin-bottom:6px;border-left:3px solid var(--mut);padding-left:7px">'+esc(OFFLABEL)+'</div>'
         +'<div class="gline" style="color:'+oc+'"><b>'+esc(ob.dir).toUpperCase()+'</b> @ '+esc(ob.entry)+' · stop '+esc(ob.stop)+' ('+esc(osb)+') · T1 '+esc(ob.t1)+' (1R '+esc(ob.R)+')'+(ob.t2?' · T2 '+esc(ob.t2)+' (next pool)':' · T2 next pool/EMA')+'</div>'
+        +'<div class="gline gmut">R:R 1:1 (T1)'+rr2+'</div>'
         +'<div class="seqtrace" style="margin:8px 0;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'+otrace+'</div>'
-        +'<div class="gtag">SIMULATED · n&lt;30 · NON-VOTING · full ICT sequence fired OUTSIDE all killzone windows ('+esc((ob.entry_ts||"").slice(11,16))+' ET). Measures whether the killzone time-filter adds edge — does NOT feed the verdict meter.</div></div>';
-    } else offbox='<div class="card" style="border:1px dashed var(--mut);background:rgba(120,124,160,.06)"><h2>OFF-KILLZONE <span class="gmut">(control)</span></h2>'
-        +'<div class="gtag" style="margin-bottom:6px">OFF-KILLZONE CONTROL — scored separately, tests whether killzone timing matters.</div>'
-        +'<div class="emaline gmut">no off-killzone full sequence yet — control measurement only, not a trade rec.</div></div>';
+        +'<div class="gtag">full ICT sequence fired OUTSIDE all four killzone windows ('+esc((ob.entry_ts||"").slice(11,16))+' ET). Logs to the OFF_KILLZONE track — scored SEPARATELY from FILTERED, NON-VOTING (does NOT feed the verdict meter).</div></div>';
+    } else offbox='<div class="card" style="border:1px dashed var(--mut);background:rgba(120,124,160,.06)"><h2>OFF-WINDOW <span class="gmut">(STUDY / control)</span></h2>'
+        +'<div class="gtag" style="margin-bottom:6px;border-left:3px solid var(--mut);padding-left:7px">'+esc(OFFLABEL)+'</div>'
+        +'<div class="emaline gmut">no off-window sequence right now — when a full sequence fires outside the killzones it prints here for tape study (control measurement, scored separately).</div></div>';
     document.getElementById("fut-content").innerHTML=
       '<div class="hero"><div class="nm">ES ICT — sequenced chain <span class="chip live">● LIVE</span></div>'
         +'<div class="px" style="font-size:26px">'+esc(d.price)+'</div>'
