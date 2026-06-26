@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T06:09:33",
+  "timestamp": "2026-06-26T06:15:37",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -8,7 +8,7 @@
   "price": 7421.25,
   "change": null,
   "internals_fresh": false,
-  "internals_age_s": 50695,
+  "internals_age_s": 51059,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -67,22 +67,29 @@
     {
       "name": "EMA_Context",
       "pillar": "EMA_Context",
-      "verdict": "SHORT",
+      "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "EMA: 9<21 5m \u00b7 15m trend down \u2014 context, NON-VOTING (weight 0)"
+      "reason": "EMA DARK (VM down/off-hrs) \u2014 context only, non-voting"
     },
     {
       "name": "FVG_Context",
       "pillar": "FVG_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "FVG: nearest bear gap 7388.25-7390.5 unmitigated floating (no confluence) (3.0pt away) \u2014 context, NON-VOTING (weight 0)"
+      "reason": "FVG DARK (VM down/off-hrs) \u2014 context only, non-voting"
+    },
+    {
+      "name": "ICT_Context",
+      "pillar": "ICT_Context",
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "ICT: bias SHORT \u00b7 untapped sell-side 7394.75 \u00b7 swept 7478.25 + MSS confirmed \u2014 context, NON-VOTING (weight 0)"
     }
   ],
   "confluence_zones": [],
   "vp_available": true,
   "fib_available": true,
-  "config_hash": "2a1a83a47f79",
+  "config_hash": "360466192e8f",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
   "newsletter_context": "Ter Schure SPX: W-iii of W-3/c down, 7265\u00b125 target",
@@ -292,7 +299,7 @@
       "long_pct": 0.0,
       "hold_pct": 0.0,
       "short_pct": 100.0,
-      "price": 7389.75,
+      "price": 7388.75,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -304,7 +311,7 @@
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "price 7389.75 not at any VP/fib level (\u00b10.1%)"
+          "reason": "price 7388.75 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -325,7 +332,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7389.75 < prior_close 7433.75 (daily fallback)"
+          "reason": "price 7388.75 < prior_close 7433.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
