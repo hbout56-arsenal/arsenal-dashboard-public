@@ -9,8 +9,9 @@
     --bg:#070a10; --bg2:#0b111b; --card:#101826; --card2:#0c1320;
     --glass:rgba(18,27,42,.55); --glass2:rgba(255,255,255,.025); --gbrd:rgba(255,255,255,.07);
     --ink:#eef3fb; --mut:#8b97ab; --dim:#5a6678; --line:rgba(255,255,255,.06);
-    --green:#2ee66e; --amber:#ffb52e; --red:#ff4d5e; --blue:#4d8dff; --grey:#6b7280;
-    --green-g:rgba(46,230,110,.5); --amber-g:rgba(255,181,46,.5); --red-g:rgba(255,77,94,.5);
+    --green:#25e96e; --amber:#ffae15; --red:#ff3547; --blue:#4d8dff; --grey:#6b7280;
+    --green-g:rgba(37,233,110,.55); --amber-g:rgba(255,174,21,.55); --red-g:rgba(255,53,71,.55);
+    --green-m:#1a8f48; --amber-m:#a0741a; --red-m:#a02b38;   /* muted/inactive direction tones (phone-legible when nothing live) */
     --red-d:#3a151a; --amber-d:#3a2c0c;
     --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"JetBrains Mono","Roboto Mono",monospace;
     --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -72,10 +73,15 @@
   table{width:100%;border-collapse:collapse;font-size:13px}
   /* trade status window (shared) */
   .statwin{margin:0 0 12px}
-  .statrow{font-size:12.5px;line-height:1.5;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--gbrd);margin-bottom:7px;font-family:var(--mono)}
-  .statrow.grey{color:var(--mut);font-style:italic;font-family:var(--sans)}
-  .statrow.paper{border-left-width:3px}
-  .statrow.mine{border-color:rgba(77,141,255,.4);background:rgba(77,141,255,.07)}
+  .statrow{font-size:12.5px;line-height:1.5;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--gbrd);margin-bottom:7px;font-family:var(--mono);transition:box-shadow .3s,border-color .3s,transform .3s}
+  /* calm/muted "nothing live" state — stays quiet so the eye skips it */
+  .statrow.grey{color:var(--mut);font-style:italic;font-family:var(--sans);background:rgba(255,255,255,.018);opacity:.9}
+  /* ACTIVE paper setup — strong standout: bigger, bolder, directional border + glow (Dispatch 24) */
+  .statrow.paper{border-left-width:4px;padding:14px 14px;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.055);box-shadow:0 7px 22px rgba(0,0,0,.42)}
+  .statrow.paper.up{border-color:var(--green-g);box-shadow:0 0 0 1px var(--green-g),0 9px 30px rgba(37,233,110,.24)}
+  .statrow.paper.dn{border-color:var(--red-g);box-shadow:0 0 0 1px var(--red-g),0 9px 30px rgba(255,53,71,.24)}
+  /* ACTIVE self-marked trade — emphasized blue standout */
+  .statrow.mine{border-color:rgba(77,141,255,.55);background:rgba(77,141,255,.11);border-left-width:4px;border-left-color:var(--blue);padding:13px 14px;font-weight:600;box-shadow:0 0 0 1px rgba(77,141,255,.32),0 9px 28px rgba(77,141,255,.18)}
   .ptag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:var(--mut);border:1px solid var(--gbrd);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
   .mtag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#9cc3ff;background:rgba(77,141,255,.18);border:1px solid rgba(77,141,255,.45);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
   .mtagnote{font-size:10px;color:var(--dim);font-style:italic;margin-top:3px;font-family:var(--sans)}
@@ -116,7 +122,7 @@
   #fut .chip.closed{background:rgba(140,150,165,.14);color:#d2d9e3;border-color:rgba(140,150,165,.42)}
   #fut .pill2{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--mut);margin-left:10px}
   #fut .meternote{text-align:center;font-size:11.5px;font-weight:800;letter-spacing:.5px;margin:16px 0 -2px}
-  #fut .meters.flat{opacity:.4;filter:grayscale(.62)}
+  #fut .meters.flat{opacity:.36;filter:grayscale(.82)}
   #fut .meters.flat .meter{box-shadow:none;transform:none;border-color:var(--gbrd)}
   #fut .meters.flat .val{text-shadow:none}
   #fut .card.guid{border-color:rgba(77,141,255,.28);box-shadow:0 0 22px rgba(77,141,255,.1),0 8px 28px rgba(0,0,0,.35)}
@@ -177,20 +183,44 @@
   #stk .ntag{display:block;text-align:center;font-size:9.5px;color:var(--amber);margin-top:8px}
   #stk .ctx{font-size:12.5px;color:var(--ink);line-height:1.5} #stk .ctx .date{color:var(--dim)}
   /* ── ⓘ help / learn layer (Dispatch 19) — pure UI, per-section, in-page state only ── */
-  .ihelp{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;
-    border:1px solid var(--gbrd);color:var(--mut);font-size:10.5px;font-weight:700;font-style:normal;cursor:pointer;
-    margin-left:6px;vertical-align:middle;line-height:1;user-select:none;background:rgba(255,255,255,.03);font-family:var(--sans)}
+  /* ⓘ help icon — visible ~22px circle, but a transparent ::after expands the tap target to 44×44pt
+     (thumb-friendly, Dispatch 24) without disturbing inline layout */
+  .ihelp{position:relative;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
+    border:1px solid var(--gbrd);color:var(--mut);font-size:13px;font-weight:700;font-style:normal;cursor:pointer;
+    margin-left:7px;vertical-align:middle;line-height:1;user-select:none;background:rgba(255,255,255,.045);font-family:var(--sans);
+    box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .ihelp::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%}
   .ihelp:hover{color:var(--ink);border-color:var(--mut)}
-  .ihelp.on{color:var(--blue);border-color:var(--blue);background:rgba(77,141,255,.12)}
+  .ihelp.on{color:var(--blue);border-color:var(--blue);background:rgba(77,141,255,.16);box-shadow:0 0 12px rgba(77,141,255,.3)}
   .helpbox{margin:8px 0 6px;padding:11px 13px;border:1px dashed var(--gbrd);border-left:3px solid var(--blue);
     border-radius:11px;background:rgba(77,141,255,.05);font-family:var(--sans)}
   .helpbox h4{margin:0 0 7px;font-size:12px;color:var(--ink);font-weight:700;letter-spacing:.2px}
   .helpbox .hp{font-size:12px;line-height:1.5;color:var(--mut);margin:5px 0}
   .helpbox .hp b{color:var(--ink);font-weight:700}
-  .helpbox .hp.cav{color:#ffd98a;margin-top:7px}
+  /* "HOW TO TRADE THIS SITUATION" block — practical, situation-aware (Dispatch 24) */
+  .helpbox .hp.how{color:#bfe6cd;margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)}
+  .helpbox .hp.how b{color:#7ff0b0}
+  .helpbox .hp.cav{color:#ffd98a;margin-top:8px}
   .newhint{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:11px 13px;
     border:1px solid rgba(77,141,255,.35);border-radius:12px;background:rgba(77,141,255,.08);font-size:12.5px;color:#cfe0ff;line-height:1.45}
   .newhint .x{cursor:pointer;color:var(--mut);font-weight:700;padding:3px 9px;border:1px solid var(--gbrd);border-radius:8px;white-space:nowrap;flex:none}
+  /* ── pinned "last updated" freshness bar (Dispatch 24) — sticky at top of the active section,
+     always visible, computed from the data timestamp vs the viewer's clock. Full-bleed within .wrap. ── */
+  .freshbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:8px;margin:0 -16px 14px;padding:10px 16px;
+    font-size:11.5px;font-weight:700;font-family:var(--mono);letter-spacing:.2px;
+    background:rgba(7,10,16,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .freshbar[hidden]{display:none}
+  .freshbar .fdot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 10px currentColor}
+  .freshbar .age{color:var(--mut);font-weight:600}
+  .freshbar.live{color:#9fe9bd} .freshbar.live .fdot{background:var(--green);color:var(--green)}
+  .freshbar.warn{color:#ffd98a} .freshbar.warn .fdot{background:var(--amber);color:var(--amber)}
+  .freshbar.bad{color:#ffb3bb} .freshbar.bad .fdot{background:var(--red);color:var(--red)}
+  .freshbar.mut{color:var(--mut)} .freshbar.mut .fdot{background:var(--grey);color:var(--grey);box-shadow:none}
+  .freshbar .upd{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#9cc3ff;
+    font-family:var(--sans);opacity:0;transition:opacity .2s}
+  .freshbar .upd.show{opacity:1}
+  .freshbar .upd::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid rgba(156,195,255,.4);border-top-color:#9cc3ff;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -205,6 +235,7 @@
 
   <div id="fut">
     <div class="tabs" id="fut-tabs"></div>
+    <div class="freshbar" id="fut-fresh" hidden></div>
     <details class="legend" open><summary>＋ legend</summary><div class="lgbody">
       <span class="li"><span class="dot" style="background:var(--green)"></span>internals live</span>
       <span class="li"><span class="dot" style="background:var(--amber)"></span>STALE — structure only</span>
@@ -221,6 +252,7 @@
   <div id="stk" hidden>
     <div id="stk-posture"></div>
     <div class="tabs" id="stk-tabs"></div>
+    <div class="freshbar" id="stk-fresh" hidden></div>
     <details class="legend" open><summary>＋ legend — pick states</summary><div class="lgbody">
       <span class="li"><span class="badge b-NEW">NEW</span>first seen today</span>
       <span class="li"><span class="badge b-CARRIED">CARRIED</span>persisting · day N</span>
@@ -291,6 +323,22 @@ const HELP={
 "pools":{"t":"Liquidity pools list","w":"Untapped price levels (old highs/lows) where clusters of stop orders likely rest.","r":"Buy-side (above) = where short-sellers' stops sit; sell-side (below) = where longs' stops sit. The distance shows how far price is from each.","u":"Price is often 'drawn' toward these pools to trigger stops — useful for anticipating where a move may reach or reverse.","c":"⚠ A pool is a magnet idea, not a signal or a guarantee. It says where, never when. Context only."}
 };
 const HELP_OPEN=new Set();
+/* ── "HOW TO TRADE THIS SITUATION" — practical, situation-aware guidance per section (Dispatch 24).
+   Kept separate from HELP so the honest definitions/caveats above stay byte-stable. Still honest:
+   context-not-trigger, price-is-the-trigger, SIMULATED, n<30 all preserved in the copy. ── */
+const HELP_HOW={
+"meter":"Use the lean to pick a side to HUNT, not to enter. If LONG leads, only take longs that price confirms — wait for price to break and hold a real level in that direction. If HOLD leads, sit on your hands: no trade is the trade. Never act off the % alone — let price trigger you at a level.",
+"fresh":"Check this FIRST, every time. Only act on the read when it says LIVE (green). On FROZEN / DARK / CLOSED / STALE, treat every number as a stale snapshot — study it, don't trade it, and wait for the feed to come back before risking money.",
+"internals":"Use them to CONFIRM a move you already have a reason for. Long? You want TICK pushing positive (+400/+700), TRIN under 1, ADD positive — the tape backing you. If internals fight your idea (long but TICK deeply negative, TRIN > 1.5), stand down. At ±1000 extremes don't chase — wait for the snap-back.",
+"structure":"On live intraday structure you can trade tight: enter at the level, stop just beyond it. On daily-coarse / DELAYED structure, zoom out — trade the ZONE not the line, give the stop extra room, and size smaller because the level is approximate.",
+"guidance":"Treat it as a pre-built map, not a buy button. Wait for price to actually reach the entry AND break the level in the trade's direction — that break is the trigger. Put the stop where the plan shows (prefer a structure stop over ATR-fallback). Poor R:R or an ATR-fallback stop = pass.",
+"ema":"Use a cross as a tailwind, not an entry. Favor setups that agree with a FILTERED cross (cross + higher-TF trend); skip ones fighting it. Never enter on the cross itself — it lags; wait for price to confirm at a level. Until a track hits n≥30 with positive net points, it's unproven context only.",
+"fvg":"Only use a gap once you already have a directional reason (bias + level). Then look to enter as price taps an unmitigated gap sitting @confluence, stop just past the gap's far side. Skip floating gaps — noise. A gap refines WHERE you enter, never WHICH WAY you bet.",
+"ict":"Price sitting between a sell-side pool below and a buy-side pool above = chop; wait. The setup: in a killzone, let price sweep a pool and snap back (reject), then break structure the other way (MSS), then enter on the pull-back into the fair-value gap, stop beyond the swept wick. No sweep, wrong order, or off-window = no trade — stand down.",
+"scorecard":"Use it to decide whether to TRUST a layer at all. Don't lean on a track until it has matured to n≥30 with positive NET POINTS per trade (not just a pretty win-rate). Greyed/faded rows are too thin to act on. If the best track only shines because it's one of many, discount it.",
+"trades":"Use it as a live ledger, not a tip. PAPER shows what the simulated setup is doing — watch it to learn how setups play out. If you mark your own (MINE) you're only tracking your idea; the trigger is still price hitting your level/stop, and nothing here is wired to a broker.",
+"pools":"Use pools as TARGETS and traps, not entries. Expect price to get pulled toward a pool to grab stops — a place to take profit into, or to watch for a sweep-and-reject to fade. Don't buy/sell just because price is near one — wait for the reaction AT the pool to tell you when."
+};
 function hEsc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function hI(k){return HELP[k]?'<span class="ihelp'+(HELP_OPEN.has(k)?" on":"")+'" data-help="'+k+'" role="button" aria-label="help" title="help">&#9432;</span>':"";}
 function hP(k){const h=HELP[k];if(!h)return"";const open=HELP_OPEN.has(k);
@@ -299,6 +347,7 @@ function hP(k){const h=HELP[k];if(!h)return"";const open=HELP_OPEN.has(k);
     +'<div class="hp"><b>What it is.</b> '+hEsc(h.w)+'</div>'
     +'<div class="hp"><b>How to read it.</b> '+hEsc(h.r)+'</div>'
     +"<div class=\"hp\"><b>How you’d use it.</b> "+hEsc(h.u)+"</div>"
+    +(HELP_HOW[k]?'<div class="hp how"><b>▸ HOW TO TRADE THIS SITUATION.</b> '+hEsc(HELP_HOW[k])+'</div>':"")
     +'<div class="hp cav">'+hEsc(h.c)+'</div></div>';}
 /* one delegated handler — toggles state + any in-DOM panels/icons for that key (survives re-render) */
 document.addEventListener("click",function(e){
@@ -317,6 +366,27 @@ document.addEventListener("click",function(e){
 const ageMin=iso=>{const t=Date.parse((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
 function banner(id,cls,txt){const b=document.getElementById(id);if(!txt){b.style.display="none";return;}
   b.className="banner "+cls;b.textContent=txt;b.style.display="block";}
+/* ── pinned "last updated" freshness bar (Dispatch 24) — pure UI. Time from the DATA timestamp vs the
+   viewer's clock; level (live/warn/bad/mut) is decided by each renderer's own honesty state. ── */
+function setFresh(prefix,tsIso,level){
+  const el=document.getElementById(prefix+"-fresh"); if(!el) return;
+  const t=Date.parse((tsIso||"").replace(" ET",""));
+  if(isNaN(t)){ el.hidden=true; delete el.dataset.ts; return; }
+  el.hidden=false; el.dataset.ts=String(t); el.dataset.level=level||"live";
+  el.className="freshbar "+(level||"live");
+  const m=Math.max(0,Math.round((Date.now()-t)/60000));
+  const hhmmss=new Date(t).toLocaleTimeString();
+  el.innerHTML='<span class="fdot"></span><span>last updated '+hEsc(hhmmss)+'</span>'
+    +'<span class="age">('+(m<1?"just now":m+"m ago")+')</span>'
+    +'<span class="upd">updating…</span>';
+}
+/* advance only the "(Nm ago)" text between fetches so the age stays honest without a re-render */
+function freshTick(){ ["fut","stk"].forEach(p=>{const el=document.getElementById(p+"-fresh");
+  if(!el||el.hidden||!el.dataset.ts)return; const m=Math.max(0,Math.round((Date.now()-Number(el.dataset.ts))/60000));
+  const a=el.querySelector(".age"); if(a)a.textContent='('+(m<1?"just now":m+"m ago")+')';});}
+/* subtle "updating…" flag while a refresh is in flight; cleared when the renderer rebuilds the bar */
+function freshUpdating(prefix,on){const el=document.getElementById(prefix+"-fresh");if(!el)return;
+  const u=el.querySelector(".upd");if(u)u.classList.toggle("show",on);}
 async function ghFetch(file){
   const r=await fetch(API_BASE+file+"?t="+Date.now(),{cache:"no-store"});
   if(!r.ok) throw new Error("HTTP "+r.status);
@@ -384,7 +454,7 @@ function paperRowFut(d,dark){
     net=' · now '+px+' · <span style="color:'+(up?"var(--green)":"var(--red)")+'">'+(up?"+":"")+pts.toFixed(2)+' pts</span>';
     const pastT1=(g.direction==="LONG"?px>=g.t1:px<=g.t1),breached=(g.direction==="LONG"?px<=g.stop:px>=g.stop);
     status=breached?'<span style="color:var(--red)">stop breached</span>':(pastT1?'<span style="color:var(--green)">at/past T1</span>':'pre-T1 · working');}
-  return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+esc(g.stop_basis)+')'+(g.coarse?' · daily-coarse':'')+' · T1 '+esc(g.t1)+' · T2 '+esc(g.t2)+net+' · '+status
+  return '<div class="statrow paper '+(g.direction==="LONG"?"up":"dn")+'" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+esc(g.stop_basis)+')'+(g.coarse?' · daily-coarse':'')+' · T1 '+esc(g.t1)+' · T2 '+esc(g.t2)+net+' · '+status
     +'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the meter % · n&lt;30</div></div>';
 }
 function statusWindowFut(k,d,dark){const px=(d.price!=null?d.price:d.es_price);return '<div class="statwin">'+paperRowFut(d,dark)+(MT.has(k)?MT.row(k,px):MT.btn(k))+'</div>';}
@@ -396,6 +466,7 @@ const Futures = (function(){
     const dark=String(d.feed_status||"").toUpperCase().startsWith("DARK");
     if(dark) banner("fut-banner","dark","○ EMA DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No EMA signal — context only.");
     else banner("fut-banner","",null);
+    setFresh("fut",d.generated_at,dark?"warn":"live");
     const T=d.timeframes||{}, s15=T["15m"];
     const trendUp=(s15&&s15.available)?s15.trend_up:null;   // FILTERED gate = 15m trend agreement
     function aline(tf,pair){
@@ -414,7 +485,7 @@ const Futures = (function(){
     const g=d.live_signal;
     const paper = dark ? '<div class="statrow grey">feed dark — paper status unknown</div>'
       : g ? (function(){const dc=g.direction==="LONG"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?"structure":"⚠ ATR-fallback";
-          return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> '+esc(g.track)+' · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.coarse?' · daily-coarse':'')+'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the EMA cross · n&lt;30</div></div>';})()
+          return '<div class="statrow paper '+(g.direction==="LONG"?"up":"dn")+'" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> '+esc(g.track)+' · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.coarse?' · daily-coarse':'')+'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the EMA cross · n&lt;30</div></div>';})()
       : '<div class="statrow grey">No active EMA paper setup · no FILTERED signal live</div>';
     const statwin='<div class="statwin">'+paper+(MT.has("EMA")?MT.row("EMA",null):MT.btn("EMA"))+'</div>';
     const tk=d.tracks_summary||{};
@@ -440,6 +511,7 @@ const Futures = (function(){
     if(dark) banner("fut-banner","dark","○ FVG DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No FVG detection — no fabrication.");
     else if(fs==="FROZEN") banner("fut-banner","frozen","⚠ FVG FROZEN — last ES 5m bar stale. DO NOT TRADE off a frozen tape.");
     else banner("fut-banner","",null);
+    setFresh("fut",d.generated_at,dark?"warn":(fs==="FROZEN"?"bad":"live"));
     if(dark){
       document.getElementById("fut-content").innerHTML='<div class="hero"><div class="nm">ES FVG — entry refinement</div>'
         +'<div class="src">○ DARK — IQFeed @ES# unavailable. FVG needs live 5m/15m tape; nothing shown (no fabricated gaps).</div></div>'
@@ -499,6 +571,7 @@ const Futures = (function(){
     else if(d.standing_down) banner("fut-banner","closed","◐ ICT STANDING DOWN — outside killzone (feed is LIVE). No setups sought until an ICT window opens.");
     else if(fs==="FROZEN") banner("fut-banner","frozen","⚠ ICT FROZEN — last ES 5m bar stale.");
     else banner("fut-banner","",null);
+    setFresh("fut",d.generated_at,dark?"warn":(d.standing_down?"mut":(fs==="FROZEN"?"bad":"live")));
     if(dark){
       document.getElementById("fut-content").innerHTML='<div class="hero"><div class="nm">ES ICT — sequenced chain'+hI("ict")+'</div>'+hP("ict")
         +'<div class="src">○ DARK — IQFeed @ES# unavailable. Chain needs live tape; nothing shown (no fabricated sweeps/setups).</div></div>'
@@ -665,6 +738,7 @@ const Futures = (function(){
     else if(state==="dark") banner("fut-banner","dark","○ DARK — no live signals this session (internals + structure unavailable). Meter is NOT actionable — last structural context only.");
     else if(state==="recon") banner("fut-banner","recon","⟳ Reconnecting — last good verdict ("+(age==null?"?":Math.round(age))+" min old).");
     else banner("fut-banner","",null);
+    setFresh("fut",tsOf(d),state==="live"?"live":state==="frozen"?"bad":state==="closed"?"mut":"warn");
     const isLive=(state==="live");
     let pc,pt;
     if(d.internals_applicable===false){pc="var(--dim)";pt="internals N/A — equity breadth only";}
@@ -715,11 +789,13 @@ const Futures = (function(){
   async function load(){
     if(!tokenReady()){banner("fut-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
     const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
+    freshUpdating("fut",true);   // fresh-on-complete: show subtle "updating…" until the new JSON lands & re-renders
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
     if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
     try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):(want==="ICT"?renderICT(d):render(d,false)));}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
+    finally{ if(current===want) freshUpdating("fut",false); }
   }
   function redraw(){ if(lastData[current]){ current==="EMA"?renderEMA(lastData[current]):(current==="FVG"?renderFVG(lastData[current]):(current==="ICT"?renderICT(lastData[current]):render(lastData[current],false)));} }
   return {init:buildTabs, load, redraw};
@@ -784,7 +860,7 @@ const Stocks = (function(){
     else st='watching · pre-trigger';
     const lv=p.needs_levels?'':' · entry '+esc(p.entry)+(p.stop?' · stop '+esc(p.stop):'')+(p.t1?' · T1 '+esc(p.t1):'');
     const dayc=(p.state==="CARRIED"&&p.day_n!=null)?' · day '+esc(p.day_n):'';
-    return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span>'+st+dayc+lv
+    return '<div class="statrow paper '+(/SHORT/i.test(p.direction||"")?"dn":"up")+'" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span>'+st+dayc+lv
       +'<div class="mtagnote">SIMULATED/tracked · price is the trigger, not the pick · n&lt;MIN</div></div>';
   }
   function pickRow(p,frozen){
@@ -828,6 +904,7 @@ const Stocks = (function(){
     if(age!=null&&age>STOCK_FREEZE_MIN){const ms=Date.parse((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
       banner("stk-banner","frozen","⚠ FEED FROZEN — last daily update "+ds+" ("+Math.round(age/60)+"h ago). The daily producer may have missed a run.");}
     else banner("stk-banner","",null);
+    setFresh("stk",data.generated_at,(age!=null&&age>STOCK_FREEZE_MIN)?"bad":"live");
     document.getElementById("stk-posture").innerHTML=data.posture?'<span class="posture">'+esc(data.posture)+' · '+esc(data.date)+'</span>':'';
     buildTabs(); renderSection();
     document.getElementById("stk-disc").textContent=data.disclaimer||"";
@@ -836,10 +913,12 @@ const Stocks = (function(){
   }
   async function load(){
     if(!tokenReady()){banner("stk-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
+    freshUpdating("stk",true);   // fresh-on-complete: subtle "updating…" until the new daily JSON lands & re-renders
     ghFetch("ema_stocks_state.json").then(s=>{emaStk=s; if(data) renderSection();}).catch(()=>{});  // non-voting context (best-effort)
     try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
     catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
+    finally{ freshUpdating("stk",false); }
   }
   function redraw(){ if(data) renderSection(); }
   return {init:buildTabs, load, redraw};
@@ -961,6 +1040,7 @@ Futures.init(); Stocks.init();
 showView("futures");
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
 setInterval(()=>{ if(view==="futures")Futures.load(); else if(view==="stocks")Stocks.load(); }, 60000);
+setInterval(freshTick, 20000);   // keep the pinned "(Nm ago)" honest between fetches
 </script>
 </body>
 </html>
