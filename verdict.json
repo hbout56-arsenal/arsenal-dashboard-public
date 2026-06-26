@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T01:48:49",
+  "timestamp": "2026-06-26T01:54:57",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -8,7 +8,7 @@
   "price": 7421.25,
   "change": null,
   "internals_fresh": false,
-  "internals_age_s": 35051,
+  "internals_age_s": 35419,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -67,16 +67,16 @@
     {
       "name": "EMA_Context",
       "pillar": "EMA_Context",
-      "verdict": "HOLD",
+      "verdict": "SHORT",
       "confidence": 0.0,
-      "reason": "EMA: 9>21 5m \u00b7 15m trend down \u2014 context, NON-VOTING (weight 0)"
+      "reason": "EMA: 9<21 5m \u00b7 15m trend down \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "FVG_Context",
       "pillar": "FVG_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "FVG: nearest bear gap 7391.0-7392.0 unmitigated floating (no confluence) (16.0pt away) \u2014 context, NON-VOTING (weight 0)"
+      "reason": "FVG: nearest bear gap 7375.0-7378.75 unmitigated floating (no confluence) (7.25pt away) \u2014 context, NON-VOTING (weight 0)"
     }
   ],
   "confluence_zones": [],
@@ -91,22 +91,22 @@
   "timeframes": {
     "5m": {
       "timeframe": "5m",
-      "long_pct": 10.0,
-      "hold_pct": 90.0,
+      "long_pct": 58.5,
+      "hold_pct": 41.5,
       "short_pct": 0.0,
-      "price": 7375.0,
+      "price": 7369.5,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "IQFeed @ES# 5m (in-guest)",
       "state": "live",
-      "bar_age_min": 13.8,
+      "bar_age_min": 10.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7375.00 at 1-method confluence (VP) near 7372.86 (support)"
+          "confidence": 65.0,
+          "reason": "price 7369.50 at 2-method confluence (FIB+VP) near 7369.39 (support)"
         },
         {
           "name": "Breadth",
@@ -127,7 +127,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7375.00 < prior_close 7428.50 (daily fallback)"
+          "reason": "price 7369.50 < prior_close 7428.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -156,21 +156,21 @@
           "method": "VP",
           "label": "HVN",
           "price": 7369.39,
-          "dist": -5.61,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7379.8,
-          "dist": 4.8,
+          "dist": -0.11,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "LVN",
-          "price": 7372.86,
-          "dist": -2.14,
+          "price": 7376.33,
+          "dist": 6.83,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "FIB",
+          "label": "C9",
+          "price": 7362.24,
+          "dist": -7.26,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -179,22 +179,22 @@
     },
     "15m": {
       "timeframe": "15m",
-      "long_pct": 0.0,
-      "hold_pct": 0.0,
-      "short_pct": 100.0,
-      "price": 7367.75,
+      "long_pct": 10.0,
+      "hold_pct": 90.0,
+      "short_pct": 0.0,
+      "price": 7374.25,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "IQFeed @ES# 15m (in-guest)",
       "state": "live",
-      "bar_age_min": 18.8,
+      "bar_age_min": 10.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "SHORT",
-          "confidence": 65.0,
-          "reason": "price 7367.75 at 2-method confluence (FIB+VP) near 7369.00 (resistance)"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7374.25 at 1-method confluence (VP) near 7369.00 (support)"
         },
         {
           "name": "Breadth",
@@ -215,7 +215,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7367.75 < prior_close 7428.50 (daily fallback)"
+          "reason": "price 7374.25 < prior_close 7428.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -244,21 +244,7 @@
           "method": "VP",
           "label": "HVN",
           "price": 7369.0,
-          "dist": 1.25,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7373.7,
-          "dist": 5.95,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "FIB",
-          "label": "C10",
-          "price": 7365.0,
-          "dist": -2.75,
+          "dist": -5.25,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -267,22 +253,22 @@
     },
     "60m": {
       "timeframe": "60m",
-      "long_pct": 0.0,
+      "long_pct": 100.0,
       "hold_pct": 0.0,
-      "short_pct": 100.0,
-      "price": 7365.75,
+      "short_pct": 0.0,
+      "price": 7374.25,
       "internals_fresh": false,
       "structure_fresh": false,
       "structure_source": "IQFeed @ES# 60m (in-guest)",
       "state": "live",
-      "bar_age_min": 48.8,
+      "bar_age_min": 55.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "SHORT",
+          "verdict": "LONG",
           "confidence": 30.0,
-          "reason": "price 7365.75 at 1-method confluence (FIB) near 7368.12 (resistance)"
+          "reason": "price 7374.25 at 1-method confluence (FIB) near 7368.12 (support)"
         },
         {
           "name": "Breadth",
@@ -332,7 +318,7 @@
           "method": "FIB",
           "label": "C14",
           "price": 7368.12,
-          "dist": 2.37,
+          "dist": -6.13,
           "vp_timeframe": "daily_swing"
         }
       ],
