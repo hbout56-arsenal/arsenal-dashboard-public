@@ -230,6 +230,7 @@
   <div class="topbar" id="topbar">
     <div class="toptab active" data-v="futures">Futures</div>
     <div class="toptab" data-v="stocks">Stocks</div>
+    <div class="toptab" data-v="alerts">Alerts</div>
   </div>
 
   <div id="fut">
@@ -265,7 +266,43 @@
     <p class="disc" id="stk-disc"></p>
     <p class="foot" id="stk-foot"></p>
   </div>
+
+  <div id="alerts" hidden>
+    <div id="al-content"><div class="loading">Loading…</div></div>
+    <p class="foot" id="al-foot"></p>
+  </div>
 </div>
+<style>
+  /* Alerts tab (Dispatch 23) */
+  #alerts .algrp{margin:14px 0 6px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--mut);text-transform:uppercase}
+  #alerts .alrow{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;margin:7px 0;border:1px solid var(--gbrd);
+    border-radius:12px;background:rgba(255,255,255,.025)}
+  #alerts .alrow.off{opacity:.62}
+  #alerts .alrow.warn{border-color:rgba(255,120,120,.45);background:rgba(255,80,80,.06)}
+  #alerts .albody{flex:1 1 auto;min-width:0}
+  #alerts .alname{font-weight:700;font-size:14px;color:var(--ink)}
+  #alerts .aldesc{font-size:12px;color:var(--mut);line-height:1.45;margin-top:3px}
+  #alerts .almeta{font-size:11px;color:var(--dim);margin-top:5px}
+  #alerts .tag{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;margin:2px 4px 0 0;letter-spacing:.03em}
+  #alerts .tag.sim{background:rgba(255,217,138,.16);color:#ffd98a}
+  #alerts .tag.study{background:rgba(180,140,255,.18);color:#cdb4ff}
+  #alerts .tag.delay{background:rgba(120,180,255,.16);color:#9fc3ff}
+  #alerts .tag.nw{background:rgba(255,255,255,.08);color:var(--mut)}
+  #alerts .tag.live{background:rgba(80,220,140,.16);color:#7ee0a6}
+  /* toggle switch */
+  #alerts .sw{flex:none;width:46px;height:26px;border-radius:14px;background:rgba(255,255,255,.14);position:relative;cursor:pointer;
+    transition:background .15s;border:1px solid var(--gbrd);margin-top:2px}
+  #alerts .sw.on{background:var(--green)}
+  #alerts .sw .kn{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+  #alerts .sw.on .kn{left:22px}
+  #alerts .almaster{display:flex;align-items:center;justify-content:space-between;gap:11px;padding:13px;border:1px solid var(--gbrd);
+    border-radius:12px;background:rgba(77,141,255,.08);margin:6px 0 4px}
+  #alerts .applybar{position:sticky;bottom:0;background:linear-gradient(to top,var(--bg) 70%,transparent);padding:12px 0 4px;margin-top:10px}
+  #alerts .applybtn{display:block;width:100%;text-align:center;padding:13px;border-radius:12px;font-weight:800;font-size:14px;
+    text-decoration:none;border:1px solid var(--gbrd);background:rgba(255,255,255,.06);color:var(--mut)}
+  #alerts .applybtn.live{background:var(--green);color:#04210f;border-color:transparent}
+  #alerts .pend{font-size:12px;color:#ffd98a;text-align:center;margin:8px 0 2px;min-height:16px}
+</style>
 <script>
 /* PUBLIC display build — NO credential. Reads PUBLIC repo raw URLs. */
 const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dashboard-public/main/";
@@ -887,6 +924,104 @@ const Stocks = (function(){
   return {init:buildTabs, load, redraw};
 })();
 
+/* ════════════ ALERTS tab (Dispatch 23) — real on/off toggles via email round-trip ════════════ */
+const Alerts=(function(){
+  const OWNER="hbout56@gmail.com";
+  const GROUPS=[
+    {label:"Futures verdict",ids:["verdict_threshold_ES","verdict_threshold_GC","verdict_threshold_CL"]},
+    {label:"EMA",ids:["ema_es","ema_gccl","ema_stocks"]},
+    {label:"FVG",ids:["fvg"]},
+    {label:"ICT",ids:["ict_killzone","ict_offwindow"]},
+    {label:"Stocks",ids:["stocks_curated","orb_intraday"]},
+    {label:"Watchdog",ids:["feed_watchdog"]},
+  ];
+  const DESC={
+    verdict_threshold_ES:"Verdict-meter threshold crossing (ES) — emails when conviction crosses 70/85/100%.",
+    verdict_threshold_GC:"Verdict-meter threshold crossing (gold).",
+    verdict_threshold_CL:"Verdict-meter threshold crossing (crude).",
+    ema_es:"EMA cross signal — ES futures, 5m/15m, 9/21 & 20/50 (FILTERED).",
+    ema_gccl:"EMA cross — gold & crude, 15m–daily. Feed is DELAYED ~10–15 min.",
+    ema_stocks:"EMA daily cross — stocks (9/21 FILTERED).",
+    fvg:"Fair-value-gap setup — ES 5m/15m at confluence.",
+    ict_killzone:"ICT sequenced setup INSIDE a killzone — ES 5m, the tested track.",
+    ict_offwindow:"ICT off-window study alerts — control, NOT validated. Fires on every off-hours setup — can be noisy.",
+    stocks_curated:"Curated stock-pick state changes — triggered / T1 hit / stopped.",
+    orb_intraday:"Opening-range breakout alerts — stocks, on volume.",
+    feed_watchdog:"Feed-death watchdog — emails if a data feed goes dark. Turning this OFF means NO feed-death alerts — you won't know if the system goes dark while you're away.",
+  };
+  let reg=null, prefs=null, pending={};   // pending[id]=bool overrides the loaded pref until applied
+  const node=id=>(prefs&&prefs[id==="all"?"_all":id])||{};
+  const baseOf=id=>node(id).enabled!==false;            // current saved state (default on)
+  const stateOf=id=>(id in pending)?pending[id]:baseOf(id);
+  const changed=()=>Object.keys(pending).filter(id=>pending[id]!==baseOf(id));
+  function srcById(id){return (reg&&reg.sources||[]).find(s=>s.id===id)||{};}
+
+  async function load(){
+    document.getElementById("al-content").innerHTML='<div class="loading">Loading…</div>';
+    try{ reg=await ghFetch("alert_registry.json"); }
+    catch(e){ document.getElementById("al-content").innerHTML='<div class="banner err" style="display:block">Could not load alert_registry.json ('+esc(e.message)+')</div>'; return; }
+    try{ prefs=await ghFetch("alert_prefs.json"); }catch(e){ prefs={}; }
+    pending={}; render();
+  }
+  window.AlertsToggle=function(id){ const c=stateOf(id); if(!c===baseOf(id)) delete pending[id]; pending[id]=!c; render(); };
+
+  function tags(s){
+    let t="";
+    if(s.wired===false) t+='<span class="tag nw">not wired yet</span>';
+    else t+='<span class="tag live">wired</span>';
+    const sys=(s.system||"")+" "+(s.dark_delayed||"");
+    if(/DELAY/i.test(sys)) t+='<span class="tag delay">DELAYED feed</span>';
+    if(/STUDY|CONTROL/i.test(sys)) t+='<span class="tag study">STUDY · not validated</span>';
+    if(["feed_watchdog","orb_intraday","stocks_curated"].indexOf(s.id)<0) t+='<span class="tag sim">SIMULATED</span>';
+    return t;
+  }
+  function row(id){
+    const s=srcById(id), on=stateOf(id), warn=(id==="feed_watchdog");
+    const la=s.last_activity?("last activity "+esc(s.last_activity)):"";
+    const meta=["rate cap: "+esc(s.rate_cap||"—"), la].filter(Boolean).join(" · ");
+    return '<div class="alrow'+(on?"":" off")+(warn?" warn":"")+'">'
+      +'<div class="albody"><div class="alname">'+esc(s.system||id)+(s.instrument?' · '+esc(s.instrument):'')+'</div>'
+      +'<div class="aldesc">'+esc(DESC[id]||"")+'</div>'
+      +'<div>'+tags(s)+'</div>'
+      +'<div class="almeta">'+meta+'</div></div>'
+      +'<div class="sw'+(on?" on":"")+'" role="switch" aria-checked="'+on+'" onclick="AlertsToggle(\''+id+'\')"><span class="kn"></span></div></div>';
+  }
+  function render(){
+    const masterOn=stateOf("all");
+    const ch=changed();
+    let h='<div class="newhint" style="border-color:rgba(77,141,255,.35)">'
+      +'<div><b>How toggles work (the round-trip).</b> Flip switches here, then tap <b>Apply</b> — your mail app opens a 1-tap email to yourself. '
+      +'A job on the Mac reads it (every ~5 min) and updates the alert prefs, then each alert sender skips the sources you turned off. '
+      +'<b>Changes take effect within ~5–10 min</b> on the next Mac cycle — a toggle that takes a minute isn\'t broken, it\'s in flight. '
+      +'Off means off: a disabled source sends no email at all.</div></div>';
+    h+='<div class="almaster"><div><div class="alname">All alerts</div>'
+      +'<div class="aldesc">Master switch — off silences every source below at once.</div></div>'
+      +'<div class="sw'+(masterOn?" on":"")+'" role="switch" aria-checked="'+masterOn+'" onclick="AlertsToggle(\'all\')"><span class="kn"></span></div></div>';
+    if(!masterOn) h+='<div class="pend">Master is OFF — all alerts suppressed once applied.</div>';
+    GROUPS.forEach(g=>{
+      const ids=g.ids.filter(id=>srcById(id).id);
+      if(!ids.length) return;
+      h+='<div class="algrp">'+esc(g.label)+'</div>'+ids.map(row).join("");
+    });
+    // apply bar
+    const subj=mailSubject(ch);
+    const href="mailto:"+OWNER+"?subject="+encodeURIComponent(subj)
+      +"&body="+encodeURIComponent("Sent from the Arsenal dashboard Alerts tab. Do not edit — just press send. "+subj);
+    h+='<div class="applybar">'
+      +'<div class="pend">'+(ch.length?(ch.length+" change"+(ch.length>1?"s":"")+" pending: "+ch.map(id=>id+"="+(stateOf(id)?"on":"off")).join(", ")):"No pending changes — current saved state shown.")+'</div>'
+      +'<a class="applybtn'+(ch.length?" live":"")+'" '+(ch.length?('href="'+href.replace(/"/g,"&quot;")+'"'):'')+'>'
+      +(ch.length?"Apply "+ch.length+" change"+(ch.length>1?"s":"")+" (opens 1-tap email)":"Apply (no changes)")+'</a></div>';
+    h+='<p class="foot">Prefs file lives on the Mac as alert_prefs.json (just on/off flags — no credentials). Last saved: '+esc((prefs&&prefs._updated)||"—")+' by '+esc((prefs&&prefs._updated_by)||"—")+'.</p>';
+    document.getElementById("al-content").innerHTML=h;
+  }
+  function mailSubject(ch){
+    if(!ch.length) return "ARSENAL_PREFS (no changes)";
+    return "ARSENAL_PREFS "+ch.map(id=>(id==="all"?"all":id)+"="+(stateOf(id)?"on":"off")).join(" ");
+  }
+  return {init:load, load};
+})();
+window.Alerts=Alerts;
+
 /* ════════════ top-level view switch ════════════ */
 let view="futures";
 function redraw(){ view==="futures"?Futures.redraw():Stocks.redraw(); }
@@ -896,12 +1031,15 @@ function showView(v){
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
   document.getElementById("fut").hidden=(v!=="futures");
   document.getElementById("stk").hidden=(v!=="stocks");
-  (v==="futures"?Futures:Stocks).load();   // fetch only the active view
+  document.getElementById("alerts").hidden=(v!=="alerts");
+  if(v==="alerts")Alerts.load();
+  else (v==="futures"?Futures:Stocks).load();   // fetch only the active view
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
 Futures.init(); Stocks.init();
 showView("futures");
-setInterval(()=>{ (view==="futures"?Futures:Stocks).load(); }, 60000);  // refresh ACTIVE only
+/* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
+setInterval(()=>{ if(view==="futures")Futures.load(); else if(view==="stocks")Stocks.load(); }, 60000);
 setInterval(freshTick, 20000);   // keep the pinned "(Nm ago)" honest between fetches
 </script>
 </body>
