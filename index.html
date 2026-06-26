@@ -300,7 +300,7 @@ function statusWindowFut(k,d,dark){const px=(d.price!=null?d.price:d.es_price);r
 
 /* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
 const Futures = (function(){
-  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"}];
+  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"},{key:"FVG",file:"fvg_state.json",label:"FVG"}];
   function renderEMA(d){
     const dark=String(d.feed_status||"").toUpperCase().startsWith("DARK");
     if(dark) banner("fut-banner","dark","○ EMA DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No EMA signal — context only.");
@@ -341,6 +341,56 @@ const Futures = (function(){
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
     const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="EMA updated "+local;
+  }
+  /* ── FVG entry-refinement panel (Dispatch FVG) — entry/stop layer, NOT a vote ── */
+  function renderFVG(d){
+    const fs=String(d.feed_status||"").toUpperCase();
+    const dark=fs.startsWith("DARK");
+    if(dark) banner("fut-banner","dark","○ FVG DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No FVG detection — no fabrication.");
+    else if(fs==="FROZEN") banner("fut-banner","frozen","⚠ FVG FROZEN — last ES 5m bar stale. DO NOT TRADE off a frozen tape.");
+    else banner("fut-banner","",null);
+    if(dark){
+      document.getElementById("fut-content").innerHTML='<div class="hero"><div class="nm">ES FVG — entry refinement</div>'
+        +'<div class="src">○ DARK — IQFeed @ES# unavailable. FVG needs live 5m/15m tape; nothing shown (no fabricated gaps).</div></div>'
+        +'<div class="card"><h2>2-mode scorecard (last good)</h2>'+fvgScore(d)+'</div>';
+      document.getElementById("fut-disc").textContent=d.disclaimer||""; document.getElementById("fut-foot").textContent=""; return;
+    }
+    const near=d.unmitigated_near_price||[];
+    const rows=near.length?near.map(g=>{
+      const dc=g.dir==="bull"?"var(--green)":"var(--red)";
+      const conf=g.at_confluence?'<b class="gok">@'+esc(g.confluence||"level")+' ✓</b>':'<span class="gwarn">floating (no confluence)</span>';
+      const fr=g.fresh?'<span class="gok">fresh</span>':'<span class="gmut">aged</span>';
+      return '<div class="emaline"><b style="color:'+dc+'">'+esc(g.dir)+'</b> gap '+esc(g.gap_lo)+'–'+esc(g.gap_hi)
+        +' <span class="gmut">(size '+esc(g.size)+'pt · '+esc(g.dist_pts)+'pt away · '+(g.unmitigated?'unmitigated':'mitigated')+' · '+fr+')</span> · '+conf+'</div>';
+    }).join(""):'<div class="emaline gmut">no unmitigated FVG near price right now</div>';
+    const g=d.live_setup;
+    const guid=g?(function(){const dc=g.dir==="bull"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?'<span class="gok">structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
+      return '<div class="card guid"><h2>FVG +setup — guidance (FILTERED)</h2><div class="gline" style="color:'+dc+'"><b>'+esc(g.dir).toUpperCase()+'</b> @ '+esc(g.entry)
+        +' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.t2?' · T2 '+esc(g.t2):' · T2 fast-EMA runner')+'</div>'
+        +'<div class="gline gmut">gap '+esc(g.gap)+' @ '+esc(g.confluence||"level")+'</div>'
+        +'<div class="gtag">price breaking the gap’s FAR SIDE is the trigger, not the gap itself. SIMULATED · n&lt;30 · entry-refinement only.</div></div>';})()
+      :'<div class="card"><h2>FVG +setup</h2><div class="emaline gmut">no live FILTERED +setup (needs in-trend gap @confluence + internals confirm). RAW retests fire on noise — not shown as setups.</div></div>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">ES FVG — entry refinement <span class="chip live">● LIVE</span></div>'
+        +'<div class="px" style="font-size:26px">'+esc(d.price)+'</div>'
+        +'<div class="src">15m trend '+(d.trend_15m_up===true?'<span class="gok">up</span>':(d.trend_15m_up===false?'<span class="gwarn">down</span>':'n/a'))
+        +' · ATR(5m) '+esc(d.atr_5m)+' · '+esc(d.n_fvgs_detected)+' gaps detected · median size '+esc(d.median_size)+'pt</div>'
+        +'<div class="src">SIMULATED · NET-POINTS · FILTERED = in-trend gap @confluence + internals (tested-for-edge) · RAW = every retest (control)</div></div>'
+      +'<div class="card"><h2>Unmitigated FVGs near price</h2>'+rows
+        +'<div class="emanote">@confluence = gap sits on an existing VP/fib/VWAP/session level (read, not recomputed). Floating gaps are RAW-only noise.</div></div>'
+      +guid
+      +'<div class="card"><h2>2-mode scorecard</h2>'+fvgScore(d)+'</div>';
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    document.getElementById("fut-foot").textContent="FVG updated "+local+" · last bar "+esc(d.last_bar_ts||"");
+  }
+  function fvgScore(d){
+    const t=d.tracks_summary||{};
+    const row=(name,c,ctl)=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.6':'1')+'"><td style="font-family:var(--mono)">'+name+(ctl?' <span class="gmut">(control)</span>':' <span class="gok">(tested-for-edge)</span>')+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';};
+    return '<details class="research"><summary>▸ research detail — RAW vs FILTERED NET-POINTS scorecard</summary>'
+      +'<table style="margin-top:6px"><tr><th>mode</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+      +row("RAW",t.RAW||{},true)+row("FILTERED",t.FILTERED||{},false)
+      +'</table><div class="scbasis">'+esc(d.note||"")+' · n&lt;30 = descriptive only.</div></details>';
   }
   const STALE_MIN=10;
   let current="ES"; const lastData={}; let summary=null; let futTF=null; let gcclEma=null;
@@ -509,11 +559,11 @@ const Futures = (function(){
     const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
     if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
-    try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):render(d,false);}}
+    try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):render(d,false));}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
   }
-  function redraw(){ if(lastData[current]){ current==="EMA"?renderEMA(lastData[current]):render(lastData[current],false);} }
+  function redraw(){ if(lastData[current]){ current==="EMA"?renderEMA(lastData[current]):(current==="FVG"?renderFVG(lastData[current]):render(lastData[current],false));} }
   return {init:buildTabs, load, redraw};
 })();
 
