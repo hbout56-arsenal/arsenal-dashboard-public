@@ -341,6 +341,8 @@ const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dash
 const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 /* ── ⓘ help / learn layer (Dispatch 19) — pure UI. State in HELP_OPEN survives full re-renders. ── */
 const HELP={
+"insidebar":{"t":"Inside Bar A+ confluence","w":"An inside bar is a candle fully inside the prior bar (the 'mother bar') — a coil/pause. The mother bar is the wide thrust bar before it. A 'fakey' is a false break of the inside bar that snaps back (a higher-grade reversal).","r":"Raw inside bars print constantly and are NULL (no edge). The A+ stack filters them: at a level + in-trend + strong mother bar + compressed + confluence. Grade A+ = full stack; B = most; info = noise. RAW vs FILTERED scorecards measure it per instrument.","u":"Trade the A+ break: a stop-entry on the break of the inside bar's high (long) / low (short) in the confluence direction; stop the opposite side; T1=1R, T2=next level.","c":"⚠ Raw inside bars are NULL; only the A+ stack is tested-for-edge and it is NOT yet proven (n<30, NON-VOTING). Price breaking the bar is the trigger, not the pattern."},
+
 "calendar":{"t":"Turn-of-month / quarter-end calendar context","w":"A calendar flag for the last 2 + first 3 trading days of a month (and especially a quarter-end: Mar/Jun/Sep/Dec). Big funds rebalance on these days — 'window dressing' is buying the quarter's winners to show them on reports; pension/index rebalancing fires market-on-close orders that move breadth.","r":"📅 means you're in a window. Quarter-end is the stronger version. On flagged days the tape's internals (TICK/TRIN/ADD/ADSPD) are downgraded and sizing is halved.","u":"Trust the internals less near the turn — a breadth surge on Jun 30 may be pension rebalancing, not real buying — and size down. For the 401(k) tilt, prefer executing early in a quarter rather than into quarter-end distortion.","c":"⚠ Real but small and decayed effect — this sizes you DOWN and distrusts the tape near the turn; it is NOT a setup and never generates a trade. Trigger is still price."},
 
 "meter":{"t":"The meter — LONG / HOLD / SHORT %","w":"Three numbers that add to ~100%. They show how strongly the system currently leans long, short, or to do nothing, from the weighted pillars (structure, breadth, internals, and so on).","r":"The biggest number is the current lean; a glowing/raised tile is the dominant read. HOLD winning is a real answer — it means 'no clean edge, stand aside', not a missing signal.","u":"Treat it as CONTEXT — a tilt in the odds, a reason to favor a side or sit out. It is not an entry.","c":"⚠ NOT a trigger. Price breaking real structure (a level/stop) is the trigger. A high % is not a green light and the meter can be confidently wrong. Check the freshness pill first."},
@@ -507,7 +509,7 @@ function statusWindowFut(k,d,dark){const px=(d.price!=null?d.price:d.es_price);r
 
 /* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
 const Futures = (function(){
-  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"},{key:"FVG",file:"fvg_state.json",label:"FVG"},{key:"ICT",file:"ict_state.json",label:"ICT"}];
+  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"},{key:"FVG",file:"fvg_state.json",label:"FVG"},{key:"ICT",file:"ict_state.json",label:"ICT"},{key:"IB",file:"inside_bar_state.json",label:"Inside Bar"}];
   function renderEMA(d){
     const dark=String(d.feed_status||"").toUpperCase().startsWith("DARK");
     if(dark) banner("fut-banner","dark","○ EMA DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No EMA signal — context only.");
@@ -748,10 +750,46 @@ const Futures = (function(){
   const pct=v=>v==null?"–":(Math.round(v*1000)/10)+"%";
   const num=v=>v==null?"–":v;
 
+  /* ── Inside Bar A+ confluence tab (Dispatch 30) — 5 instruments, RAW=null vs A+ FILTERED ── */
+  function renderInsideBar(d){
+    const insts=d.instruments||{}, order=["ES","NQ","RTY","STOCK","GC","CL"];
+    const anyLive=order.some(i=>insts[i]&&String(insts[i].feed).toUpperCase()==="LIVE");
+    if(!anyLive) banner("fut-banner","dark","○ INSIDE BAR DARK — no live feed (VM down/off-hrs or no RTY entitlement). No detection — no fabrication.");
+    else banner("fut-banner","",null);
+    const corr=d.es_nq_correlated?'<div class="card" style="border-color:rgba(255,181,46,.5)"><div class="gline gwarn">⛓ '+esc(d.es_nq_correlated_note)+'</div></div>':'';
+    const cal=d.calendar_downgrade?'<div class="card"><div class="gline gwarn">⚠ turn-of-month/quarter-end — confluence downgraded, half-size (calendar_context)</div></div>':'';
+    const blocks=order.map(inst=>{
+      const x=insts[inst]; if(!x) return "";
+      const dark=String(x.feed).toUpperCase()!=="LIVE", s=x.live_setup;
+      const tag=inst==="RTY"?" (RTY/M2K)":(inst==="STOCK"?" (stocks-daily)":(inst==="GC"||inst==="CL"?" (daily · internals N/A)":""));
+      const head='<h2>'+esc(inst)+tag+' <span class="chip '+(dark?"dark":"live")+'">'+(dark?"○ DARK":"● LIVE")+'</span></h2>';
+      let body;
+      if(dark){ body='<div class="emaline gmut">○ '+esc(inst)+' feed unavailable'+(inst==="RTY"?" — RTY/M2K entitlement?":"")+' — nothing shown (no fabrication)</div>'; }
+      else if(s){const dc=s.dir==="long"?"var(--green)":"var(--red)";
+        const trace=(s.trace||[]).map(t=>'<div class="gline" style="font-family:var(--mono);font-size:12px">'+esc(t)+'</div>').join("");
+        body='<div class="gline" style="color:'+dc+'"><b>'+esc(((s.grade||"")+" "+s.dir).toUpperCase())+'</b> break '+esc(s.entry)+' · stop '+esc(s.stop)+' ('+esc(s.stop_basis)+') · T1 '+esc(s.t1)+' (1R '+esc(s.R)+') · T2 '+esc(s.t2||"next pool")+'</div>'
+          +'<div class="seqtrace" style="margin:8px 0;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'+trace+'</div>'
+          +'<div class="gtag">SIMULATED · n&lt;30 · NON-VOTING · raw inside bars are NULL — this is the A+ stack (tested-for-edge). Price breaking the bar is the trigger, not the pattern.</div>';
+      } else body='<div class="emaline gmut">no live A+ inside-bar coil near price</div>';
+      const tk=x.tracks_summary||{};
+      const sc='<details class="research"><summary>▸ research detail — '+esc(inst)+' RAW vs FILTERED net-points</summary>'
+        +'<table style="margin-top:6px"><tr><th>mode</th><th>n</th><th>net/trade</th><th>WR</th></tr>'
+        +["RAW","FILTERED"].map(m=>{const c=tk[m]||{},im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?".5":"1")+'"><td>'+m+(m==="RAW"?' (control)':' (A+ tested)')+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?"–":esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?"–":esc(c.win_rate)+"%")+'</td></tr>';}).join("")
+        +'</table><div class="scbasis">each FILTERED must beat ITS OWN RAW past n≥30 (high multiple-comparison risk; expect most null). n&lt;30 = descriptive.</div></details>';
+      return '<div class="card">'+head+body+sc+'</div>';
+    }).join("");
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">Inside Bar — A+ confluence '+hI("insidebar")+'</div>'
+        +'<div class="src">5 instruments · RAW=null control vs A+ FILTERED=tested-for-edge · SIMULATED · NON-VOTING · n&lt;30</div></div>'
+      +hP("insidebar")+corr+cal+blocks;
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    document.getElementById("fut-foot").textContent="Inside Bar updated "+esc(d.generated_at||"");
+  }
+
   function buildTabs(){
     document.getElementById("fut-tabs").innerHTML=INSTR.map(i=>'<div class="tab'+(i.key===current?" active":"")+'" data-k="'+i.key+'">'+i.label+'</div>').join("");
     document.querySelectorAll("#fut-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();
-      if(lastData[current]){current==="EMA"?renderEMA(lastData[current]):render(lastData[current],false);} else document.getElementById("fut-content").innerHTML='<div class="loading">Loading…</div>'; load();});
+      if(lastData[current]){current==="IB"?renderInsideBar(lastData[current]):(current==="EMA"?renderEMA(lastData[current]):render(lastData[current],false));} else document.getElementById("fut-content").innerHTML='<div class="loading">Loading…</div>'; load();});
   }
   function scorecardPanel(sym){
     if(!summary||!summary.instruments||!summary.instruments[sym]) return "";
@@ -838,12 +876,12 @@ const Futures = (function(){
     freshUpdating("fut",true);   // fresh-on-complete: show subtle "updating…" until the new JSON lands & re-renders
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
     if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
-    try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):(want==="ICT"?renderICT(d):render(d,false)));}}
+    try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="IB"?renderInsideBar(d):(want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):(want==="ICT"?renderICT(d):render(d,false))));}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
     finally{ if(current===want) freshUpdating("fut",false); }
   }
-  function redraw(){ if(lastData[current]){ current==="EMA"?renderEMA(lastData[current]):(current==="FVG"?renderFVG(lastData[current]):(current==="ICT"?renderICT(lastData[current]):render(lastData[current],false)));} }
+  function redraw(){ if(lastData[current]){ current==="IB"?renderInsideBar(lastData[current]):(current==="EMA"?renderEMA(lastData[current]):(current==="FVG"?renderFVG(lastData[current]):(current==="ICT"?renderICT(lastData[current]):render(lastData[current],false))));} }
   return {init:buildTabs, load, redraw};
 })();
 
