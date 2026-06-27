@@ -1063,15 +1063,23 @@ const Account=(function(){
   function render(d){
     const sa=d.shared_account||{}, r=d.rules||{};
     const pnl=sa.pnl||0;
-    let h='<div class="accnote"><b>$15,000 paper account — SIMULATED.</b> Single micros (MES $5/pt, MGC $10/pt, MCL $100/pt), '
-      +'1 unit/signal, risk = the structural stop, costs + 1-tick slippage in, margin + concurrency modelled. '
-      +'Built from the <b>dedup-corrected</b> independent trades. Filtered (tested-for-edge) tracks only — raw controls '
-      +'are listed below but not traded in the shared curve. This is <b>lower &amp; more realistic</b> than summing isolated tracks. '
-      +'Net-points scorecards are unchanged; this is an additive dollar view.</div>';
+    const fresh=(sa.n_trades_taken||0)===0;
+    let h='<div class="accnote"><b>$15,000 paper account — SIMULATED · FORWARD-ONLY.</b> '
+      +'Reset to $15,000, live from <b>'+esc(d.account_start_date||"")+'</b> — the prior 2025 backtested history is excluded. '
+      +'Single micros (MES $5/pt, MGC $10/pt, MCL $100/pt), 1 unit/signal, risk = the structural stop, costs + 1-tick slippage in, '
+      +'margin + concurrency modelled, from the <b>dedup-corrected</b> filtered tracks. Net-points scorecards are unchanged.</div>';
+    if(d.status) h+='<div style="font-size:12.5px;font-weight:700;color:'+(fresh?"#ffd98a":"#7ee0a6")+';margin:2px 0 8px">'+esc(d.status)+'</div>';
     // headline
     h+='<div class="bigbal">'+money(sa.final_balance||0)+'</div>';
     h+='<div class="'+pcls(pnl)+'" style="font-weight:700;font-size:15px;margin-top:2px">'
       +(pnl>=0?"+":"")+money(pnl)+' ('+(sa.return_pct>=0?"+":"")+(sa.return_pct||0).toFixed(1)+'%) from $15,000</div>';
+    if(fresh){
+      h+='<div class="accnote" style="border-color:rgba(255,217,138,.4);background:rgba(255,217,138,.08);color:#ffe7b3;margin-top:12px">'
+        +'No forward trades yet — the account is flat at $15,000 and will start filling in as setups fire on/after '
+        +esc(d.account_start_date||"Monday")+'. Per-instrument P&amp;L and the per-track breakdown populate once trades close.</div>';
+      h+='<p class="foot">'+esc(d.disclaimer||"")+' Generated '+esc(d.generated_at||"")+'.</p>';
+      return h;
+    }
     h+='<div class="accgrid">'
       +stat("Max drawdown",money(sa.max_drawdown||0)+" ("+(sa.max_drawdown_pct||0).toFixed(1)+"%)")
       +stat("Trades taken / skipped",(sa.n_trades_taken||0)+" / "+(sa.n_trades_skipped_no_margin||0)+" no-margin")
