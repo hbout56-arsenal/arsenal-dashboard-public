@@ -1,0 +1,832 @@
+{
+  "generated_at": "2026-06-26T20:10:47",
+  "kind": "paper_account_15k",
+  "labels": [
+    "SIMULATED",
+    "single micros",
+    "stop-defined risk",
+    "costs-in",
+    "models concurrency + margin \u2014 lower/more realistic than summing isolated tracks"
+  ],
+  "rules": {
+    "start_balance": 15000.0,
+    "micros": {
+      "MES": {
+        "point_value": 5.0,
+        "margin": 1500.0,
+        "cost_per_trade": 2.0
+      },
+      "MGC": {
+        "point_value": 10.0,
+        "margin": 1100.0,
+        "cost_per_trade": 1.75
+      },
+      "MCL": {
+        "point_value": 100.0,
+        "margin": 1100.0,
+        "cost_per_trade": 1.75
+      }
+    },
+    "stocks": {
+      "notional_per_position": 3000.0,
+      "margin_frac": 0.5,
+      "slippage_per_share": 0.01
+    },
+    "data": "dedup-corrected independent trades only (Dispatch 21 rescore)",
+    "shared_account_set": "FILTERED tracks only (realistic live set); raw controls excluded from the shared curve, reported per-track as descriptive"
+  },
+  "shared_account": {
+    "start_balance": 15000.0,
+    "final_balance": 43266.95,
+    "pnl": 28266.95,
+    "return_pct": 188.45,
+    "max_drawdown": 2342.9,
+    "max_drawdown_pct": 15.62,
+    "peak_margin_committed": 27083.42,
+    "margin_utilization_pct": 180.6,
+    "n_trades_taken": 469,
+    "n_trades_skipped_no_margin": 16,
+    "total_costs": 805.86,
+    "per_instrument_pnl": {
+      "STOCK": 19696.7,
+      "MGC": 7018.5,
+      "MCL": 2823.5,
+      "MES": -1271.75
+    },
+    "equity_curve_points": 470,
+    "curve_tail": [
+      {
+        "t": "2026-06-25T14:45:00",
+        "balance": 43290.95
+      },
+      {
+        "t": "2026-06-26T03:20:00",
+        "balance": 43398.5
+      },
+      {
+        "t": "2026-06-26T09:05:00",
+        "balance": 43299.55
+      },
+      {
+        "t": "2026-06-26T09:05:00",
+        "balance": 43200.6
+      },
+      {
+        "t": "2026-06-26T15:10:00",
+        "balance": 43266.95
+      }
+    ]
+  },
+  "shared_account_all_tracks": {
+    "start_balance": 15000.0,
+    "final_balance": 40474.81,
+    "pnl": 25474.81,
+    "return_pct": 169.83,
+    "max_drawdown": 17187.04,
+    "max_drawdown_pct": 114.58,
+    "peak_margin_committed": 35305.43,
+    "margin_utilization_pct": 235.4,
+    "n_trades_taken": 1875,
+    "n_trades_skipped_no_margin": 342,
+    "total_costs": 3227.02,
+    "per_instrument_pnl": {
+      "MCL": -4830.75,
+      "MGC": 6840.15,
+      "STOCK": 27947.96,
+      "MES": -4482.55
+    },
+    "equity_curve_points": 1876,
+    "curve_tail": [
+      {
+        "t": "2026-06-26T01:25:00",
+        "balance": 40498.81
+      },
+      {
+        "t": "2026-06-26T03:20:00",
+        "balance": 40606.36
+      },
+      {
+        "t": "2026-06-26T09:05:00",
+        "balance": 40507.41
+      },
+      {
+        "t": "2026-06-26T09:05:00",
+        "balance": 40408.46
+      },
+      {
+        "t": "2026-06-26T15:10:00",
+        "balance": 40474.81
+      }
+    ]
+  },
+  "per_track": {
+    "ema::20_50_15m_filtered": {
+      "instrument": "MES",
+      "n_independent": 8,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 133.7,
+      "avg_net_points": -6.215,
+      "isolated_15k": {
+        "final_balance": 14735.4,
+        "pnl": -264.6,
+        "return_pct": -1.76,
+        "max_drawdown": 436.95,
+        "n_taken": 8,
+        "n_skipped_no_margin": 0,
+        "total_costs": 16.0
+      }
+    },
+    "ema::20_50_15m_raw": {
+      "instrument": "MES",
+      "n_independent": 15,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 192.21,
+      "avg_net_points": -18.396,
+      "isolated_15k": {
+        "final_balance": 13590.3,
+        "pnl": -1409.7,
+        "return_pct": -9.4,
+        "max_drawdown": 1409.7,
+        "n_taken": 15,
+        "n_skipped_no_margin": 0,
+        "total_costs": 30.0
+      }
+    },
+    "ema::20_50_5m_filtered": {
+      "instrument": "MES",
+      "n_independent": 25,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 64.24,
+      "avg_net_points": -4.394,
+      "isolated_15k": {
+        "final_balance": 14400.8,
+        "pnl": -599.2,
+        "return_pct": -3.99,
+        "max_drawdown": 709.2,
+        "n_taken": 25,
+        "n_skipped_no_margin": 0,
+        "total_costs": 50.0
+      }
+    },
+    "ema::20_50_5m_raw": {
+      "instrument": "MES",
+      "n_independent": 30,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 65.01,
+      "avg_net_points": -2.183,
+      "isolated_15k": {
+        "final_balance": 14612.55,
+        "pnl": -387.45,
+        "return_pct": -2.58,
+        "max_drawdown": 741.05,
+        "n_taken": 30,
+        "n_skipped_no_margin": 0,
+        "total_costs": 60.0
+      }
+    },
+    "ema::9_21_15m_filtered": {
+      "instrument": "MES",
+      "n_independent": 16,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 145.14,
+      "avg_net_points": -4.781,
+      "isolated_15k": {
+        "final_balance": 14585.55,
+        "pnl": -414.45,
+        "return_pct": -2.76,
+        "max_drawdown": 804.2,
+        "n_taken": 16,
+        "n_skipped_no_margin": 0,
+        "total_costs": 32.0
+      }
+    },
+    "ema::9_21_15m_raw": {
+      "instrument": "MES",
+      "n_independent": 17,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 186.41,
+      "avg_net_points": -6.825,
+      "isolated_15k": {
+        "final_balance": 14385.9,
+        "pnl": -614.1,
+        "return_pct": -4.09,
+        "max_drawdown": 1117.5,
+        "n_taken": 17,
+        "n_skipped_no_margin": 0,
+        "total_costs": 34.0
+      }
+    },
+    "ema::9_21_5m_filtered": {
+      "instrument": "MES",
+      "n_independent": 31,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 63.48,
+      "avg_net_points": -0.275,
+      "isolated_15k": {
+        "final_balance": 14895.4,
+        "pnl": -104.6,
+        "return_pct": -0.7,
+        "max_drawdown": 431.85,
+        "n_taken": 31,
+        "n_skipped_no_margin": 0,
+        "total_costs": 62.0
+      }
+    },
+    "ema::9_21_5m_raw": {
+      "instrument": "MES",
+      "n_independent": 43,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 64.59,
+      "avg_net_points": 1.042,
+      "isolated_15k": {
+        "final_balance": 15138.1,
+        "pnl": 138.1,
+        "return_pct": 0.92,
+        "max_drawdown": 317.3,
+        "n_taken": 43,
+        "n_skipped_no_margin": 0,
+        "total_costs": 86.0
+      }
+    },
+    "fvg::RAW": {
+      "instrument": "MES",
+      "n_independent": 67,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 34.71,
+      "avg_net_points": -1.522,
+      "isolated_15k": {
+        "final_balance": 14356.0,
+        "pnl": -644.0,
+        "return_pct": -4.29,
+        "max_drawdown": 855.6,
+        "n_taken": 67,
+        "n_skipped_no_margin": 0,
+        "total_costs": 134.0
+      }
+    },
+    "ict::FILTERED": {
+      "instrument": "MES",
+      "n_independent": 1,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 110.0,
+      "avg_net_points": 22.62,
+      "isolated_15k": {
+        "final_balance": 15111.1,
+        "pnl": 111.1,
+        "return_pct": 0.74,
+        "max_drawdown": 0.0,
+        "n_taken": 1,
+        "n_skipped_no_margin": 0,
+        "total_costs": 2.0
+      }
+    },
+    "ict::RAW": {
+      "instrument": "MES",
+      "n_independent": 36,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 43.09,
+      "avg_net_points": -1.231,
+      "isolated_15k": {
+        "final_balance": 14706.35,
+        "pnl": -293.65,
+        "return_pct": -1.96,
+        "max_drawdown": 419.75,
+        "n_taken": 36,
+        "n_skipped_no_margin": 0,
+        "total_costs": 72.0
+      }
+    },
+    "ema_stocks::20_50_daily_filtered": {
+      "instrument": "STOCK",
+      "n_independent": 16,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 1034.65,
+      "avg_net_points": 8.559,
+      "isolated_15k": {
+        "final_balance": 16596.82,
+        "pnl": 1596.82,
+        "return_pct": 10.65,
+        "max_drawdown": 7038.24,
+        "n_taken": 16,
+        "n_skipped_no_margin": 0,
+        "total_costs": 12.73
+      }
+    },
+    "ema_stocks::20_50_daily_raw": {
+      "instrument": "STOCK",
+      "n_independent": 56,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 921.79,
+      "avg_net_points": 6.077,
+      "isolated_15k": {
+        "final_balance": 24337.49,
+        "pnl": 9337.49,
+        "return_pct": 62.25,
+        "max_drawdown": 11363.88,
+        "n_taken": 43,
+        "n_skipped_no_margin": 13,
+        "total_costs": 38.17
+      }
+    },
+    "ema_stocks::9_21_daily_filtered": {
+      "instrument": "STOCK",
+      "n_independent": 40,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 746.16,
+      "avg_net_points": 14.394,
+      "isolated_15k": {
+        "final_balance": 33716.09,
+        "pnl": 18716.09,
+        "return_pct": 124.77,
+        "max_drawdown": 2027.45,
+        "n_taken": 40,
+        "n_skipped_no_margin": 0,
+        "total_costs": 39.95
+      }
+    },
+    "ema_stocks::9_21_daily_raw": {
+      "instrument": "STOCK",
+      "n_independent": 104,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 665.87,
+      "avg_net_points": 0.466,
+      "isolated_15k": {
+        "final_balance": 12558.81,
+        "pnl": -2441.19,
+        "return_pct": -16.27,
+        "max_drawdown": 11515.77,
+        "n_taken": 81,
+        "n_skipped_no_margin": 23,
+        "total_costs": 71.87
+      }
+    },
+    "ema_gccl::CL_20_50_15m_filtered": {
+      "instrument": "MCL",
+      "n_independent": 9,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 41.11,
+      "avg_net_points": 0.254,
+      "isolated_15k": {
+        "final_balance": 15213.25,
+        "pnl": 213.25,
+        "return_pct": 1.42,
+        "max_drawdown": 88.25,
+        "n_taken": 9,
+        "n_skipped_no_margin": 0,
+        "total_costs": 15.75
+      }
+    },
+    "ema_gccl::CL_20_50_15m_raw": {
+      "instrument": "MCL",
+      "n_independent": 50,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 80.52,
+      "avg_net_points": 0.123,
+      "isolated_15k": {
+        "final_balance": 15528.5,
+        "pnl": 528.5,
+        "return_pct": 3.52,
+        "max_drawdown": 754.5,
+        "n_taken": 50,
+        "n_skipped_no_margin": 0,
+        "total_costs": 87.5
+      }
+    },
+    "ema_gccl::CL_20_50_30m_filtered": {
+      "instrument": "MCL",
+      "n_independent": 16,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 72.81,
+      "avg_net_points": 0.192,
+      "isolated_15k": {
+        "final_balance": 15279.0,
+        "pnl": 279.0,
+        "return_pct": 1.86,
+        "max_drawdown": 197.25,
+        "n_taken": 16,
+        "n_skipped_no_margin": 0,
+        "total_costs": 28.0
+      }
+    },
+    "ema_gccl::CL_20_50_30m_raw": {
+      "instrument": "MCL",
+      "n_independent": 90,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 88.8,
+      "avg_net_points": -0.217,
+      "isolated_15k": {
+        "final_balance": 12892.5,
+        "pnl": -2107.5,
+        "return_pct": -14.05,
+        "max_drawdown": 2832.25,
+        "n_taken": 90,
+        "n_skipped_no_margin": 0,
+        "total_costs": 157.5
+      }
+    },
+    "ema_gccl::CL_20_50_60m_filtered": {
+      "instrument": "MCL",
+      "n_independent": 14,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 115.0,
+      "avg_net_points": 0.324,
+      "isolated_15k": {
+        "final_balance": 15429.5,
+        "pnl": 429.5,
+        "return_pct": 2.86,
+        "max_drawdown": 282.5,
+        "n_taken": 14,
+        "n_skipped_no_margin": 0,
+        "total_costs": 24.5
+      }
+    },
+    "ema_gccl::CL_20_50_60m_raw": {
+      "instrument": "MCL",
+      "n_independent": 82,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 131.9,
+      "avg_net_points": -0.227,
+      "isolated_15k": {
+        "final_balance": 12992.5,
+        "pnl": -2007.5,
+        "return_pct": -13.38,
+        "max_drawdown": 2534.0,
+        "n_taken": 82,
+        "n_skipped_no_margin": 0,
+        "total_costs": 143.5
+      }
+    },
+    "ema_gccl::CL_20_50_daily_raw": {
+      "instrument": "MCL",
+      "n_independent": 4,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 618.0,
+      "avg_net_points": 1.475,
+      "isolated_15k": {
+        "final_balance": 15583.0,
+        "pnl": 583.0,
+        "return_pct": 3.89,
+        "max_drawdown": 1239.5,
+        "n_taken": 4,
+        "n_skipped_no_margin": 0,
+        "total_costs": 7.0
+      }
+    },
+    "ema_gccl::CL_9_21_15m_filtered": {
+      "instrument": "MCL",
+      "n_independent": 33,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 49.79,
+      "avg_net_points": 0.088,
+      "isolated_15k": {
+        "final_balance": 15232.25,
+        "pnl": 232.25,
+        "return_pct": 1.55,
+        "max_drawdown": 310.0,
+        "n_taken": 33,
+        "n_skipped_no_margin": 0,
+        "total_costs": 57.75
+      }
+    },
+    "ema_gccl::CL_9_21_15m_raw": {
+      "instrument": "MCL",
+      "n_independent": 122,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 53.17,
+      "avg_net_points": 0.048,
+      "isolated_15k": {
+        "final_balance": 15374.5,
+        "pnl": 374.5,
+        "return_pct": 2.5,
+        "max_drawdown": 793.0,
+        "n_taken": 122,
+        "n_skipped_no_margin": 0,
+        "total_costs": 213.5
+      }
+    },
+    "ema_gccl::CL_9_21_30m_filtered": {
+      "instrument": "MCL",
+      "n_independent": 53,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 67.98,
+      "avg_net_points": 0.169,
+      "isolated_15k": {
+        "final_balance": 15802.25,
+        "pnl": 802.25,
+        "return_pct": 5.35,
+        "max_drawdown": 390.25,
+        "n_taken": 53,
+        "n_skipped_no_margin": 0,
+        "total_costs": 92.75
+      }
+    },
+    "ema_gccl::CL_9_21_30m_raw": {
+      "instrument": "MCL",
+      "n_independent": 156,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 79.56,
+      "avg_net_points": -0.007,
+      "isolated_15k": {
+        "final_balance": 14625.0,
+        "pnl": -375.0,
+        "return_pct": -2.5,
+        "max_drawdown": 2094.0,
+        "n_taken": 156,
+        "n_skipped_no_margin": 0,
+        "total_costs": 273.0
+      }
+    },
+    "ema_gccl::CL_9_21_60m_filtered": {
+      "instrument": "MCL",
+      "n_independent": 42,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 100.9,
+      "avg_net_points": 0.338,
+      "isolated_15k": {
+        "final_balance": 16344.5,
+        "pnl": 1344.5,
+        "return_pct": 8.96,
+        "max_drawdown": 557.25,
+        "n_taken": 42,
+        "n_skipped_no_margin": 0,
+        "total_costs": 73.5
+      }
+    },
+    "ema_gccl::CL_9_21_60m_raw": {
+      "instrument": "MCL",
+      "n_independent": 146,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 113.18,
+      "avg_net_points": -0.21,
+      "isolated_15k": {
+        "final_balance": 11678.5,
+        "pnl": -3321.5,
+        "return_pct": -22.14,
+        "max_drawdown": 4274.25,
+        "n_taken": 146,
+        "n_skipped_no_margin": 0,
+        "total_costs": 255.5
+      }
+    },
+    "ema_gccl::CL_9_21_daily_filtered": {
+      "instrument": "MCL",
+      "n_independent": 1,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 618.0,
+      "avg_net_points": -6.18,
+      "isolated_15k": {
+        "final_balance": 14380.25,
+        "pnl": -619.75,
+        "return_pct": -4.13,
+        "max_drawdown": 619.75,
+        "n_taken": 1,
+        "n_skipped_no_margin": 0,
+        "total_costs": 1.75
+      }
+    },
+    "ema_gccl::CL_9_21_daily_raw": {
+      "instrument": "MCL",
+      "n_independent": 4,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 618.0,
+      "avg_net_points": -3.002,
+      "isolated_15k": {
+        "final_balance": 13792.0,
+        "pnl": -1208.0,
+        "return_pct": -8.05,
+        "max_drawdown": 1859.25,
+        "n_taken": 4,
+        "n_skipped_no_margin": 0,
+        "total_costs": 7.0
+      }
+    },
+    "ema_gccl::GC_20_50_15m_filtered": {
+      "instrument": "MGC",
+      "n_independent": 18,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 134.71,
+      "avg_net_points": 1.048,
+      "isolated_15k": {
+        "final_balance": 15157.2,
+        "pnl": 157.2,
+        "return_pct": 1.05,
+        "max_drawdown": 861.7,
+        "n_taken": 18,
+        "n_skipped_no_margin": 0,
+        "total_costs": 31.5
+      }
+    },
+    "ema_gccl::GC_20_50_15m_raw": {
+      "instrument": "MGC",
+      "n_independent": 52,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 176.94,
+      "avg_net_points": 1.348,
+      "isolated_15k": {
+        "final_balance": 15610.0,
+        "pnl": 610.0,
+        "return_pct": 4.07,
+        "max_drawdown": 2019.6,
+        "n_taken": 52,
+        "n_skipped_no_margin": 0,
+        "total_costs": 91.0
+      }
+    },
+    "ema_gccl::GC_20_50_30m_filtered": {
+      "instrument": "MGC",
+      "n_independent": 24,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 218.59,
+      "avg_net_points": 13.981,
+      "isolated_15k": {
+        "final_balance": 18313.5,
+        "pnl": 3313.5,
+        "return_pct": 22.09,
+        "max_drawdown": 320.45,
+        "n_taken": 24,
+        "n_skipped_no_margin": 0,
+        "total_costs": 42.0
+      }
+    },
+    "ema_gccl::GC_20_50_30m_raw": {
+      "instrument": "MGC",
+      "n_independent": 95,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 278.2,
+      "avg_net_points": -4.046,
+      "isolated_15k": {
+        "final_balance": 10989.85,
+        "pnl": -4010.15,
+        "return_pct": -26.73,
+        "max_drawdown": 7613.0,
+        "n_taken": 95,
+        "n_skipped_no_margin": 0,
+        "total_costs": 166.25
+      }
+    },
+    "ema_gccl::GC_20_50_60m_filtered": {
+      "instrument": "MGC",
+      "n_independent": 8,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 309.47,
+      "avg_net_points": 3.096,
+      "isolated_15k": {
+        "final_balance": 15233.7,
+        "pnl": 233.7,
+        "return_pct": 1.56,
+        "max_drawdown": 1387.1,
+        "n_taken": 8,
+        "n_skipped_no_margin": 0,
+        "total_costs": 14.0
+      }
+    },
+    "ema_gccl::GC_20_50_60m_raw": {
+      "instrument": "MGC",
+      "n_independent": 82,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 447.67,
+      "avg_net_points": -10.011,
+      "isolated_15k": {
+        "final_balance": 6647.2,
+        "pnl": -8352.8,
+        "return_pct": -55.69,
+        "max_drawdown": 8417.45,
+        "n_taken": 82,
+        "n_skipped_no_margin": 0,
+        "total_costs": 143.5
+      }
+    },
+    "ema_gccl::GC_20_50_daily_raw": {
+      "instrument": "MGC",
+      "n_independent": 2,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 2710.95,
+      "avg_net_points": 5.0,
+      "isolated_15k": {
+        "final_balance": 15096.5,
+        "pnl": 96.5,
+        "return_pct": 0.64,
+        "max_drawdown": 3665.05,
+        "n_taken": 2,
+        "n_skipped_no_margin": 0,
+        "total_costs": 3.5
+      }
+    },
+    "ema_gccl::GC_9_21_15m_filtered": {
+      "instrument": "MGC",
+      "n_independent": 45,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 129.6,
+      "avg_net_points": 0.262,
+      "isolated_15k": {
+        "final_balance": 15039.15,
+        "pnl": 39.15,
+        "return_pct": 0.26,
+        "max_drawdown": 889.05,
+        "n_taken": 45,
+        "n_skipped_no_margin": 0,
+        "total_costs": 78.75
+      }
+    },
+    "ema_gccl::GC_9_21_15m_raw": {
+      "instrument": "MGC",
+      "n_independent": 133,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 145.34,
+      "avg_net_points": -2.496,
+      "isolated_15k": {
+        "final_balance": 11447.45,
+        "pnl": -3552.55,
+        "return_pct": -23.68,
+        "max_drawdown": 3739.25,
+        "n_taken": 133,
+        "n_skipped_no_margin": 0,
+        "total_costs": 232.75
+      }
+    },
+    "ema_gccl::GC_9_21_30m_filtered": {
+      "instrument": "MGC",
+      "n_independent": 52,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 221.06,
+      "avg_net_points": 3.476,
+      "isolated_15k": {
+        "final_balance": 16716.4,
+        "pnl": 1716.4,
+        "return_pct": 11.44,
+        "max_drawdown": 1816.05,
+        "n_taken": 52,
+        "n_skipped_no_margin": 0,
+        "total_costs": 91.0
+      }
+    },
+    "ema_gccl::GC_9_21_30m_raw": {
+      "instrument": "MGC",
+      "n_independent": 168,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 238.96,
+      "avg_net_points": -1.384,
+      "isolated_15k": {
+        "final_balance": 12380.5,
+        "pnl": -2619.5,
+        "return_pct": -17.46,
+        "max_drawdown": 6332.05,
+        "n_taken": 168,
+        "n_skipped_no_margin": 0,
+        "total_costs": 294.0
+      }
+    },
+    "ema_gccl::GC_9_21_60m_filtered": {
+      "instrument": "MGC",
+      "n_independent": 33,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 315.3,
+      "avg_net_points": 3.339,
+      "isolated_15k": {
+        "final_balance": 16044.25,
+        "pnl": 1044.25,
+        "return_pct": 6.96,
+        "max_drawdown": 1614.15,
+        "n_taken": 33,
+        "n_skipped_no_margin": 0,
+        "total_costs": 57.75
+      }
+    },
+    "ema_gccl::GC_9_21_60m_raw": {
+      "instrument": "MGC",
+      "n_independent": 170,
+      "status": "VALIDATED (n>=30)",
+      "avg_risk_$": 349.36,
+      "avg_net_points": -2.873,
+      "isolated_15k": {
+        "final_balance": 9818.4,
+        "pnl": -5181.6,
+        "return_pct": -34.54,
+        "max_drawdown": 6576.1,
+        "n_taken": 170,
+        "n_skipped_no_margin": 0,
+        "total_costs": 297.5
+      }
+    },
+    "ema_gccl::GC_9_21_daily_raw": {
+      "instrument": "MGC",
+      "n_independent": 8,
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "avg_risk_$": 1758.6,
+      "avg_net_points": 88.021,
+      "isolated_15k": {
+        "final_balance": 22027.7,
+        "pnl": 7027.7,
+        "return_pct": 46.85,
+        "max_drawdown": 1760.35,
+        "n_taken": 8,
+        "n_skipped_no_margin": 0,
+        "total_costs": 14.0
+      }
+    }
+  },
+  "n_total_independent_trades": 2217,
+  "n_filtered_trades": 485,
+  "n_rows_dropped_unsized": 0,
+  "disclaimer": "SIMULATED paper account. Single micros, 1 unit/signal, risk = the structural stop, costs + 1-tick slippage in, margin + concurrency modeled (skips shown). Net-points scorecards are unchanged; this is an additive dollar view. n<30 tracks are DESCRIPTIVE."
+}

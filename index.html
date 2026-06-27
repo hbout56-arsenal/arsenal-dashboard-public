@@ -231,6 +231,7 @@
     <div class="toptab active" data-v="futures">Futures</div>
     <div class="toptab" data-v="stocks">Stocks</div>
     <div class="toptab" data-v="alerts">Alerts</div>
+    <div class="toptab" data-v="account">$15K</div>
   </div>
 
   <div id="fut">
@@ -271,8 +272,33 @@
     <div id="al-content"><div class="loading">Loading…</div></div>
     <p class="foot" id="al-foot"></p>
   </div>
+
+  <div id="account" hidden>
+    <div id="acc-content"><div class="loading">Loading…</div></div>
+  </div>
 </div>
 <style>
+  /* $15K account tab (Dispatch 27) */
+  #account .accnote{margin:8px 0 12px;padding:10px 12px;border:1px solid rgba(77,141,255,.35);border-radius:12px;
+    background:rgba(77,141,255,.08);font-size:12px;color:#cfe0ff;line-height:1.5}
+  #account .bigbal{font-size:34px;font-weight:800;letter-spacing:-.5px}
+  #account .pnlpos{color:var(--green)} #account .pnlneg{color:var(--red)}
+  #account .accgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+  #account .accstat{border:1px solid var(--gbrd);border-radius:10px;padding:9px 11px;background:rgba(255,255,255,.025)}
+  #account .accstat .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+  #account .accstat .v{font-size:17px;font-weight:700;margin-top:2px}
+  #account .ibar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}
+  #account .ibar .lbl{width:120px;flex:none;color:var(--mut)}
+  #account .ibar .bar{height:14px;border-radius:4px;min-width:2px}
+  #account h3.acch{font-size:13px;font-weight:800;letter-spacing:.03em;color:var(--mut);text-transform:uppercase;margin:16px 0 6px}
+  #account table.acct{width:100%;border-collapse:collapse;font-size:12px}
+  #account table.acct th{text-align:right;color:var(--mut);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--gbrd)}
+  #account table.acct th:first-child{text-align:left}
+  #account table.acct td{text-align:right;padding:4px 6px;border-bottom:1px solid rgba(255,255,255,.05)}
+  #account table.acct td:first-child{text-align:left}
+  #account .desc-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(255,217,138,.16);color:#ffd98a;margin-left:5px}
+  #account .val-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(80,220,140,.16);color:#7ee0a6;margin-left:5px}
+  #account .warnrisk{color:#ff9a9a;font-weight:700}
   /* Alerts tab (Dispatch 23) */
   #alerts .algrp{margin:14px 0 6px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--mut);text-transform:uppercase}
   #alerts .alrow{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;margin:7px 0;border:1px solid var(--gbrd);
@@ -1022,6 +1048,69 @@ const Alerts=(function(){
 })();
 window.Alerts=Alerts;
 
+/* ════════════ $15K ACCOUNT tab (Dispatch 27) — paper-account layer alongside net-points ════════════ */
+const Account=(function(){
+  const money=n=>(n<0?"-$":"$")+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0});
+  const pcls=n=>n>=0?"pnlpos":"pnlneg";
+  const INSTC={STOCK:"#4d8dff",MGC:"#f5c451",MCL:"#c98b5b",MES:"#7ee0a6"};
+  async function load(){
+    const c=document.getElementById("acc-content");
+    c.innerHTML='<div class="loading">Loading…</div>';
+    let d; try{ d=await ghFetch("account_summary.json"); }
+    catch(e){ c.innerHTML='<div class="banner err" style="display:block">No account_summary.json yet ('+esc(e.message)+')</div>'; return; }
+    c.innerHTML=render(d);
+  }
+  function render(d){
+    const sa=d.shared_account||{}, r=d.rules||{};
+    const pnl=sa.pnl||0;
+    let h='<div class="accnote"><b>$15,000 paper account — SIMULATED.</b> Single micros (MES $5/pt, MGC $10/pt, MCL $100/pt), '
+      +'1 unit/signal, risk = the structural stop, costs + 1-tick slippage in, margin + concurrency modelled. '
+      +'Built from the <b>dedup-corrected</b> independent trades. Filtered (tested-for-edge) tracks only — raw controls '
+      +'are listed below but not traded in the shared curve. This is <b>lower &amp; more realistic</b> than summing isolated tracks. '
+      +'Net-points scorecards are unchanged; this is an additive dollar view.</div>';
+    // headline
+    h+='<div class="bigbal">'+money(sa.final_balance||0)+'</div>';
+    h+='<div class="'+pcls(pnl)+'" style="font-weight:700;font-size:15px;margin-top:2px">'
+      +(pnl>=0?"+":"")+money(pnl)+' ('+(sa.return_pct>=0?"+":"")+(sa.return_pct||0).toFixed(1)+'%) from $15,000</div>';
+    h+='<div class="accgrid">'
+      +stat("Max drawdown",money(sa.max_drawdown||0)+" ("+(sa.max_drawdown_pct||0).toFixed(1)+"%)")
+      +stat("Trades taken / skipped",(sa.n_trades_taken||0)+" / "+(sa.n_trades_skipped_no_margin||0)+" no-margin")
+      +stat("Peak margin used",money(sa.peak_margin_committed||0))
+      +stat("Costs paid",money(sa.total_costs||0))
+      +'</div>';
+    // per-instrument bars
+    const pi=sa.per_instrument_pnl||{};
+    const max=Math.max(1,...Object.values(pi).map(v=>Math.abs(v)));
+    h+='<h3 class="acch">Per-instrument P&amp;L</h3>';
+    ["STOCK","MGC","MCL","MES"].forEach(k=>{ if(!(k in pi))return; const v=pi[k];
+      h+='<div class="ibar"><span class="lbl">'+k+'</span>'
+        +'<span class="bar" style="width:'+Math.round(Math.abs(v)/max*55)+'%;background:'+(v>=0?INSTC[k]:"#e06060")+'"></span>'
+        +'<b class="'+pcls(v)+'">'+(v>=0?"+":"")+money(v)+'</b></div>';
+    });
+    // per-track table
+    const pt=d.per_track||{};
+    const rows=Object.entries(pt).sort((a,b)=>(b[1].isolated_15k.pnl)-(a[1].isolated_15k.pnl));
+    h+='<h3 class="acch">Per-track — isolated $15K (what $15K did on each, costs+sizing in)</h3>';
+    h+='<table class="acct"><tr><th>track</th><th>inst</th><th>n</th><th>$15K→</th><th>return</th><th>maxDD</th><th>avg risk</th></tr>';
+    rows.forEach(([tk,t])=>{ const iso=t.isolated_15k; const val=t.status&&t.status.indexOf("VALIDATED")===0;
+      const ar=t["avg_risk_$"]||0, arPct=ar/15000*100;
+      h+='<tr><td>'+esc(tk.replace("::","/"))+(val?'<span class="val-tag">n≥30</span>':'<span class="desc-tag">DESC</span>')+'</td>'
+        +'<td>'+esc(t.instrument)+'</td><td>'+t.n_independent+'</td>'
+        +'<td>'+money(iso.final_balance)+'</td>'
+        +'<td class="'+pcls(iso.return_pct)+'">'+(iso.return_pct>=0?"+":"")+iso.return_pct.toFixed(0)+'%</td>'
+        +'<td>'+money(iso.max_drawdown)+'</td>'
+        +'<td'+(arPct>=10?' class="warnrisk"':'')+'>'+money(ar)+' ('+arPct.toFixed(0)+'%)</td></tr>';
+    });
+    h+='</table>';
+    h+='<p class="foot">'+esc(d.disclaimer||"")+' Generated '+esc(d.generated_at||"")+'. '
+      +'Risk shown in red = a single trade risks ≥10% of the account (wide stop — survivability concern).</p>';
+    return h;
+  }
+  function stat(k,v){ return '<div class="accstat"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'; }
+  return {load};
+})();
+window.Account=Account;
+
 /* ════════════ top-level view switch ════════════ */
 let view="futures";
 function redraw(){ view==="futures"?Futures.redraw():Stocks.redraw(); }
@@ -1032,7 +1121,9 @@ function showView(v){
   document.getElementById("fut").hidden=(v!=="futures");
   document.getElementById("stk").hidden=(v!=="stocks");
   document.getElementById("alerts").hidden=(v!=="alerts");
+  document.getElementById("account").hidden=(v!=="account");
   if(v==="alerts")Alerts.load();
+  else if(v==="account")Account.load();
   else (v==="futures"?Futures:Stocks).load();   // fetch only the active view
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
