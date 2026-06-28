@@ -185,16 +185,6 @@
   #stk .b-EXPIRED{background:rgba(140,150,165,.12);color:#9aa3b0;border-color:rgba(140,150,165,.25)}
   #stk .b-RE-PRICED{background:rgba(170,110,255,.14);color:#d6a8ff;border-color:rgba(170,110,255,.35)}
   #stk .needs{font-size:10px;color:var(--amber);font-weight:650}
-  /* D51 not-extended gate chips */
-  #stk .xchip{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.4px;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle;font-family:var(--sans)}
-  #stk .xchip.clean{background:var(--pos);color:var(--pos-ink);border:1px solid var(--pos-ink)}
-  #stk .xchip.ext{background:var(--neg);color:var(--neg-ink);border:1px solid var(--neg-ink)}
-  #stk .gate3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px}
-  #stk .gate3 .gcell{background:var(--glass2);border:1px solid var(--gbrd);border-radius:11px;padding:9px 8px;text-align:center}
-  #stk .gate3 .gcell h4{margin:0 0 5px;font-size:11px;font-weight:750;letter-spacing:.3px}
-  #stk .gate3 .gcell .gv{font-size:14px;font-weight:750;font-family:var(--mono)}
-  #stk .gate3 .gcell .gs{font-size:10px;color:var(--mut);margin-top:3px}
-  #stk .gateline{font-size:11px;color:var(--mut);margin-top:7px;line-height:1.45}
   #stk .sc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
   #stk .scol{background:var(--glass2);border:1px solid var(--gbrd);border-radius:13px;padding:12px 11px}
   #stk .scol.muted{opacity:.55} #stk .scol h3{margin:0 0 8px;font-size:13px;font-weight:750;text-align:center;letter-spacing:.3px}
@@ -399,8 +389,7 @@ const HELP={
 "portfolio":{"t":"Portfolio constructor","w":"Gates every validated track through PF≥1.2 AND stress-survived AND not-concentrated for the $15K model.","r":"The recommendation = the one track that clears every gate; candidates compare options; watchlist = forward-only until they de-concentrate.","u":"Tells you what to actually run today — and refuses to fake a portfolio when only one edge qualifies.","c":"⚠ In-sample, forward-gated · SIMULATED. Only forward evidence promotes a watchlist track."},
 "risk":{"t":"Risk & Survival layer","w":"Position sizing, risk-of-ruin, loss limits, open heat, and when each setup actually works (edge × regime).","r":"¼-Kelly (full Kelly is too hot); P(−25%) = Monte-Carlo chance of a −25% drawdown; RAG heat = total risk if every stop hits.","u":"Size to SURVIVE the drawdown the edge will inevitably have — survival first, return second.","c":"⚠ ADVISORY · SIMULATED · never a signal. You size and execute; these views never trade."},
 "swing":{"t":"Swing / Pick scorecard (asymmetry)","w":"The IRA / swing engine's honest scorecard, split FORWARD (live-stamped) vs HISTORICAL (in-sample).","r":"Expectancy + profit factor lead; win% is a footnote. Pullback entries beat at-market by cutting the worst case, not by winning more.","u":"Judge whether the swing edge is real over time, by bucket and entry style.","c":"⚠ SIMULATED / advisory · aggregate %s only · n<30 DESCRIPTIVE. FORWARD = live-stamped; HISTORICAL = in-sample backfill."},
-"stocks":{"t":"Stock / swing picks","w":"Claude-curated picks plus the engine's top-5, per section (Convergence / Minervini / Top Setups / Context).","r":"Badges = lifecycle (NEW / CARRIED / OPEN / EXPIRED / RE-PRICED). Net + expectancy lead; win% is a footnote.","u":"Today's actionable swing candidates and how each is tracking after it triggers.","c":"⚠ SIMULATED / tracked · price is the trigger, not the pick · n<MIN DESCRIPTIVE."},
-"notext":{"t":"Not-extended gate (no-chase) — the one validated filter","w":"The single screener filter that earned promotion on FORWARD data (Dispatch 50/51). It flags a long pick as EXTENDED — i.e. chasing — if the entry is >5×ATR above the breakout pivot, OR >12% above the rising 50-day MA, OR RSI(14)≥80 (pinned). Pre-registered thresholds, not re-tuned.","r":"CLEAN (not-extended) picks stay actionable; EXTENDED picks are demoted to context-only (gated, never deleted). The RAW ungated series keeps logging as the control so the comparison never breaks. Forward: clean −0.04% (n=291) vs the extended −8.92% (n=105) it excludes = +8.88 pts/trade, survives the ÷8 haircut (+1.11).","u":"Don't chase. Take the not-extended (clean) names; let the extended ones come back to you or treat them as context only.","c":"⚠ SIMULATED / advisory. Validated FORWARD (n≥30 both legs, haircut-survived). Gate flags & demotes, never deletes; RAW control still tracked. Filters 1-4/6/7 remain DEFERRED."}
+"stocks":{"t":"Stock / swing picks","w":"Claude-curated picks plus the engine's top-5, per section (Convergence / Minervini / Top Setups / Context).","r":"Badges = lifecycle (NEW / CARRIED / OPEN / EXPIRED / RE-PRICED). Net + expectancy lead; win% is a footnote.","u":"Today's actionable swing candidates and how each is tracking after it triggers.","c":"⚠ SIMULATED / tracked · price is the trigger, not the pick · n<MIN DESCRIPTIVE."}
 };
 const HELP_OPEN=new Set();
 /* ── "HOW TO TRADE THIS SITUATION" — practical, situation-aware guidance per section (Dispatch 24).
@@ -955,15 +944,7 @@ const Futures = (function(){
 const Stocks = (function(){
   const STALE_MIN=60;
   const SECTIONS=[{key:"convergence",label:"Convergence"},{key:"minervini",label:"Minervini"},{key:"top_setups",label:"Top Setups"},{key:"context",label:"Context"}];
-  let current="convergence", data=null, emaStk=null, gateData=null;
-  /* D51 not-extended (no-chase) gate — render a CLEAN/EXTENDED chip when the engine tags a pick */
-  function xChip(p){
-    const st=p&&(p.gate_status||(p.extended===true?"EXTENDED":p.extended===false?"NOT_EXTENDED":null));
-    if(!st||st==="INSUFFICIENT_HISTORY") return "";
-    if(st==="EXTENDED"){const why=(p.extended_reasons&&p.extended_reasons.length)?p.extended_reasons.join("; "):"chasing";
-      return '<span class="xchip ext" title="'+esc(why)+'">✗ EXTENDED</span>';}
-    return '<span class="xchip clean" title="not-extended — no chase">✓ not-extended</span>';
-  }
+  let current="convergence", data=null, emaStk=null;
   const pctt=v=>v==null?"–":Math.round(v)+"%";
   /* ── stocks-daily EMA context (Dispatch 13) — NON-VOTING, display join by ticker ── */
   function emaStkStale(){ if(!emaStk) return true; const h=(emaStk.stale_after_hours||25); const a=ageMin(emaStk.generated_at); return a!=null&&a>h*60; }
@@ -1025,7 +1006,7 @@ const Stocks = (function(){
     const lv=p.needs_levels?'<span class="needs">needs levels</span>':'entry '+esc(p.entry)+' · stop '+esc(p.stop)+' · T1 '+esc(p.t1);
     const rp=p.repriced_from?(' · re-priced from '+esc(p.repriced_from)):'';
     const day=(p.state==="CARRIED")?(' day '+p.day_n):'';
-    return '<div class="pick"><div><div class="pk-tk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.direction)+'</span>'+xChip(p)+'</div>'
+    return '<div class="pick"><div><div class="pk-tk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.direction)+'</span></div>'
       +'<div class="pk-meta">'+lv+' · '+esc(p.conviction||"")+' · '+esc(p.pillars||"")+' · '+esc(p.status||"")+' · trig '+esc(p.trigger_status)+'/'+esc(p.outcome)+rp+'</div>'
       +(p.note?'<div class="pk-note">'+esc(p.note)+'</div>':'')+'</div><span class="badge b-'+esc(p.state)+'">'+esc(p.state)+esc(day)+'</span></div>'
       +'<div class="statwin" style="margin:-2px 0 10px">'+paperRowPick(p,frozen)+(MT.has(p.ticker)?MT.row(p.ticker,null):MT.btn(p.ticker))+'</div>'
@@ -1034,25 +1015,6 @@ const Stocks = (function(){
   function engineRows(top5){
     if(!top5||!top5.length) return '<tr><td colspan="5" style="color:var(--dim)">no engine ledger for this section</td></tr>';
     return top5.map(p=>'<tr><td style="font-weight:700">'+esc(p.ticker)+'</td><td>'+esc(p.entry)+'</td><td>'+esc(p.conviction)+'</td><td>'+esc(p.score)+'</td><td>'+esc(p.trigger_status)+'/'+esc(p.outcome)+'</td></tr>').join("");
-  }
-  function gatePanel(){
-    const g=gateData; if(!g||!g.raw_vs_gated_forward) return "";
-    const c=g.raw_vs_gated_forward;
-    const cell=(t,leg,cls)=>'<div class="gcell"><h4>'+t+'</h4><div class="gv'+(cls?' '+cls:'')+'">'+(leg.expectancy_pct>=0?"+":"")+leg.expectancy_pct+'%</div><div class="gs">PF '+leg.profit_factor+' · n='+leg.n+' · win '+leg.win_rate_pct+'%</div></div>';
-    const body='<div class="gateline"><b>'+esc(g.honesty_line||"")+'</b></div>'
-      +'<div class="gate3">'
-        +cell("RAW (ungated control)",c.RAW_ungated_control,"")
-        +cell("✓ CLEAN — kept",c.GATED_clean_kept,"")
-        +cell("✗ EXTENDED — excluded",c.EXCLUDED_extended,"")
-      +'</div>'
-      +'<div class="gateline">Forward gap '+(c.forward_gap_pts>=0?"+":"")+c.forward_gap_pts+' pts/trade · after ÷'+c.haircut_N+' haircut '+(c.forward_gap_after_haircut_pts>=0?"+":"")+c.forward_gap_after_haircut_pts+' pts · excluding extended lifts blended '+(c.blended_lift_from_excluding_extended_pts>=0?"+":"")+c.blended_lift_from_excluding_extended_pts+' pts. '
-        +'<span style="color:var(--dim)">FORWARD only · n≥30 both legs · RAW control preserved.</span></div>'
-      +(Array.isArray(g.sample_tagged_picks)?dwrap("worked example — gate thresholds applied (anti-look-ahead)",
-          '<div class="gmut" style="margin-bottom:6px">'+esc(g.anti_look_ahead||"")+'</div>'
-          +'<table><tr><th>demo</th><th>ATR&gt;pivot</th><th>%&gt;50MA</th><th>RSI</th><th>verdict</th></tr>'
-          +g.sample_tagged_picks.map(s=>'<tr><td style="font-family:var(--mono)">'+esc(s.ticker)+'</td><td>'+esc((s.gate_metrics||{}).atr_above_pivot)+'</td><td>'+esc((s.gate_metrics||{}).pct_above_ma50)+'%</td><td>'+esc((s.gate_metrics||{}).rsi)+'</td><td>'+(s.extended?'<span style="color:var(--neg-ink)">✗ EXTENDED</span>':'<span style="color:var(--pos-ink)">✓ clean</span>')+'</td></tr>').join("")
-          +'</table>'):"");
-    return '<div class="card"><div class="secttl">Not-extended gate (no-chase) — VALIDATED'+hI("notext")+'</div>'+hP("notext")+body+'</div>';
   }
   function renderSection(){
     const min=data.min_triggered||20;
@@ -1072,7 +1034,6 @@ const Stocks = (function(){
     const curatedHtml=curated.length?curated.map(p=>pickRow(p,frozen)).join(""):'<div class="noact">no curated picks in this section today</div>';
     document.getElementById("stk-content").innerHTML=
       '<div class="card"><div class="secttl">Claude curated'+hI("stocks")+'</div>'+hP("stocks")+curatedHtml+'</div>'
-      +gatePanel()
       +'<div class="card">'+dwrap("Engine top 5 (control)",'<table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table>')+'</div>'
       +'<div class="card">'+dwrap("Scorecard — curated vs engine",'<div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div>')+'</div>'
       +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'');
@@ -1093,7 +1054,6 @@ const Stocks = (function(){
     if(!tokenReady()){banner("stk-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
     freshUpdating("stk",true);   // fresh-on-complete: subtle "updating…" until the new daily JSON lands & re-renders
     ghFetch("ema_stocks_state.json").then(s=>{emaStk=s; if(data) renderSection();}).catch(()=>{});  // non-voting context (best-effort)
-    ghFetch("not_extended_gate.json").then(g=>{gateData=g; if(data) renderSection();}).catch(()=>{});  // D51 not-extended gate (best-effort)
     try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
     catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }

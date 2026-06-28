@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-06-28T00:00:00",
+  "kind": "not_extended_gate",
+  "dispatch": 51,
+  "status": "LIVE \u2014 ships the one D50 filter that cleared the bar (filter 5). Filters 1-4/6/7 DEFERRED (D52).",
+  "honesty_line": "Not-extended gate (validated +8.88 pts/trade forward, n>=30, haircut-survived). RAW control still tracked.",
+  "thresholds_frozen": {
+    "max_atr_above_pivot": 5.0,
+    "atr_lookback": 14,
+    "max_pct_above_ma_short": 12.0,
+    "ma_short": 50,
+    "rsi_pin_level": 80.0,
+    "rsi_lookback": 14
+  },
+  "anti_look_ahead": "ATR(14)/SMA50/RSI(14) read bars<=signal only; truncated-vs-full series give identical verdict (proven in not_extended_gate.py self-test).",
+  "raw_vs_gated_forward": {
+    "note": "FORWARD only (n>=30 both legs). RAW control is the ungated blended series and KEEPS logging. EXTENDED leg (at_market) is what the gate excludes from actionable; CLEAN leg (pullback_limit) is what it keeps.",
+    "RAW_ungated_control": {
+      "n": 396,
+      "expectancy_pct": -2.4,
+      "profit_factor": 0.43,
+      "payoff_ratio": 0.8,
+      "win_rate_pct": 35.1
+    },
+    "GATED_clean_kept": {
+      "n": 291,
+      "expectancy_pct": -0.04,
+      "profit_factor": 0.98,
+      "payoff_ratio": 1.34,
+      "win_rate_pct": 42.3
+    },
+    "EXCLUDED_extended": {
+      "n": 105,
+      "expectancy_pct": -8.92,
+      "profit_factor": 0.09,
+      "payoff_ratio": 0.48,
+      "win_rate_pct": 15.2
+    },
+    "forward_gap_pts": 8.88,
+    "haircut_N": 8,
+    "forward_gap_after_haircut_pts": 1.11,
+    "blended_lift_from_excluding_extended_pts": 2.35
+  },
+  "sample_tagged_picks": [
+    {
+      "ticker": "CLEAN_DEMO",
+      "direction": "LONG",
+      "entry": 56.0,
+      "extended": false,
+      "extended_reasons": [],
+      "not_extended_clean": true,
+      "gate_metrics": {
+        "atr_above_pivot": 0.44,
+        "pct_above_ma50": 1.08,
+        "rsi": 45.5
+      },
+      "gate_status": "NOT_EXTENDED"
+    },
+    {
+      "ticker": "EXT_DEMO",
+      "direction": "LONG",
+      "entry": 81.2,
+      "extended": true,
+      "extended_reasons": [
+        ">5.0xATR above pivot (8.1)",
+        ">12.0% above 50MA (45.2%)",
+        "RSI pinned (94>=80)"
+      ],
+      "not_extended_clean": false,
+      "gate_metrics": {
+        "atr_above_pivot": 8.14,
+        "pct_above_ma50": 45.25,
+        "rsi": 94.3
+      },
+      "gate_status": "EXTENDED"
+    }
+  ],
+  "disclaimer": "SIMULATED / advisory. Gate flags & demotes EXTENDED picks; it never deletes them. RAW (ungated) control preserved so the comparison keeps accumulating. Pre-registered thresholds only \u2014 not re-tuned."
+}

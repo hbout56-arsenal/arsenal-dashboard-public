@@ -1,0 +1,58 @@
+{
+  "kind": "screener_pro_preregistration",
+  "dispatch": 50,
+  "frozen_at": "2026-06-28",
+  "status": "FROZEN — thresholds set BEFORE any backtest result. Changing any value is a NEW pre-registration and re-incurs the divide-by-N haircut.",
+  "control": "RAW = current screener output (engine_top5 + curated, unchanged).",
+  "treatment": "ENHANCED = RAW + the gating/ranking stack below.",
+  "haircut": {"N": 8, "basis": "7 filters ablated individually + 1 full stack", "rule": "in-sample edge divided by N before any 'survives' claim"},
+  "anti_look_ahead": "Every filter reads bars[0..signal_index] only; proven by truncation test in enhanced_filters.py self-test.",
+  "measurement": "Tag each FORWARD pick RAW-pass vs ENHANCED-pass going forward; expectancy-led; FORWARD never blended with HISTORICAL; n>=30 before 'validated'.",
+  "filters": [
+    {
+      "id": 1, "name": "trend_template", "role": "GATE",
+      "rule": "close > SMA50 > SMA150 > SMA200, SMA50 and SMA200 both rising over 21 bars; >=30% above 52w low; within 25% of 52w high",
+      "thresholds": {"ma": [50, 150, 200], "rising_lookback": 21, "min_pct_off_52w_low": 30.0, "max_pct_off_52w_high": 25.0},
+      "prior_status": "PARTIAL — exists as soft 0-100% score, not a hard gate"
+    },
+    {
+      "id": 2, "name": "vcp", "role": "RANK+GATE",
+      "rule": ">=2 successive pullbacks, each <=0.75x the prior depth, with pivot volume <=0.85x base volume; whole base <=35% deep",
+      "thresholds": {"min_contractions": 2, "tightness_ratio_max": 0.75, "vol_dryup_ratio_max": 0.85, "max_base_depth_pct": 35.0},
+      "prior_status": "MISSING"
+    },
+    {
+      "id": 3, "name": "volume_breakout", "role": "GATE",
+      "rule": "breakout/entry bar volume >= 1.40x the trailing 50-bar average (prior bars only)",
+      "thresholds": {"min_mult": 1.40, "avg_lookback": 50},
+      "prior_status": "MISSING"
+    },
+    {
+      "id": 4, "name": "rs_rank", "role": "RANK",
+      "rule": "rank survivors by 126-bar return minus SPY; keep top decile (top 10%)",
+      "thresholds": {"top_decile": 0.10, "lookback": 126},
+      "prior_status": "MISSING/PARTIAL — filters, does not rank-to-decile"
+    },
+    {
+      "id": 5, "name": "not_extended", "role": "EXCLUSION_GATE",
+      "rule": "reject if >5*ATR(14) above pivot, OR >12% above SMA50, OR RSI(14) >= 80",
+      "thresholds": {"max_atr_above_pivot": 5.0, "atr_lookback": 14, "max_pct_above_ma_short": 12.0, "rsi_pin_level": 80.0, "rsi_lookback": 14},
+      "prior_status": "PARTIAL — pullback entry exists but extended names not rejected",
+      "forward_evidence": "EXISTS — at_market vs pullback_limit forward split already validates this (see raw_vs_enhanced.md)"
+    },
+    {
+      "id": 6, "name": "earnings_growth", "role": "DEFERRED",
+      "rule": "accelerating EPS/revenue + recent positive surprise (CANSLIM)",
+      "thresholds": {},
+      "prior_status": "MISSING — needs fundamentals feed; NOT computable from OHLCV; flagged deferred, not fabricated"
+    },
+    {
+      "id": 7, "name": "liquidity", "role": "EXCLUSION_GATE",
+      "rule": "average dollar volume over 50 bars >= $20,000,000",
+      "thresholds": {"min_avg_dollar_vol": 20000000, "lookback": 50},
+      "prior_status": "MISSING"
+    }
+  ],
+  "enhanced_pass_definition": "all GATES pass (trend_template, not_extended, liquidity, volume_breakout); VCP + RS_rank inform ranking; earnings_growth deferred (None never counts as a pass)",
+  "ship_rule": "promote a filter to live ONLY if ENHANCED beats RAW on FORWARD expectancy after the /N haircut, at n>=30 ENHANCED-pass forward picks. Otherwise ship nothing; log null."
+}
