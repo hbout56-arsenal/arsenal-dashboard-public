@@ -79,25 +79,6 @@
   .disc{color:var(--dim);font-size:11px;font-style:italic;margin-top:14px;line-height:1.55}
   .foot{color:var(--dim);font-size:10.5px;margin-top:9px}
   .loading{color:var(--mut);font-size:13px;padding:34px 0;text-align:center}
-  /* D54 Pro Screener (v2) shadow education tab */
-  #proscreen .ps-shadow{background:rgba(170,110,255,.13);border:1px solid rgba(170,110,255,.42);color:#e7d6ff;border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:13px;line-height:1.5}
-  #proscreen .ps-shadow b{color:#f0e6ff}
-  #proscreen .ps-empty{color:var(--mut);font-size:13.5px;line-height:1.6;padding:22px 4px}
-  #proscreen .ps-empty .big{color:var(--ink);font-size:15px;font-weight:700;display:block;margin-bottom:6px}
-  #proscreen .funnel{display:flex;flex-direction:column;gap:5px;margin-top:8px}
-  #proscreen .frow{display:flex;align-items:center;gap:9px}
-  #proscreen .frow .flab{flex:0 0 168px;font-size:12px;color:var(--mut)}
-  #proscreen .frow .fbar{height:20px;border-radius:6px;background:linear-gradient(90deg,var(--info),rgba(77,141,255,.35));min-width:3px}
-  #proscreen .frow .fbar.s1{background:linear-gradient(90deg,var(--pal-stock,#5b8def),rgba(91,141,239,.4))}
-  #proscreen .frow .fn{font-size:12.5px;font-weight:700;font-family:var(--mono);color:var(--ink)}
-  #proscreen .ps-qty{font-size:14px;font-weight:700;margin:10px 0 2px}
-  #proscreen .setup{border:1px solid var(--gbrd);border-radius:13px;padding:12px;margin:9px 0;background:var(--glass2)}
-  #proscreen .setup .stk{font-weight:750;font-size:15.5px}
-  #proscreen .setup .params{font-size:12.5px;font-family:var(--mono);color:var(--ink);margin-top:5px;line-height:1.5}
-  #proscreen .setup .params .lbl{color:var(--mut)}
-  #proscreen .setup .edu{font-size:11.5px;color:var(--mut);margin-top:7px;line-height:1.5;border-top:1px dashed var(--gbrd);padding-top:6px}
-  #proscreen .setup .edu b{color:var(--ink)}
-  #proscreen .ps-rr{font-weight:700;color:var(--pos-ink)}
   table{width:100%;border-collapse:collapse;font-size:13px}
   /* trade status window (shared) */
   .statwin{margin:0 0 12px}
@@ -275,7 +256,6 @@
     <div class="toptab active" data-v="overview">Overview</div>
     <div class="toptab" data-v="futures">Futures</div>
     <div class="toptab" data-v="stocks">Stocks/Swing</div>
-    <div class="toptab" data-v="proscreen">Pro Screener</div>
     <div class="toptab" data-v="alerts">Alerts</div>
     <div class="toptab" data-v="account">$15K / Risk</div>
     <div class="toptab" data-v="journal">Journal</div>
@@ -321,10 +301,6 @@
     <div id="stk-content"><div class="loading">Loading…</div></div>
     <p class="disc" id="stk-disc"></p>
     <p class="foot" id="stk-foot"></p>
-  </div>
-
-  <div id="proscreen" hidden>
-    <div id="ps-content"><div class="loading">Loading…</div></div>
   </div>
 
   <div id="alerts" hidden>
@@ -424,7 +400,6 @@ const HELP={
 "risk":{"t":"Risk & Survival layer","w":"Position sizing, risk-of-ruin, loss limits, open heat, and when each setup actually works (edge × regime).","r":"¼-Kelly (full Kelly is too hot); P(−25%) = Monte-Carlo chance of a −25% drawdown; RAG heat = total risk if every stop hits.","u":"Size to SURVIVE the drawdown the edge will inevitably have — survival first, return second.","c":"⚠ ADVISORY · SIMULATED · never a signal. You size and execute; these views never trade."},
 "swing":{"t":"Swing / Pick scorecard (asymmetry)","w":"The IRA / swing engine's honest scorecard, split FORWARD (live-stamped) vs HISTORICAL (in-sample).","r":"Expectancy + profit factor lead; win% is a footnote. Pullback entries beat at-market by cutting the worst case, not by winning more.","u":"Judge whether the swing edge is real over time, by bucket and entry style.","c":"⚠ SIMULATED / advisory · aggregate %s only · n<30 DESCRIPTIVE. FORWARD = live-stamped; HISTORICAL = in-sample backfill."},
 "stocks":{"t":"Stock / swing picks","w":"Claude-curated picks plus the engine's top-5, per section (Convergence / Minervini / Top Setups / Context).","r":"Badges = lifecycle (NEW / CARRIED / OPEN / EXPIRED / RE-PRICED). Net + expectancy lead; win% is a footnote.","u":"Today's actionable swing candidates and how each is tracking after it triggers.","c":"⚠ SIMULATED / tracked · price is the trigger, not the pick · n<MIN DESCRIPTIVE."},
-"proscreen":{"t":"Pro Screener (v2) — SHADOW education tab","w":"A ground-up Minervini/O'Neil/Zanger/CANSLIM screener that runs in PARALLEL to the live engine. It gates the universe hard (trend template -> liquidity -> VCP -> RS top-decile) and shows the survivors as teaching examples with the same entry/stop/target/R:R/size format as the other system panels.","r":"The funnel shows how many names survive each gate (most die early — that's the point). Qualified setups show the pro structure. SHADOW = it logs forward picks to prove itself vs the current engine; it is NOT a live recommendation.","u":"Learn how a disciplined pro screen structures a trade: tight VCP base, strongest RS, entry at the pivot (not chased), structural stop, measured-move target. Watch the funnel — pros sit in cash when nothing passes.","c":"⚠ SHADOW / educational — NOT a trade signal. REAL data only (synthetic/test data is never shown). Promotion to live requires n≥30 forward beating the current engine + haircut + go. n<30 DESCRIPTIVE."},
 "notext":{"t":"Not-extended gate (no-chase) — the one validated filter","w":"The single screener filter that earned promotion on FORWARD data (Dispatch 50/51). It flags a long pick as EXTENDED — i.e. chasing — if the entry is >5×ATR above the breakout pivot, OR >12% above the rising 50-day MA, OR RSI(14)≥80 (pinned). Pre-registered thresholds, not re-tuned.","r":"CLEAN (not-extended) picks stay actionable; EXTENDED picks are demoted to context-only (gated, never deleted). The RAW ungated series keeps logging as the control so the comparison never breaks. Forward: clean −0.04% (n=291) vs the extended −8.92% (n=105) it excludes = +8.88 pts/trade, survives the ÷8 haircut (+1.11).","u":"Don't chase. Take the not-extended (clean) names; let the extended ones come back to you or treat them as context only.","c":"⚠ SIMULATED / advisory. Validated FORWARD (n≥30 both legs, haircut-survived). Gate flags & demotes, never deletes; RAW control still tracked. Filters 1-4/6/7 remain DEFERRED."}
 };
 const HELP_OPEN=new Set();
@@ -1566,73 +1541,6 @@ const Overview=(function(){
 })();
 window.Overview=Overview;
 
-/* ════════════ PRO SCREENER (v2) — SHADOW education tab (Dispatch 54) ════════════
-   REAL DATA ONLY. Reads screener_v2_funnel.json (written by run_funnel.run_real in the
-   engine). If absent OR source is not REAL OR no qualified picks -> honest state. The
-   synthetic _smoke() pick is NEVER rendered (hard guard on source prefix). SHADOW:
-   educational, never a live signal; does not feed any actionable list. ── */
-const ProScreen=(function(){
-  const FEED="screener_v2_funnel.json";
-  function banner(){
-    return '<div class="ps-shadow"><b>Pro Screener v2 is SHADOW — educational, NOT live recommendations.</b> '
-      +'It logs forward picks to prove itself vs the current engine. Nothing here is a trade signal yet. '
-      +'Promotion requires n≥30 forward beating the current engine + haircut.</div>';
-  }
-  function head(extra){ return '<div class="card"><div class="secttl">Pro Screener (v2)'+hI("proscreen")+'</div>'+hP("proscreen")+banner()+(extra||"")+'</div>'; }
-  function emptyState(msg){
-    return head('<div class="ps-empty"><span class="big">Pro screener funnel not yet run on the live universe</span>'
-      +esc(msg)+'</div>');
-  }
-  function neChip(v){
-    if(v===true) return '<span style="color:var(--pos-ink);font-weight:700">✓ not-extended</span>';
-    if(v===false) return '<span style="color:var(--neg-ink);font-weight:700">✗ extended</span>';
-    return '<span class="gmut">not-extended n/a</span>';
-  }
-  function funnelViz(f){
-    const N=Math.max(1,f.universe||0);
-    const rows=[["Universe",f.universe,""],["① Trend template",f.stage1,"s1"],["② Liquidity",f.stage2,""],
-      ["③ VCP setup",f.stage3_vcp,""],["④ RS top-decile",f.stage4_top,""]];
-    return '<div class="funnel">'+rows.map(([lab,n,cls])=>{
-      const w=Math.max(3,Math.round(100*(n||0)/N));
-      return '<div class="frow"><div class="flab">'+esc(lab)+'</div><div class="fbar '+cls+'" style="width:'+w+'%"></div><div class="fn">'+esc(n!=null?n:"–")+'</div></div>';
-    }).join("")+'</div>';
-  }
-  function setupCard(p){
-    const edu=(p.education||[]).map(e=>'• '+esc(e)).join('<br>');
-    const rr=p.rr!=null?('<span class="ps-rr">'+esc(p.rr)+'</span>'):'–';
-    return '<div class="setup"><div class="stk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.setup||"VCP base")+'</span> '+neChip(p.not_extended)+'</div>'
-      +'<div class="params"><span class="lbl">entry</span> '+esc(p.entry)+' (pivot) · <span class="lbl">stop</span> '+esc(p.stop)+' (below base) · <span class="lbl">target</span> '+esc(p.target)+' (measured) · <span class="lbl">R:R</span> '+rr
-      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+'</div>'
-      +(edu?'<div class="edu"><b>Why it\'s a pro setup:</b><br>'+edu+'</div>':'')+'</div>';
-  }
-  function render(d){
-    const el=document.getElementById("ps-content");
-    // HARD GUARD: real data only. Absent, or source not REAL => honest state (never synthetic).
-    if(!d){ el.innerHTML=emptyState("— no real setups to show. Run the pro screen on the live universe (engine: run_funnel.run_real) to populate this tab. (Synthetic/test data is never shown here.)"); return; }
-    if(!String(d.source||"").toUpperCase().startsWith("REAL")){
-      el.innerHTML=emptyState("— the available feed is SYNTHETIC/test data, which is never shown on the dashboard. Waiting for a REAL run_real() funnel."); return; }
-    const f=d.funnel||{}, q=Array.isArray(d.qualified)?d.qualified:[];
-    const hh=d.head_to_head||{}; const rl=hh.review_line||d.review_line||"";
-    const qtyLine='<div class="ps-qty">'+esc(q.length)+' of '+esc(f.universe!=null?f.universe:"–")+' names qualified today.</div>'
-      +(q.length?'':'<div class="ps-empty">Nothing passed the pro gate today. Pros sit in cash when nothing qualifies — this is an honest result, not a reason to loosen anything.</div>');
-    let html=head('<div style="margin-top:4px"><b style="font-size:13px">Today\'s funnel</b>'+funnelViz(f)+qtyLine+'</div>');
-    if(q.length){
-      html+='<div class="card"><div class="secttl">Qualified setups — pro structure (educational)</div>'
-        +q.map(setupCard).join("")+'</div>';
-    }
-    html+='<div class="card">'+dwrap("Head-to-head vs current engine (FORWARD · accruing)",
-        '<div class="gmut" style="line-height:1.6">'+esc(rl||"screener_v2 vs current engine — ACCRUING (need n≥30 both sides).")
-        +'<br>Verdict: '+esc(hh.verdict||"ACCRUING — keep logging.")+'</div>')+'</div>';
-    el.innerHTML=html;
-  }
-  async function load(){
-    if(!tokenReady()){ document.getElementById("ps-content").innerHTML=emptyState("— paste your read-only GitHub token to load the feed."); return; }
-    try{ const d=await ghFetch(FEED); render(d); }
-    catch(e){ render(null); }   // absent feed => honest empty state (graceful)
-  }
-  return { load };
-})();
-
 /* ════════════ top-level view switch ════════════ */
 let view="overview";
 function redraw(){ if(view==="futures")Futures.redraw(); else if(view==="stocks")Stocks.redraw(); }
@@ -1643,7 +1551,6 @@ function showView(v){
   document.getElementById("overview").hidden=(v!=="overview");
   document.getElementById("fut").hidden=(v!=="futures");
   document.getElementById("stk").hidden=(v!=="stocks");
-  document.getElementById("proscreen").hidden=(v!=="proscreen");
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
   document.getElementById("journal").hidden=(v!=="journal");
@@ -1651,7 +1558,6 @@ function showView(v){
   else if(v==="alerts")Alerts.load();
   else if(v==="account")Account.load();
   else if(v==="journal")Journal.load();
-  else if(v==="proscreen")ProScreen.load();
   else (v==="futures"?Futures:Stocks).load();   // fetch only the active view
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
