@@ -1,0 +1,77 @@
+{
+  "kind": "screener_v2_preregistration",
+  "dispatch": 53,
+  "frozen_at": "2026-06-28",
+  "status": "FROZEN — all stage thresholds set BEFORE any funnel/backtest result. Any change is a NEW pre-registration and re-incurs the divide-by-N haircut.",
+  "mandate": "SHADOW pipeline. screener_v2 logs its OWN forward pick ledger head-to-head vs the current live engine. It does NOT touch/replace/feed the live screener, email, or dashboard selection. Promotion to live ONLY on n>=30 forward beat + haircut + explicit go.",
+  "survivorship": "No point-in-time universe exists -> a from-scratch HISTORICAL funnel/backtest is survivorship-biased and is NOT proof of edge. screener_v2 is validated FORWARD ONLY. Any in-sample funnel is DESCRIPTIVE mechanics, never edge.",
+  "anti_look_ahead": "Every stage reads bars[0..signal_index] only. Proven by truncation test in pipeline.py self-test.",
+  "architecture": "GATING+RANKING (reject most of the universe at the gate, THEN rank survivors) — the key difference vs today's SCORING engine.",
+  "stages": {
+    "stage1_trend_template": {
+      "role": "HARD GATE (binary pass/fail) — replaces today's soft Minervini score",
+      "rules": [
+        "price > MA50 > MA150 > MA200",
+        "MA50 > MA150 > MA200 (proper stack)",
+        "MA50, MA150, MA200 all rising over the rising_lookback",
+        "MA200 rising for >= 22 trading days (~1 month)",
+        "price >= 25% above 52-week low",
+        "price >= 75% of 52-week high (within 25% of the high)"
+      ],
+      "thresholds": {"ma": [50, 150, 200], "rising_lookback": 22, "ma200_rising_days": 22,
+                     "min_pct_above_52w_low": 25.0, "min_pct_of_52w_high": 75.0,
+                     "history_required_bars": 252}
+    },
+    "stage2_liquidity_quality": {
+      "role": "GATE",
+      "rules": [
+        "average dollar volume over 50 bars >= $20,000,000",
+        "earnings/growth (CANSLIM): accelerating EPS/revenue + recent positive surprise IF a fundamentals feed exists; else DEFER (return None, never a silent pass)"
+      ],
+      "thresholds": {"min_avg_dollar_vol": 20000000, "adv_lookback": 50},
+      "earnings_overlay": "DEFERRED unless fundamentals feed present at run time; reported as deferred, not fabricated"
+    },
+    "stage3_vcp": {
+      "role": "SETUP GATE (no valid VCP => WATCH, not a buy)",
+      "rules": [
+        ">= 2 successive pullbacks, each shallower than the prior (contraction)",
+        "each contraction depth <= 0.75x the prior contraction depth",
+        "volume declining into the pivot: pivot 5-bar avg vol <= 0.85x base avg vol",
+        "whole base depth <= 35%",
+        "price coiling under a definable pivot/buy-point"
+      ],
+      "thresholds": {"min_contractions": 2, "tightness_ratio_max": 0.75,
+                     "vol_dryup_ratio_max": 0.85, "max_base_depth_pct": 35.0,
+                     "base_window_bars": 60, "swing_reversal_pct": 4.0},
+      "outputs": ["pivot_price", "base_depth_pct", "contraction_count"]
+    },
+    "stage4_rs_rank": {
+      "role": "RANK — take the top decile (trade the STRONGEST, not the merely-qualified)",
+      "rule": "IBD-style weighted RS vs SPY; rank ALL stage-3 setups; keep top decile (or top N if the survivor set is small)",
+      "thresholds": {"rs_weights": {"63d": 0.40, "126d": 0.20, "189d": 0.20, "252d": 0.20},
+                     "top_decile": 0.10, "min_take": 1}
+    },
+    "stage5_entry": {
+      "role": "ENTRY DISCIPLINE (reuse validated pieces)",
+      "rules": [
+        "not-extended gate (D51, ALREADY VALIDATED) applied at the pivot",
+        "entry = pivot breakout WITH volume-confirm >= 1.40x avg",
+        "stop = below the VCP base low (structural)",
+        "target = measured-move (base depth projected up) or next resistance",
+        "size = risk_model (D44), 1-2% risk, ruin-safe"
+      ],
+      "thresholds": {"vol_confirm_mult": 1.40, "vol_confirm_lookback": 50, "risk_pct": [1.0, 2.0]},
+      "reuses": ["screener_pro/not_extended_gate.py (D51)", "risk_model (D44)", "regime_tagger (D49)"]
+    }
+  },
+  "haircut": {"N": 6, "basis": "5 stage gates ablated individually + 1 full pipeline", "rule": "in-sample edge / N before any 'survives' claim"},
+  "ledger": {
+    "name": "screener_v2_picks",
+    "per_pick_fields": ["ticker", "signal_date", "stage_pass_record", "vcp_base", "base_depth_pct",
+                        "contraction_count", "rs_rank", "rs_score", "pivot", "stop", "target",
+                        "entry_trigger", "vol_confirm_mult", "not_extended", "regime_at_signal",
+                        "size_pct", "timestamp"],
+    "head_to_head": "expectancy-led (net/PF/payoff, win% footnote) vs current-engine FORWARD picks; ÷N haircut; n<30 DESCRIPTIVE; FORWARD never blended with HISTORICAL"
+  },
+  "promotion_rule": "v2 stays SHADOW (logs, never trades) until its FORWARD picks beat the current engine's FORWARD picks over n>=30, haircut-applied, AND an explicit go. Until then current engine remains the sole live source of truth."
+}
