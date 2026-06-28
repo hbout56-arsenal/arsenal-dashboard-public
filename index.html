@@ -238,6 +238,7 @@
     <div class="toptab" data-v="stocks">Stocks</div>
     <div class="toptab" data-v="alerts">Alerts</div>
     <div class="toptab" data-v="account">$15K</div>
+    <div class="toptab" data-v="journal">Journal</div>
   </div>
 
   <div id="fut">
@@ -285,6 +286,9 @@
 
   <div id="account" hidden>
     <div id="acc-content"><div class="loading">Loading…</div></div>
+  </div>
+  <div id="journal" hidden>
+    <div id="jr-content"><div class="loading">Loading…</div></div>
   </div>
 </div>
 <style>
@@ -346,6 +350,8 @@ const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dash
 const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 /* ── ⓘ help / learn layer (Dispatch 19) — pure UI. State in HELP_OPEN survives full re-renders. ── */
 const HELP={
+"journal":{"t":"Discipline scorecard (the execution layer)","w":"A trading journal that grades YOUR EXECUTION on PROCESS — separate from the strategy's edge. Every trade is scored 0-100 on plan-vs-execution (matched playbook, entry quality, honored stop, exit discipline, size) — NOT on win/loss.","r":"Discipline score 0-100 = process adherence (green >=70). The emotion-vs-outcome table shows which feelings cost you R; process-vs-profit shows whether following the system pays.","u":"A losing trade taken per-plan is a GOOD trade (right habit); a winning trade that broke the rules is BAD (wrong habit reinforced). Fix the lowest adherence % and your #1 mistake tag.","c":"⚠ Process, NOT profit. This grades the trader, not the strategy. SIMULATED/advisory — not financial advice. Raw entries (size/$/emotions) stay LOCAL; only aggregate %s are shown here."},
+
 "regime":{"t":"Regime label (coincident)","w":"A blended read of how the tape is moving RIGHT NOW — ADX (trend strength), Choppiness Index, Kaufman Efficiency Ratio, and recent EMA-cross count — into one label (TRENDING / TRANSITIONAL / CHOP) plus a 0-100 trendiness score.","r":"Green TRENDING (high score) = clean directional moves; grey CHOP (low) = whippy/range-bound; amber TRANSITIONAL = mixed/turning.","u":"A sizing + expectation backdrop: CHOP -> size down, fade extremes, expect whipsaw; TRENDING -> normal size, follow, hold winners.","c":"⚠ COINCIDENT — it describes the regime you are IN now, NOT a forecast of the next one. Direction-forecasting is the fluke the engine exists to catch. Context only, never a signal."},
 
 "insidebar":{"t":"Inside Bar A+ confluence","w":"An inside bar is a candle fully inside the prior bar (the 'mother bar') — a coil/pause. The mother bar is the wide thrust bar before it. A 'fakey' is a false break of the inside bar that snaps back (a higher-grade reversal).","r":"Raw inside bars print constantly and are NULL (no edge). The A+ stack filters them: at a level + in-trend + strong mother bar + compressed + confluence. Grade A+ = full stack; B = most; info = noise. RAW vs FILTERED scorecards measure it per instrument.","u":"Trade the A+ break: a stop-entry on the break of the inside bar's high (long) / low (short) in the confluence direction; stop the opposite side; T1=1R, T2=next level.","c":"⚠ Raw inside bars are NULL; only the A+ stack is tested-for-edge and it is NOT yet proven (n<30, NON-VOTING). Price breaking the bar is the trigger, not the pattern."},
@@ -1282,11 +1288,66 @@ function showView(v){
   document.getElementById("stk").hidden=(v!=="stocks");
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
+  document.getElementById("journal").hidden=(v!=="journal");
   if(v==="alerts")Alerts.load();
   else if(v==="account")Account.load();
+  else if(v==="journal")Journal.load();
   else (v==="futures"?Futures:Stocks).load();   // fetch only the active view
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
+
+/* ════════════ JOURNAL tab (Dispatch 42) — discipline scorecard + entry round-trip ════════════ */
+const Journal=(function(){
+  const OWN="hbout56@gmail.com";
+  function fld(l,v){return '<div class="emaline"><b>'+esc(l)+'</b> '+(v==null?'<span class="gmut">—</span>':esc(v))+'</div>';}
+  function sel(id,opts){return '<select id="'+id+'" style="width:100%;padding:8px;margin:3px 0;background:var(--glass2);color:var(--ink);border:1px solid var(--gbrd);border-radius:8px">'+opts.map(o=>'<option>'+o+'</option>').join("")+'</select>';}
+  function inp(id,ph){return '<input id="'+id+'" placeholder="'+ph+'" style="width:100%;padding:8px;margin:3px 0;background:var(--glass2);color:var(--ink);border:1px solid var(--gbrd);border-radius:8px">';}
+  function formHtml(){
+    return '<div class="emanote">Fills a 1-tap email to yourself; a local poller ingests it into the private journal (raw size/$ never leave your Mac).</div>'
+      +inp("jr_inst","Instrument (ES/NQ/CL…)")+sel("jr_dir",["LONG","SHORT"])
+      +inp("jr_entry","Entry price")+inp("jr_stop","Stop price")+inp("jr_exit","Exit price (on close)")+inp("jr_size","Size (contracts/shares)")
+      +sel("jr_playbook",["yes:setup","no"])+sel("jr_eq",["at-level","early","chased"])
+      +sel("jr_stopd",["yes","moved","removed"])+sel("jr_exitd",["per-plan","target-hit","stopped","early","late"])+sel("jr_size_ok",["yes","over","under"])
+      +sel("jr_conv",["1","2","3","4","5"])+sel("jr_emo",["calm","FOMO","fear","confident","hesitant"])
+      +sel("jr_mistake",["none","chased_entry","moved_stop","oversized","no_setup","exited_early","exited_late","revenge","fomo"])
+      +inp("jr_lesson","Lesson (optional)")
+      +'<span class="addmine" style="margin-top:8px" onclick="Journal.compose()">✉ Log trade (email round-trip)</span>';
+  }
+  function gv(id){const el=document.getElementById(id);return el?el.value:"";}
+  function compose(){
+    const e={source:"manual",instrument:gv("jr_inst"),direction:gv("jr_dir"),entry_price:gv("jr_entry"),
+      stop_price:gv("jr_stop"),exit_price:gv("jr_exit"),size:gv("jr_size"),matched_playbook:gv("jr_playbook"),
+      entry_quality:gv("jr_eq"),honored_stop:gv("jr_stopd"),exit_discipline:gv("jr_exitd"),size_appropriate:gv("jr_size_ok"),
+      conviction_at_entry:gv("jr_conv"),dominant_emotion_entry:gv("jr_emo"),mistake_tags:[gv("jr_mistake")],lesson:gv("jr_lesson"),
+      datetime_entry:new Date().toISOString().slice(0,19)};
+    const body="JOURNAL_ENTRY "+JSON.stringify(e);
+    location.href="mailto:"+OWN+"?subject="+encodeURIComponent("JOURNAL")+"&body="+encodeURIComponent(body);
+  }
+  async function load(){
+    const c=document.getElementById("jr-content");
+    let d; try{ d=await ghFetch("journal_scorecard.json"); }catch(err){ d=null; }
+    const n=(d&&d.n_closed_trades)||0, score=d&&d.DISCIPLINE_SCORE_0_100, a=(d&&d.adherence_pcts)||{}, pp=(d&&d.process_vs_profit)||{};
+    const sc=score==null?"var(--mut)":(score>=70?"var(--green)":(score>=50?"var(--amber)":"var(--red)"));
+    const emo=Object.entries((d&&d.emotion_vs_outcome)||{}).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+esc(v.n)+'</td><td>'+(v.win_rate_pct==null?'–':esc(v.win_rate_pct)+'%')+'</td><td><b>'+(v.avg_R==null?'–':esc(v.avg_R)+'R')+'</b></td></tr>').join("");
+    c.innerHTML=
+      '<div class="hero"><div class="nm">Discipline scorecard '+hI("journal")+'</div>'
+        +'<div class="px" style="color:'+sc+'">'+(score==null?'—':esc(score)+'<span style="font-size:15px;color:var(--mut)">/100</span>')+'</div>'
+        +'<div class="src">process, not profit · '+esc(n)+' closed trades · '+esc((d&&d.window_days)||"all-time")+'</div></div>'
+      +hP("journal")
+      +'<div class="card"><h2>Adherence</h2>'+fld("matched playbook",a.matched_playbook_pct!=null?a.matched_playbook_pct+'%':null)
+        +fld("honored stop",a.honored_stop_pct!=null?a.honored_stop_pct+'%':null)+fld("exit per plan",a.exit_per_plan_pct!=null?a.exit_per_plan_pct+'%':null)
+        +fld("size appropriate",a.size_appropriate_pct!=null?a.size_appropriate_pct+'%':null)+'</div>'
+      +'<div class="card"><h2>Emotion vs outcome (avg R)</h2><table><tr><th>emotion</th><th>n</th><th>win%</th><th>avg R</th></tr>'+(emo||'<tr><td colspan="4" class="gmut">no closed trades yet</td></tr>')+'</table></div>'
+      +'<div class="card"><h2>Process vs profit</h2>'+fld("high-adherence avg R",pp.high_adherence_avg_R!=null?pp.high_adherence_avg_R+'R':null)
+        +fld("low-adherence avg R",pp.low_adherence_avg_R!=null?pp.low_adherence_avg_R+'R':null)+'<div class="emanote">'+esc(pp.diagnostic||"—")+'</div></div>'
+      +((d&&d.top_mistake)?'<div class="card"><h2>#1 leak this month</h2><div class="emaline"><b>'+esc(d.top_mistake.tag)+'</b> ('+esc(d.top_mistake.count)+'x)</div></div>':'')
+      +'<div class="card"><h2>Log a trade</h2>'+formHtml()+'</div>'
+      +'<div class="card"><div class="emanote">'+esc((d&&d.honest_note)||"Discipline = process, NOT profit. A losing trade taken per-plan is a GOOD trade.")+' Raw entries (size/$/emotions) stay LOCAL — only aggregate %s shown here.</div></div>';
+  }
+  return {load,compose};
+})();
+window.Journal=Journal;
+
 Futures.init(); Stocks.init();
 showView("futures");
 loadCalCtx();
