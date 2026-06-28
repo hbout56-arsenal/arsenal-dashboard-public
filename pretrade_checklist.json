@@ -1,0 +1,90 @@
+{
+  "generated_at": "2026-06-28T14:50:51",
+  "kind": "pretrade_checklist",
+  "dispatch": "44 / Phase 3A",
+  "banner": "ADVISORY / SIMULATED \u2014 run before 'I'm in'. Auto-checks loss limits, heat + regime; Hany confirms the rest. Completion logs to the journal; SKIPPING it is a discipline ding (D42).",
+  "intent_source": "SAMPLE (built-in)",
+  "checklist_template": [
+    {
+      "id": "levels_set",
+      "q": "entry / stop / target / size all set?",
+      "auto": false
+    },
+    {
+      "id": "playbook",
+      "q": "matches a playbook setup?",
+      "auto": false
+    },
+    {
+      "id": "within_limits",
+      "q": "within loss limits?",
+      "auto": true
+    },
+    {
+      "id": "not_overheat",
+      "q": "not over-heat?",
+      "auto": true
+    },
+    {
+      "id": "regime_ok",
+      "q": "regime-appropriate?",
+      "auto": true
+    },
+    {
+      "id": "invalidation",
+      "q": "what would make me wrong? (invalidation written)",
+      "auto": false
+    }
+  ],
+  "evaluation": [
+    {
+      "id": "levels_set",
+      "q": "entry / stop / target / size all set?",
+      "auto": false,
+      "pass": true,
+      "detail": "entry 71.2 / stop 70.6 / target 72.4 / size 1"
+    },
+    {
+      "id": "playbook",
+      "q": "matches a playbook setup?",
+      "auto": false,
+      "pass": true,
+      "detail": "ema_gccl::CL_9_21_60m_filtered"
+    },
+    {
+      "id": "within_limits",
+      "q": "within loss limits?",
+      "auto": true,
+      "pass": false,
+      "detail": "A LOSS LIMIT IS ACTIVE \u2014 stand down"
+    },
+    {
+      "id": "not_overheat",
+      "q": "not over-heat?",
+      "auto": true,
+      "pass": true,
+      "detail": "open heat RAG=AMBER"
+    },
+    {
+      "id": "regime_ok",
+      "q": "regime-appropriate?",
+      "auto": true,
+      "pass": true,
+      "detail": "current CL_daily regime=TRENDING; this setup is +0.40R there"
+    },
+    {
+      "id": "invalidation",
+      "q": "what would make me wrong? (invalidation written)",
+      "auto": false,
+      "pass": true,
+      "detail": "lose 70.60 (below the pullback low) -> thesis dead, exit."
+    }
+  ],
+  "all_clear": false,
+  "blocking_items": [
+    "within_limits"
+  ],
+  "verdict": "NOT CLEAR \u2014 within loss limits?",
+  "discipline_log": [],
+  "privacy": "The actual trade intent lives in trade_intent.local.json (never mirrored). Only the pass/fail evaluation is emitted."
+}

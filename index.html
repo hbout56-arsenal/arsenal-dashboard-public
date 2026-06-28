@@ -1173,7 +1173,93 @@ const Account=(function(){
     catch(e){ c.innerHTML='<div class="banner err" style="display:block">No account_summary.json yet ('+esc(e.message)+')</div>'; return; }
     let html=render(d);
     try{ const pd=await ghFetch("portfolio_constructor.json"); html+=renderPortfolio(pd); }catch(e){}  // D41
+    // D44 risk & survival layer — each view loads independently; advisory/SIMULATED
+    const rl={};
+    await Promise.all([
+      ["rm","risk_model.json"],["ll","loss_limits.json"],["ph","portfolio_heat.json"],
+      ["er","edge_by_regime.json"],["pc","pretrade_checklist.json"],
+      ["sl","slippage.json"],["mm","mae_mfe.json"]
+    ].map(([k,f])=>ghFetch(f).then(j=>{rl[k]=j;}).catch(()=>{})));
+    html+=renderRisk(rl);
     c.innerHTML=html;
+  }
+  /* D44: Risk & Survival layer — sizing/ruin, loss limits, heat, edge×regime, exec.
+     ADVISORY / SIMULATED — never a signal; Hany sizes + executes. All %s/R only. */
+  const ragCol=r=>r==="RED"?"var(--red)":(r==="AMBER"?"var(--amber)":"var(--green)");
+  function renderRisk(rl){
+    const {rm,ll,ph,er,pc,sl,mm}=rl;
+    if(!rm&&!ll&&!ph&&!er&&!pc&&!sl&&!mm) return '';
+    let h='<h3 class="acch" style="margin-top:24px">Risk &amp; Survival layer — size to survive (Dispatch 44)</h3>';
+    h+='<div class="accnote" style="border-color:rgba(255,217,138,.4);background:rgba(255,217,138,.08);color:#ffe7b3">'
+      +'<b>ADVISORY · SIMULATED · not financial advice.</b> The edge is in-sample — size to SURVIVE the drawdown it will inevitably have. These views never trade; Hany sizes + executes.</div>';
+    // ── loss limits (survival first) ──
+    if(ll){ const s=ll.status||{}, t=s.today||{}, w=s.week||{};
+      if(ll.any_limit_hit){
+        h+='<div class="banner err" style="display:block;margin:8px 0">';
+        (ll.alerts||[]).forEach(a=>{ h+='<div style="font-weight:800">'+esc(a.title)+'</div><div style="font-weight:500;font-size:12px;margin:2px 0 4px">'+esc(a.body)+'</div>'; });
+        h+='<div style="font-size:11px;opacity:.85">Cannot force-flatten — Hany acts. Breaches logged to the discipline scorecard (D42).</div></div>';
+      } else {
+        h+='<div class="accnote" style="border-color:rgba(80,220,140,.4);background:rgba(80,220,140,.08);color:#cdeacd;margin-top:8px"><b>✓ No loss limit active.</b> Circuit breakers armed.</div>';
+      }
+      const lim=ll.registered_limits||{};
+      h+='<div class="accgrid">'
+        +stat("Today",(t.pnl_R!=null?t.pnl_R+"R":"—")+" / "+(t.pnl_pct!=null?t.pnl_pct+"%":"—"))
+        +stat("Consec. losers",(t.max_consecutive_losers!=null?t.max_consecutive_losers:"—")+" / "+(lim.consecutive_loser_limit!=null?lim.consecutive_loser_limit:"—")+" max")
+        +stat("Week",(w.pnl_pct!=null?w.pnl_pct+"%":"—")+" → "+(w.next_week_action||"normal"))
+        +stat("Daily / weekly limit",(lim.daily_stop_pct!=null?lim.daily_stop_pct+"%":"—")+" / "+(lim.weekly_stop_pct!=null?lim.weekly_stop_pct+"%":"—"))
+        +'</div>';
+    }
+    // ── portfolio heat meter ──
+    if(ph){ const col=ragCol(ph.rag);
+      h+='<h3 class="acch">Open heat — total risk if every stop hits</h3>';
+      h+='<div class="accnote" style="border-color:'+col+';color:#eef3fb"><b style="color:'+col+'">◉ '+esc(ph.meter_line||"")+'</b>'
+        +'<div style="font-size:11px;color:var(--mut);margin-top:3px">gross '+(ph.gross_heat_pct)+'% · correlation-adjusted (stat) '+(ph.correlation_adjusted_heat_pct)+'% · vs independent '+(ph.independent_equivalent_heat_pct)+'% — correlated same-direction bets stack.</div></div>';
+      const gb=(ph.by_correlation_group||[]).filter(g=>g.factor_multiple_x>1.3);
+      if(gb.length){ h+='<table class="acct" style="margin-top:6px"><tr><th>cluster</th><th>positions</th><th>gross%</th><th>concentration</th></tr>';
+        gb.forEach(g=>{ h+='<tr><td>'+esc(g.group)+'</td><td>'+g.n_positions+'</td><td>'+g.gross_risk_pct+'%</td><td class="warnrisk">'+g.factor_multiple_x+'×</td></tr>'; });
+        h+='</table>'; }
+    }
+    // ── risk model: sizing + risk-of-ruin ──
+    if(rm){ const setups=(rm.setups||[]).filter(s=>s.eligible_in_constructor||s.positive_edge).slice(0,8);
+      h+='<h3 class="acch">Sizing &amp; risk-of-ruin — full Kelly is too hot; use ¼-Kelly</h3>';
+      h+='<div class="accnote">'+esc(rm.banner||'')+' Equity basis: '+esc(rm.equity_basis||'')+'.</div>';
+      if(setups.length){
+        h+='<table class="acct" style="margin-top:8px"><tr><th>setup</th><th>n</th><th>W</th><th>pay</th><th>¼-K</th><th>1%·P(-25)</th><th>2%·P(-25)</th><th>safe·P(-25)</th></tr>';
+        setups.forEach(s=>{ const k=s.kelly||{}, b=s.size_band||{}, c1=b.conservative_1pct||{}, c2=b.standard_2pct||{}, ms=b.max_safe||{};
+          const pr=o=>o&&o.p_ruin?(o.p_ruin["p_hit_-25pct"]*100).toFixed(1)+"%":"—";
+          const val=(s.n||0)>=30;
+          h+='<tr><td>'+esc((s.setup||'').replace('::','/'))+(val?'<span class="val-tag">n≥30</span>':'<span class="desc-tag">DESC</span>')+'</td>'
+            +'<td>'+(s.n!=null?s.n:'—')+'</td>'
+            +'<td>'+(s.win_rate_derived!=null?(s.win_rate_derived*100).toFixed(0)+'%':'—')+'</td>'
+            +'<td>'+(s.payoff!=null?s.payoff:'—')+'</td>'
+            +'<td class="warnrisk" title="full Kelly '+(k.full_kelly_pct||'—')+'% — too hot">'+(k.quarter_kelly_pct!=null?k.quarter_kelly_pct+'%':'—')+'</td>'
+            +'<td>'+(c1.risk_per_trade_pct||'—')+'%·'+pr(c1)+'</td>'
+            +'<td>'+(c2.risk_per_trade_pct||'—')+'%·'+pr(c2)+'</td>'
+            +'<td>'+(ms.risk_per_trade_pct||'—')+'%·'+pr(ms)+'</td></tr>';
+        });
+        h+='</table>';
+        h+='<p class="foot">¼-K = quarter-Kelly (full Kelly flagged too-volatile). P(-25) = Monte-Carlo prob. of a −25% drawdown over a year of trades. max-safe = largest risk keeping P(-25%) under 5%.</p>';
+      }
+    }
+    // ── edge × regime cross-tab ──
+    if(er&&er.setups){ const keys=Object.keys(er.setups).slice(0,6);
+      if(keys.length){
+        h+='<h3 class="acch">Edge × regime — when each setup actually works</h3>';
+        h+='<div class="accnote">'+esc(er.banner||'')+'</div>';
+        keys.forEach(k=>{ const r=er.setups[k];
+          h+='<div style="font-size:12px;margin:6px 0;padding:7px 9px;border:1px solid var(--gbrd);border-radius:9px;background:rgba(255,255,255,.02)">'
+            +'<b>'+esc(k.replace('::','/'))+'</b> <span style="color:var(--mut)">'+esc(r.brief||'')+'</span>'
+            +(r.conditional_edge?'<div style="color:#ffd98a;margin-top:3px">▸ '+esc(r.conditional_edge)+'</div>':'')+'</div>';
+        });
+      }
+    }
+    // ── Phase 3 status: checklist / slippage / MAE-MFE ──
+    const p3=[];
+    if(pc) p3.push((pc.all_clear?"✓ Pre-trade checklist CLEAR":"✗ Checklist: "+esc(pc.verdict||"not clear")));
+    if(sl) p3.push("Slippage: "+esc(sl.headline||""));
+    if(mm) p3.push("MAE/MFE: "+(mm.status==="DEFERRED"?"DEFERRED (no intraday excursion data — not fabricated)":esc(mm.status||"")));
+    if(p3.length){ h+='<h3 class="acch">Execution &amp; discipline</h3><div class="accnote" style="font-size:12px">'+p3.map(x=>'<div>'+x+'</div>').join('')+'</div>'; }
+    return h;
   }
   /* D41: portfolio constructor — best instruments × strategies (in-sample, forward-gated) */
   function renderPortfolio(pd){

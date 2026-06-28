@@ -1,0 +1,2497 @@
+{
+  "generated_at": "2026-06-28T14:52:44",
+  "kind": "risk_model_sizing_and_ruin",
+  "dispatch": "44 / Phase 1A",
+  "banner": "ADVISORY / SIMULATED \u2014 not financial advice. The edge is IN-SAMPLE; size to SURVIVE the drawdown it will inevitably have, not to maximise the backtest. Full Kelly is flagged too-hot by policy \u2014 use 1/4-Kelly. Hany sizes + executes.",
+  "equity_basis": "SIMULATED_paper_15k",
+  "equity_used_is_simulated": true,
+  "method": {
+    "win_rate": "DERIVED W = PF/(PF+payoff) (no re-measure)",
+    "kelly": "f* = W - (1-W)/payoff; fractional = 1/4 & 1/2 f*",
+    "sizing": "risk_per_trade% x equity / ($/R per contract) = contracts",
+    "risk_of_ruin": "seeded Monte-Carlo (20000 sims, seed 4400), fixed-fractional, P(worst drawdown >= band) over a year of trades",
+    "max_safe": "largest risk% with P(hit -25%) < 5%"
+  },
+  "n_setups": 42,
+  "setups": [
+    {
+      "setup": "ema_gccl::CL_9_21_60m_filtered",
+      "instrument": "MCL",
+      "n": 42,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.6902,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.92,
+      "pf": 2.05,
+      "expectancy_R": 0.3253,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 98.42,
+      "trades_per_week": 1.53,
+      "mc_horizon_trades": 80,
+      "kelly": {
+        "full_kelly_pct": 35.35,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 17.68,
+        "quarter_kelly_pct": 8.84,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.52,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 28.71,
+          "worst_5pct_year_return_pct": 12.52
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 3.05,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0019,
+            "p_hit_-25pct": 0.0001,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 64.5,
+          "worst_5pct_year_return_pct": 25.69
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 3.75,
+          "implied_contracts": 5.72,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1357,
+            "p_hit_-25pct": 0.0357,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 148.43,
+          "worst_5pct_year_return_pct": 49.93,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~80 trades/yr"
+        }
+      },
+      "eligible_in_constructor": true
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_30m_filtered",
+      "instrument": "MGC",
+      "n": 24,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.6667,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.57,
+      "pf": 3.14,
+      "expectancy_R": 0.7133,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 193.54,
+      "trades_per_week": 2.0,
+      "mc_horizon_trades": 104,
+      "kelly": {
+        "full_kelly_pct": 45.44,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 22.72,
+        "quarter_kelly_pct": 11.36,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.78,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 106.09,
+          "worst_5pct_year_return_pct": 67.88
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.55,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0006,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 316.28,
+          "worst_5pct_year_return_pct": 176.55
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 4.25,
+          "implied_contracts": 3.29,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1686,
+            "p_hit_-25pct": 0.0485,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 1785.72,
+          "worst_5pct_year_return_pct": 694.64,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~104 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_15m_filtered",
+      "instrument": "MCL",
+      "n": 9,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.5556,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.92,
+      "pf": 2.4,
+      "expectancy_R": 0.6222,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 38.07,
+      "trades_per_week": 2.1,
+      "mc_horizon_trades": 109,
+      "kelly": {
+        "full_kelly_pct": 32.41,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 16.2,
+        "quarter_kelly_pct": 8.1,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 3.94,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0001,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 91.29,
+          "worst_5pct_year_return_pct": 51.6
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 7.88,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0192,
+            "p_hit_-25pct": 0.0021,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 256.42,
+          "worst_5pct_year_return_pct": 124.31
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 3.0,
+          "implied_contracts": 11.82,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1648,
+            "p_hit_-25pct": 0.0487,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 547.29,
+          "worst_5pct_year_return_pct": 224.12,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~109 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_daily_raw",
+      "instrument": "MGC",
+      "n": 8,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.6247,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.4,
+      "pf": 2.33,
+      "expectancy_R": 0.4992,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 1759.75,
+      "trades_per_week": 0.11,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 35.66,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 17.83,
+        "quarter_kelly_pct": 8.91,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.09,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 27.13,
+          "worst_5pct_year_return_pct": 12.78
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.17,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0016,
+            "p_hit_-25pct": 0.0003,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 60.35,
+          "worst_5pct_year_return_pct": 26.25
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 4.0,
+          "implied_contracts": 0.34,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1527,
+            "p_hit_-25pct": 0.0428,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 149.31,
+          "worst_5pct_year_return_pct": 54.8,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_stocks::9_21_daily_filtered",
+      "instrument": "STOCK",
+      "n": 43,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.6285,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.33,
+      "pf": 2.25,
+      "expectancy_R": 0.4644,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 730.08,
+      "trades_per_week": 0.75,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 34.92,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 17.46,
+        "quarter_kelly_pct": 8.73,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.21,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 24.44,
+          "worst_5pct_year_return_pct": 10.77
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.41,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0019,
+            "p_hit_-25pct": 0.0003,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 53.72,
+          "worst_5pct_year_return_pct": 21.86
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 4.0,
+          "implied_contracts": 0.82,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1486,
+            "p_hit_-25pct": 0.0457,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 129.61,
+          "worst_5pct_year_return_pct": 44.47,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_30m_filtered",
+      "instrument": "MCL",
+      "n": 16,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.5619,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.31,
+      "pf": 1.68,
+      "expectancy_R": 0.2979,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 58.54,
+      "trades_per_week": 1.26,
+      "mc_horizon_trades": 66,
+      "kelly": {
+        "full_kelly_pct": 22.74,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 11.37,
+        "quarter_kelly_pct": 5.69,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 2.56,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0001,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 20.94,
+          "worst_5pct_year_return_pct": 2.9
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 5.12,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0294,
+            "p_hit_-25pct": 0.0052,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 44.92,
+          "worst_5pct_year_return_pct": 4.98
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 2.75,
+          "implied_contracts": 7.05,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1353,
+            "p_hit_-25pct": 0.0431,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 65.01,
+          "worst_5pct_year_return_pct": 5.96,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~66 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_60m_filtered",
+      "instrument": "MCL",
+      "n": 14,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.7132,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.78,
+      "pf": 1.94,
+      "expectancy_R": 0.2696,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 113.82,
+      "trades_per_week": 0.54,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 34.56,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 17.28,
+        "quarter_kelly_pct": 8.64,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.32,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 14.91,
+          "worst_5pct_year_return_pct": 3.26
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.64,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0008,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 31.58,
+          "worst_5pct_year_return_pct": 6.22
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 4.25,
+          "implied_contracts": 5.6,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1222,
+            "p_hit_-25pct": 0.0369,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 76.13,
+          "worst_5pct_year_return_pct": 11.6,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_daily_raw",
+      "instrument": "MCL",
+      "n": 4,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.5,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.48,
+      "pf": 1.48,
+      "expectancy_R": 0.24,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 607.29,
+      "trades_per_week": 0.05,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 16.22,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 8.11,
+        "quarter_kelly_pct": 4.05,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.25,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0001,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 12.3,
+          "worst_5pct_year_return_pct": -3.19
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.49,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0586,
+            "p_hit_-25pct": 0.0149,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 25.13,
+          "worst_5pct_year_return_pct": -6.95
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 2.25,
+          "implied_contracts": 0.56,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0955,
+            "p_hit_-25pct": 0.0299,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 28.4,
+          "worst_5pct_year_return_pct": -7.97,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_9_21_30m_filtered",
+      "instrument": "MCL",
+      "n": 53,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.6038,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.05,
+      "pf": 1.6,
+      "expectancy_R": 0.2377,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 63.68,
+      "trades_per_week": 4.12,
+      "mc_horizon_trades": 214,
+      "kelly": {
+        "full_kelly_pct": 22.64,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 11.32,
+        "quarter_kelly_pct": 5.66,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 2.36,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0005,
+            "p_hit_-25pct": 0.0001,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 63.75,
+          "worst_5pct_year_return_pct": 28.05
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 4.71,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0826,
+            "p_hit_-25pct": 0.0203,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 162.14,
+          "worst_5pct_year_return_pct": 60.3
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 2.25,
+          "implied_contracts": 5.3,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1708,
+            "p_hit_-25pct": 0.047,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 193.83,
+          "worst_5pct_year_return_pct": 68.97,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~214 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_stocks::20_50_daily_filtered",
+      "instrument": "STOCK",
+      "n": 21,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.619,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.96,
+      "pf": 1.56,
+      "expectancy_R": 0.2133,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 1399.64,
+      "trades_per_week": 0.51,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 22.22,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 11.11,
+        "quarter_kelly_pct": 5.56,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.11,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 11.1,
+          "worst_5pct_year_return_pct": -1.23
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.21,
+          "p_ruin": {
+            "p_hit_-20pct": 0.012,
+            "p_hit_-25pct": 0.0016,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 22.84,
+          "worst_5pct_year_return_pct": -2.92
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 3.0,
+          "implied_contracts": 0.32,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1056,
+            "p_hit_-25pct": 0.0306,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 35.18,
+          "worst_5pct_year_return_pct": -5.03,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_30m_filtered",
+      "instrument": "MGC",
+      "n": 52,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.5761,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.03,
+      "pf": 1.4,
+      "expectancy_R": 0.1695,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 194.69,
+      "trades_per_week": 4.04,
+      "mc_horizon_trades": 210,
+      "kelly": {
+        "full_kelly_pct": 16.46,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 8.23,
+        "quarter_kelly_pct": 4.12,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.77,
+          "p_ruin": {
+            "p_hit_-20pct": 0.004,
+            "p_hit_-25pct": 0.0004,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 41.26,
+          "worst_5pct_year_return_pct": 10.72
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.54,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1875,
+            "p_hit_-25pct": 0.0683,
+            "p_hit_-50pct": 0.0001
+          },
+          "median_year_return_pct": 95.27,
+          "worst_5pct_year_return_pct": 19.97
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 1.75,
+          "implied_contracts": 1.35,
+          "p_ruin": {
+            "p_hit_-20pct": 0.134,
+            "p_hit_-25pct": 0.035,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 80.46,
+          "worst_5pct_year_return_pct": 17.83,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~210 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_9_21_15m_filtered",
+      "instrument": "MCL",
+      "n": 33,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.5745,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.0,
+      "pf": 1.35,
+      "expectancy_R": 0.1489,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 47.27,
+      "trades_per_week": 5.25,
+      "mc_horizon_trades": 273,
+      "kelly": {
+        "full_kelly_pct": 14.89,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 7.45,
+        "quarter_kelly_pct": 3.72,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 3.17,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0084,
+            "p_hit_-25pct": 0.0011,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 48.64,
+          "worst_5pct_year_return_pct": 12.34
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 6.35,
+          "p_ruin": {
+            "p_hit_-20pct": 0.3458,
+            "p_hit_-25pct": 0.1272,
+            "p_hit_-50pct": 0.0004
+          },
+          "median_year_return_pct": 115.01,
+          "worst_5pct_year_return_pct": 22.8
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 1.5,
+          "implied_contracts": 4.76,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0994,
+            "p_hit_-25pct": 0.0266,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 79.38,
+          "worst_5pct_year_return_pct": 17.86,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~273 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_15m_raw",
+      "instrument": "MCL",
+      "n": 50,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.6205,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.85,
+      "pf": 1.39,
+      "expectancy_R": 0.148,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 71.42,
+      "trades_per_week": 7.95,
+      "mc_horizon_trades": 413,
+      "kelly": {
+        "full_kelly_pct": 17.41,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 8.71,
+        "quarter_kelly_pct": 4.35,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 2.1,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0052,
+            "p_hit_-25pct": 0.0004,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 80.2,
+          "worst_5pct_year_return_pct": 34.0
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 4.2,
+          "p_ruin": {
+            "p_hit_-20pct": 0.3096,
+            "p_hit_-25pct": 0.1047,
+            "p_hit_-50pct": 0.0001
+          },
+          "median_year_return_pct": 213.8,
+          "worst_5pct_year_return_pct": 73.44
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 1.5,
+          "implied_contracts": 3.15,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0832,
+            "p_hit_-25pct": 0.0184,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 138.82,
+          "worst_5pct_year_return_pct": 53.11,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~413 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_60m_filtered",
+      "instrument": "MGC",
+      "n": 33,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.5442,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.03,
+      "pf": 1.23,
+      "expectancy_R": 0.1048,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 301.84,
+      "trades_per_week": 1.26,
+      "mc_horizon_trades": 66,
+      "kelly": {
+        "full_kelly_pct": 10.18,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 5.09,
+        "quarter_kelly_pct": 2.54,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.5,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0008,
+            "p_hit_-25pct": 0.0001,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 6.97,
+          "worst_5pct_year_return_pct": -7.2
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.99,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1006,
+            "p_hit_-25pct": 0.0338,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 13.65,
+          "worst_5pct_year_return_pct": -14.46
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.99,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1006,
+            "p_hit_-25pct": 0.0338,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 13.65,
+          "worst_5pct_year_return_pct": -14.46,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~66 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_9_21_15m_raw",
+      "instrument": "MCL",
+      "n": 122,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4918,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.24,
+      "pf": 1.2,
+      "expectancy_R": 0.1016,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 30.2,
+      "trades_per_week": 19.41,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": 8.2,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 4.1,
+        "quarter_kelly_pct": 2.05,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 4.97,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1852,
+            "p_hit_-25pct": 0.0609,
+            "p_hit_-50pct": 0.0001
+          },
+          "median_year_return_pct": 61.42,
+          "worst_5pct_year_return_pct": 5.52
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 9.93,
+          "p_ruin": {
+            "p_hit_-20pct": 0.897,
+            "p_hit_-25pct": 0.6623,
+            "p_hit_-50pct": 0.0246
+          },
+          "median_year_return_pct": 144.71,
+          "worst_5pct_year_return_pct": 4.66
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.75,
+          "implied_contracts": 3.73,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0496,
+            "p_hit_-25pct": 0.0088,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 44.06,
+          "worst_5pct_year_return_pct": 4.72,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_60m_filtered",
+      "instrument": "MGC",
+      "n": 8,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.3754,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.93,
+      "pf": 1.16,
+      "expectancy_R": 0.0999,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 292.29,
+      "trades_per_week": 0.27,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 5.18,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 2.59,
+        "quarter_kelly_pct": 1.29,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.51,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0092,
+            "p_hit_-25pct": 0.0006,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 5.3,
+          "worst_5pct_year_return_pct": -11.6
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.03,
+          "p_ruin": {
+            "p_hit_-20pct": 0.2928,
+            "p_hit_-25pct": 0.1287,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 9.78,
+          "worst_5pct_year_return_pct": -22.52
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 1.5,
+          "implied_contracts": 0.77,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1076,
+            "p_hit_-25pct": 0.0271,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 7.65,
+          "worst_5pct_year_return_pct": -17.16,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_stocks::20_50_daily_raw",
+      "instrument": "STOCK",
+      "n": 59,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4917,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.22,
+      "pf": 1.18,
+      "expectancy_R": 0.0915,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 902.95,
+      "trades_per_week": 0.98,
+      "mc_horizon_trades": 51,
+      "kelly": {
+        "full_kelly_pct": 7.5,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 3.75,
+        "quarter_kelly_pct": 1.88,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.17,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0011,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 4.27,
+          "worst_5pct_year_return_pct": -8.72
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.33,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1313,
+            "p_hit_-25pct": 0.0417,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 8.05,
+          "worst_5pct_year_return_pct": -17.18
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.33,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1313,
+            "p_hit_-25pct": 0.0417,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 8.05,
+          "worst_5pct_year_return_pct": -17.18,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~51 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_15m_raw",
+      "instrument": "MGC",
+      "n": 52,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4603,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.36,
+      "pf": 1.16,
+      "expectancy_R": 0.0863,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 135.84,
+      "trades_per_week": 8.67,
+      "mc_horizon_trades": 451,
+      "kelly": {
+        "full_kelly_pct": 6.35,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 3.17,
+        "quarter_kelly_pct": 1.59,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.1,
+          "p_ruin": {
+            "p_hit_-20pct": 0.2767,
+            "p_hit_-25pct": 0.1087,
+            "p_hit_-50pct": 0.0001
+          },
+          "median_year_return_pct": 41.05,
+          "worst_5pct_year_return_pct": -5.5
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.21,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9394,
+            "p_hit_-25pct": 0.7589,
+            "p_hit_-50pct": 0.0527
+          },
+          "median_year_return_pct": 86.96,
+          "worst_5pct_year_return_pct": -15.97
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.75,
+          "implied_contracts": 0.83,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0905,
+            "p_hit_-25pct": 0.0222,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 30.19,
+          "worst_5pct_year_return_pct": -3.6,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~451 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::9_21_5m_raw",
+      "instrument": "MES",
+      "n": 43,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.5342,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.02,
+      "pf": 1.17,
+      "expectancy_R": 0.0792,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 40.54,
+      "trades_per_week": 43.0,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": 7.76,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 3.88,
+        "quarter_kelly_pct": 1.94,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 3.7,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1634,
+            "p_hit_-25pct": 0.0505,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 44.47,
+          "worst_5pct_year_return_pct": 0.43
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 7.4,
+          "p_ruin": {
+            "p_hit_-20pct": 0.8229,
+            "p_hit_-25pct": 0.5873,
+            "p_hit_-50pct": 0.0204
+          },
+          "median_year_return_pct": 98.33,
+          "worst_5pct_year_return_pct": -4.15
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.75,
+          "implied_contracts": 2.78,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0403,
+            "p_hit_-25pct": 0.0083,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 32.4,
+          "worst_5pct_year_return_pct": 0.8,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_15m_filtered",
+      "instrument": "MGC",
+      "n": 18,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.3889,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.76,
+      "pf": 1.12,
+      "expectancy_R": 0.0733,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 119.05,
+      "trades_per_week": 3.0,
+      "mc_horizon_trades": 156,
+      "kelly": {
+        "full_kelly_pct": 4.17,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 2.08,
+        "quarter_kelly_pct": 1.04,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.26,
+          "p_ruin": {
+            "p_hit_-20pct": 0.16,
+            "p_hit_-25pct": 0.0557,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 11.57,
+          "worst_5pct_year_return_pct": -15.25
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.52,
+          "p_ruin": {
+            "p_hit_-20pct": 0.7658,
+            "p_hit_-25pct": 0.5359,
+            "p_hit_-50pct": 0.0212
+          },
+          "median_year_return_pct": 21.05,
+          "worst_5pct_year_return_pct": -30.02
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.75,
+          "implied_contracts": 0.94,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0448,
+            "p_hit_-25pct": 0.0067,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 8.84,
+          "worst_5pct_year_return_pct": -11.46,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~156 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_15m_filtered",
+      "instrument": "MGC",
+      "n": 45,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4664,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.19,
+      "pf": 1.04,
+      "expectancy_R": 0.0213,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 40.76,
+      "trades_per_week": 7.16,
+      "mc_horizon_trades": 372,
+      "kelly": {
+        "full_kelly_pct": 1.79,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 0.9,
+        "quarter_kelly_pct": 0.45,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 3.68,
+          "p_ruin": {
+            "p_hit_-20pct": 0.4495,
+            "p_hit_-25pct": 0.2389,
+            "p_hit_-50pct": 0.0009
+          },
+          "median_year_return_pct": 7.08,
+          "worst_5pct_year_return_pct": -24.55
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 7.36,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9608,
+            "p_hit_-25pct": 0.8481,
+            "p_hit_-50pct": 0.1437
+          },
+          "median_year_return_pct": 9.7,
+          "worst_5pct_year_return_pct": -45.5
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.5,
+          "implied_contracts": 1.84,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0316,
+            "p_hit_-25pct": 0.0039,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 4.05,
+          "worst_5pct_year_return_pct": -12.66,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~372 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_daily_raw",
+      "instrument": "MGC",
+      "n": 2,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.5,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.03,
+      "pf": 1.03,
+      "expectancy_R": 0.015,
+      "positive_edge": true,
+      "dollars_per_R_per_contract": 3216.67,
+      "trades_per_week": 0.03,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": 1.46,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": 0.73,
+        "quarter_kelly_pct": 0.36,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.05,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0017,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.49,
+          "worst_5pct_year_return_pct": -11.03
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.09,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1578,
+            "p_hit_-25pct": 0.0571,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.47,
+          "worst_5pct_year_return_pct": -21.25
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 1.75,
+          "implied_contracts": 0.08,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1143,
+            "p_hit_-25pct": 0.027,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.53,
+          "worst_5pct_year_return_pct": -18.77,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_9_21_30m_raw",
+      "instrument": "MCL",
+      "n": 156,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.5,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.98,
+      "pf": 0.98,
+      "expectancy_R": -0.01,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 240.0,
+      "trades_per_week": 11.87,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -1.02,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -0.51,
+        "quarter_kelly_pct": -0.26,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.62,
+          "p_ruin": {
+            "p_hit_-20pct": 0.6864,
+            "p_hit_-25pct": 0.4753,
+            "p_hit_-50pct": 0.0072
+          },
+          "median_year_return_pct": -7.18,
+          "worst_5pct_year_return_pct": -35.01
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.25,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9909,
+            "p_hit_-25pct": 0.9497,
+            "p_hit_-50pct": 0.3472
+          },
+          "median_year_return_pct": -17.97,
+          "worst_5pct_year_return_pct": -59.79
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.5,
+          "implied_contracts": 0.31,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1231,
+            "p_hit_-25pct": 0.0314,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -3.06,
+          "worst_5pct_year_return_pct": -18.89,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::9_21_5m_filtered",
+      "instrument": "MES",
+      "n": 31,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.5161,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.9,
+      "pf": 0.96,
+      "expectancy_R": -0.0194,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 174.12,
+      "trades_per_week": 31.0,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -2.15,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -1.08,
+        "quarter_kelly_pct": -0.54,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.86,
+          "p_ruin": {
+            "p_hit_-20pct": 0.7206,
+            "p_hit_-25pct": 0.5178,
+            "p_hit_-50pct": 0.0091
+          },
+          "median_year_return_pct": -11.36,
+          "worst_5pct_year_return_pct": -37.04
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.72,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9916,
+            "p_hit_-25pct": 0.9547,
+            "p_hit_-50pct": 0.3902
+          },
+          "median_year_return_pct": -24.9,
+          "worst_5pct_year_return_pct": -62.13
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.5,
+          "implied_contracts": 0.43,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1439,
+            "p_hit_-25pct": 0.0377,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -5.32,
+          "worst_5pct_year_return_pct": -20.2,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_stocks::9_21_daily_raw",
+      "instrument": "STOCK",
+      "n": 106,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4532,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.11,
+      "pf": 0.92,
+      "expectancy_R": -0.0437,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 673.47,
+      "trades_per_week": 1.56,
+      "mc_horizon_trades": 81,
+      "kelly": {
+        "full_kelly_pct": -3.94,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -1.97,
+        "quarter_kelly_pct": -0.99,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.22,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0645,
+            "p_hit_-25pct": 0.0092,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -3.32,
+          "worst_5pct_year_return_pct": -18.33
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.45,
+          "p_ruin": {
+            "p_hit_-20pct": 0.5636,
+            "p_hit_-25pct": 0.3515,
+            "p_hit_-50pct": 0.0011
+          },
+          "median_year_return_pct": -7.37,
+          "worst_5pct_year_return_pct": -33.89
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.22,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0645,
+            "p_hit_-25pct": 0.0092,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -3.32,
+          "worst_5pct_year_return_pct": -18.33,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~81 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_30m_raw",
+      "instrument": "MGC",
+      "n": 168,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4588,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.05,
+      "pf": 0.89,
+      "expectancy_R": -0.0595,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 261.86,
+      "trades_per_week": 13.07,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -5.67,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -2.84,
+        "quarter_kelly_pct": -1.42,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.57,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9279,
+            "p_hit_-25pct": 0.8279,
+            "p_hit_-50pct": 0.1023
+          },
+          "median_year_return_pct": -28.23,
+          "worst_5pct_year_return_pct": -50.37
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.15,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9993,
+            "p_hit_-25pct": 0.9961,
+            "p_hit_-50pct": 0.747
+          },
+          "median_year_return_pct": -51.12,
+          "worst_5pct_year_return_pct": -76.62
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.25,
+          "implied_contracts": 0.14,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0099,
+            "p_hit_-25pct": 0.0003,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -7.5,
+          "worst_5pct_year_return_pct": -15.66,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_60m_raw",
+      "instrument": "MGC",
+      "n": 170,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4433,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.08,
+      "pf": 0.86,
+      "expectancy_R": -0.0779,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 391.08,
+      "trades_per_week": 5.51,
+      "mc_horizon_trades": 287,
+      "kelly": {
+        "full_kelly_pct": -7.22,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -3.61,
+        "quarter_kelly_pct": -1.8,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.38,
+          "p_ruin": {
+            "p_hit_-20pct": 0.8082,
+            "p_hit_-25pct": 0.6272,
+            "p_hit_-50pct": 0.0091
+          },
+          "median_year_return_pct": -21.64,
+          "worst_5pct_year_return_pct": -41.43
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.77,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9933,
+            "p_hit_-25pct": 0.9697,
+            "p_hit_-50pct": 0.4874
+          },
+          "median_year_return_pct": -40.46,
+          "worst_5pct_year_return_pct": -66.73
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.5,
+          "implied_contracts": 0.19,
+          "p_ruin": {
+            "p_hit_-20pct": 0.2033,
+            "p_hit_-25pct": 0.0475,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -11.13,
+          "worst_5pct_year_return_pct": -23.17,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~287 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_30m_raw",
+      "instrument": "MGC",
+      "n": 95,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4327,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.97,
+      "pf": 0.74,
+      "expectancy_R": -0.1475,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 286.2,
+      "trades_per_week": 7.39,
+      "mc_horizon_trades": 384,
+      "kelly": {
+        "full_kelly_pct": -15.2,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -7.6,
+        "quarter_kelly_pct": -3.8,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.52,
+          "p_ruin": {
+            "p_hit_-20pct": 0.995,
+            "p_hit_-25pct": 0.9824,
+            "p_hit_-50pct": 0.3799
+          },
+          "median_year_return_pct": -44.49,
+          "worst_5pct_year_return_pct": -59.5
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.05,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9645
+          },
+          "median_year_return_pct": -70.32,
+          "worst_5pct_year_return_pct": -84.2
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.25,
+          "implied_contracts": 0.13,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0675,
+            "p_hit_-25pct": 0.0021,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -13.38,
+          "worst_5pct_year_return_pct": -19.94,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~384 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::20_50_5m_raw",
+      "instrument": "MES",
+      "n": 30,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4671,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.81,
+      "pf": 0.71,
+      "expectancy_R": -0.1545,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 83.54,
+      "trades_per_week": 30.0,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -19.08,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -9.54,
+        "quarter_kelly_pct": -4.77,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.8,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9998,
+            "p_hit_-25pct": 0.999,
+            "p_hit_-50pct": 0.7745
+          },
+          "median_year_return_pct": -55.23,
+          "worst_5pct_year_return_pct": -67.69
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 3.59,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9972
+          },
+          "median_year_return_pct": -80.79,
+          "worst_5pct_year_return_pct": -90.0
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.25,
+          "implied_contracts": 0.45,
+          "p_ruin": {
+            "p_hit_-20pct": 0.355,
+            "p_hit_-25pct": 0.0447,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -17.88,
+          "worst_5pct_year_return_pct": -24.3,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_60m_raw",
+      "instrument": "MCL",
+      "n": 82,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4762,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.77,
+      "pf": 0.7,
+      "expectancy_R": -0.1571,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 155.78,
+      "trades_per_week": 2.99,
+      "mc_horizon_trades": 155,
+      "kelly": {
+        "full_kelly_pct": -20.41,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -10.2,
+        "quarter_kelly_pct": -5.1,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.96,
+          "p_ruin": {
+            "p_hit_-20pct": 0.7463,
+            "p_hit_-25pct": 0.4988,
+            "p_hit_-50pct": 0.0001
+          },
+          "median_year_return_pct": -21.84,
+          "worst_5pct_year_return_pct": -34.54
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.93,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9827,
+            "p_hit_-25pct": 0.9525,
+            "p_hit_-50pct": 0.2983
+          },
+          "median_year_return_pct": -39.68,
+          "worst_5pct_year_return_pct": -57.7
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.5,
+          "implied_contracts": 0.48,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0544,
+            "p_hit_-25pct": 0.0024,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -11.46,
+          "worst_5pct_year_return_pct": -18.96,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~155 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ict::RAW",
+      "instrument": "MES",
+      "n": 36,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.3874,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.17,
+      "pf": 0.74,
+      "expectancy_R": -0.1593,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 51.23,
+      "trades_per_week": 36.0,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -13.61,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -6.81,
+        "quarter_kelly_pct": -3.4,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 2.93,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9994,
+            "p_hit_-25pct": 0.9979,
+            "p_hit_-50pct": 0.8056
+          },
+          "median_year_return_pct": -55.9,
+          "worst_5pct_year_return_pct": -70.15
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 5.86,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9963
+          },
+          "median_year_return_pct": -81.64,
+          "worst_5pct_year_return_pct": -91.58
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_9_21_60m_raw",
+      "instrument": "MCL",
+      "n": 146,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4533,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.82,
+      "pf": 0.68,
+      "expectancy_R": -0.1749,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 130.05,
+      "trades_per_week": 5.32,
+      "mc_horizon_trades": 277,
+      "kelly": {
+        "full_kelly_pct": -21.33,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -10.67,
+        "quarter_kelly_pct": -5.33,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.15,
+          "p_ruin": {
+            "p_hit_-20pct": 0.99,
+            "p_hit_-25pct": 0.9637,
+            "p_hit_-50pct": 0.1348
+          },
+          "median_year_return_pct": -38.65,
+          "worst_5pct_year_return_pct": -52.46
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.31,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9999,
+            "p_hit_-25pct": 0.9992,
+            "p_hit_-50pct": 0.9252
+          },
+          "median_year_return_pct": -63.25,
+          "worst_5pct_year_return_pct": -77.94
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.25,
+          "implied_contracts": 0.29,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0052,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -11.3,
+          "worst_5pct_year_return_pct": -16.78,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~277 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::9_21_15m_filtered",
+      "instrument": "MES",
+      "n": 16,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.375,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.2,
+      "pf": 0.72,
+      "expectancy_R": -0.175,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 148.0,
+      "trades_per_week": 12.44,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -14.58,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -7.29,
+        "quarter_kelly_pct": -3.65,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.01,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9998,
+            "p_hit_-25pct": 0.9991,
+            "p_hit_-50pct": 0.8844
+          },
+          "median_year_return_pct": -59.95,
+          "worst_5pct_year_return_pct": -72.44
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.03,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9984
+          },
+          "median_year_return_pct": -84.87,
+          "worst_5pct_year_return_pct": -92.83
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_9_21_15m_raw",
+      "instrument": "MGC",
+      "n": 133,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.3817,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.15,
+      "pf": 0.71,
+      "expectancy_R": -0.1793,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 148.97,
+      "trades_per_week": 21.16,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -15.59,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -7.8,
+        "quarter_kelly_pct": -3.9,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.01,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9999,
+            "p_hit_-25pct": 0.9994,
+            "p_hit_-50pct": 0.9001
+          },
+          "median_year_return_pct": -60.21,
+          "worst_5pct_year_return_pct": -72.97
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.01,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.999
+          },
+          "median_year_return_pct": -85.03,
+          "worst_5pct_year_return_pct": -93.09
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::9_21_15m_raw",
+      "instrument": "MES",
+      "n": 17,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.4132,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.98,
+      "pf": 0.69,
+      "expectancy_R": -0.1819,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 198.55,
+      "trades_per_week": 13.22,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -18.56,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -9.28,
+        "quarter_kelly_pct": -4.64,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.76,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 0.9999,
+            "p_hit_-50pct": 0.9133
+          },
+          "median_year_return_pct": -61.16,
+          "worst_5pct_year_return_pct": -72.81
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.51,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9997
+          },
+          "median_year_return_pct": -85.64,
+          "worst_5pct_year_return_pct": -92.96
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::GC_20_50_60m_raw",
+      "instrument": "MGC",
+      "n": 82,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.3913,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.98,
+      "pf": 0.63,
+      "expectancy_R": -0.2252,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 452.27,
+      "trades_per_week": 2.73,
+      "mc_horizon_trades": 142,
+      "kelly": {
+        "full_kelly_pct": -22.98,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -11.49,
+        "quarter_kelly_pct": -5.75,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.33,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9059,
+            "p_hit_-25pct": 0.7514,
+            "p_hit_-50pct": 0.0008
+          },
+          "median_year_return_pct": -28.68,
+          "worst_5pct_year_return_pct": -40.32
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.66,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9971,
+            "p_hit_-25pct": 0.9883,
+            "p_hit_-50pct": 0.5653
+          },
+          "median_year_return_pct": -49.85,
+          "worst_5pct_year_return_pct": -64.89
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.5,
+          "implied_contracts": 0.17,
+          "p_ruin": {
+            "p_hit_-20pct": 0.1943,
+            "p_hit_-25pct": 0.019,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -15.4,
+          "worst_5pct_year_return_pct": -22.61,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~142 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "fvg::RAW",
+      "instrument": "MES",
+      "n": 67,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.4026,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.92,
+      "pf": 0.62,
+      "expectancy_R": -0.227,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 42.33,
+      "trades_per_week": 67.0,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -24.68,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -12.34,
+        "quarter_kelly_pct": -6.17,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 3.54,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9927
+          },
+          "median_year_return_pct": -68.79,
+          "worst_5pct_year_return_pct": -77.91
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 7.09,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 1.0
+          },
+          "median_year_return_pct": -90.71,
+          "worst_5pct_year_return_pct": -95.35
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_20_50_30m_raw",
+      "instrument": "MCL",
+      "n": 90,
+      "n_status": "n>=30",
+      "win_rate_derived": 0.3772,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.04,
+      "pf": 0.63,
+      "expectancy_R": -0.2304,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 101.64,
+      "trades_per_week": 7.08,
+      "mc_horizon_trades": 368,
+      "kelly": {
+        "full_kelly_pct": -22.16,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -11.08,
+        "quarter_kelly_pct": -5.54,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.48,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 0.9998,
+            "p_hit_-50pct": 0.8714
+          },
+          "median_year_return_pct": -57.83,
+          "worst_5pct_year_return_pct": -68.94
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.95,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9992
+          },
+          "median_year_return_pct": -82.88,
+          "worst_5pct_year_return_pct": -90.71
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~368 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::20_50_15m_filtered",
+      "instrument": "MES",
+      "n": 8,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.3766,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.96,
+      "pf": 0.58,
+      "expectancy_R": -0.2618,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 126.31,
+      "trades_per_week": 7.0,
+      "mc_horizon_trades": 364,
+      "kelly": {
+        "full_kelly_pct": -27.27,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -13.64,
+        "quarter_kelly_pct": -6.82,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 1.19,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.959
+          },
+          "median_year_return_pct": -62.19,
+          "worst_5pct_year_return_pct": -71.82
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 2.38,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 0.9999
+          },
+          "median_year_return_pct": -86.2,
+          "worst_5pct_year_return_pct": -92.34
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~364 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::20_50_5m_filtered",
+      "instrument": "MES",
+      "n": 25,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.3597,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 0.89,
+      "pf": 0.5,
+      "expectancy_R": -0.3201,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 74.87,
+      "trades_per_week": 25.0,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -35.97,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -17.99,
+        "quarter_kelly_pct": -8.99,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 2.0,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 1.0
+          },
+          "median_year_return_pct": -80.23,
+          "worst_5pct_year_return_pct": -85.94
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 4.01,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 1.0
+          },
+          "median_year_return_pct": -96.27,
+          "worst_5pct_year_return_pct": -98.11
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema::20_50_15m_raw",
+      "instrument": "MES",
+      "n": 15,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.2647,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.0,
+      "pf": 0.36,
+      "expectancy_R": -0.4706,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 199.71,
+      "trades_per_week": 11.67,
+      "mc_horizon_trades": 500,
+      "kelly": {
+        "full_kelly_pct": -47.06,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -23.53,
+        "quarter_kelly_pct": -11.76,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.75,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 1.0
+          },
+          "median_year_return_pct": -90.79,
+          "worst_5pct_year_return_pct": -93.31
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 1.5,
+          "p_ruin": {
+            "p_hit_-20pct": 1.0,
+            "p_hit_-25pct": 1.0,
+            "p_hit_-50pct": 1.0
+          },
+          "median_year_return_pct": -99.19,
+          "worst_5pct_year_return_pct": -99.57
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.0,
+          "implied_contracts": 0.0,
+          "p_ruin": {
+            "p_hit_-20pct": 0.0,
+            "p_hit_-25pct": 0.0,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": 0.0,
+          "worst_5pct_year_return_pct": 0.0,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~500 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    },
+    {
+      "setup": "ema_gccl::CL_9_21_daily_raw",
+      "instrument": "MCL",
+      "n": 4,
+      "n_status": "DESCRIPTIVE (n<30, not validated)",
+      "win_rate_derived": 0.2482,
+      "win_rate_source": "DERIVED W = PF/(PF+payoff)",
+      "payoff": 1.06,
+      "pf": 0.35,
+      "expectancy_R": -0.4887,
+      "positive_edge": false,
+      "dollars_per_R_per_contract": 618.03,
+      "trades_per_week": 0.04,
+      "mc_horizon_trades": 50,
+      "kelly": {
+        "full_kelly_pct": -46.1,
+        "full_kelly_flag": "TOO VOLATILE \u2014 do not use full Kelly; drawdowns are brutal. Use 1/4-Kelly.",
+        "half_kelly_pct": -23.05,
+        "quarter_kelly_pct": -11.52,
+        "recommended": "quarter_kelly"
+      },
+      "size_band": {
+        "conservative_1pct": {
+          "risk_per_trade_pct": 1.0,
+          "implied_contracts": 0.24,
+          "p_ruin": {
+            "p_hit_-20pct": 0.7323,
+            "p_hit_-25pct": 0.3005,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -22.54,
+          "worst_5pct_year_return_pct": -28.66
+        },
+        "standard_2pct": {
+          "risk_per_trade_pct": 2.0,
+          "implied_contracts": 0.49,
+          "p_ruin": {
+            "p_hit_-20pct": 0.9951,
+            "p_hit_-25pct": 0.9774,
+            "p_hit_-50pct": 0.064
+          },
+          "median_year_return_pct": -40.31,
+          "worst_5pct_year_return_pct": -49.37
+        },
+        "max_safe": {
+          "risk_per_trade_pct": 0.75,
+          "implied_contracts": 0.18,
+          "p_ruin": {
+            "p_hit_-20pct": 0.2207,
+            "p_hit_-25pct": 0.0106,
+            "p_hit_-50pct": 0.0
+          },
+          "median_year_return_pct": -17.39,
+          "worst_5pct_year_return_pct": -22.34,
+          "note": "largest risk-per-trade keeping P(hit -25%) < 5% over ~50 trades/yr"
+        }
+      },
+      "eligible_in_constructor": false
+    }
+  ],
+  "privacy": "Real equity (if set via real_equity.local.json) is used only to compute contract counts; NO real $ is written here. The equity shown/used by default is the SIMULATED $15k paper account, already public."
+}
