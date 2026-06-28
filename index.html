@@ -1165,7 +1165,44 @@ const Account=(function(){
     c.innerHTML='<div class="loading">Loading…</div>';
     let d; try{ d=await ghFetch("account_summary.json"); }
     catch(e){ c.innerHTML='<div class="banner err" style="display:block">No account_summary.json yet ('+esc(e.message)+')</div>'; return; }
-    c.innerHTML=render(d);
+    let html=render(d);
+    try{ const pd=await ghFetch("portfolio_constructor.json"); html+=renderPortfolio(pd); }catch(e){}  // D41
+    c.innerHTML=html;
+  }
+  /* D41: portfolio constructor — best instruments × strategies (in-sample, forward-gated) */
+  function renderPortfolio(pd){
+    if(!pd) return '';
+    let h='<h3 class="acch" style="margin-top:22px">Portfolio constructor — best instruments × strategies</h3>';
+    h+='<div class="accnote">'+esc(pd.banner||'')+'</div>';
+    if(pd.recommendation_text) h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:#cdeacd;margin-top:8px"><b>'+esc(pd.recommendation_text)+'</b></div>';
+    const cand=pd.portfolio_candidates||[];
+    if(cand.length){
+      h+='<table class="acct" style="margin-top:10px"><tr><th>portfolio</th><th>tracks</th><th>return</th><th>maxDD</th><th>exp$/wk</th><th>margin%</th><th>skip</th><th>riskadj</th></tr>';
+      cand.forEach(p=>{ if(p.error)return; const hyp=p.name.indexOf('HYPOTHETICAL')>=0;
+        h+='<tr'+(hyp?' style="opacity:.6"':'')+'><td>'+esc(p.name.replace(/ \(.*/,''))+(hyp?'<span class="desc-tag">HYPO</span>':'')+'</td>'
+          +'<td>'+(p.tracks||[]).length+'</td>'
+          +'<td class="'+pcls(p.return_pct)+'">'+(p.return_pct>=0?'+':'')+(p.return_pct||0).toFixed(0)+'%</td>'
+          +'<td>'+money(p["max_drawdown_$"]||0)+' ('+(p.max_drawdown_pct||0).toFixed(0)+'%)</td>'
+          +'<td>'+money(p["expectancy_$_per_week"]||0)+'</td>'
+          +'<td'+((p.margin_utilization_pct||0)>=90?' class="warnrisk"':'')+'>'+(p.margin_utilization_pct||0).toFixed(0)+'%</td>'
+          +'<td>'+(p.trades_skipped_no_margin||0)+'</td>'
+          +'<td>'+(p.risk_adjusted_return!=null?p.risk_adjusted_return:'—')+'</td></tr>';
+      });
+      h+='</table>';
+    }
+    const wl=pd.forward_only_watchlist||{};
+    if(Object.keys(wl).length){
+      h+='<div class="accnote" style="margin-top:8px"><b>Forward-only watchlist</b> (would diversify the core once the stress / wide-universe test clears): '
+        +Object.entries(wl).map(([inst,w])=>esc(w.track.split('::').pop())+' <span style="color:var(--mut)">('+esc(inst)+')</span>').join(' · ')+'</div>';
+    }
+    const ex=pd.excluded_validated_tracks||{};
+    const exrows=Object.entries(ex).slice(0,8);
+    if(exrows.length){
+      h+='<table class="acct" style="margin-top:8px"><tr><th>excluded validated track</th><th>why</th></tr>';
+      exrows.forEach(([tk,why])=>{ h+='<tr><td>'+esc(tk.replace('::','/'))+'</td><td style="color:var(--mut)">'+esc((why||[])[0]||'')+'</td></tr>'; });
+      h+='</table>';
+    }
+    return h;
   }
   function render(d){
     const sa=d.shared_account||{}, r=d.rules||{};
