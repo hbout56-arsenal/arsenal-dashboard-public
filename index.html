@@ -224,6 +224,9 @@
   /* ── calendar context (Dispatch 29) — turn-of-month / quarter-end flag, display-only ── */
   .calctx{margin:0 0 14px;padding:10px 13px;border:1px solid rgba(255,181,46,.32);border-radius:12px;
     background:rgba(255,181,46,.08);font-size:12.5px;color:#ffe6b3;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.45}
+  /* ── coincident regime badge (Dispatch 39) — what regime we're IN now, NOT a forecast ── */
+  .regime{margin:0 0 14px;padding:9px 13px;border:1px solid var(--gbrd);border-radius:12px;
+    background:rgba(255,255,255,.03);font-size:12.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4}
 </style>
 </head>
 <body>
@@ -249,6 +252,7 @@
     </div></details>
     <div id="fut-banner" class="banner"></div>
     <div id="fut-cal" class="calctx" style="display:none"></div>
+    <div id="fut-regime" class="regime" style="display:none"></div>
     <div id="fut-content"><div class="loading">Loading…</div></div>
     <p class="disc" id="fut-disc"></p>
     <p class="foot" id="fut-foot"></p>
@@ -268,6 +272,7 @@
     </div></details>
     <div id="stk-banner" class="banner"></div>
     <div id="stk-cal" class="calctx" style="display:none"></div>
+    <div id="stk-regime" class="regime" style="display:none"></div>
     <div id="stk-content"><div class="loading">Loading…</div></div>
     <p class="disc" id="stk-disc"></p>
     <p class="foot" id="stk-foot"></p>
@@ -341,6 +346,8 @@ const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dash
 const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 /* ── ⓘ help / learn layer (Dispatch 19) — pure UI. State in HELP_OPEN survives full re-renders. ── */
 const HELP={
+"regime":{"t":"Regime label (coincident)","w":"A blended read of how the tape is moving RIGHT NOW — ADX (trend strength), Choppiness Index, Kaufman Efficiency Ratio, and recent EMA-cross count — into one label (TRENDING / TRANSITIONAL / CHOP) plus a 0-100 trendiness score.","r":"Green TRENDING (high score) = clean directional moves; grey CHOP (low) = whippy/range-bound; amber TRANSITIONAL = mixed/turning.","u":"A sizing + expectation backdrop: CHOP -> size down, fade extremes, expect whipsaw; TRENDING -> normal size, follow, hold winners.","c":"⚠ COINCIDENT — it describes the regime you are IN now, NOT a forecast of the next one. Direction-forecasting is the fluke the engine exists to catch. Context only, never a signal."},
+
 "insidebar":{"t":"Inside Bar A+ confluence","w":"An inside bar is a candle fully inside the prior bar (the 'mother bar') — a coil/pause. The mother bar is the wide thrust bar before it. A 'fakey' is a false break of the inside bar that snaps back (a higher-grade reversal).","r":"Raw inside bars print constantly and are NULL (no edge). The A+ stack filters them: at a level + in-trend + strong mother bar + compressed + confluence. Grade A+ = full stack; B = most; info = noise. RAW vs FILTERED scorecards measure it per instrument.","u":"Trade the A+ break: a stop-entry on the break of the inside bar's high (long) / low (short) in the confluence direction; stop the opposite side; T1=1R, T2=next level.","c":"⚠ Raw inside bars are NULL; only the A+ stack is tested-for-edge and it is NOT yet proven (n<30, NON-VOTING). Price breaking the bar is the trigger, not the pattern."},
 
 "calendar":{"t":"Turn-of-month / quarter-end calendar context","w":"A calendar flag for the last 2 + first 3 trading days of a month (and especially a quarter-end: Mar/Jun/Sep/Dec). Big funds rebalance on these days — 'window dressing' is buying the quarter's winners to show them on reports; pension/index rebalancing fires market-on-close orders that move breadth.","r":"📅 means you're in a window. Quarter-end is the stronger version. On flagged days the tape's internals (TICK/TRIN/ADD/ADSPD) are downgraded and sizing is halved.","u":"Trust the internals less near the turn — a breadth surge on Jun 30 may be pension rebalancing, not real buying — and size down. For the 401(k) tilt, prefer executing early in a quarter rather than into quarter-end distortion.","c":"⚠ Real but small and decayed effect — this sizes you DOWN and distrusts the tape near the turn; it is NOT a setup and never generates a trade. Trigger is still price."},
@@ -405,6 +412,23 @@ function renderCalLine(id){
 function loadCalCtx(){
   ghFetch("calendar_context.json").then(c=>{calCtx=c;renderCalLine("fut-cal");renderCalLine("stk-cal");}).catch(()=>{});
 }
+/* ── coincident regime badge (Dispatch 39) — reads feed/regime_label.json; display-only, NOT a signal ── */
+let regimeData=null;
+function renderRegime(id, inst){
+  const el=document.getElementById(id); if(!el) return;
+  const r=regimeData&&(regimeData.instruments||{})[inst];
+  if(!r||r.trendiness==null){ el.style.display="none"; el.innerHTML=""; return; }
+  const col=r.label==="TRENDING"?"var(--green)":(r.label==="CHOP"?"var(--mut)":"var(--amber)");
+  const lbl=esc(String(inst).split("_")[0]);
+  el.innerHTML='<span style="color:'+col+'"><b>◉ regime '+lbl+': '+esc(r.label)+'</b></span>'
+    +'<span class="gmut">trendiness '+esc(r.trendiness)+'/100 · coincident readout (not a forecast)</span>'
+    +hI("regime")+hP("regime");
+  el.style.display="";
+}
+function loadRegime(){
+  ghFetch("regime_label.json").then(d=>{regimeData=d;renderRegime("fut-regime","ES_4h");renderRegime("stk-regime","SPY_daily_proxy");}).catch(()=>{});
+}
+
 
 /* one-time dismissible "New here?" hint (best-effort localStorage; falls back to per-load) */
 (function(){var n=document.getElementById("newhint");if(!n)return;
@@ -1229,8 +1253,9 @@ document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset
 Futures.init(); Stocks.init();
 showView("futures");
 loadCalCtx();
+loadRegime();
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
-setInterval(()=>{ if(view==="futures")Futures.load(); else if(view==="stocks")Stocks.load(); loadCalCtx(); }, 60000);
+setInterval(()=>{ if(view==="futures")Futures.load(); else if(view==="stocks")Stocks.load(); loadCalCtx(); loadRegime(); }, 60000);
 setInterval(freshTick, 20000);   // keep the pinned "(Nm ago)" honest between fetches
 </script>
 </body>
