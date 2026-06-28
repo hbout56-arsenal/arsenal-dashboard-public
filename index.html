@@ -362,6 +362,8 @@
 const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dashboard-public/main/";
 
 const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+/* D46 collapse helper — Context/Diagnostics drawer, closed by default (uses the .research summary style) */
+function dwrap(title,html,open){return '<details class="research"'+(open?' open':'')+'><summary>▸ '+title+'</summary><div style="margin-top:6px">'+html+'</div></details>';}
 /* ── ⓘ help / learn layer (Dispatch 19) — pure UI. State in HELP_OPEN survives full re-renders. ── */
 const HELP={
 "journal":{"t":"Discipline scorecard (the execution layer)","w":"A trading journal that grades YOUR EXECUTION on PROCESS — separate from the strategy's edge. Every trade is scored 0-100 on plan-vs-execution (matched playbook, entry quality, honored stop, exit discipline, size) — NOT on win/loss.","r":"Discipline score 0-100 = process adherence (green >=70). The emotion-vs-outcome table shows which feelings cost you R; process-vs-profit shows whether following the system pays.","u":"A losing trade taken per-plan is a GOOD trade (right habit); a winning trade that broke the rules is BAD (wrong habit reinforced). Fix the lowest adherence % and your #1 mistake tag.","c":"⚠ Process, NOT profit. This grades the trader, not the strategy. SIMULATED/advisory — not financial advice. Raw entries (size/$/emotions) stay LOCAL; only aggregate %s are shown here."},
@@ -382,7 +384,12 @@ const HELP={
 "ict":{"t":"ICT panel (the sequenced chain)","w":"A strict step-by-step setup: bias → liquidity sweep → market-structure shift (MSS) → entry in a fair-value gap inside the 'optimal entry' zone → inside a time window → stop beyond the swept wick. Every step must happen in order.","r":"Liquidity pool = a cluster of stops above a high / below a low. Sweep = price spikes past it then snaps back (grabbing those stops). MSS = price then breaks structure the other way. 'Killzone' = the ICT time windows; 'off-window' = the same setup outside them, kept as a STUDY/CONTROL.","u":"A framework for reading where stops sit and how reversals form. The killzone version is the one being tested; off-window is the control.","c":"⚠ A step out of order = no setup. It stands down outside its windows by design. SIMULATED · n<30 — not proven; off-window is explicitly a control, not a trade rec."},
 "scorecard":{"t":"Paper scorecard (simulated track record)","w":"An auto-kept record of how the simulated setups would have done, split by track (RAW control vs FILTERED tested-for-edge).","r":"n = how many setups have fully resolved ('matured'). Net points per trade is the honest metric. Win-rate alone misleads — you can win often and still lose money if the losers are big.","u":"Lets you judge whether a layer actually has edge over time, not just whether it 'looks right'.","c":"⚠ n<30 = DESCRIPTIVE only — too little data to trust. Greyed/faded rows are unproven. Nothing is validated until matured, and best-of-many-tracks can flatter by chance."},
 "trades":{"t":"Trade-status window (PAPER vs MY TRADE)","w":"A small status strip per instrument: the auto-simulated paper setup, and optionally a trade you mark yourself.","r":"PAPER = the system's simulated setup and its live P/L. MINE (via '+ I'm in this') = your own self-entered side/entry — tracking only.","u":"See at a glance what the paper layer is doing and, if you marked one, how your own idea is tracking.","c":"⚠ PAPER is SIMULATED, not a recommendation. MINE is self-marked, not linked to any broker, and resets on a full reload. Price hitting the stop is the trigger."},
-"pools":{"t":"Liquidity pools list","w":"Untapped price levels (old highs/lows) where clusters of stop orders likely rest.","r":"Buy-side (above) = where short-sellers' stops sit; sell-side (below) = where longs' stops sit. The distance shows how far price is from each.","u":"Price is often 'drawn' toward these pools to trigger stops — useful for anticipating where a move may reach or reverse.","c":"⚠ A pool is a magnet idea, not a signal or a guarantee. It says where, never when. Context only."}
+"pools":{"t":"Liquidity pools list","w":"Untapped price levels (old highs/lows) where clusters of stop orders likely rest.","r":"Buy-side (above) = where short-sellers' stops sit; sell-side (below) = where longs' stops sit. The distance shows how far price is from each.","u":"Price is often 'drawn' toward these pools to trigger stops — useful for anticipating where a move may reach or reverse.","c":"⚠ A pool is a magnet idea, not a signal or a guarantee. It says where, never when. Context only."},
+"account":{"t":"$15K paper account","w":"A forward-only SIMULATED $15,000 micro account that takes the filtered tracks 1 unit at a time.","r":"Net $ + expectancy lead; win% is a footnote. Balance, equity curve, per-instrument and per-track breakdown.","u":"See whether the in-sample edge actually survives live, with real margin + costs modelled.","c":"⚠ SIMULATED · forward-only from the reset date · single micros · n<30 DESCRIPTIVE. Real $ / positions stay LOCAL on the Mac."},
+"portfolio":{"t":"Portfolio constructor","w":"Gates every validated track through PF≥1.2 AND stress-survived AND not-concentrated for the $15K model.","r":"The recommendation = the one track that clears every gate; candidates compare options; watchlist = forward-only until they de-concentrate.","u":"Tells you what to actually run today — and refuses to fake a portfolio when only one edge qualifies.","c":"⚠ In-sample, forward-gated · SIMULATED. Only forward evidence promotes a watchlist track."},
+"risk":{"t":"Risk & Survival layer","w":"Position sizing, risk-of-ruin, loss limits, open heat, and when each setup actually works (edge × regime).","r":"¼-Kelly (full Kelly is too hot); P(−25%) = Monte-Carlo chance of a −25% drawdown; RAG heat = total risk if every stop hits.","u":"Size to SURVIVE the drawdown the edge will inevitably have — survival first, return second.","c":"⚠ ADVISORY · SIMULATED · never a signal. You size and execute; these views never trade."},
+"swing":{"t":"Swing / Pick scorecard (asymmetry)","w":"The IRA / swing engine's honest scorecard, split FORWARD (live-stamped) vs HISTORICAL (in-sample).","r":"Expectancy + profit factor lead; win% is a footnote. Pullback entries beat at-market by cutting the worst case, not by winning more.","u":"Judge whether the swing edge is real over time, by bucket and entry style.","c":"⚠ SIMULATED / advisory · aggregate %s only · n<30 DESCRIPTIVE. FORWARD = live-stamped; HISTORICAL = in-sample backfill."},
+"stocks":{"t":"Stock / swing picks","w":"Claude-curated picks plus the engine's top-5, per section (Convergence / Minervini / Top Setups / Context).","r":"Badges = lifecycle (NEW / CARRIED / OPEN / EXPIRED / RE-PRICED). Net + expectancy lead; win% is a footnote.","u":"Today's actionable swing candidates and how each is tracking after it triggers.","c":"⚠ SIMULATED / tracked · price is the trigger, not the pick · n<MIN DESCRIPTIVE."}
 };
 const HELP_OPEN=new Set();
 /* ── "HOW TO TRADE THIS SITUATION" — practical, situation-aware guidance per section (Dispatch 24).
@@ -1026,9 +1033,9 @@ const Stocks = (function(){
     const curated=(sec.curated||[]);
     const curatedHtml=curated.length?curated.map(p=>pickRow(p,frozen)).join(""):'<div class="noact">no curated picks in this section today</div>';
     document.getElementById("stk-content").innerHTML=
-      '<div class="card"><div class="secttl">Claude curated</div>'+curatedHtml+'</div>'
-      +'<div class="card"><div class="secttl">Engine top 5</div><table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table></div>'
-      +'<div class="card"><h2>Scorecard — curated vs engine</h2><div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div></div>'
+      '<div class="card"><div class="secttl">Claude curated'+hI("stocks")+'</div>'+hP("stocks")+curatedHtml+'</div>'
+      +'<div class="card">'+dwrap("Engine top 5 (control)",'<table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table>')+'</div>'
+      +'<div class="card">'+dwrap("Scorecard — curated vs engine",'<div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div>')+'</div>'
       +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'');
   }
   function render(){
@@ -1208,7 +1215,7 @@ const Account=(function(){
   function renderRisk(rl){
     const {rm,ll,ph,er,pc,sl,mm}=rl;
     if(!rm&&!ll&&!ph&&!er&&!pc&&!sl&&!mm) return '';
-    let h='<h3 class="acch" style="margin-top:24px">Risk &amp; Survival layer — size to survive (Dispatch 44)</h3>';
+    let h='<h3 class="acch" style="margin-top:24px">Risk &amp; Survival layer — size to survive (Dispatch 44)'+hI("risk")+'</h3>'+hP("risk");
     h+='<div class="accnote" style="border-color:rgba(255,217,138,.4);background:rgba(255,217,138,.08);color:#ffe7b3">'
       +'<b>ADVISORY · SIMULATED · not financial advice.</b> The edge is in-sample — size to SURVIVE the drawdown it will inevitably have. These views never trade; Hany sizes + executes.</div>';
     // ── loss limits (survival first) ──
@@ -1240,7 +1247,7 @@ const Account=(function(){
     }
     // ── risk model: sizing + risk-of-ruin ──
     if(rm){ const setups=(rm.setups||[]).filter(s=>s.eligible_in_constructor||s.positive_edge).slice(0,8);
-      h+='<h3 class="acch">Sizing &amp; risk-of-ruin — full Kelly is too hot; use ¼-Kelly</h3>';
+      h+='<details class="research"><summary>▸ Sizing &amp; risk-of-ruin — ¼-Kelly, P(−25%) (diagnostics)</summary><div style="margin-top:6px">';
       h+='<div class="accnote">'+esc(rm.banner||'')+' Equity basis: '+esc(rm.equity_basis||'')+'.</div>';
       if(setups.length){
         h+='<table class="acct" style="margin-top:8px"><tr><th>setup</th><th>n</th><th>W</th><th>pay</th><th>¼-K</th><th>1%·P(-25)</th><th>2%·P(-25)</th><th>safe·P(-25)</th></tr>';
@@ -1259,6 +1266,7 @@ const Account=(function(){
         h+='</table>';
         h+='<p class="foot">¼-K = quarter-Kelly (full Kelly flagged too-volatile). P(-25) = Monte-Carlo prob. of a −25% drawdown over a year of trades. max-safe = largest risk keeping P(-25%) under 5%.</p>';
       }
+      h+='</div></details>';
     }
     // ── edge × regime cross-tab ──
     if(er&&er.setups){ const keys=Object.keys(er.setups).slice(0,6);
@@ -1283,7 +1291,7 @@ const Account=(function(){
   /* D41: portfolio constructor — best instruments × strategies (in-sample, forward-gated) */
   function renderPortfolio(pd){
     if(!pd) return '';
-    let h='<h3 class="acch" style="margin-top:22px">Portfolio constructor — best instruments × strategies</h3>';
+    let h='<h3 class="acch" style="margin-top:22px">Portfolio constructor — best instruments × strategies'+hI("portfolio")+'</h3>'+hP("portfolio");
     h+='<div class="accnote">'+esc(pd.banner||'')+'</div>';
     if(pd.recommendation_text) h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:var(--pos-pale);margin-top:8px"><b>'+esc(pd.recommendation_text)+'</b></div>';
     const cand=pd.portfolio_candidates||[];
@@ -1320,7 +1328,7 @@ const Account=(function(){
     if(!ka) return '';
     const exp=n=>(n>=0?'+':'')+(n||0).toFixed(2)+'%';
     const ecls=n=>n>=0?'pnlpos':'pnlneg';
-    let h='<h3 class="acch" style="margin-top:22px">Swing / Pick Scorecard — asymmetry (the IRA / swing engine)</h3>';
+    let h='<h3 class="acch" style="margin-top:22px">Swing / Pick Scorecard — asymmetry (the IRA / swing engine)'+hI("swing")+'</h3>'+hP("swing");
     h+='<div class="accnote"><b>Read net+expectancy, not win%.</b> Pullback entries beat at-market because they cut the worst-case, not because they win more. SIMULATED/advisory · aggregate %s only · n&lt;30 DESCRIPTIVE.</div>';
     const tbl=(title,cohort)=>{
       const bk=(cohort&&cohort.by_bucket)||{}, sb=(cohort&&cohort.by_sub_bucket)||{};
@@ -1346,13 +1354,13 @@ const Account=(function(){
     if(am&&pb){ h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:var(--pos-pale);margin-top:8px">'
       +'<b>at_market vs pullback (expectancy):</b> at_market '+exp(am[1].expectancy)+' (PF '+am[1].profit_factor+', win '+am[1].win_rate_pct+'%) '
       +'vs pullback '+exp(pb[1].expectancy)+' (PF '+pb[1].profit_factor+', win '+pb[1].win_rate_pct+'%). Pullback is the entry edge.</div>'; }
-    h+=tbl('HISTORICAL BASELINE (in-sample, small-n)',ka.HISTORICAL_BASELINE);
-    // pillars
+    let _diag=tbl('HISTORICAL BASELINE (in-sample, small-n)',ka.HISTORICAL_BASELINE);
     if(pa&&pa.pillars){
-      h+='<h4 class="acch" style="font-size:13px;margin:12px 0 4px">Pillars (matured)</h4><ul style="font-size:12px;margin:2px 0;padding-left:18px">';
-      Object.entries(pa.pillars).forEach(([name,m])=>{ h+='<li>'+esc(name)+': '+esc(m.pillar_headline||'')+' — <i style="color:var(--mut)">'+esc(m.status||'')+'</i></li>'; });
-      h+='</ul>';
+      _diag+='<h4 class="acch" style="font-size:13px;margin:12px 0 4px">Pillars (matured)</h4><ul style="font-size:12px;margin:2px 0;padding-left:18px">';
+      Object.entries(pa.pillars).forEach(([name,m])=>{ _diag+='<li>'+esc(name)+': '+esc(m.pillar_headline||'')+' — <i style="color:var(--mut)">'+esc(m.status||'')+'</i></li>'; });
+      _diag+='</ul>';
     }
+    h+=dwrap('HISTORICAL baseline + pillars (in-sample · diagnostics)',_diag);
     h+='<p class="foot">net is Σ per-trade % (not a compounded return); per-trade expectancy is the read. FORWARD = live-stamped; HISTORICAL = in-sample backfill.</p>';
     return h;
   }
@@ -1360,7 +1368,8 @@ const Account=(function(){
     const sa=d.shared_account||{}, r=d.rules||{};
     const pnl=sa.pnl||0;
     const fresh=(sa.n_trades_taken||0)===0;
-    let h='<div class="accnote"><b>$15,000 paper account — SIMULATED · FORWARD-ONLY.</b> '
+    let h='<h2 style="font-size:15px;margin:2px 0 8px">$15K paper account'+hI("account")+'</h2>'+hP("account")
+      +'<div class="accnote"><b>$15,000 paper account — SIMULATED · FORWARD-ONLY.</b> '
       +'Reset to $15,000, live from <b>'+esc(d.account_start_date||"")+'</b> — the prior 2025 backtested history is excluded. '
       +'Single micros (MES $5/pt, MGC $10/pt, MCL $100/pt), 1 unit/signal, risk = the structural stop, costs + 1-tick slippage in, '
       +'margin + concurrency modelled, from the <b>dedup-corrected</b> filtered tracks. Net-points scorecards are unchanged.</div>';
@@ -1399,7 +1408,7 @@ const Account=(function(){
     // per-track table
     const pt=d.per_track||{};
     const rows=Object.entries(pt).sort((a,b)=>(b[1].isolated_15k.pnl)-(a[1].isolated_15k.pnl));
-    h+='<h3 class="acch">Per-track — expectancy + payoff lead; isolated $15K; win% last</h3>';
+    h+='<details class="research"><summary>▸ Per-track breakdown — expectancy / payoff / isolated $15K (diagnostics)</summary><div style="margin-top:6px">';
     h+='<table class="acct"><tr><th>track</th><th>inst</th><th>n</th><th>exp/trade</th><th>PF</th><th>payoff</th>'
       +'<th>$15K→</th><th>maxDD</th><th>win%</th></tr>';
     rows.forEach(([tk,t])=>{ const iso=t.isolated_15k; const val=t.status&&t.status.indexOf("VALIDATED")===0;
@@ -1415,7 +1424,7 @@ const Account=(function(){
     });
     h+='</table>';
     h+='<p class="foot">'+esc(d.disclaimer||"")+' Generated '+esc(d.generated_at||"")+'. '
-      +'Risk shown in red = a single trade risks ≥10% of the account (wide stop — survivability concern).</p>';
+      +'Risk shown in red = a single trade risks ≥10% of the account (wide stop — survivability concern).</p></div></details>';
     return h;
   }
   function stat(k,v){ return '<div class="accstat"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'; }
