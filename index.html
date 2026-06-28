@@ -1181,6 +1181,7 @@ const Account=(function(){
       ["sl","slippage.json"],["mm","mae_mfe.json"]
     ].map(([k,f])=>ghFetch(f).then(j=>{rl[k]=j;}).catch(()=>{})));
     html+=renderRisk(rl);
+    try{ const ka=await ghFetch("pick_asymmetry.json"), pa=await ghFetch("pillar_asymmetry.json"); html+=renderSwing(ka,pa); }catch(e){}  // D43
     c.innerHTML=html;
   }
   /* D44: Risk & Survival layer — sizing/ruin, loss limits, heat, edge×regime, exec.
@@ -1294,6 +1295,47 @@ const Account=(function(){
       exrows.forEach(([tk,why])=>{ h+='<tr><td>'+esc(tk.replace('::','/'))+'</td><td style="color:var(--mut)">'+esc((why||[])[0]||'')+'</td></tr>'; });
       h+='</table>';
     }
+    return h;
+  }
+  /* D43: Swing / Pick Scorecard asymmetry — the IRA/swing engine (expectancy leads, win% footnote) */
+  function renderSwing(ka,pa){
+    if(!ka) return '';
+    const exp=n=>(n>=0?'+':'')+(n||0).toFixed(2)+'%';
+    const ecls=n=>n>=0?'pnlpos':'pnlneg';
+    let h='<h3 class="acch" style="margin-top:22px">Swing / Pick Scorecard — asymmetry (the IRA / swing engine)</h3>';
+    h+='<div class="accnote"><b>Read net+expectancy, not win%.</b> Pullback entries beat at-market because they cut the worst-case, not because they win more. SIMULATED/advisory · aggregate %s only · n&lt;30 DESCRIPTIVE.</div>';
+    const tbl=(title,cohort)=>{
+      const bk=(cohort&&cohort.by_bucket)||{}, sb=(cohort&&cohort.by_sub_bucket)||{};
+      if(!Object.keys(bk).length) return '';
+      let t='<h4 class="acch" style="font-size:13px;margin:10px 0 4px">'+title+'</h4>';
+      t+='<table class="acct"><tr><th>bucket</th><th>exp</th><th>PF</th><th>payoff</th><th>maxDD</th><th>win% (foot)</th></tr>';
+      const row=(name,m,ind)=>{ if(!m||!m.n) return '<tr><td'+(ind?' style="padding-left:16px"':'')+'>'+esc(name)+'</td><td colspan="5" style="color:var(--mut)">no scored picks</td></tr>';
+        const desc=m.n<30?'<span class="desc-tag">n&lt;30</span>':'';
+        return '<tr><td'+(ind?' style="padding-left:16px"':'')+'>'+esc(name)+desc+'</td>'
+          +'<td class="'+ecls(m.expectancy)+'" style="font-weight:700">'+exp(m.expectancy)+(m.expectancy_R!=null?' ('+m.expectancy_R+'R)':'')+'</td>'
+          +'<td>'+(m.profit_factor==null?'—':m.profit_factor)+'</td>'
+          +'<td>'+(m.payoff_ratio!=null?m.payoff_ratio+':1':'—')+'</td>'
+          +'<td>'+(m.max_drawdown!=null?m.max_drawdown.toFixed(1)+'%':'—')+'</td>'
+          +'<td style="color:var(--mut)">'+m.win_rate_pct+'% (n='+m.n+')</td></tr>'; };
+      Object.entries(bk).forEach(([v,m])=>{ t+=row(v,m,false); });
+      Object.entries(sb).forEach(([c,m])=>{ t+=row(c,m,true); });
+      return t+'</table>';
+    };
+    h+=tbl('FORWARD (live-stamped)',ka.FORWARD);
+    // at_market vs pullback contrast callout
+    const sub=(ka.FORWARD&&ka.FORWARD.by_sub_bucket)||{};
+    const am=Object.entries(sub).find(([k])=>/at_market/.test(k)), pb=Object.entries(sub).find(([k])=>/pullback/.test(k));
+    if(am&&pb){ h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:#cdeacd;margin-top:8px">'
+      +'<b>at_market vs pullback (expectancy):</b> at_market '+exp(am[1].expectancy)+' (PF '+am[1].profit_factor+', win '+am[1].win_rate_pct+'%) '
+      +'vs pullback '+exp(pb[1].expectancy)+' (PF '+pb[1].profit_factor+', win '+pb[1].win_rate_pct+'%). Pullback is the entry edge.</div>'; }
+    h+=tbl('HISTORICAL BASELINE (in-sample, small-n)',ka.HISTORICAL_BASELINE);
+    // pillars
+    if(pa&&pa.pillars){
+      h+='<h4 class="acch" style="font-size:13px;margin:12px 0 4px">Pillars (matured)</h4><ul style="font-size:12px;margin:2px 0;padding-left:18px">';
+      Object.entries(pa.pillars).forEach(([name,m])=>{ h+='<li>'+esc(name)+': '+esc(m.pillar_headline||'')+' — <i style="color:var(--mut)">'+esc(m.status||'')+'</i></li>'; });
+      h+='</ul>';
+    }
+    h+='<p class="foot">net is Σ per-trade % (not a compounded return); per-trade expectancy is the read. FORWARD = live-stamped; HISTORICAL = in-sample backfill.</p>';
     return h;
   }
   function render(d){
