@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-06-28T14:52:44",
+  "kind": "loss_limits_circuit_breakers",
+  "dispatch": "44 / Phase 1B",
+  "banner": "ADVISORY / SIMULATED \u2014 these limits CANNOT force-flatten (Hany executes). They make the rule loud + log every breach to the discipline scorecard (D42). Breaking a loss limit IS a discipline violation.",
+  "journal_source": "SAMPLE (synthetic \u2014 no live journal present)",
+  "limits_source": "DEFAULT",
+  "registered_limits": {
+    "daily_stop_pct": -3.0,
+    "daily_stop_R": -2.0,
+    "consecutive_loser_limit": 2,
+    "weekly_stop_pct": -6.0
+  },
+  "equity_basis": "SIMULATED_paper_15k (%->R reference; no real $ mirrored)",
+  "status": {
+    "as_of": "2026-07-01",
+    "iso_week": "2026-W27",
+    "today": {
+      "n_trades": 4,
+      "pnl_R": -4.7,
+      "pnl_pct": -3.15,
+      "max_consecutive_losers": 4,
+      "daily_limit_hit": true,
+      "consecutive_limit_hit": true
+    },
+    "week": {
+      "n_trades": 7,
+      "pnl_R": -3.7,
+      "pnl_pct": -2.5,
+      "weekly_limit_hit": false,
+      "next_week_action": "normal size"
+    }
+  },
+  "alerts": [
+    {
+      "source": "loss_limits",
+      "level": "CRITICAL",
+      "title": "DAILY LOSS LIMIT HIT \u2014 STOP",
+      "body": "DAILY LOSS LIMIT HIT \u2014 stop trading. Today -4.7R / -3.15% (limit -2.0R / -3.0%).",
+      "recipient": "hbout56@gmail.com (self-only)",
+      "labels": [
+        "SIMULATED",
+        "ADVISORY",
+        "cannot force-execute \u2014 Hany acts"
+      ],
+      "ts": "2026-06-28T14:52:44"
+    },
+    {
+      "source": "loss_limits",
+      "level": "CRITICAL",
+      "title": "CONSECUTIVE-LOSER LIMIT HIT \u2014 STOP",
+      "body": "CONSECUTIVE-LOSER LIMIT HIT \u2014 stop trading. 4 losers in a row (limit 2).",
+      "recipient": "hbout56@gmail.com (self-only)",
+      "labels": [
+        "SIMULATED",
+        "ADVISORY",
+        "cannot force-execute \u2014 Hany acts"
+      ],
+      "ts": "2026-06-28T14:52:44"
+    }
+  ],
+  "any_limit_hit": true,
+  "discipline_log": [
+    {
+      "date": "2026-07-01",
+      "rule": "daily_stop",
+      "detail": "-4.7R / -3.15%",
+      "severity": "limit_hit"
+    },
+    {
+      "date": "2026-07-01",
+      "rule": "consecutive_losers",
+      "detail": "4 in a row",
+      "severity": "limit_hit"
+    },
+    {
+      "date": "2026-07-01",
+      "rule": "consecutive_losers",
+      "detail": "2 trade(s) taken after the stop rule fired",
+      "severity": "DISCIPLINE_VIOLATION"
+    }
+  ],
+  "privacy": "Live P&L lives in journal.local.json (never mirrored). Only R-multiples, %s, breach flags + the alert text are emitted here \u2014 no real $."
+}
