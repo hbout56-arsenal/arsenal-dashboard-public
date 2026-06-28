@@ -1111,6 +1111,31 @@ const Account=(function(){
   const money=n=>(n<0?"-$":"$")+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0});
   const pcls=n=>n>=0?"pnlpos":"pnlneg";
   const INSTC={STOCK:"#4d8dff",MGC:"#f5c451",MCL:"#c98b5b",MES:"#7ee0a6"};
+  /* D40: equity-curve SVG (flat single point pre-Monday; a line once trades close) */
+  function curveSVG(curve){
+    const c=(curve&&curve.length)?curve:[{balance:15000}];
+    const W=600,H=120,pad=8,bals=c.map(p=>p.balance);
+    let mn=Math.min(15000,...bals),mx=Math.max(15000,...bals); if(mx-mn<1){mn-=200;mx+=200;}
+    const n=c.length,X=i=>pad+(n<=1?(W-2*pad)/2:(i/(n-1))*(W-2*pad)),Y=b=>H-pad-((b-mn)/(mx-mn))*(H-2*pad);
+    const base=Y(15000).toFixed(1),last=bals[bals.length-1],col=last>=15000?"#7ee0a6":"#e06060";
+    const pts=c.map((p,i)=>X(i).toFixed(1)+","+Y(p.balance).toFixed(1)).join(" ");
+    return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:120px;margin:8px 0;border:1px solid var(--gbrd);border-radius:10px;background:rgba(255,255,255,.02)">'
+      +'<line x1="'+pad+'" y1="'+base+'" x2="'+(W-pad)+'" y2="'+base+'" stroke="var(--dim)" stroke-dasharray="3 3"/>'
+      +(n>1?'<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2"/>':'<circle cx="'+X(0)+'" cy="'+base+'" r="3.5" fill="var(--dim)"/>')
+      +'<text x="'+pad+'" y="13" fill="var(--mut)" font-size="10">equity curve · $15K baseline (dashed) · smooth-vs-lumpy</text></svg>';
+  }
+  function asymRow(a){
+    if(!a||!a.n) return '';
+    const pf=(a.profit_factor===null?"—":a.profit_factor);
+    return '<div class="accgrid">'
+      +stat("Expectancy / trade", money(a.expectancy)+(a.expectancy_R!=null?" ("+a.expectancy_R+"R)":""))
+      +stat("Profit factor", pf)
+      +stat("Payoff avgW/avgL", (a.payoff_ratio!=null?a.payoff_ratio+":1":"—"))
+      +stat("Max drawdown", money(a.max_drawdown))
+      +stat("Longest loss streak", a.longest_losing_streak)
+      +stat("Win rate (footnote)", a.win_rate_pct+"%")
+      +'</div>';
+  }
   async function load(){
     const c=document.getElementById("acc-content");
     c.innerHTML='<div class="loading">Loading…</div>';
@@ -1131,13 +1156,18 @@ const Account=(function(){
     h+='<div class="bigbal">'+money(sa.final_balance||0)+'</div>';
     h+='<div class="'+pcls(pnl)+'" style="font-weight:700;font-size:15px;margin-top:2px">'
       +(pnl>=0?"+":"")+money(pnl)+' ('+(sa.return_pct>=0?"+":"")+(sa.return_pct||0).toFixed(1)+'%) from $15,000</div>';
+    h+=curveSVG(sa.equity_curve);                 // D40: equity curve (flat baseline pre-Monday)
     if(fresh){
       h+='<div class="accnote" style="border-color:rgba(255,217,138,.4);background:rgba(255,217,138,.08);color:#ffe7b3;margin-top:12px">'
         +'No forward trades yet — the account is flat at $15,000 and will start filling in as setups fire on/after '
-        +esc(d.account_start_date||"Monday")+'. Per-instrument P&amp;L and the per-track breakdown populate once trades close.</div>';
+        +esc(d.account_start_date||"Monday")+'. The equity curve, expectancy / profit-factor / payoff metrics '
+        +'and the per-track breakdown populate once trades close.</div>';
+      h+='<div class="accnote" style="margin-top:8px">SIMULATED, forward-only from '+esc(d.account_start_date||"")+', '
+        +'single micros, costs-in, n&lt;30 DESCRIPTIVE. <b>Net $ + expectancy are the read; win% is a footnote.</b></div>';
       h+='<p class="foot">'+esc(d.disclaimer||"")+' Generated '+esc(d.generated_at||"")+'.</p>';
       return h;
     }
+    if(sa.asymmetry){ h+='<h3 class="acch">Asymmetry — net $ + expectancy lead, win% is a footnote</h3>'+asymRow(sa.asymmetry); }
     h+='<div class="accgrid">'
       +stat("Max drawdown",money(sa.max_drawdown||0)+" ("+(sa.max_drawdown_pct||0).toFixed(1)+"%)")
       +stat("Trades taken / skipped",(sa.n_trades_taken||0)+" / "+(sa.n_trades_skipped_no_margin||0)+" no-margin")
@@ -1156,16 +1186,19 @@ const Account=(function(){
     // per-track table
     const pt=d.per_track||{};
     const rows=Object.entries(pt).sort((a,b)=>(b[1].isolated_15k.pnl)-(a[1].isolated_15k.pnl));
-    h+='<h3 class="acch">Per-track — isolated $15K (what $15K did on each, costs+sizing in)</h3>';
-    h+='<table class="acct"><tr><th>track</th><th>inst</th><th>n</th><th>$15K→</th><th>return</th><th>maxDD</th><th>avg risk</th></tr>';
+    h+='<h3 class="acch">Per-track — expectancy + payoff lead; isolated $15K; win% last</h3>';
+    h+='<table class="acct"><tr><th>track</th><th>inst</th><th>n</th><th>exp/trade</th><th>PF</th><th>payoff</th>'
+      +'<th>$15K→</th><th>maxDD</th><th>win%</th></tr>';
     rows.forEach(([tk,t])=>{ const iso=t.isolated_15k; const val=t.status&&t.status.indexOf("VALIDATED")===0;
-      const ar=t["avg_risk_$"]||0, arPct=ar/15000*100;
+      const a=t.asymmetry||{};
       h+='<tr><td>'+esc(tk.replace("::","/"))+(val?'<span class="val-tag">n≥30</span>':'<span class="desc-tag">DESC</span>')+'</td>'
         +'<td>'+esc(t.instrument)+'</td><td>'+t.n_independent+'</td>'
+        +'<td class="'+pcls(a.expectancy||0)+'">'+money(a.expectancy||0)+(a.expectancy_R!=null?' ('+a.expectancy_R+'R)':'')+'</td>'
+        +'<td>'+(a.profit_factor==null?'—':a.profit_factor)+'</td>'
+        +'<td>'+(a.payoff_ratio!=null?a.payoff_ratio+':1':'—')+'</td>'
         +'<td>'+money(iso.final_balance)+'</td>'
-        +'<td class="'+pcls(iso.return_pct)+'">'+(iso.return_pct>=0?"+":"")+iso.return_pct.toFixed(0)+'%</td>'
         +'<td>'+money(iso.max_drawdown)+'</td>'
-        +'<td'+(arPct>=10?' class="warnrisk"':'')+'>'+money(ar)+' ('+arPct.toFixed(0)+'%)</td></tr>';
+        +'<td style="color:var(--mut)">'+(a.win_rate_pct!=null?a.win_rate_pct+'%':'—')+'</td></tr>';
     });
     h+='</table>';
     h+='<p class="foot">'+esc(d.disclaimer||"")+' Generated '+esc(d.generated_at||"")+'. '
