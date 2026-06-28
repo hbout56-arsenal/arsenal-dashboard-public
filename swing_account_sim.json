@@ -1,0 +1,1842 @@
+{
+  "generated_at": "2026-06-28T13:20:29",
+  "kind": "swing_account_sim",
+  "banner": "\u03a3 per-trade % is NOT a return \u2014 THIS is the sized curve. Negative-expectancy buckets grind down when sized correctly (a bleed, not a blowup). HISTORICAL = in-sample, survivorship-biased (no point-in-time universe) \u2014 NOT a promise. SIMULATED/DESCRIPTIVE; not the forward $15K live account; not a recommendation.",
+  "rules": {
+    "start_balance": 15000.0,
+    "margin_frac": 0.5,
+    "slippage_per_share": 0.01,
+    "risk_per_trade": [
+      "1%",
+      "2%"
+    ],
+    "assumed_hold_days": 14,
+    "sizing": "fixed-fractional risk to the structural stop; equity-dependent (compounds)",
+    "reuse": "account_sim STOCK constants + skip-on-margin discipline; loop here (equity-dependent)"
+  },
+  "limitations": [
+    "pick ledger has entry date but NO exit date -> margin occupancy uses assumed HOLD_DAYS",
+    "FORWARD stamped picks span ~1 month (2026-06) -> 1-month curve, not multi-year",
+    "HISTORICAL backfill has NO dates -> sequential, no concurrency, in-sample + survivorship-biased",
+    "each bucket/sub-bucket curve is ISOLATED (own $15K, only its own picks compete for margin) -> sub-bucket n_taken is NOT additive with the combined STRONG_LONG curve",
+    "HISTORICAL uses fixed-notional sizing (backfill has no stops) -> NOT directly comparable to the forward risk-based curves; it is a separate descriptive method"
+  ],
+  "FORWARD": {
+    "STRONG_LONG (all)": {
+      "1pct": {
+        "risk_per_trade_pct": 1.0,
+        "sizing_label": "1% risk",
+        "start_balance": 15000.0,
+        "final_balance": 13305.69,
+        "return_pct": -11.3,
+        "max_drawdown_pct": 11.4,
+        "n_taken": 27,
+        "n_skipped_no_margin": 369,
+        "total_costs": 13.14,
+        "span": [
+          "2026-06-01",
+          "2026-06-26"
+        ],
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-06",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 15017.49
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 15017.49
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-19",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 14997.64
+          },
+          {
+            "d": "2026-06-29",
+            "bal": 14588.86
+          },
+          {
+            "d": "2026-07-01",
+            "bal": 13305.69
+          }
+        ],
+        "asymmetry": {
+          "n": 27,
+          "net_total": -1694.31,
+          "expectancy": -62.7522,
+          "expectancy_unit": "$",
+          "expectancy_R": -0.487,
+          "profit_factor": 0.44,
+          "win_rate_pct": 7.4,
+          "loss_rate_pct": 92.6,
+          "avg_win": 657.28,
+          "avg_loss": 120.3548,
+          "payoff_ratio": 5.46,
+          "R": {
+            "sum": -13.15,
+            "avg": -0.487,
+            "distribution": {
+              "min": -1.0,
+              "p25": -1.0,
+              "p50": -1.0,
+              "p75": -1.0,
+              "max": 5.097
+            }
+          },
+          "max_drawdown": 2318.04,
+          "longest_winning_streak": 1,
+          "longest_losing_streak": 19,
+          "avg_trades_between_big_wins": null,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $-62.75/trade (-0.487R), PF 0.44, payoff 5.46:1 \u2014 net $-1,694.31 over 27 trades (win% 7.4)"
+        },
+        "n_scorable": 396
+      },
+      "2pct": {
+        "risk_per_trade_pct": 2.0,
+        "sizing_label": "2% risk",
+        "start_balance": 15000.0,
+        "final_balance": 12168.88,
+        "return_pct": -18.87,
+        "max_drawdown_pct": 18.87,
+        "n_taken": 19,
+        "n_skipped_no_margin": 377,
+        "total_costs": 13.42,
+        "span": [
+          "2026-06-01",
+          "2026-06-26"
+        ],
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-06",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-13",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 14995.79
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-19",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 14179.74
+          },
+          {
+            "d": "2026-07-01",
+            "bal": 12168.88
+          }
+        ],
+        "asymmetry": {
+          "n": 19,
+          "net_total": -2831.12,
+          "expectancy": -149.0063,
+          "expectancy_unit": "$",
+          "expectancy_R": -0.539,
+          "profit_factor": 0.28,
+          "win_rate_pct": 5.3,
+          "loss_rate_pct": 94.7,
+          "avg_win": 1115.64,
+          "avg_loss": 219.2644,
+          "payoff_ratio": 5.09,
+          "R": {
+            "sum": -10.25,
+            "avg": -0.539,
+            "distribution": {
+              "min": -1.0,
+              "p25": -1.0,
+              "p50": -1.0,
+              "p75": -0.455,
+              "max": 3.75
+            }
+          },
+          "max_drawdown": 3635.68,
+          "longest_winning_streak": 1,
+          "longest_losing_streak": 16,
+          "avg_trades_between_big_wins": null,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $-149.01/trade (-0.539R), PF 0.28, payoff 5.09:1 \u2014 net $-2,831.12 over 19 trades (win% 5.3)"
+        },
+        "n_scorable": 396
+      }
+    },
+    "STRONG_LONG | at_market": {
+      "1pct": {
+        "risk_per_trade_pct": 1.0,
+        "sizing_label": "1% risk",
+        "start_balance": 15000.0,
+        "final_balance": 11908.08,
+        "return_pct": -20.61,
+        "max_drawdown_pct": 22.7,
+        "n_taken": 46,
+        "n_skipped_no_margin": 59,
+        "total_costs": 19.38,
+        "span": [
+          "2026-06-01",
+          "2026-06-26"
+        ],
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-06",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-13",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 14766.41
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 13815.82
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 13815.82
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 13013.75
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 13013.75
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-19",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 12654.76
+          },
+          {
+            "d": "2026-06-30",
+            "bal": 12519.46
+          },
+          {
+            "d": "2026-07-01",
+            "bal": 12451.9
+          },
+          {
+            "d": "2026-07-02",
+            "bal": 12321.52
+          },
+          {
+            "d": "2026-07-06",
+            "bal": 11958.82
+          },
+          {
+            "d": "2026-07-07",
+            "bal": 11594.9
+          },
+          {
+            "d": "2026-07-08",
+            "bal": 12159.53
+          },
+          {
+            "d": "2026-07-09",
+            "bal": 11908.08
+          }
+        ],
+        "asymmetry": {
+          "n": 46,
+          "net_total": -3091.92,
+          "expectancy": -67.2157,
+          "expectancy_unit": "$",
+          "expectancy_R": -0.521,
+          "profit_factor": 0.2,
+          "win_rate_pct": 17.4,
+          "loss_rate_pct": 82.6,
+          "avg_win": 99.58,
+          "avg_loss": 102.3305,
+          "payoff_ratio": 0.97,
+          "R": {
+            "sum": -23.98,
+            "avg": -0.521,
+            "distribution": {
+              "min": -1.0,
+              "p25": -1.0,
+              "p50": -1.0,
+              "p75": -0.184,
+              "max": 3.208
+            }
+          },
+          "max_drawdown": 3276.94,
+          "longest_winning_streak": 2,
+          "longest_losing_streak": 11,
+          "avg_trades_between_big_wins": null,
+          "status": "VALIDATED candidate (n>=30)",
+          "headline": "EXPECTANCY $-67.22/trade (-0.521R), PF 0.2, payoff 0.97:1 \u2014 net $-3,091.92 over 46 trades (win% 17.4)"
+        },
+        "n_scorable": 105
+      },
+      "2pct": {
+        "risk_per_trade_pct": 2.0,
+        "sizing_label": "2% risk",
+        "start_balance": 15000.0,
+        "final_balance": 11177.27,
+        "return_pct": -25.48,
+        "max_drawdown_pct": 25.48,
+        "n_taken": 27,
+        "n_skipped_no_margin": 78,
+        "total_costs": 13.96,
+        "span": [
+          "2026-06-01",
+          "2026-06-26"
+        ],
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-01",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-06",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-13",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 14495.03
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 12440.76
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 12440.76
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-19",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 11927.36
+          },
+          {
+            "d": "2026-06-30",
+            "bal": 11527.28
+          },
+          {
+            "d": "2026-07-01",
+            "bal": 11458.25
+          },
+          {
+            "d": "2026-07-01",
+            "bal": 11322.87
+          },
+          {
+            "d": "2026-07-01",
+            "bal": 11177.27
+          }
+        ],
+        "asymmetry": {
+          "n": 27,
+          "net_total": -3822.73,
+          "expectancy": -141.5826,
+          "expectancy_unit": "$",
+          "expectancy_R": -0.537,
+          "profit_factor": 0.1,
+          "win_rate_pct": 22.2,
+          "loss_rate_pct": 77.8,
+          "avg_win": 68.5117,
+          "avg_loss": 201.6095,
+          "payoff_ratio": 0.34,
+          "R": {
+            "sum": -14.51,
+            "avg": -0.537,
+            "distribution": {
+              "min": -1.0,
+              "p25": -1.0,
+              "p50": -1.0,
+              "p75": 0.0,
+              "max": 0.516
+            }
+          },
+          "max_drawdown": 3822.73,
+          "longest_winning_streak": 1,
+          "longest_losing_streak": 8,
+          "avg_trades_between_big_wins": 5.0,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $-141.58/trade (-0.537R), PF 0.1, payoff 0.34:1 \u2014 net $-3,822.73 over 27 trades (win% 22.2)"
+        },
+        "n_scorable": 105
+      }
+    },
+    "STRONG_LONG | pullback_limit": {
+      "1pct": {
+        "risk_per_trade_pct": 1.0,
+        "sizing_label": "1% risk",
+        "start_balance": 15000.0,
+        "final_balance": 14355.29,
+        "return_pct": -4.3,
+        "max_drawdown_pct": 9.83,
+        "n_taken": 22,
+        "n_skipped_no_margin": 269,
+        "total_costs": 14.5,
+        "span": [
+          "2026-06-01",
+          "2026-06-26"
+        ],
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-03",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-06",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-13",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 15251.08
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 15251.08
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 15551.28
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15551.28
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15551.28
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15551.28
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15551.28
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-19",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 15920.18
+          },
+          {
+            "d": "2026-06-29",
+            "bal": 15227.06
+          },
+          {
+            "d": "2026-07-02",
+            "bal": 14355.29
+          }
+        ],
+        "asymmetry": {
+          "n": 22,
+          "net_total": -644.71,
+          "expectancy": -29.305,
+          "expectancy_unit": "$",
+          "expectancy_R": -0.209,
+          "profit_factor": 0.73,
+          "win_rate_pct": 18.2,
+          "loss_rate_pct": 81.8,
+          "avg_win": 425.635,
+          "avg_loss": 130.4028,
+          "payoff_ratio": 3.26,
+          "R": {
+            "sum": -4.59,
+            "avg": -0.209,
+            "distribution": {
+              "min": -1.0,
+              "p25": -1.0,
+              "p50": -1.0,
+              "p75": -0.282,
+              "max": 5.097
+            }
+          },
+          "max_drawdown": 1564.89,
+          "longest_winning_streak": 1,
+          "longest_losing_streak": 10,
+          "avg_trades_between_big_wins": null,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $-29.31/trade (-0.209R), PF 0.73, payoff 3.26:1 \u2014 net $-644.71 over 22 trades (win% 18.2)"
+        },
+        "n_scorable": 291
+      },
+      "2pct": {
+        "risk_per_trade_pct": 2.0,
+        "sizing_label": "2% risk",
+        "start_balance": 15000.0,
+        "final_balance": 13727.99,
+        "return_pct": -8.48,
+        "max_drawdown_pct": 11.44,
+        "n_taken": 11,
+        "n_skipped_no_margin": 280,
+        "total_costs": 13.12,
+        "span": [
+          "2026-06-01",
+          "2026-06-26"
+        ],
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-02",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-04",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-05",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-06",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-08",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-09",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-10",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-11",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-12",
+            "bal": 15000.0
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 15500.76
+          },
+          {
+            "d": "2026-06-15",
+            "bal": 15500.76
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-16",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-17",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-18",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-22",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-23",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-24",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-25",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-26",
+            "bal": 15199.76
+          },
+          {
+            "d": "2026-06-30",
+            "bal": 13727.99
+          }
+        ],
+        "asymmetry": {
+          "n": 11,
+          "net_total": -1272.01,
+          "expectancy": -115.6373,
+          "expectancy_unit": "$",
+          "expectancy_R": -0.378,
+          "profit_factor": 0.48,
+          "win_rate_pct": 18.2,
+          "loss_rate_pct": 81.8,
+          "avg_win": 576.9,
+          "avg_loss": 269.5344,
+          "payoff_ratio": 2.14,
+          "R": {
+            "sum": -4.16,
+            "avg": -0.378,
+            "distribution": {
+              "min": -1.0,
+              "p25": -1.0,
+              "p50": -1.0,
+              "p75": -0.521,
+              "max": 3.75
+            }
+          },
+          "max_drawdown": 2076.57,
+          "longest_winning_streak": 1,
+          "longest_losing_streak": 6,
+          "avg_trades_between_big_wins": null,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $-115.64/trade (-0.378R), PF 0.48, payoff 2.14:1 \u2014 net $-1,272.01 over 11 trades (win% 18.2)"
+        },
+        "n_scorable": 291
+      }
+    }
+  },
+  "HISTORICAL_BASELINE": {
+    "BOUNCE_SHORT": {
+      "fixed_notional": {
+        "risk_per_trade_pct": null,
+        "sizing_label": "20% notional (no stops in backfill)",
+        "start_balance": 15000.0,
+        "final_balance": 16269.97,
+        "return_pct": 8.47,
+        "max_drawdown_pct": 0.35,
+        "n_taken": 14,
+        "n_skipped_no_margin": 0,
+        "total_costs": 13.15,
+        "span": null,
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": null,
+            "bal": 15127.57
+          },
+          {
+            "d": null,
+            "bal": 15248.87
+          },
+          {
+            "d": null,
+            "bal": 15231.35
+          },
+          {
+            "d": null,
+            "bal": 15327.02
+          },
+          {
+            "d": null,
+            "bal": 15479.42
+          },
+          {
+            "d": null,
+            "bal": 15598.16
+          },
+          {
+            "d": null,
+            "bal": 15737.98
+          },
+          {
+            "d": null,
+            "bal": 15880.8
+          },
+          {
+            "d": null,
+            "bal": 15941.32
+          },
+          {
+            "d": null,
+            "bal": 16112.41
+          },
+          {
+            "d": null,
+            "bal": 16056.22
+          },
+          {
+            "d": null,
+            "bal": 16193.1
+          },
+          {
+            "d": null,
+            "bal": 16291.22
+          },
+          {
+            "d": null,
+            "bal": 16269.97
+          }
+        ],
+        "asymmetry": {
+          "n": 14,
+          "net_total": 1269.97,
+          "expectancy": 90.712,
+          "expectancy_unit": "$",
+          "expectancy_R": null,
+          "profit_factor": 14.37,
+          "win_rate_pct": 78.6,
+          "loss_rate_pct": 21.4,
+          "avg_win": 124.0842,
+          "avg_loss": 31.6528,
+          "payoff_ratio": 3.92,
+          "R": {
+            "note": "no per-trade R available"
+          },
+          "max_drawdown": 56.1872,
+          "longest_winning_streak": 7,
+          "longest_losing_streak": 1,
+          "avg_trades_between_big_wins": null,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $90.71/trade, PF 14.37, payoff 3.92:1 \u2014 net $1,269.97 over 14 trades (win% 78.6)"
+        },
+        "n_scorable": 14,
+        "status": "DESCRIPTIVE \u2014 in-sample, survivorship-biased, no dates/stops in backfill"
+      }
+    },
+    "GAP_UP": {
+      "fixed_notional": {
+        "risk_per_trade_pct": null,
+        "sizing_label": "20% notional (no stops in backfill)",
+        "start_balance": 15000.0,
+        "final_balance": 16789.28,
+        "return_pct": 11.93,
+        "max_drawdown_pct": 1.8,
+        "n_taken": 16,
+        "n_skipped_no_margin": 0,
+        "total_costs": 15.28,
+        "span": null,
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": null,
+            "bal": 15315.7
+          },
+          {
+            "d": null,
+            "bal": 15280.99
+          },
+          {
+            "d": null,
+            "bal": 15296.84
+          },
+          {
+            "d": null,
+            "bal": 15565.11
+          },
+          {
+            "d": null,
+            "bal": 15411.21
+          },
+          {
+            "d": null,
+            "bal": 15976.77
+          },
+          {
+            "d": null,
+            "bal": 16151.03
+          },
+          {
+            "d": null,
+            "bal": 16094.68
+          },
+          {
+            "d": null,
+            "bal": 16109.21
+          },
+          {
+            "d": null,
+            "bal": 16244.08
+          },
+          {
+            "d": null,
+            "bal": 15951.43
+          },
+          {
+            "d": null,
+            "bal": 16228.21
+          },
+          {
+            "d": null,
+            "bal": 16438.23
+          },
+          {
+            "d": null,
+            "bal": 16739.59
+          },
+          {
+            "d": null,
+            "bal": 16929.51
+          },
+          {
+            "d": null,
+            "bal": 16789.28
+          }
+        ],
+        "asymmetry": {
+          "n": 16,
+          "net_total": 1789.28,
+          "expectancy": 111.8302,
+          "expectancy_unit": "$",
+          "expectancy_R": null,
+          "profit_factor": 3.64,
+          "win_rate_pct": 68.8,
+          "loss_rate_pct": 31.2,
+          "avg_win": 224.2829,
+          "avg_loss": 135.5657,
+          "payoff_ratio": 1.65,
+          "R": {
+            "note": "no per-trade R available"
+          },
+          "max_drawdown": 292.65,
+          "longest_winning_streak": 4,
+          "longest_losing_streak": 1,
+          "avg_trades_between_big_wins": null,
+          "status": "DESCRIPTIVE \u2014 n<30, not validated",
+          "headline": "EXPECTANCY $111.83/trade, PF 3.64, payoff 1.65:1 \u2014 net $1,789.28 over 16 trades (win% 68.8)"
+        },
+        "n_scorable": 16,
+        "status": "DESCRIPTIVE \u2014 in-sample, survivorship-biased, no dates/stops in backfill"
+      }
+    },
+    "PULLBACK_LONG": {
+      "fixed_notional": {
+        "risk_per_trade_pct": null,
+        "sizing_label": "20% notional (no stops in backfill)",
+        "start_balance": 15000.0,
+        "final_balance": 16337.49,
+        "return_pct": 8.92,
+        "max_drawdown_pct": 1.67,
+        "n_taken": 30,
+        "n_skipped_no_margin": 0,
+        "total_costs": 28.87,
+        "span": null,
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": null,
+            "bal": 14805.48
+          },
+          {
+            "d": null,
+            "bal": 14969.68
+          },
+          {
+            "d": null,
+            "bal": 15393.32
+          },
+          {
+            "d": null,
+            "bal": 15228.4
+          },
+          {
+            "d": null,
+            "bal": 15330.95
+          },
+          {
+            "d": null,
+            "bal": 16050.6
+          },
+          {
+            "d": null,
+            "bal": 16207.45
+          },
+          {
+            "d": null,
+            "bal": 16213.1
+          },
+          {
+            "d": null,
+            "bal": 16238.74
+          },
+          {
+            "d": null,
+            "bal": 16312.65
+          },
+          {
+            "d": null,
+            "bal": 16327.41
+          },
+          {
+            "d": null,
+            "bal": 16295.07
+          },
+          {
+            "d": null,
+            "bal": 16257.62
+          },
+          {
+            "d": null,
+            "bal": 16361.4
+          },
+          {
+            "d": null,
+            "bal": 16344.97
+          },
+          {
+            "d": null,
+            "bal": 16327.97
+          },
+          {
+            "d": null,
+            "bal": 16429.28
+          },
+          {
+            "d": null,
+            "bal": 16318.31
+          },
+          {
+            "d": null,
+            "bal": 16322.7
+          },
+          {
+            "d": null,
+            "bal": 16270.07
+          },
+          {
+            "d": null,
+            "bal": 16263.96
+          },
+          {
+            "d": null,
+            "bal": 16269.08
+          },
+          {
+            "d": null,
+            "bal": 16321.34
+          },
+          {
+            "d": null,
+            "bal": 16316.33
+          },
+          {
+            "d": null,
+            "bal": 16213.68
+          },
+          {
+            "d": null,
+            "bal": 16164.49
+          },
+          {
+            "d": null,
+            "bal": 16155.64
+          },
+          {
+            "d": null,
+            "bal": 16239.66
+          },
+          {
+            "d": null,
+            "bal": 16235.97
+          },
+          {
+            "d": null,
+            "bal": 16337.49
+          }
+        ],
+        "asymmetry": {
+          "n": 30,
+          "net_total": 1337.49,
+          "expectancy": 44.5831,
+          "expectancy_unit": "$",
+          "expectancy_R": null,
+          "profit_factor": 2.67,
+          "win_rate_pct": 53.3,
+          "loss_rate_pct": 46.7,
+          "avg_win": 133.7034,
+          "avg_loss": 57.2687,
+          "payoff_ratio": 2.33,
+          "R": {
+            "note": "no per-trade R available"
+          },
+          "max_drawdown": 273.6468,
+          "longest_winning_streak": 7,
+          "longest_losing_streak": 4,
+          "avg_trades_between_big_wins": null,
+          "status": "VALIDATED candidate (n>=30)",
+          "headline": "EXPECTANCY $44.58/trade, PF 2.67, payoff 2.33:1 \u2014 net $1,337.49 over 30 trades (win% 53.3)"
+        },
+        "n_scorable": 30,
+        "status": "DESCRIPTIVE \u2014 in-sample, survivorship-biased, no dates/stops in backfill"
+      }
+    },
+    "STRONG_LONG": {
+      "fixed_notional": {
+        "risk_per_trade_pct": null,
+        "sizing_label": "20% notional (no stops in backfill)",
+        "start_balance": 15000.0,
+        "final_balance": 17533.2,
+        "return_pct": 16.89,
+        "max_drawdown_pct": 3.79,
+        "n_taken": 30,
+        "n_skipped_no_margin": 0,
+        "total_costs": 28.74,
+        "span": null,
+        "equity_curve": [
+          {
+            "d": null,
+            "bal": 15000.0
+          },
+          {
+            "d": null,
+            "bal": 14998.14
+          },
+          {
+            "d": null,
+            "bal": 15007.8
+          },
+          {
+            "d": null,
+            "bal": 14809.61
+          },
+          {
+            "d": null,
+            "bal": 14799.52
+          },
+          {
+            "d": null,
+            "bal": 14831.75
+          },
+          {
+            "d": null,
+            "bal": 14997.07
+          },
+          {
+            "d": null,
+            "bal": 14964.59
+          },
+          {
+            "d": null,
+            "bal": 16341.84
+          },
+          {
+            "d": null,
+            "bal": 16412.39
+          },
+          {
+            "d": null,
+            "bal": 16575.65
+          },
+          {
+            "d": null,
+            "bal": 16186.87
+          },
+          {
+            "d": null,
+            "bal": 16189.72
+          },
+          {
+            "d": null,
+            "bal": 16398.58
+          },
+          {
+            "d": null,
+            "bal": 16019.05
+          },
+          {
+            "d": null,
+            "bal": 16329.41
+          },
+          {
+            "d": null,
+            "bal": 16294.79
+          },
+          {
+            "d": null,
+            "bal": 16185.2
+          },
+          {
+            "d": null,
+            "bal": 16080.18
+          },
+          {
+            "d": null,
+            "bal": 16011.1
+          },
+          {
+            "d": null,
+            "bal": 16012.62
+          },
+          {
+            "d": null,
+            "bal": 15947.9
+          },
+          {
+            "d": null,
+            "bal": 15954.15
+          },
+          {
+            "d": null,
+            "bal": 16047.79
+          },
+          {
+            "d": null,
+            "bal": 16118.3
+          },
+          {
+            "d": null,
+            "bal": 16170.3
+          },
+          {
+            "d": null,
+            "bal": 16427.74
+          },
+          {
+            "d": null,
+            "bal": 16698.21
+          },
+          {
+            "d": null,
+            "bal": 17813.79
+          },
+          {
+            "d": null,
+            "bal": 17328.39
+          },
+          {
+            "d": null,
+            "bal": 17533.2
+          }
+        ],
+        "asymmetry": {
+          "n": 30,
+          "net_total": 2533.2,
+          "expectancy": 84.4399,
+          "expectancy_unit": "$",
+          "expectancy_R": null,
+          "profit_factor": 2.35,
+          "win_rate_pct": 60.0,
+          "loss_rate_pct": 40.0,
+          "avg_win": 245.1417,
+          "avg_loss": 156.6128,
+          "payoff_ratio": 1.57,
+          "R": {
+            "note": "no per-trade R available"
+          },
+          "max_drawdown": 627.7478,
+          "longest_winning_streak": 7,
+          "longest_losing_streak": 4,
+          "avg_trades_between_big_wins": null,
+          "status": "VALIDATED candidate (n>=30)",
+          "headline": "EXPECTANCY $84.44/trade, PF 2.35, payoff 1.57:1 \u2014 net $2,533.20 over 30 trades (win% 60.0)"
+        },
+        "n_scorable": 30,
+        "status": "DESCRIPTIVE \u2014 in-sample, survivorship-biased, no dates/stops in backfill"
+      }
+    }
+  }
+}
