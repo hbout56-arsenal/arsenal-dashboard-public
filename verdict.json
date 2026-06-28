@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T16:55:43",
+  "timestamp": "2026-06-28T18:02:29",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -8,7 +8,7 @@
   "price": 7425.0,
   "change": null,
   "internals_fresh": false,
-  "internals_age_s": 3055,
+  "internals_age_s": 179861,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -84,12 +84,19 @@
       "verdict": "HOLD",
       "confidence": 0.0,
       "reason": "ICT DARK (VM down/off-hrs) \u2014 context only, non-voting"
+    },
+    {
+      "name": "InsideBar_Context",
+      "pillar": "InsideBar_Context",
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "Inside Bar DARK (VM down/off-hrs) \u2014 context only, non-voting"
     }
   ],
   "confluence_zones": [],
-  "vp_available": true,
-  "fib_available": true,
-  "config_hash": "360466192e8f",
+  "vp_available": false,
+  "fib_available": false,
+  "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
   "newsletter_context": "Ter Schure SPX: W-iii of W-3/c down, 7265\u00b125 target",
@@ -297,21 +304,21 @@
     "daily": {
       "timeframe": "daily",
       "long_pct": 0.0,
-      "hold_pct": 0.0,
-      "short_pct": 100.0,
-      "price": 7396.75,
+      "hold_pct": 100.0,
+      "short_pct": 0.0,
+      "price": null,
       "internals_fresh": false,
-      "structure_fresh": true,
+      "structure_fresh": false,
       "structure_source": "polygon ES daily",
-      "state": "live",
+      "state": "dark",
       "bar_age_min": 0.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "SHORT",
-          "confidence": 30.0,
-          "reason": "price 7396.75 at 1-method confluence (VP) near 7403.52 (resistance)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "no price"
         },
         {
           "name": "Breadth",
@@ -330,9 +337,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "SHORT",
-          "confidence": 45.0,
-          "reason": "price 7396.75 < prior_close 7433.75 (daily fallback)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "structure unavailable"
         },
         {
           "name": "SectorDivergence",
@@ -356,17 +363,9 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [
-        {
-          "method": "VP",
-          "label": "VAL",
-          "price": 7403.52,
-          "dist": 6.77,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
-      "vp_available": true,
-      "fib_available": true
+      "confluence_zones": [],
+      "vp_available": false,
+      "fib_available": false
     }
   },
   "guidance": {
