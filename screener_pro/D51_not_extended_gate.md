@@ -49,3 +49,23 @@ blended series **+2.35 pts** (−2.40% → −0.04%). Matches D50 exactly.
 - Prior panels present (curated / engine-top5 / scorecard / EMA). Only **one** new
   `ghFetch` (`not_extended_gate.json`); no existing data-binding changed.
 - Backup: `backups/index.html.D51.bak` (md5 `c24e95df…`, the pre-D51 file).
+
+## Decision log — pivot source for the ATR-extension leg (recorded, not silent)
+The engine wires the gate with `gate.tag_pick(view_pick, sliced, len(sliced)-1, pivot=None)`
+(`gate_apply.py:121-124`). With `pivot=None` the module falls back to the **50-MA** as the
+pivot, so the *"X×ATR above pivot"* leg measures extension above the **50-day MA structure**,
+not above the specific breakout pivot named in pre-registered rule #5.
+
+- **Anti-look-ahead: certified.** `sliced = bars[:i+1]` (i = last bar on/before signal date);
+  the module only ever sees `bars[0..signal]`. Verified live: 13/13 tags internally consistent
+  with the frozen thresholds.
+- **Side effect (accepted):** the "ATR-above-pivot" and "%-above-50-MA" legs are then both
+  50-MA-anchored, so they partly measure the same distance. RSI(80) and the %-above-50-MA leg
+  are unaffected.
+- **DECISION (option 1):** **keep `pivot=None`** for this cycle. It is the behavior that was
+  validated this run, it is conservative, and it changes no thresholds (no re-tune). Passing the
+  true breakout pivot is a deliberate fidelity refinement deferred to **D52**, to be logged as a
+  tracked config change (it would shift some verdicts), not swapped mid-cycle.
+- **Make it explicit in the artifact:** the engine should stamp `pivot_source` into the
+  generated `not_extended_gate.json` (e.g. `"pivot_source": "50MA_fallback (pivot=None)"`) so
+  the live data records which anchor produced the tags.
