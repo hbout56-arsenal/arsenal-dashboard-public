@@ -13,6 +13,12 @@
     --green-g:rgba(37,233,110,.55); --amber-g:rgba(255,174,21,.55); --red-g:rgba(255,53,71,.55);
     --green-m:#1a8f48; --amber-m:#a0741a; --red-m:#a02b38;   /* muted/inactive direction tones (phone-legible when nothing live) */
     --red-d:#3a151a; --amber-d:#3a2c0c;
+    /* ── D46 design-standard colour tokens (single source of truth — see DESIGN.md) ──
+       semantic: pos=good/go · neg=bad/stop · warn=caution/wait/stale · info=context/non-voting · idle=inactive/N-A.
+       *-ink = the lighter on-dark text tints; pal-* = categorical instrument palette (NOT semantic). */
+    --pos:var(--green); --neg:var(--red); --warn:var(--amber); --info:var(--blue); --idle:var(--grey);
+    --pos-ink:#7ee0a6; --neg-ink:#e06060; --warn-ink:#ffd98a; --info-ink:#9cc3ff; --pos-pale:#cdeacd;
+    --pal-stock:#4d8dff; --pal-mgc:#f5c451; --pal-mcl:#c98b5b; --pal-mes:#7ee0a6;
     --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"JetBrains Mono","Roboto Mono",monospace;
     --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --r:18px;
@@ -33,10 +39,13 @@
   .head .meta{font-size:11px;color:var(--dim)}
   @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   /* top-level Futures | Stocks toggle */
-  .topbar{display:flex;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  /* top-level tab bar — horizontal scroll, nowrap labels (D46: clean with 6 tabs) */
+  .topbar{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
     border:1px solid var(--gbrd);border-radius:16px;padding:6px;gap:6px;margin-bottom:18px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-  .toptab{flex:1;text-align:center;padding:16px 6px;border-radius:12px;color:var(--mut);font-weight:700;font-size:16px;
-          cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);letter-spacing:.3px}
+  .topbar::-webkit-scrollbar{display:none}
+  .toptab{flex:0 0 auto;text-align:center;padding:13px 14px;border-radius:12px;color:var(--mut);font-weight:700;font-size:14.5px;
+          white-space:nowrap;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);letter-spacing:.3px}
   .toptab.active{background:linear-gradient(180deg,rgba(77,141,255,.20),rgba(77,141,255,.05));color:#fff;
     box-shadow:0 0 0 1px rgba(77,141,255,.4),0 6px 22px rgba(77,141,255,.28)}
   /* shared sub-nav tabs */
@@ -83,9 +92,9 @@
   /* ACTIVE self-marked trade — emphasized blue standout */
   .statrow.mine{border-color:rgba(77,141,255,.55);background:rgba(77,141,255,.11);border-left-width:4px;border-left-color:var(--blue);padding:13px 14px;font-weight:600;box-shadow:0 0 0 1px rgba(77,141,255,.32),0 9px 28px rgba(77,141,255,.18)}
   .ptag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:var(--mut);border:1px solid var(--gbrd);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
-  .mtag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#9cc3ff;background:rgba(77,141,255,.18);border:1px solid rgba(77,141,255,.45);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
+  .mtag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:var(--info-ink);background:rgba(77,141,255,.18);border:1px solid rgba(77,141,255,.45);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
   .mtagnote{font-size:10px;color:var(--dim);font-style:italic;margin-top:3px;font-family:var(--sans)}
-  .addmine{display:inline-block;font-size:11.5px;font-weight:700;color:#9cc3ff;border:1px solid rgba(77,141,255,.4);border-radius:9px;padding:7px 12px;cursor:pointer;margin-bottom:7px}
+  .addmine{display:inline-block;font-size:11.5px;font-weight:700;color:var(--info-ink);border:1px solid rgba(77,141,255,.4);border-radius:9px;padding:7px 12px;cursor:pointer;margin-bottom:7px}
   .closebtn{font-size:10.5px;color:var(--red);cursor:pointer;border:1px solid rgba(255,77,94,.4);border-radius:6px;padding:1px 7px;margin-left:6px;font-family:var(--sans)}
   /* EMA simplified lines + research expander */
   .emaline{font-size:13px;line-height:1.55;padding:7px 0;border-bottom:1px solid var(--line);font-family:var(--sans)}
@@ -117,7 +126,7 @@
   #fut .meter.dominant{transform:translateY(-3px)}
   #fut .chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:999px;border:1px solid transparent;vertical-align:middle}
   #fut .chip.live{background:rgba(46,230,110,.16);color:#7ff0b0;border-color:rgba(46,230,110,.55);box-shadow:0 0 14px rgba(46,230,110,.3)}
-  #fut .chip.dark{background:rgba(255,181,46,.16);color:#ffd98a;border-color:rgba(255,181,46,.55)}
+  #fut .chip.dark{background:rgba(255,181,46,.16);color:var(--warn-ink);border-color:rgba(255,181,46,.55)}
   #fut .chip.frozen{background:rgba(255,40,55,.2);color:#ffd9de;border-color:rgba(255,77,94,.75)}
   #fut .chip.closed{background:rgba(140,150,165,.14);color:#d2d9e3;border-color:rgba(140,150,165,.42)}
   #fut .pill2{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--mut);margin-left:10px}
@@ -134,7 +143,7 @@
   #fut .tfsub{display:flex;gap:5px;background:var(--bg2);border:1px solid var(--gbrd);border-radius:11px;padding:4px;margin:2px 0 4px}
   #fut .tftab{flex:1;text-align:center;padding:9px 4px;border-radius:8px;color:var(--mut);font-weight:700;font-size:12.5px;cursor:pointer;transition:all .18s}
   #fut .tftab.active{background:rgba(255,255,255,.07);color:#fff;box-shadow:inset 0 0 0 1px var(--gbrd)}
-  #fut .tftab.primary{color:#9cc3ff} #fut .tftab.primary.active{color:#cfe0ff;box-shadow:inset 0 0 0 1px rgba(77,141,255,.45)}
+  #fut .tftab.primary{color:var(--info-ink)} #fut .tftab.primary.active{color:#cfe0ff;box-shadow:inset 0 0 0 1px rgba(77,141,255,.45)}
   #fut .secttl{font-size:11px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:2px 0 6px}
   #fut .m-long.dominant{border-color:rgba(46,230,110,.45);box-shadow:0 0 0 1px var(--green-g),0 10px 32px var(--green-g)} #fut .m-long.dominant .val{text-shadow:0 0 20px var(--green-g)}
   #fut .m-hold.dominant{border-color:rgba(255,181,46,.45);box-shadow:0 0 0 1px var(--amber-g),0 10px 32px var(--amber-g)} #fut .m-hold.dominant .val{text-shadow:0 0 20px var(--amber-g)}
@@ -171,8 +180,8 @@
   #stk .pk-note{font-size:11px;color:var(--dim);margin-top:3px;font-style:italic}
   #stk .badge{font-size:10px;font-weight:750;padding:4px 9px;border-radius:7px;white-space:nowrap;letter-spacing:.3px;border:1px solid transparent}
   #stk .b-NEW{background:rgba(46,230,110,.14);color:#7ff0b0;border-color:rgba(46,230,110,.35)}
-  #stk .b-CARRIED{background:rgba(77,141,255,.14);color:#9cc3ff;border-color:rgba(77,141,255,.35)}
-  #stk .b-OPEN{background:rgba(255,181,46,.14);color:#ffd98a;border-color:rgba(255,181,46,.38)}
+  #stk .b-CARRIED{background:rgba(77,141,255,.14);color:var(--info-ink);border-color:rgba(77,141,255,.35)}
+  #stk .b-OPEN{background:rgba(255,181,46,.14);color:var(--warn-ink);border-color:rgba(255,181,46,.38)}
   #stk .b-EXPIRED{background:rgba(140,150,165,.12);color:#9aa3b0;border-color:rgba(140,150,165,.25)}
   #stk .b-RE-PRICED{background:rgba(170,110,255,.14);color:#d6a8ff;border-color:rgba(170,110,255,.35)}
   #stk .needs{font-size:10px;color:var(--amber);font-weight:650}
@@ -200,7 +209,7 @@
   /* "HOW TO TRADE THIS SITUATION" block — practical, situation-aware (Dispatch 24) */
   .helpbox .hp.how{color:#bfe6cd;margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)}
   .helpbox .hp.how b{color:#7ff0b0}
-  .helpbox .hp.cav{color:#ffd98a;margin-top:8px}
+  .helpbox .hp.cav{color:var(--warn-ink);margin-top:8px}
   .newhint{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:11px 13px;
     border:1px solid rgba(77,141,255,.35);border-radius:12px;background:rgba(77,141,255,.08);font-size:12.5px;color:#cfe0ff;line-height:1.45}
   .newhint .x{cursor:pointer;color:var(--mut);font-weight:700;padding:3px 9px;border:1px solid var(--gbrd);border-radius:8px;white-space:nowrap;flex:none}
@@ -213,13 +222,13 @@
   .freshbar .fdot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 10px currentColor}
   .freshbar .age{color:var(--mut);font-weight:600}
   .freshbar.live{color:#9fe9bd} .freshbar.live .fdot{background:var(--green);color:var(--green)}
-  .freshbar.warn{color:#ffd98a} .freshbar.warn .fdot{background:var(--amber);color:var(--amber)}
+  .freshbar.warn{color:var(--warn-ink)} .freshbar.warn .fdot{background:var(--amber);color:var(--amber)}
   .freshbar.bad{color:#ffb3bb} .freshbar.bad .fdot{background:var(--red);color:var(--red)}
   .freshbar.mut{color:var(--mut)} .freshbar.mut .fdot{background:var(--grey);color:var(--grey);box-shadow:none}
-  .freshbar .upd{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#9cc3ff;
+  .freshbar .upd{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--info-ink);
     font-family:var(--sans);opacity:0;transition:opacity .2s}
   .freshbar .upd.show{opacity:1}
-  .freshbar .upd::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid rgba(156,195,255,.4);border-top-color:#9cc3ff;animation:spin .7s linear infinite}
+  .freshbar .upd::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid rgba(156,195,255,.4);border-top-color:var(--info-ink);animation:spin .7s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   /* ── calendar context (Dispatch 29) — turn-of-month / quarter-end flag, display-only ── */
   .calctx{margin:0 0 14px;padding:10px 13px;border:1px solid rgba(255,181,46,.32);border-radius:12px;
@@ -234,17 +243,22 @@
   <div class="head"><h1>Arsenal Dashboard</h1><span class="meta">refresh 60s</span></div>
   <div class="newhint" id="newhint">New here? Tap the <b>&#9432;</b> icons on each section to learn what it is, how to read it, and its honest limits. <span class="x" id="newhint-x">dismiss</span></div>
   <div class="topbar" id="topbar">
-    <div class="toptab active" data-v="futures">Futures</div>
-    <div class="toptab" data-v="stocks">Stocks</div>
+    <div class="toptab active" data-v="overview">Overview</div>
+    <div class="toptab" data-v="futures">Futures</div>
+    <div class="toptab" data-v="stocks">Stocks/Swing</div>
     <div class="toptab" data-v="alerts">Alerts</div>
-    <div class="toptab" data-v="account">$15K</div>
+    <div class="toptab" data-v="account">$15K / Risk</div>
     <div class="toptab" data-v="journal">Journal</div>
   </div>
 
-  <div id="fut">
+  <div id="overview">
+    <div id="ov-content"><div class="loading">Loading…</div></div>
+  </div>
+
+  <div id="fut" hidden>
     <div class="tabs" id="fut-tabs"></div>
     <div class="freshbar" id="fut-fresh" hidden></div>
-    <details class="legend" open><summary>＋ legend</summary><div class="lgbody">
+    <details class="legend"><summary>＋ legend</summary><div class="lgbody">
       <span class="li"><span class="dot" style="background:var(--green)"></span>internals live</span>
       <span class="li"><span class="dot" style="background:var(--amber)"></span>STALE — structure only</span>
       <span class="li"><span class="dot" style="background:var(--dim)"></span>N/A — equity breadth only</span>
@@ -263,7 +277,7 @@
     <div id="stk-posture"></div>
     <div class="tabs" id="stk-tabs"></div>
     <div class="freshbar" id="stk-fresh" hidden></div>
-    <details class="legend" open><summary>＋ legend — pick states</summary><div class="lgbody">
+    <details class="legend"><summary>＋ legend — pick states</summary><div class="lgbody">
       <span class="li"><span class="badge b-NEW">NEW</span>first seen today</span>
       <span class="li"><span class="badge b-CARRIED">CARRIED</span>persisting · day N</span>
       <span class="li"><span class="badge b-OPEN">OPEN</span>triggered · tracking</span>
@@ -310,8 +324,8 @@
   #account table.acct th:first-child{text-align:left}
   #account table.acct td{text-align:right;padding:4px 6px;border-bottom:1px solid rgba(255,255,255,.05)}
   #account table.acct td:first-child{text-align:left}
-  #account .desc-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(255,217,138,.16);color:#ffd98a;margin-left:5px}
-  #account .val-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(80,220,140,.16);color:#7ee0a6;margin-left:5px}
+  #account .desc-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(255,217,138,.16);color:var(--warn-ink);margin-left:5px}
+  #account .val-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:5px;background:rgba(80,220,140,.16);color:var(--pos-ink);margin-left:5px}
   #account .warnrisk{color:#ff9a9a;font-weight:700}
   /* Alerts tab (Dispatch 23) */
   #alerts .algrp{margin:14px 0 6px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--mut);text-transform:uppercase}
@@ -324,11 +338,11 @@
   #alerts .aldesc{font-size:12px;color:var(--mut);line-height:1.45;margin-top:3px}
   #alerts .almeta{font-size:11px;color:var(--dim);margin-top:5px}
   #alerts .tag{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;margin:2px 4px 0 0;letter-spacing:.03em}
-  #alerts .tag.sim{background:rgba(255,217,138,.16);color:#ffd98a}
+  #alerts .tag.sim{background:rgba(255,217,138,.16);color:var(--warn-ink)}
   #alerts .tag.study{background:rgba(180,140,255,.18);color:#cdb4ff}
   #alerts .tag.delay{background:rgba(120,180,255,.16);color:#9fc3ff}
   #alerts .tag.nw{background:rgba(255,255,255,.08);color:var(--mut)}
-  #alerts .tag.live{background:rgba(80,220,140,.16);color:#7ee0a6}
+  #alerts .tag.live{background:rgba(80,220,140,.16);color:var(--pos-ink)}
   /* toggle switch */
   #alerts .sw{flex:none;width:46px;height:26px;border-radius:14px;background:rgba(255,255,255,.14);position:relative;cursor:pointer;
     transition:background .15s;border:1px solid var(--gbrd);margin-top:2px}
@@ -341,7 +355,7 @@
   #alerts .applybtn{display:block;width:100%;text-align:center;padding:13px;border-radius:12px;font-weight:800;font-size:14px;
     text-decoration:none;border:1px solid var(--gbrd);background:rgba(255,255,255,.06);color:var(--mut)}
   #alerts .applybtn.live{background:var(--green);color:#04210f;border-color:transparent}
-  #alerts .pend{font-size:12px;color:#ffd98a;text-align:center;margin:8px 0 2px;min-height:16px}
+  #alerts .pend{font-size:12px;color:var(--warn-ink);text-align:center;margin:8px 0 2px;min-height:16px}
 </style>
 <script>
 /* PUBLIC display build — NO credential. Reads PUBLIC repo raw URLs. */
@@ -870,6 +884,9 @@ const Futures = (function(){
     let sig="";(d.signals||[]).forEach(s=>{const na=s.verdict==="N/A";
       sig+='<tr class="'+(na?"na":"")+'"><td><div class="sname">'+esc(s.name)+'</div><div class="smeta">'+esc(s.pillar)+' · conf '+esc(s.confidence)+'</div><div class="reason">'+esc(s.reason)+'</div></td>'
         +'<td style="text-align:right;white-space:nowrap"><span class="v v-'+esc(s.verdict)+'">'+esc(s.verdict)+'</span></td></tr>';});
+    /* D46: HOLD-wall collapse — one-line summary, full per-signal rows behind a drop-down */
+    const _sg=(d.signals||[]),_vote=_sg.filter(s=>Number(s.confidence)>0&&s.verdict!=="N/A").length,_na=_sg.filter(s=>s.verdict==="N/A").length;
+    const sigSummary=_sg.length?('<b>'+_vote+'</b> voting · '+(_sg.length-_vote-_na)+' hold'+(_na?' · '+_na+' N/A (no feed)':'')):'no signals';
     let zones="";(d.confluence_zones||[]).forEach(z=>{zones+='<div class="zone"><span>'+esc(z.method)+' '+esc(z.label)+' @ <b>'+esc(z.price)+'</b> <span class="zmut">(Δ'+esc(z.dist)+')</span></span><span class="tag">'+esc(z.vp_timeframe||"?")+'</span></div>';});
     if(!zones) zones='<div class="zone zmut">no level within tolerance of price</div>';
     let news=""; const si=(summary&&summary.instruments&&summary.instruments[current])?summary.instruments[current]:null;
@@ -891,7 +908,8 @@ const Futures = (function(){
         +'</div></div>'
       +guidanceBlock(d,isLive)
       +scorecardPanel(current)
-      +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
+      +'<div class="card"><h2>Signals</h2><div class="src" style="margin:-4px 0 2px;color:'+(_vote?"var(--mut)":"var(--warn-ink)")+'">'+sigSummary+'</div>'
+        +'<details class="research"><summary>▸ per-signal breakdown ('+_sg.length+')</summary><table style="margin-top:6px">'+sig+'</table></details></div>'
       +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news
       +(current==="ES"&&d.timeframes?tfPanel(d):"")
       +((current==="GC"||current==="CL")?gcclEmaPanel(current):"");
@@ -1140,14 +1158,14 @@ window.Alerts=Alerts;
 const Account=(function(){
   const money=n=>(n<0?"-$":"$")+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0});
   const pcls=n=>n>=0?"pnlpos":"pnlneg";
-  const INSTC={STOCK:"#4d8dff",MGC:"#f5c451",MCL:"#c98b5b",MES:"#7ee0a6"};
+  const INSTC={STOCK:"#4d8dff",MGC:"var(--pal-mgc)",MCL:"var(--pal-mcl)",MES:"var(--pos-ink)"};
   /* D40: equity-curve SVG (flat single point pre-Monday; a line once trades close) */
   function curveSVG(curve){
     const c=(curve&&curve.length)?curve:[{balance:15000}];
     const W=600,H=120,pad=8,bals=c.map(p=>p.balance);
     let mn=Math.min(15000,...bals),mx=Math.max(15000,...bals); if(mx-mn<1){mn-=200;mx+=200;}
     const n=c.length,X=i=>pad+(n<=1?(W-2*pad)/2:(i/(n-1))*(W-2*pad)),Y=b=>H-pad-((b-mn)/(mx-mn))*(H-2*pad);
-    const base=Y(15000).toFixed(1),last=bals[bals.length-1],col=last>=15000?"#7ee0a6":"#e06060";
+    const base=Y(15000).toFixed(1),last=bals[bals.length-1],col=last>=15000?"var(--pos-ink)":"var(--neg-ink)";
     const pts=c.map((p,i)=>X(i).toFixed(1)+","+Y(p.balance).toFixed(1)).join(" ");
     return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:120px;margin:8px 0;border:1px solid var(--gbrd);border-radius:10px;background:rgba(255,255,255,.02)">'
       +'<line x1="'+pad+'" y1="'+base+'" x2="'+(W-pad)+'" y2="'+base+'" stroke="var(--dim)" stroke-dasharray="3 3"/>'
@@ -1200,7 +1218,7 @@ const Account=(function(){
         (ll.alerts||[]).forEach(a=>{ h+='<div style="font-weight:800">'+esc(a.title)+'</div><div style="font-weight:500;font-size:12px;margin:2px 0 4px">'+esc(a.body)+'</div>'; });
         h+='<div style="font-size:11px;opacity:.85">Cannot force-flatten — Hany acts. Breaches logged to the discipline scorecard (D42).</div></div>';
       } else {
-        h+='<div class="accnote" style="border-color:rgba(80,220,140,.4);background:rgba(80,220,140,.08);color:#cdeacd;margin-top:8px"><b>✓ No loss limit active.</b> Circuit breakers armed.</div>';
+        h+='<div class="accnote" style="border-color:rgba(80,220,140,.4);background:rgba(80,220,140,.08);color:var(--pos-pale);margin-top:8px"><b>✓ No loss limit active.</b> Circuit breakers armed.</div>';
       }
       const lim=ll.registered_limits||{};
       h+='<div class="accgrid">'
@@ -1250,7 +1268,7 @@ const Account=(function(){
         keys.forEach(k=>{ const r=er.setups[k];
           h+='<div style="font-size:12px;margin:6px 0;padding:7px 9px;border:1px solid var(--gbrd);border-radius:9px;background:rgba(255,255,255,.02)">'
             +'<b>'+esc(k.replace('::','/'))+'</b> <span style="color:var(--mut)">'+esc(r.brief||'')+'</span>'
-            +(r.conditional_edge?'<div style="color:#ffd98a;margin-top:3px">▸ '+esc(r.conditional_edge)+'</div>':'')+'</div>';
+            +(r.conditional_edge?'<div style="color:var(--warn-ink);margin-top:3px">▸ '+esc(r.conditional_edge)+'</div>':'')+'</div>';
         });
       }
     }
@@ -1267,7 +1285,7 @@ const Account=(function(){
     if(!pd) return '';
     let h='<h3 class="acch" style="margin-top:22px">Portfolio constructor — best instruments × strategies</h3>';
     h+='<div class="accnote">'+esc(pd.banner||'')+'</div>';
-    if(pd.recommendation_text) h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:#cdeacd;margin-top:8px"><b>'+esc(pd.recommendation_text)+'</b></div>';
+    if(pd.recommendation_text) h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:var(--pos-pale);margin-top:8px"><b>'+esc(pd.recommendation_text)+'</b></div>';
     const cand=pd.portfolio_candidates||[];
     if(cand.length){
       h+='<table class="acct" style="margin-top:10px"><tr><th>portfolio</th><th>tracks</th><th>return</th><th>maxDD</th><th>exp$/wk</th><th>margin%</th><th>skip</th><th>riskadj</th></tr>';
@@ -1325,7 +1343,7 @@ const Account=(function(){
     // at_market vs pullback contrast callout
     const sub=(ka.FORWARD&&ka.FORWARD.by_sub_bucket)||{};
     const am=Object.entries(sub).find(([k])=>/at_market/.test(k)), pb=Object.entries(sub).find(([k])=>/pullback/.test(k));
-    if(am&&pb){ h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:#cdeacd;margin-top:8px">'
+    if(am&&pb){ h+='<div class="accnote" style="border-color:rgba(126,224,166,.4);background:rgba(126,224,166,.08);color:var(--pos-pale);margin-top:8px">'
       +'<b>at_market vs pullback (expectancy):</b> at_market '+exp(am[1].expectancy)+' (PF '+am[1].profit_factor+', win '+am[1].win_rate_pct+'%) '
       +'vs pullback '+exp(pb[1].expectancy)+' (PF '+pb[1].profit_factor+', win '+pb[1].win_rate_pct+'%). Pullback is the entry edge.</div>'; }
     h+=tbl('HISTORICAL BASELINE (in-sample, small-n)',ka.HISTORICAL_BASELINE);
@@ -1346,7 +1364,7 @@ const Account=(function(){
       +'Reset to $15,000, live from <b>'+esc(d.account_start_date||"")+'</b> — the prior 2025 backtested history is excluded. '
       +'Single micros (MES $5/pt, MGC $10/pt, MCL $100/pt), 1 unit/signal, risk = the structural stop, costs + 1-tick slippage in, '
       +'margin + concurrency modelled, from the <b>dedup-corrected</b> filtered tracks. Net-points scorecards are unchanged.</div>';
-    if(d.status) h+='<div style="font-size:12.5px;font-weight:700;color:'+(fresh?"#ffd98a":"#7ee0a6")+';margin:2px 0 8px">'+esc(d.status)+'</div>';
+    if(d.status) h+='<div style="font-size:12.5px;font-weight:700;color:'+(fresh?"var(--warn-ink)":"var(--pos-ink)")+';margin:2px 0 8px">'+esc(d.status)+'</div>';
     // headline
     h+='<div class="bigbal">'+money(sa.final_balance||0)+'</div>';
     h+='<div class="'+pcls(pnl)+'" style="font-weight:700;font-size:15px;margin-top:2px">'
@@ -1375,7 +1393,7 @@ const Account=(function(){
     h+='<h3 class="acch">Per-instrument P&amp;L</h3>';
     ["STOCK","MGC","MCL","MES"].forEach(k=>{ if(!(k in pi))return; const v=pi[k];
       h+='<div class="ibar"><span class="lbl">'+k+'</span>'
-        +'<span class="bar" style="width:'+Math.round(Math.abs(v)/max*55)+'%;background:'+(v>=0?INSTC[k]:"#e06060")+'"></span>'
+        +'<span class="bar" style="width:'+Math.round(Math.abs(v)/max*55)+'%;background:'+(v>=0?INSTC[k]:"var(--neg-ink)")+'"></span>'
         +'<b class="'+pcls(v)+'">'+(v>=0?"+":"")+money(v)+'</b></div>';
     });
     // per-track table
@@ -1405,19 +1423,64 @@ const Account=(function(){
 })();
 window.Account=Account;
 
+/* ════════════ OVERVIEW tab (Dispatch 46) — at-a-glance answer across books. Presentation-only;
+   reuses regime_label / portfolio_constructor / account_summary / verdict — NO new data source. ══ */
+const Overview=(function(){
+  function chip(kind,word,txt){const c={pos:"var(--pos)",neg:"var(--neg)",warn:"var(--warn)",info:"var(--info)",idle:"var(--idle)"}[kind]||"var(--mut)";
+    return '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid '+c+';color:'+c+';margin:3px 6px 3px 0">'+word+' '+esc(txt)+'</span>';}
+  function regChip(r,lbl){ if(!r||r.trendiness==null) return chip("idle","—",lbl+" n/a");
+    const k=r.label==="TRENDING"?"pos":(r.label==="CHOP"?"warn":"info"), ic=r.label==="TRENDING"?"▲":(r.label==="CHOP"?"≈":"◦");
+    return chip(k,ic,lbl+" "+r.label+" "+r.trendiness); }
+  async function load(){
+    const el=document.getElementById("ov-content"); el.innerHTML='<div class="loading">Loading…</div>';
+    const o={};
+    await Promise.all([
+      ghFetch("regime_label.json").then(d=>o.reg=d).catch(()=>{}),
+      ghFetch("portfolio_constructor.json").then(d=>o.pf=d).catch(()=>{}),
+      ghFetch("account_summary.json").then(d=>o.acc=d).catch(()=>{}),
+      ghFetch("verdict.json").then(d=>o.es=d).catch(()=>{})
+    ]);
+    el.innerHTML=render(o);
+  }
+  function render(o){
+    const ts=o.es&&(o.es.pushed_at||o.es.timestamp), age=ageMin(ts);
+    const fresh = age==null?chip("idle","—","ES feed age unknown")
+      :(age<=FREEZE_MIN?chip("pos","●","ES feed LIVE · "+Math.round(age)+"m"):chip("warn","◉","ES feed STALE · "+Math.round(age)+"m"));
+    const ri=(o.reg&&o.reg.instruments)||{};
+    let h='<h2 style="font-size:16px;margin:4px 0 2px">Overview</h2><div class="src" style="margin-bottom:10px">The at-a-glance answer across your books — regime weather, the deployable edge, and the account, with everything else one tab away.</div>';
+    h+='<div class="card"><h2>Status — the weather'+hI("regime")+'</h2>'+hP("regime")
+      +'<div style="margin:2px 0">'+fresh+regChip(ri.ES_4h,"ES")+regChip(ri.SPY_daily_proxy,"SPY")+regChip(ri.GC_daily||ri.GC,"GC")+regChip(ri.CL_daily||ri.CL,"CL")+'</div>'
+      +'<div class="src">regime = coincident readout (not a forecast) · act only when the relevant feed reads LIVE</div></div>';
+    let ans='<div class="card guid"><h2>The answer — what’s actionable right now'+hI("guidance")+'</h2>'+hP("guidance");
+    const rec=(o.pf&&o.pf.recommendation_text);
+    ans+= rec?'<div class="gline gok" style="font-weight:750">▸ '+esc(rec)+'</div>'
+            :'<div class="gline gmut">No single deployable edge surfaced right now — see the $15K / Risk tab for the portfolio gate.</div>';
+    if(o.acc&&o.acc.shared_account){const sa=o.acc.shared_account, pnl=sa.pnl||0;
+      ans+='<div class="gline gmut" style="margin-top:6px">$15K paper account: <b style="color:'+(pnl>=0?"var(--pos)":"var(--neg)")+'">'+(pnl>=0?"+":"−")+'$'+Math.abs(pnl).toLocaleString(undefined,{maximumFractionDigits:0})+'</b> · forward-only, SIMULATED</div>';}
+    ans+='<div class="gtag">SIMULATED · the trigger is price breaking the stop, not this summary. Full detail lives in each tab.</div></div>';
+    const labels={futures:"Futures",stocks:"Stocks/Swing",account:"$15K / Risk",journal:"Journal",alerts:"Alerts"};
+    let jump='<div class="card"><h2>Go to</h2>'+Object.keys(labels).map(v=>'<span class="addmine" style="margin:3px 6px 3px 0" onclick="showView(\''+v+'\')">'+labels[v]+'</span>').join("")+'</div>';
+    return h+ans+jump;
+  }
+  return {load};
+})();
+window.Overview=Overview;
+
 /* ════════════ top-level view switch ════════════ */
-let view="futures";
-function redraw(){ view==="futures"?Futures.redraw():Stocks.redraw(); }
+let view="overview";
+function redraw(){ if(view==="futures")Futures.redraw(); else if(view==="stocks")Stocks.redraw(); }
 window.redraw=redraw;
 function showView(v){
   view=v;
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
+  document.getElementById("overview").hidden=(v!=="overview");
   document.getElementById("fut").hidden=(v!=="futures");
   document.getElementById("stk").hidden=(v!=="stocks");
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
   document.getElementById("journal").hidden=(v!=="journal");
-  if(v==="alerts")Alerts.load();
+  if(v==="overview")Overview.load();
+  else if(v==="alerts")Alerts.load();
   else if(v==="account")Account.load();
   else if(v==="journal")Journal.load();
   else (v==="futures"?Futures:Stocks).load();   // fetch only the active view
@@ -1477,7 +1540,7 @@ const Journal=(function(){
 window.Journal=Journal;
 
 Futures.init(); Stocks.init();
-showView("futures");
+showView("overview");
 loadCalCtx();
 loadRegime();
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
