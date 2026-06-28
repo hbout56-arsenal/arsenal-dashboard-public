@@ -419,7 +419,7 @@ function renderRegime(id, inst){
   const r=regimeData&&(regimeData.instruments||{})[inst];
   if(!r||r.trendiness==null){ el.style.display="none"; el.innerHTML=""; return; }
   const col=r.label==="TRENDING"?"var(--green)":(r.label==="CHOP"?"var(--mut)":"var(--amber)");
-  const lbl=esc(String(inst).split("_")[0]);
+  const _pp=String(inst).split("_"); const lbl=esc(_pp[0]+(_pp[1]?" "+_pp[1].replace("proxy",""):""));
   el.innerHTML='<span style="color:'+col+'"><b>◉ regime '+lbl+': '+esc(r.label)+'</b></span>'
     +'<span class="gmut">trendiness '+esc(r.trendiness)+'/100 · coincident readout (not a forecast)</span>'
     +hI("regime")+hP("regime");
