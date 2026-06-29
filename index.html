@@ -270,6 +270,7 @@
 <body>
 <div class="wrap">
   <div class="head"><h1>Arsenal Dashboard</h1><span class="meta">refresh 60s</span></div>
+  <div id="price-age" class="price-age"></div>
   <div class="newhint" id="newhint">New here? Tap the <b>&#9432;</b> icons on each section to learn what it is, how to read it, and its honest limits. <span class="x" id="newhint-x">dismiss</span></div>
   <div class="topbar" id="topbar">
     <div class="toptab active" data-v="overview">Overview</div>
@@ -1866,5 +1867,83 @@ function orbFuturesPanel(){
 }
 
 var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
+
+<!-- D59 price-age strip (additive) -->
+<style>
+  .price-age{margin:6px 0 10px;font-size:11.5px;line-height:1.8}
+  .price-age .pa-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 0}
+  .price-age .pa-lbl{font-weight:700;letter-spacing:.4px;font-size:10.5px}
+  .price-age .pchip{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
+  .price-age .pchip.dim{color:var(--mut);opacity:.6}
+  .price-age .pchg{font-size:10.5px}
+  .price-age .ptag{font-size:9px;color:var(--mut);letter-spacing:.2px}
+  .price-age .pa-note{color:var(--dim);font-size:10.5px;margin-top:3px}
+</style>
+<script>
+/* D60 IQFeed-first futures prices + tiered freshness — reads internals_snapshot.json,
+   prices_futures.json (Polygon fallback), prices_stocks.json */
+(function(){
+  const IQF_STALE_MS = 10*60000;     // reuse the snapshot's pushed_at-vs-clock rule (10min RTH)
+  const TOL_FUT = 4*60000, TOL_STK = 6*60000;
+  const LIVE = [["ES","es"],["NQ","nq"],["YM","ym"]];   // genuinely live IQFeed
+  const SNAP_DELAYED = [["SOX","sox"],["VIX","vix"]];    // in snapshot but Polygon-sourced -> DELAYED
+  const POLY_ONLY = ["GC","CL","BZ"];
+  let SNAP=null, PF=null, PS=null;
+  const num=v=>{const n=parseFloat(v);return isNaN(n)?null:n;};
+  function snapAgeMs(){ if(!SNAP||!SNAP.pushed_at) return null; const t=Date.parse(SNAP.pushed_at); return isNaN(t)?null:Date.now()-t; }
+  function iqfFresh(){ const a=snapAgeMs(); return a!=null && a < IQF_STALE_MS; }
+  function row(){ return (SNAP&&SNAP.rows&&SNAP.rows.length)?SNAP.rows[SNAP.rows.length-1]:null; }
+  function agoStr(ms){ if(ms==null) return "n/a"; const s=Math.max(0,Math.round(ms/1000));
+    if(s<3600){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");} return (s/3600).toFixed(1)+"h"; }
+  function polyOf(sym){ return (PF&&PF.symbols&&PF.symbols[sym])||null; }
+  function chip(sym, price, chg, tag, color, ageMs){
+    if(price==null) return '<span class="pchip dim">'+esc(sym)+' — '+esc(tag)+'</span>';
+    const cc=(chg||0)>=0?"var(--pos-ink)":"var(--neg-ink)";
+    return '<span class="pchip" style="color:'+color+'">'+esc(sym)+' '+esc(price)
+      +(chg!=null?' <span class="pchg" style="color:'+cc+'">'+((chg>=0)?"+":"")+esc(chg)+'</span>':'')
+      +' <span class="ptag">'+esc(tag)+(ageMs!=null?' '+agoStr(ageMs):'')+'</span></span>';
+  }
+  function futuresChips(){
+    const r=row(), fresh=iqfFresh(), out=[];
+    LIVE.forEach(([sym,k])=>{
+      const live = fresh && r && num(r[k+"_last"])!=null;
+      if(live){ out.push(chip(sym, num(r[k+"_last"]), num(r[k+"_chg"]), "LIVE (IQFeed,", "var(--pos-ink)", snapAgeMs())); }
+      else { const p=polyOf(sym); out.push(chip(sym, p&&p.price, p&&p.change_pct, "DELAYED (IQFeed stale,", "var(--warn-ink)", p&&p.as_of_ms?Date.now()-p.as_of_ms:null)); }
+    });
+    SNAP_DELAYED.forEach(([sym,k])=>{
+      const sv = (fresh&&r)?num(r[k==="vix"?"vix":k+"_last"]):null;
+      if(sv!=null){ out.push(chip(sym, sv, fresh&&r?num(r[k+"_chg"]):null, "DELAYED (snapshot/Polygon,", "var(--warn-ink)", snapAgeMs())); }
+      else { const p=polyOf(sym); out.push(p&&p.price!=null?chip(sym,p.price,p.change_pct,"DELAYED (Polygon,","var(--warn-ink)",p.as_of_ms?Date.now()-p.as_of_ms:null):chip(sym,null,null,"unavailable","var(--mut)",null)); }
+    });
+    POLY_ONLY.forEach(sym=>{ const p=polyOf(sym);
+      out.push(p&&p.price!=null?chip(sym,p.price,p.change_pct,"DELAYED ~10-15min (Polygon,","var(--warn-ink)",p.as_of_ms?Date.now()-p.as_of_ms:null):chip(sym,null,null,"unavailable","var(--mut)",null)); });
+    return out.join("");
+  }
+  function stocksChips(){
+    if(!PS||!PS.symbols) return '<span class="gmut">—</span>';
+    return Object.entries(PS.symbols).map(([k,v])=> v.price==null?'<span class="pchip dim">'+esc(k)+' —</span>'
+      :chip(k, v.price, v.change_pct, "", (Date.now()-(v.as_of_ms||0))<TOL_STK?"var(--pos-ink)":"var(--warn-ink)", v.as_of_ms?Date.now()-v.as_of_ms:null)).join("");
+  }
+  function render(){
+    const el=document.getElementById("price-age"); if(!el) return;
+    const iqf = iqfFresh()?'<span style="color:var(--pos-ink)">IQFeed LIVE</span>':'<span style="color:var(--warn-ink)">IQFeed STALE → Polygon fallback</span>';
+    el.innerHTML =
+      '<div class="pa-row"><span class="pa-lbl">FUTURES</span> '+iqf+' '+futuresChips()+'</div>'
+      +'<div class="pa-row"><span class="pa-lbl">STOCKS ~5min</span> '+stocksChips()+'</div>'
+      +'<div class="pa-note">ES/NQ/YM = LIVE IQFeed when fresh, else delayed-Polygon fallback. SOX/VIX/GC/CL/BZ = '
+      +'exchange-delayed (Polygon). For live execution prices use ToS.</div>';
+  }
+  async function load(){
+    try{ SNAP=await ghFetch("internals_snapshot.json"); }catch(e){ SNAP=null; }
+    try{ PF=await ghFetch("prices_futures.json"); }catch(e){}
+    try{ PS=await ghFetch("prices_stocks.json"); }catch(e){}
+    render();
+  }
+  function rth(){ try{const n=etNow(); return n&&n.dow<=5&&n.hm>=930&&n.hm<=1600;}catch(e){return false;} }
+  function schedule(){ load(); setTimeout(schedule, rth()?70000:300000); }
+  setInterval(render, 5000);   // keep "(M:SS ago)" honest between fetches
+  if(document.readyState!=="loading") schedule(); else document.addEventListener("DOMContentLoaded", schedule);
+})();
+</script>
 </body>
 </html>
