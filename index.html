@@ -982,7 +982,7 @@ const Futures = (function(){
 const Stocks = (function(){
   const STALE_MIN=60;
   const SECTIONS=[{key:"convergence",label:"Convergence"},{key:"minervini",label:"Minervini"},{key:"top_setups",label:"Top Setups"},{key:"context",label:"Context"}];
-  let current="convergence", data=null, emaStk=null, gateData=null;
+  let current="convergence", data=null, emaStk=null, gateData=null, orbData=null;
   /* D51 not-extended (no-chase) gate — render a CLEAN/EXTENDED chip when the engine tags a pick */
   function xChip(p){
     const st=p&&(p.gate_status||(p.extended===true?"EXTENDED":p.extended===false?"NOT_EXTENDED":null));
@@ -1102,7 +1102,8 @@ const Stocks = (function(){
       +gatePanel()
       +'<div class="card">'+dwrap("Engine top 5 (control)",'<table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table>')+'</div>'
       +'<div class="card">'+dwrap("Scorecard — curated vs engine",'<div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div>')+'</div>'
-      +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'');
+      +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'')
+      +orbPanel();
   }
   function render(){
     const age=ageMin(data.generated_at);
@@ -1120,7 +1121,8 @@ const Stocks = (function(){
     if(!tokenReady()){banner("stk-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
     freshUpdating("stk",true);   // fresh-on-complete: subtle "updating…" until the new daily JSON lands & re-renders
     ghFetch("ema_stocks_state.json").then(s=>{emaStk=s; if(data) renderSection();}).catch(()=>{});  // non-voting context (best-effort)
-    ghFetch("not_extended_gate.json").then(g=>{gateData=g; if(data) renderSection();}).catch(()=>{});  // D51 not-extended gate (best-effort)
+    ghFetch("not_extended_gate.json").then(g=>{gateData=g; if(data) renderSection();}).catch(()=>{});
+    ghFetch("orb_aplus.json").then(o=>{orbData=o; if(data) renderSection();}).catch(()=>{});  // D51 not-extended gate (best-effort)
     try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
     catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
@@ -1780,5 +1782,46 @@ function gcDxyPanel(){
 }
 
 var dxyOv=(typeof dxyOv!=='undefined')?dxyOv:null;</script>
+
+<script>/* D47 ORB A+ panel (SHADOW, additive) */
+
+HELP["orb"]={t:"ORB — opening-range breakout (RAW vs A+)",
+ w:"The opening range (OR) is the high/low of the first 30 min (09:30–10:00 ET). A breakout = a 5-min close beyond it on >=1.5x volume. RAW = that breakout alone (the live alert). A+ = a RAW breakout that ALSO passes 5 confluence filters.",
+ r:"A+ filters (all must pass): TREND (above a rising daily EMA21), NOT-EXTENDED (the D51 gate), RANGE QUALITY (OR width 0.2–0.8x ATR), RS (126d return beats SPY), REGIME (index TRENDING). RAW keeps firing as the null control.",
+ u:"See whether a breakout has confluence behind it — context, not a separate trigger.",
+ c:"⚠ A+ = confluence filter, NOT a validated win rate. Earns validated status only on n>=30 forward beating RAW + the divide-by-N haircut. SHADOW / INFORMATIONAL — does not feed the actionable list."};
+
+
+function orbPanel(){
+  const d=(typeof orbData!=="undefined"&&orbData)?orbData:null;
+  const banner='<div class="ps-shadow" style="margin:8px 0"><b>ORB A+ = INFORMATIONAL / SHADOW</b> — '
+    +'A+ is a confluence filter, NOT a validated win rate. The RAW opening-range alert keeps firing as the '
+    +'null control. A+ earns validated status only on n≥30 forward beating RAW + haircut.</div>';
+  const head='<div class="card"><div class="secttl" style="font-size:11px;letter-spacing:.6px;color:var(--mut);text-transform:uppercase;font-weight:700">ORB — opening-range breakout (RAW vs A+)'+hI("orb")+'</div>'+hP("orb")+banner;
+  if(!d){ return head+'<div class="loading">ORB overlay not loaded yet (SHADOW — run orb_aplus.py --dry-run).</div></div>'; }
+  const cnt='<div class="statrow"><b>Session</b> '+esc(d.session)+' · watched '+esc(d.watched)
+    +' · RAW triggers <b>'+esc(d.raw_triggers)+'</b> · A+ <b style="color:var(--pos-ink)">'+esc(d.aplus_triggers)+'</b></div>';
+  const chip=(p)=> p===true?'<span style="color:var(--pos-ink)">✓</span>':(p===false?'<span style="color:var(--neg-ink)">✗</span>':'<span class="gmut">–</span>');
+  let body="";
+  (d.triggers||[]).forEach(t=>{
+    const tagCol=t.aplus?"var(--pos-ink)":"var(--mut)";
+    const tag=t.aplus?"A+":("RAW only"+(t.fails&&t.fails.length?" (fails: "+t.fails.join(", ")+")":""));
+    const f=t.filters||{};
+    body+='<div class="setup" style="margin-top:7px"><div class="stk">'+esc(t.ticker)+' '+esc((t.side||"").toUpperCase())
+      +' <span style="font-weight:800;color:'+tagCol+'">'+esc(tag)+'</span> <span class="gmut" style="font-weight:400">@ '+esc(t.trigger_time)+' · '+esc(t.vol_mult)+'x vol</span></div>'
+      +'<div class="params" style="font-size:12px"><span class="lbl">OR</span> '+esc(t.or_low)+'–'+esc(t.or_high)
+      +' · <span class="lbl">entry</span> '+esc(t.entry)+' · <span class="lbl">stop</span> '+esc(t.stop)+' ('+esc(t.stop_basis)+') · <span class="lbl">T1</span> '+esc(t.t1)+' · <span class="lbl">T2</span> '+esc(t.t2)+' · <span class="lbl">R:R</span> '+esc(t.rr_t2)+' · <span class="lbl">size</span> '+esc(t.size_band)+'</div>'
+      +'<div class="edu" style="font-size:11px;color:var(--mut)">filters: trend '+chip(f.trend&&f.trend.pass)+' · not-extended '+chip(f.not_extended&&f.not_extended.pass)+' · range '+chip(f.range_quality&&f.range_quality.pass)+' · RS '+chip(f.rs&&f.rs.pass)+' · regime '+chip(f.regime&&f.regime.pass)
+      +' · <span class="lbl">regime</span> '+esc(t.regime_at_signal)+' · <span class="lbl">RS126</span> '+esc(t.rs_daily)+'</div></div>';
+  });
+  if(!body) body='<div class="statrow grey">No RAW opening-range breakout on the watched names this session.</div>';
+  const g=d.gauntlet||{}, c=g.cells||{};
+  const gaunt='<details class="research" style="margin-top:9px"><summary>▸ gauntlet: RAW vs A+ + per-filter ablation ('+esc(g.status||"")+')</summary>'
+    +'<div class="statrow" style="font-size:11.5px;color:var(--mut)">RAW n='+esc((c.RAW_all||{}).n)+' · A+ n='+esc((c.APLUS||{}).n)+' · leave-one-out: '+esc(Object.keys(g.ablation_leave_one_out||{}).join(", "))+'</div>'
+    +'<div class="statrow grey" style="font-size:11px">'+esc(g.read||"")+'</div></details>';
+  return head+cnt+body+gaunt+'</div>';
+}
+
+var orbData=(typeof orbData!=='undefined')?orbData:null;</script>
 </body>
 </html>
