@@ -760,7 +760,7 @@ const Futures = (function(){
     document.getElementById("fut-foot").textContent="ICT updated "+local+" · last bar "+esc(d.last_bar_ts||"");
   }
   const STALE_MIN=10;
-  let current="ES"; const lastData={}; let summary=null; let futTF=null; let gcclEma=null;
+  let current="ES"; const lastData={}; let summary=null; let futTF=null; let gcclEma=null; let futSnap=null;
   /* ── GC/CL EMA on Polygon DELAYED (Dispatch 14) — NON-VOTING, DELAYED tag everywhere ── */
   function gcclEmaPanel(instKey){
     if(!gcclEma||!gcclEma.instruments) return "";
@@ -897,6 +897,13 @@ const Futures = (function(){
   }
   function render(d,reconnecting){
     const age=ageMin(tsOf(d));
+    let _liveTs=null;   // D60: live IQFeed price override for ES (snapshot <=10min); null-safe fallback to verdict
+    try{ const _k={ES:"es",NQ:"nq",YM:"ym"}[current];
+      if(_k&&futSnap&&futSnap.rows&&futSnap.rows.length&&futSnap.pushed_at){
+        const _age=Date.now()-Date.parse(futSnap.pushed_at), _r=futSnap.rows[futSnap.rows.length-1], _v=_r[_k+"_last"];
+        if(_age<600000&&_v!=null&&_v!==""){ d=Object.assign({},d,{price:parseFloat(_v)});
+          const _c=_r[_k+"_chg"]; if(_c!=null&&_c!=="") d.change=parseFloat(_c); _liveTs=futSnap.pushed_at; } }
+    }catch(e){}
     const ts0=tsOf(d), tms0=Date.parse((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
     // ── FROZEN / DARK / LIVE honesty layer ──
     const hasLive=(d.signals||[]).some(s=>Number(s.confidence)>0);   // >=1 signal actually voted (conf>0)
@@ -910,7 +917,7 @@ const Futures = (function(){
     else if(state==="dark") banner("fut-banner","dark","○ DARK — no live signals this session (internals + structure unavailable). Meter is NOT actionable — last structural context only.");
     else if(state==="recon") banner("fut-banner","recon","⟳ Reconnecting — last good verdict ("+(age==null?"?":Math.round(age))+" min old).");
     else banner("fut-banner","",null);
-    setFresh("fut",tsOf(d),state==="live"?"live":state==="frozen"?"bad":state==="closed"?"mut":"warn");
+    setFresh("fut",_liveTs||tsOf(d),_liveTs?"live":(state==="live"?"live":state==="frozen"?"bad":state==="closed"?"mut":"warn"));
     const isLive=(state==="live");
     let pc,pt;
     if(d.internals_applicable===false){pc="var(--dim)";pt="internals N/A — equity breadth only";}
@@ -970,6 +977,7 @@ const Futures = (function(){
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
     if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
     if(want==="GC") ghFetch("dxy_overlay.json").then(x=>{dxyOv=x; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
+    if(want==="ES") ghFetch("internals_snapshot.json").then(s=>{futSnap=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // D60 LIVE IQFeed ES price
     try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="IB"?renderInsideBar(d):(want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):(want==="ICT"?renderICT(d):render(d,false))));}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
