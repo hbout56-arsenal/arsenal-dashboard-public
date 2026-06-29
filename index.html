@@ -269,7 +269,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="head"><h1>Arsenal Dashboard</h1><span class="meta"><a href="trainer.html" style="color:var(--info-ink);text-decoration:none;font-weight:650">◎ Trainer ▸</a> · refresh 60s</span></div>
+  <div class="head"><h1>Arsenal Dashboard</h1><span class="meta">refresh 60s</span></div>
   <div id="price-age" class="price-age"></div>
   <div class="newhint" id="newhint">New here? Tap the <b>&#9432;</b> icons on each section to learn what it is, how to read it, and its honest limits. <span class="x" id="newhint-x">dismiss</span></div>
   <div class="topbar" id="topbar">
@@ -1961,5 +1961,49 @@ var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
 </script>
 <script>/* D62 liquidity-gate tooltip */
 HELP["liquidity"]={t:"Liquidity gate (ADV \u2265 $20M)",w:"Average daily dollar volume must clear $20M so slippage doesn\u2019t eat the edge; thin names are rejected here.",r:"Stage-2 of the funnel: of the trend-template survivors, only those trading \u2265 $20M/day on average pass. Each qualified pick shows its actual ADV and how many \u00d7s over the floor it trades.",u:"Avoid names you can\u2019t get in and out of cleanly \u2014 a pro screen culls illiquid tickers before structure even matters.",c:"\u26a0 Public market volume only (NOT account $/positions). SHADOW / educational."};</script>
+
+<!-- D63: collapsible sections IN PLACE (tabs kept; each tab its own page). No localStorage. -->
+<style>
+  .card .cardhdr{cursor:pointer;position:relative;padding-right:20px}
+  .card .cardhdr .ccaret{position:absolute;right:2px;top:50%;transform:translateY(-50%) rotate(90deg);
+    color:var(--mut);font-size:11px;transition:transform .15s}
+  .card.collapsed .cardhdr .ccaret{transform:translateY(-50%) rotate(0deg)}
+  .card.collapsed > :not(.cardhdr){display:none !important}
+  .card.collapsed{opacity:.94}
+  .card .cardhdr .csum{font-weight:400;color:var(--mut);font-size:11px;margin-left:7px;display:none}
+  .card.collapsed .cardhdr .csum{display:inline}
+</style>
+<script>
+/* D63 collapsible sections: click a card header to collapse/expand. State is in-page
+   (a Set), survives the 60s auto-refresh re-render, resets on full reload. NO localStorage. */
+(function(){
+  var COLLAPSED=new Set();
+  function keyOf(h){return (h.textContent||"").replace(/\s+/g," ").replace(/\u25b8/g,"").trim().slice(0,52);}
+  function firstLine(card){
+    var t=(card.textContent||"").replace(/\s+/g," ").trim();
+    return t.slice(0,90);
+  }
+  function apply(){
+    document.querySelectorAll(".card").forEach(function(card){
+      var h=card.querySelector(":scope > h2, :scope > .secttl");
+      if(!h) return;
+      if(!h.classList.contains("cardhdr")){
+        h.classList.add("cardhdr");
+        var ca=document.createElement("span"); ca.className="ccaret"; ca.textContent="\u25b8"; h.appendChild(ca);
+        var sm=document.createElement("span"); sm.className="csum"; h.appendChild(sm);
+        h.addEventListener("click",function(e){
+          if(e.target.closest(".ihelp")||e.target.closest("a")||e.target.closest("button")||e.target.closest("summary")) return;
+          var k=keyOf(h);
+          if(card.classList.toggle("collapsed")){COLLAPSED.add(k);} else {COLLAPSED.delete(k);}
+        });
+      }
+      var k=keyOf(h);
+      card.classList.toggle("collapsed", COLLAPSED.has(k));
+    });
+  }
+  apply(); setInterval(apply, 1200);
+  document.addEventListener("click", function(){ setTimeout(apply,50); });  // re-apply after tab switches
+})();
+</script>
 </body>
 </html>
