@@ -1597,25 +1597,13 @@ const ProScreen=(function(){
       return '<div class="frow"><div class="flab">'+esc(lab)+'</div><div class="fbar '+cls+'" style="width:'+w+'%"></div><div class="fn">'+esc(n!=null?n:"–")+'</div></div>';
     }).join("")+'</div>';
   }
-  function etfFlag(p){ return p&&p.is_etf?' <span class="xchip" style="background:var(--warn);color:var(--warn-ink);border:1px solid var(--warn-ink);font-size:9.5px;font-weight:800;border-radius:5px;padding:1px 6px;margin-left:5px">◉ ETF — not a single stock</span>':''; }
-  function detTag(p){ return (p&&p.detector)?'<br><span class="lbl">detector</span> '+esc(p.detector):''; }
   function setupCard(p){
     const edu=(p.education||[]).map(e=>'• '+esc(e)).join('<br>');
     const rr=p.rr!=null?('<span class="ps-rr">'+esc(p.rr)+'</span>'):'–';
-    return '<div class="setup"><div class="stk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.setup||"VCP base")+'</span> '+neChip(p.not_extended)+etfFlag(p)+'</div>'
+    return '<div class="setup"><div class="stk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.setup||"VCP base")+'</span> '+neChip(p.not_extended)+'</div>'
       +'<div class="params"><span class="lbl">entry</span> '+esc(p.entry)+' (pivot) · <span class="lbl">stop</span> '+esc(p.stop)+' (below base) · <span class="lbl">target</span> '+esc(p.target)+' (measured) · <span class="lbl">R:R</span> '+rr
-      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+detTag(p)+'</div>'
+      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+'</div>'
       +(edu?'<div class="edu"><b>Why it\'s a pro setup:</b><br>'+edu+'</div>':'')+'</div>';
-  }
-  function methodNote(){
-    return '<div class="gateline" style="margin-top:8px;color:var(--mut)"><b>VCP detector = ZigZag</b> (bug-fix replacing the degenerate D50 reference); method pre-registered 2026-06-29 (<code>zigzag_v1_prereg_2026-06-29</code>). FTEC is the first qualifier under the frozen method. <b>SHADOW — educational, forward-validating, not a live signal.</b></div>';
-  }
-  function honestRead(d){
-    const h=d.honest_read; if(!h) return "";
-    const reps=(h.single_stock_qualified===0)?'<div class="gateline" style="color:var(--warn-ink)"><b>◉ Representativeness flag:</b> 0 single stocks qualified this session — the survivor(s) are correlated tech ETFs. Watch whether single stocks clear as the frozen method runs weekly.</div>':'';
-    const notes=(h.notes||[]).map(n=>'• '+esc(n)).join('<br>');
-    return '<div class="card">'+reps+dwrap("Honest read — is the gate healthy / too-strict / too-loose? (reported, not tuned)",
-      '<div class="gmut" style="line-height:1.6"><b>Verdict:</b> '+esc(h.verdict||"–")+(h.binding_stage?' · binding stage: '+esc(h.binding_stage):'')+'<br><br>'+notes+'</div>')+'</div>';
   }
   function render(d){
     const el=document.getElementById("ps-content");
@@ -1627,12 +1615,11 @@ const ProScreen=(function(){
     const hh=d.head_to_head||{}; const rl=hh.review_line||d.review_line||"";
     const qtyLine='<div class="ps-qty">'+esc(q.length)+' of '+esc(f.universe!=null?f.universe:"–")+' names qualified today.</div>'
       +(q.length?'':'<div class="ps-empty">Nothing passed the pro gate today. Pros sit in cash when nothing qualifies — this is an honest result, not a reason to loosen anything.</div>');
-    let html=head('<div style="margin-top:4px"><b style="font-size:13px">Today\'s funnel</b>'+funnelViz(f)+qtyLine+methodNote()+'</div>');
+    let html=head('<div style="margin-top:4px"><b style="font-size:13px">Today\'s funnel</b>'+funnelViz(f)+qtyLine+'</div>');
     if(q.length){
       html+='<div class="card"><div class="secttl">Qualified setups — pro structure (educational)</div>'
         +q.map(setupCard).join("")+'</div>';
     }
-    html+=honestRead(d);
     html+='<div class="card">'+dwrap("Head-to-head vs current engine (FORWARD · accruing)",
         '<div class="gmut" style="line-height:1.6">'+esc(rl||"screener_v2 vs current engine — ACCRUING (need n≥30 both sides).")
         +'<br>Verdict: '+esc(hh.verdict||"ACCRUING — keep logging.")+'</div>')+'</div>';

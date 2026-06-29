@@ -1,0 +1,36 @@
+{
+  "kind": "vcp_method_preregistration",
+  "dispatch": "55-followup",
+  "frozen_at": "2026-06-29",
+  "detector_id": "zigzag_v1_prereg_2026-06-29",
+  "decision_by": "Hany",
+  "status": "FROZEN — this is the LAST post-hoc change to the VCP detection METHOD. From here the method is frozen; any future change is a NEW pre-registered decision that starts its OWN forward series.",
+  "decision": "The degenerate D50 reference contraction detector was a BUG (it over-segments real daily bars into 15-40 micro-contractions, so 'each <=0.75x prior' can never hold and Stage 3 collapses to 0). The faithful ZigZag swing-detection detector is the correct implementation and is hereby frozen as the canonical VCP method.",
+  "method": {
+    "detector": "ZigZag swing-finder",
+    "rule": "Build alternating swing highs/lows over the base window; a reversal is registered only after price moves >= swing_reversal_pct off the running extreme. Pullback depths = each swing HIGH down to the following swing LOW. Require >= min_contractions pullbacks with successive tightening (each <= tightness_ratio_max x the prior), volume dry-up into the pivot, and base depth <= max_base_depth_pct. Pivot/buy-point = highest swing high in the base.",
+    "frozen_constants": {
+      "swing_reversal_pct": 4.0,
+      "min_contractions": 2,
+      "tightness_ratio_max": 0.75,
+      "vol_dryup_ratio_max": 0.85,
+      "max_base_depth_pct": 35.0,
+      "base_window_bars": 60
+    },
+    "reversal_knob_note": "swing_reversal_pct = 4.0 is THE knob the funnel count is most sensitive to (count swings ~0-4 across plausible values). It is NOW pre-registered at 4.0 and frozen. This closes the open gap flagged in the 2026-06-26 run's honest_read.",
+    "anti_look_ahead": "Detector reads bars[0..signal_index] only (proven by pipeline.py truncation self-test)."
+  },
+  "first_qualifier_under_frozen_method": {
+    "run_date": "2026-06-26",
+    "ticker": "FTEC",
+    "pick_id": "V2_FTEC_20260626",
+    "is_etf": true,
+    "vcp_depths_pct": [12.4, 5.5],
+    "note": "FTEC is the first qualifier under the frozen method and stands as the canonical lone qualifier for 2026-06-26. Tag its forward ledger row detector=\"zigzag_v1_prereg_2026-06-29\"."
+  },
+  "open_flags_not_part_of_this_freeze": [
+    "REPRESENTATIVENESS: both survivors (FTEC, IYW) are correlated tech-sector ETFs; 0 SINGLE STOCKS cleared this session. Watch whether single stocks qualify once the frozen method runs weekly. This is an observation to monitor, NOT a reason to change the method.",
+    "TOO-STRICT read: the VCP stage is the binding constraint and is knife-edge. If, after several weekly runs under the frozen method, single stocks ~never qualify, a loosening would be a SEPARATE pre-registered decision with its own forward series — never a quiet tweak."
+  ],
+  "shadow": "SHADOW — educational, forward-validating. Does NOT feed the live actionable list/email/recommendations. n<30 -> ACCRUING. Promotion only on n>=30 forward beat vs current engine + haircut + explicit go."
+}
