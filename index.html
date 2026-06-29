@@ -1605,21 +1605,27 @@ const ProScreen=(function(){
   }
   function funnelViz(f){
     const N=Math.max(1,f.universe||0);
-    const rows=[["Universe",f.universe,""],["① Trend template",f.stage1,"s1"],["② Liquidity",f.stage2,""],
+    const liqM=Math.round((f.stage2_liquidity_threshold_usd||20000000)/1e6);
+    const rows=[["Universe",f.universe,""],["① Trend template",f.stage1,"s1"],["② Liquidity ≥$"+liqM+"M ADV"+hI("liquidity"),f.stage2,""],
       ["③ VCP setup",f.stage3_vcp,""],["④ RS top-decile",f.stage4_top,""]];
-    return '<div class="funnel">'+rows.map(([lab,n,cls])=>{
+    let html='<div class="funnel">'+rows.map(([lab,n,cls])=>{
       const w=Math.max(3,Math.round(100*(n||0)/N));
-      return '<div class="frow"><div class="flab">'+esc(lab)+'</div><div class="fbar '+cls+'" style="width:'+w+'%"></div><div class="fn">'+esc(n!=null?n:"–")+'</div></div>';
-    }).join("")+'</div>';
+      return '<div class="frow"><div class="flab">'+lab+'</div><div class="fbar '+cls+'" style="width:'+w+'%"></div><div class="fn">'+esc(n!=null?n:"–")+'</div></div>';
+    }).join("")+'</div>'+hP("liquidity");
+    if(f.stage2_liquidity_passed!=null){
+      html+='<div class="statrow" style="font-size:11.5px;padding:4px 0"><b style="color:var(--pos-ink)">Liquidity gate</b> ADV ≥ $'+liqM+'M → <b>'+esc(f.stage2_liquidity_passed)+' passed</b> / '+esc(f.stage2_liquidity_failed)+' failed <span class="gmut">(of '+esc(f.stage1)+' trend survivors)</span></div>';
+    }
+    return html;
   }
   function etfFlag(p){ return p&&p.is_etf?' <span class="xchip" style="background:var(--warn);color:var(--warn-ink);border:1px solid var(--warn-ink);font-size:9.5px;font-weight:800;border-radius:5px;padding:1px 6px;margin-left:5px">◉ ETF — not a single stock</span>':''; }
   function detTag(p){ return (p&&p.detector)?'<br><span class="lbl">detector</span> '+esc(p.detector):''; }
+  function advChip(p){ if(p&&p.adv!=null){var m=(p.adv/1e6).toFixed(0),fl=((p.adv_floor||20000000)/1e6).toFixed(0),hx=(p.adv_headroom_x!=null?(" \u00b7 "+p.adv_headroom_x+"\u00d7 floor"):"");return "<br><span class=\"lbl\">ADV</span> $"+m+"M <span style=\"color:var(--pos-ink)\">(\u2265$"+fl+"M \u2713"+hx+")</span>";} return ""; }
   function setupCard(p){
     const edu=(p.education||[]).map(e=>'• '+esc(e)).join('<br>');
     const rr=p.rr!=null?('<span class="ps-rr">'+esc(p.rr)+'</span>'):'–';
     return '<div class="setup"><div class="stk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.setup||"VCP base")+'</span> '+neChip(p.not_extended)+etfFlag(p)+'</div>'
       +'<div class="params"><span class="lbl">entry</span> '+esc(p.entry)+' (pivot) · <span class="lbl">stop</span> '+esc(p.stop)+' (below base) · <span class="lbl">target</span> '+esc(p.target)+' (measured) · <span class="lbl">R:R</span> '+rr
-      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+detTag(p)+'</div>'
+      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+advChip(p)+detTag(p)+'</div>'
       +(edu?'<div class="edu"><b>Why it\'s a pro setup:</b><br>'+edu+'</div>':'')+'</div>';
   }
   function methodNote(){
@@ -1953,5 +1959,7 @@ var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
   if(document.readyState!=="loading") schedule(); else document.addEventListener("DOMContentLoaded", schedule);
 })();
 </script>
+<script>/* D62 liquidity-gate tooltip */
+HELP["liquidity"]={t:"Liquidity gate (ADV \u2265 $20M)",w:"Average daily dollar volume must clear $20M so slippage doesn\u2019t eat the edge; thin names are rejected here.",r:"Stage-2 of the funnel: of the trend-template survivors, only those trading \u2265 $20M/day on average pass. Each qualified pick shows its actual ADV and how many \u00d7s over the floor it trades.",u:"Avoid names you can\u2019t get in and out of cleanly \u2014 a pro screen culls illiquid tickers before structure even matters.",c:"\u26a0 Public market volume only (NOT account $/positions). SHADOW / educational."};</script>
 </body>
 </html>
