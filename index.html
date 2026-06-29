@@ -955,7 +955,8 @@ const Futures = (function(){
         +'<details class="research"><summary>▸ per-signal breakdown ('+_sg.length+')</summary><table style="margin-top:6px">'+sig+'</table></details></div>'
       +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news
       +(current==="ES"&&d.timeframes?tfPanel(d):"")
-      +((current==="GC"||current==="CL")?gcclEmaPanel(current):"");
+      +((current==="GC"||current==="CL")?gcclEmaPanel(current):"")
+      +(current==="GC"?gcDxyPanel():"");
     document.querySelectorAll("#fut-content .tftab").forEach(el=>el.onclick=()=>{futTF=el.getAttribute("data-tf");render(d,false);});
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
     const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
@@ -966,7 +967,8 @@ const Futures = (function(){
     const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
     freshUpdating("fut",true);   // fresh-on-complete: show subtle "updating…" until the new JSON lands & re-renders
     ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
-    if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
+    if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
+    if(want==="GC") ghFetch("dxy_overlay.json").then(x=>{dxyOv=x; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
     try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="IB"?renderInsideBar(d):(want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):(want==="ICT"?renderICT(d):render(d,false))));}}
     catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
@@ -1729,5 +1731,54 @@ loadRegime();
 setInterval(()=>{ if(view==="futures")Futures.load(); else if(view==="stocks")Stocks.load(); loadCalCtx(); loadRegime(); }, 60000);
 setInterval(freshTick, 20000);   // keep the pinned "(Nm ago)" honest between fetches
 </script>
+
+<script>/* D56 GC/DXY overlay (SHADOW, additive) */
+
+HELP["gcdxy"]={t:"GC / DXY overlay (SHADOW)",
+ w:"The US Dollar Index (DXY) and gold usually move INVERSELY. Pros use DXY as a confirm/veto on gold setups — but only when the rolling correlation is actually negative. DXY is a PROXY for the real driver (real yields), not the driver itself.",
+ r:"INVERSE = 60-day correlation ≤ −0.40 (trust the dollar read). DECOUPLED/POSITIVE = the inverse has broken; DXY is downgraded to 'unknown' and we lean on gold's own structure. CONFIRMED = gold setup direction agrees with the dollar; DIVERGENT = dollar contradicts it (veto: half-size/skip).",
+ u:"Context + veto on GC setups — never an entry on its own.",
+ c:"⚠ INFORMATIONAL/SHADOW, not a validated signal. Earns voting status only on n≥30 forward beating RAW + haircut. Regime-dependent: trusted only when correlation is INVERSE."};
+
+
+function gcDxyPanel(){
+  const d = (typeof dxyOv!=="undefined" && dxyOv) ? dxyOv : null;
+  const banner='<div class="ps-shadow" style="margin:8px 0">'
+    +'<b>GC / DXY overlay = INFORMATIONAL / SHADOW</b> — context + veto, not a validated signal. '
+    +'Earns voting status only on n≥30 forward beating RAW + haircut. '
+    +'The GC–DXY inverse is regime-dependent — trusted only when correlation is INVERSE.</div>';
+  const head='<div class="card"><div class="secttl" style="font-size:11px;letter-spacing:.6px;color:var(--mut);text-transform:uppercase;font-weight:700">GC / DXY overlay'+hI("gcdxy")+'</div>'+hP("gcdxy")+banner;
+  if(!d || !d.snapshot){ return head+'<div class="loading">DXY overlay not loaded yet (SHADOW — run dxy_overlay.py --build).</div></div>'; }
+  const s=d.snapshot;
+  const regCol = s.regime==="INVERSE"?"var(--info-ink)":(s.regime==="DECOUPLED"?"var(--warn-ink)":"var(--neg-ink)");
+  const trdCol = s.dxy_trend==="UP"?"var(--neg-ink)":(s.dxy_trend==="DOWN"?"var(--pos-ink)":"var(--mut)"); // DXY up = gold headwind
+  const ry = s.real_yield||"deferred";
+  const snap='<div class="statrow"><b>Correlation</b> 20d '+esc(s.corr20)+' · 60d '+esc(s.corr60)
+    +' → <b style="color:'+regCol+'">'+esc(s.regime)+'</b></div>'
+    +'<div class="statrow"><b>DXY trend</b> <span style="color:'+trdCol+'">'+esc(s.dxy_trend)+'</span>'
+    +' · <b>Real yields</b> '+esc(ry)+' <span style="color:var(--dim)">(TIP/IEF proxy)</span></div>';
+  const tagCol=t=>t==="DXY-CONFIRMED"?"var(--pos-ink)":(t==="DIVERGENT"?"var(--neg-ink)":"var(--mut)");
+  let live="";
+  (d.live_gc&&d.live_gc.setups||[]).forEach(p=>{
+    const sign=(p.direction||"").toUpperCase()==="LONG"?1:-1;
+    const atr=p.atr||0, entry=p.close;
+    const stop=entry?(entry-sign*1.5*atr):null, t1=entry?(entry+sign*1.5*atr):null;
+    const R=(entry&&stop)?Math.abs(entry-stop).toFixed(2):"–";
+    live+='<div class="setup" style="margin-top:7px"><div class="stk">GC '+esc(p.tf)+' '+esc(p.direction)
+      +' <span style="font-weight:800;color:'+tagCol(p.tag)+'">'+esc(p.tag)+'</span></div>'
+      +'<div class="params" style="font-size:12px"><span class="lbl">entry</span> '+esc(entry)+' · <span class="lbl">stop</span> '+esc(stop?stop.toFixed(2):"–")+' (1.5·ATR) · <span class="lbl">target</span> '+esc(t1?t1.toFixed(2):"–")+' · <span class="lbl">R</span> '+R+'pts · <span class="lbl">R:R</span> 2.0 · <span class="lbl">size</span> 1–2% risk/R (sim)</div>'
+      +'<div class="edu" style="font-size:11px;color:var(--mut)">'+esc(p.reason||"")+' · '+esc(p.real_yield_context||"")+'</div></div>';
+  });
+  if(!live) live='<div class="statrow grey">No GC directional setup right now.</div>';
+  // gauntlet mini-summary (DESCRIPTIVE / ACCRUING)
+  const g=d.gauntlet||{}, v=g.verdict||{}, tc=g.tag_counts||{};
+  const gaunt='<details class="research" style="margin-top:9px"><summary>▸ gauntlet: RAW vs CONFIRMED vs veto (in-sample, DESCRIPTIVE)</summary>'
+    +'<div class="statrow" style="font-size:11.5px;color:var(--mut)">tags: CONFIRMED '+esc(tc["DXY-CONFIRMED"]||0)+' · DIVERGENT '+esc(tc["DIVERGENT"]||0)+' · DECOUPLED '+esc(tc["DECOUPLED"]||0)+'</div>'
+    +'<div class="statrow" style="font-size:11.5px;color:var(--mut)">RAW exp '+esc(v.raw_expectancy_pts)+'pts · confirm edge '+esc(v.confirm_edge_pts)+' (÷N '+esc(v.confirm_edge_after_divN)+') · veto edge '+esc(v.veto_edge_pts)+' (÷N '+esc(v.veto_edge_after_divN)+')</div>'
+    +'<div class="statrow grey" style="font-size:11px">'+esc(v.read||"")+'</div></details>';
+  return head+snap+live+gaunt+'</div>';
+}
+
+var dxyOv=(typeof dxyOv!=='undefined')?dxyOv:null;</script>
 </body>
 </html>
