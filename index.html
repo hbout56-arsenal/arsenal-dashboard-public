@@ -455,6 +455,20 @@ function hP(k){const h=HELP[k];if(!h)return"";const open=HELP_OPEN.has(k);
     +"<div class=\"hp\"><b>How you’d use it.</b> "+hEsc(h.u)+"</div>"
     +(HELP_HOW[k]?'<div class="hp how"><b>▸ HOW TO TRADE THIS SITUATION.</b> '+hEsc(HELP_HOW[k])+'</div>':"")
     +'<div class="hp cav">'+hEsc(h.c)+'</div></div>';}
+/* D63 live "right now" trainer line — generated from the feed values already on the page. */
+function nowLine(html){return '<div class="nowline"><span class="nowtag">NOW</span> '+html+'</div>';}
+function esNowText(d,state,price){
+  if(state==="frozen"||state==="closed"||state==="dark"||state==="recon")
+    return "Feed "+state+" — last context only, no live trigger. On your LIVE feed, price breaking a level is the trigger, not the indicator.";
+  var g=d&&d.guidance;
+  if(g&&g.active) return "Paper "+esc(g.direction)+" from "+esc(g.entry)+", stop "+esc(g.stop)+" — price breaking the STOP is the trigger, not the meter %. "+(price!=null?("Now "+esc(price)+"."):"");
+  var z=(d&&d.confluence_zones&&d.confluence_zones[0]);
+  return (price!=null?("Price "+esc(price)+" — "):"")+"no active trigger. WAIT for a 5-min close "+(z?("through "+esc(z.method)+" "+esc(z.price)):"through a structure level")+"; the break is the trigger, not the meter. Informational layers don’t vote.";
+}
+function proNowText(f,q){
+  if(q&&q.length){var t=q[0];return "<b>"+esc(q.length)+"</b> name clears the full funnel: <b>"+esc(t.ticker)+"</b>"+(t.adv?(", ADV $"+Math.round(t.adv/1e6)+"M"):"")+", RS top-decile. Trigger = a break ABOVE the "+esc(t.entry)+" pivot, NOT its presence here. SHADOW · n<30 → ACCRUING.";}
+  return "No name clears the full funnel today — pros sit in cash when nothing passes. SHADOW · educational, never a live rec.";
+}
 /* one delegated handler — toggles state + any in-DOM panels/icons for that key (survives re-render) */
 document.addEventListener("click",function(e){
   const t=(e.target&&e.target.closest)?e.target.closest(".ihelp"):null;if(!t)return;
@@ -944,7 +958,7 @@ const Futures = (function(){
     const ntext=(si&&si.newsletter_context)||d.newsletter_context||"", ndate=(si&&si.context_date)||"";
     if(ntext) news='<div class="card"><h2>Newsletter cross-check</h2><div class="news">'+esc(ntext)+(ndate?' <span class="date">(as of '+esc(ndate)+')</span>':'')+'</div></div>';
     document.getElementById("fut-content").innerHTML=
-      '<div class="hero"><div style="margin-bottom:9px">'+chip+hI("fresh")+'</div>'+hP("fresh")
+      nowLine(esNowText(d,state,price))+'<div class="hero"><div style="margin-bottom:9px">'+chip+hI("fresh")+'</div>'+hP("fresh")
         +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
         +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+hI("internals")+'</div>'+hP("internals")
         +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
@@ -1649,6 +1663,7 @@ const ProScreen=(function(){
     const qtyLine='<div class="ps-qty">'+esc(q.length)+' of '+esc(f.universe!=null?f.universe:"–")+' names qualified today.</div>'
       +(q.length?'':'<div class="ps-empty">Nothing passed the pro gate today. Pros sit in cash when nothing qualifies — this is an honest result, not a reason to loosen anything.</div>');
     let html=head('<div style="margin-top:4px"><b style="font-size:13px">Today\'s funnel</b>'+funnelViz(f)+qtyLine+methodNote()+'</div>');
+    html=nowLine(proNowText(f,q))+html;
     if(q.length){
       html+='<div class="card"><div class="secttl">Qualified setups — pro structure (educational)</div>'
         +q.map(setupCard).join("")+'</div>';
@@ -2005,5 +2020,6 @@ HELP["liquidity"]={t:"Liquidity gate (ADV \u2265 $20M)",w:"Average daily dollar 
   document.addEventListener("click", function(){ setTimeout(apply,50); });  // re-apply after tab switches
 })();
 </script>
+<style>.nowline{background:rgba(156,195,255,.06);border:1px solid rgba(156,195,255,.22);border-radius:9px;padding:8px 10px;font-size:12px;line-height:1.45;margin:0 0 10px}.nowtag{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--info-ink);border:1px solid var(--info-ink);border-radius:5px;padding:1px 5px;margin-right:6px}</style>
 </body>
 </html>
