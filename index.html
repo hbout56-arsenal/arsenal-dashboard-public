@@ -982,7 +982,7 @@ const Futures = (function(){
 const Stocks = (function(){
   const STALE_MIN=60;
   const SECTIONS=[{key:"convergence",label:"Convergence"},{key:"minervini",label:"Minervini"},{key:"top_setups",label:"Top Setups"},{key:"context",label:"Context"}];
-  let current="convergence", data=null, emaStk=null, gateData=null, orbData=null;
+  let current="convergence", data=null, emaStk=null, gateData=null, orbData=null, orbFutData=null;
   /* D51 not-extended (no-chase) gate — render a CLEAN/EXTENDED chip when the engine tags a pick */
   function xChip(p){
     const st=p&&(p.gate_status||(p.extended===true?"EXTENDED":p.extended===false?"NOT_EXTENDED":null));
@@ -1103,7 +1103,8 @@ const Stocks = (function(){
       +'<div class="card">'+dwrap("Engine top 5 (control)",'<table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table>')+'</div>'
       +'<div class="card">'+dwrap("Scorecard — curated vs engine",'<div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div>')+'</div>'
       +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'')
-      +orbPanel();
+      +orbPanel()
+      +orbFuturesPanel();
   }
   function render(){
     const age=ageMin(data.generated_at);
@@ -1122,7 +1123,8 @@ const Stocks = (function(){
     freshUpdating("stk",true);   // fresh-on-complete: subtle "updating…" until the new daily JSON lands & re-renders
     ghFetch("ema_stocks_state.json").then(s=>{emaStk=s; if(data) renderSection();}).catch(()=>{});  // non-voting context (best-effort)
     ghFetch("not_extended_gate.json").then(g=>{gateData=g; if(data) renderSection();}).catch(()=>{});
-    ghFetch("orb_aplus.json").then(o=>{orbData=o; if(data) renderSection();}).catch(()=>{});  // D51 not-extended gate (best-effort)
+    ghFetch("orb_aplus.json").then(o=>{orbData=o; if(data) renderSection();}).catch(()=>{});
+    ghFetch("orb_futures.json").then(o=>{orbFutData=o; if(data) renderSection();}).catch(()=>{});  // D51 not-extended gate (best-effort)
     try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
     catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
       if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
@@ -1823,5 +1825,46 @@ function orbPanel(){
 }
 
 var orbData=(typeof orbData!=='undefined')?orbData:null;</script>
+
+<script>/* D57 Futures ORB section (SHADOW, DELAYED, additive) */
+
+HELP["orbfut"]={t:"Futures ORB — MES/MNQ/MGC/MCL (RAW vs A+, DELAYED)",
+ w:"Opening-range breakouts on the futures Hany day-trades. The full-size (ES/NQ/GC/CL) is the read; trade the micro (MES/MNQ/MGC/MCL) for sizing. Polygon futures are DELAYED ~10-15min — this is CONTEXT; confirm the break on your live ToS feed.",
+ r:"RAW = 30-min OR break + 1.5x vol (null control). A+ = RAW + daily bias agrees + index regime TRENDING + OR width 0.2-0.8x ATR + not-extended (<2 ATR from open). GC/CL OR windows are assumptions-under-test. ES/NQ are ~85-90% correlated — same-direction = ONE risk.",
+ u:"See which futures broke their opening range and whether confluence backs it — never an entry on its own.",
+ c:"⚠ DELAYED context, not a live trigger. A+ = confluence filter, NOT a validated win rate — earns status only on n>=30 forward (per instrument) beating RAW + haircut. Distinct from ib_logger (60-min IB)."};
+
+
+function orbFuturesPanel(){
+  const d=(typeof orbFutData!=="undefined"&&orbFutData)?orbFutData:null;
+  const dly='<div class="ps-shadow" style="margin:8px 0;background:rgba(156,195,255,.08);border-color:rgba(156,195,255,.3);color:var(--info-ink)"><b>DELAYED ~10-15min</b> — futures ORB is CONTEXT; confirm the break on your live ToS feed. <b>A+ = confluence filter, not a validated win rate</b> (SHADOW; earns status only on n≥30 forward per instrument beating RAW + haircut).</div>';
+  const head='<div class="card"><div class="secttl" style="font-size:11px;letter-spacing:.6px;color:var(--mut);text-transform:uppercase;font-weight:700">Futures ORB — MES / MNQ / MGC / MCL'+hI("orbfut")+'</div>'+hP("orbfut")+dly;
+  if(!d){ return head+'<div class="loading">Futures ORB not loaded yet (SHADOW — run orb_futures.py --dry-run).</div></div>'; }
+  let meta='<div class="statrow">RAW triggers <b>'+esc(d.raw_triggers)+'</b> · A+ <b style="color:var(--pos-ink)">'+esc(d.aplus_triggers)+'</b>'
+    +(d.half_day_flag?' · <span style="color:var(--warn-ink)">half-day — curtail</span>':'')+'</div>';
+  if(d.correlation_flag) meta+='<div class="statrow" style="color:var(--warn-ink);font-size:11.5px">⚠ '+esc(d.correlation_flag)+'</div>';
+  const chip=(p)=> p===true?'<span style="color:var(--pos-ink)">✓</span>':(p===false?'<span style="color:var(--neg-ink)">✗</span>':'<span class="gmut">–</span>');
+  let body="";
+  (d.triggers||[]).forEach(t=>{
+    const tagCol=t.aplus?"var(--pos-ink)":"var(--mut)";
+    const tag=t.aplus?"A+":("RAW only"+(t.fails&&t.fails.length?" (fails: "+t.fails.join(", ")+")":""));
+    const f=t.filters||{};
+    const wf=t.or_window_flag?' <span class="gmut" style="font-weight:400">['+esc(t.or_window_flag)+']</span>':'';
+    body+='<div class="setup" style="margin-top:7px"><div class="stk">'+esc(t.micro)+' ('+esc(t.data)+') '+esc(t.side)
+      +' <span style="font-weight:800;color:'+tagCol+'">'+esc(tag)+'</span> <span class="gmut" style="font-weight:400">@ '+esc(t.trigger_time)+' · '+esc(t.vol_mult)+'x vol · DELAYED</span></div>'
+      +'<div class="params" style="font-size:12px"><span class="lbl">OR</span> '+esc(t.or_window_et)+' '+esc(t.or_low)+'–'+esc(t.or_high)+wf
+      +' · <span class="lbl">entry</span> '+esc(t.entry)+' · <span class="lbl">stop</span> '+esc(t.stop)+' ('+esc(t.stop_basis)+') · <span class="lbl">T1</span> '+esc(t.t1)+' · <span class="lbl">T2</span> '+esc(t.t2)+' · <span class="lbl">R:R</span> '+esc(t.rr_t2)+' · <span class="lbl">size</span> '+esc(t.size_band)+'</div>'
+      +'<div class="edu" style="font-size:11px;color:var(--mut)">filters: bias '+chip(f.trend&&f.trend.pass)+' · regime '+chip(f.regime&&f.regime.pass)+' · range '+chip(f.range_quality&&f.range_quality.pass)+' · not-ext '+chip(f.not_extended&&f.not_extended.pass)
+      +' · <span class="lbl">regime</span> '+esc(t.regime_at_signal)+' · <span class="lbl">daily bias</span> '+esc(t.daily_bias)+'</div></div>';
+  });
+  if(!body) body='<div class="statrow grey">No futures opening-range breakout on the watched instruments this session.</div>';
+  const g=d.gauntlet||{};
+  const gaunt='<details class="research" style="margin-top:9px"><summary>▸ gauntlet: RAW vs A+ per instrument + ablation ('+esc(g.status||"")+')</summary>'
+    +'<div class="statrow grey" style="font-size:11px">'+esc(g.read||"")+'</div>'
+    +'<div class="statrow" style="font-size:11px;color:var(--dim)">'+esc(d.no_double_count||"")+'</div></details>';
+  return head+meta+body+gaunt+'</div>';
+}
+
+var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
 </body>
 </html>
