@@ -1,0 +1,42 @@
+{
+  "kind": "ema_primary_track_config",
+  "dispatch": 83,
+  "frozen_at": "2026-06-30",
+  "status": "STAGED — NOT loaded. Selection/default only. Both raw+filtered remain scored for ALL instruments (measurement unchanged). Reversible (it's a declared map). SHADOW/non-voting.",
+  "prerequisite_before_loading": "Hany's choice (D83): REFRESH the dashboard EMA data to the independent-deduped 6/30 basis FIRST, so the surfaced numbers corroborate this config. Until ema_*_state.json carry the deduped tracks, this config stays staged. See ema_config/D83_report.md § engine refresh spec.",
+  "change_scope": "Changes ONLY which track is labeled primary/recommended + feeds the surfaced read per instrument. Does NOT auto-tune thresholds, does NOT add tracks, does NOT touch the strategy.",
+  "primary_by_instrument": {
+    "GC": "filtered",
+    "CL": "filtered",
+    "STOCKS": "filtered",
+    "ES": "raw",
+    "NQ": "raw",
+    "RTY": "raw",
+    "YM": "raw"
+  },
+  "basis": {
+    "GC": {"primary": "filtered", "evidence": "n>=30 validated",
+           "basis_tag": "GC uses FILTERED — filter ADDS edge (6/30 deduped: 9_21_60m filtered +7.93 PF1.62 n37 vs raw -2.65 PF0.86 n205; 9_21_30m +1.4 PF1.14 n68 vs -2.6 PF0.80 n213; 20_50_30m +4.37 PF1.45 n42 vs -6.25 PF0.58 n153). Mechanism: GC trends cleanly on higher TFs so the filter catches real trends.",
+           "dashboard_corroborates_direction": true},
+    "CL": {"primary": "filtered", "evidence": "n>=30 validated",
+           "basis_tag": "CL uses FILTERED — filter ADDS edge (6/30 deduped: 9_21_60m filtered +0.17 PF1.44 n49 vs raw -0.21 PF0.68 n157). Mechanism: CL trends cleanly on higher TFs.",
+           "dashboard_corroborates_direction": true},
+    "STOCKS": {"primary": "filtered", "evidence": "n>=30 validated",
+           "basis_tag": "STOCKS use FILTERED — filter ADDS edge (6/30 deduped: 9_21_daily filtered +9.14% PF1.69 n47 vs raw -0.66% PF0.94 n107; 20_50_daily +10.6% PF1.65 n27 vs +5.1% PF1.39 n63). Mechanism: stocks trend cleanly on the daily.",
+           "dashboard_corroborates_direction": true},
+    "ES": {"primary": "raw", "evidence": "n>=30 validated (deduped)",
+           "basis_tag": "ES uses RAW intraday — filter REMOVES winners on ES (6/30 deduped: 9_21_5m filtered -0.78 PF0.88 n58 vs raw +0.65 PF1.14 n96; 20_50_5m filtered -2.91 PF0.61 n44 vs raw +0.88 PF1.20 n61). Mechanism: ES intraday mean-reverts/chops so the filter strips winners. Revisit as n grows.",
+           "dashboard_corroborates_direction": false,
+           "caveat": "BLOCKING: the dashboard's CURRENT (non-deduped) 6/30 tracks show the OPPOSITE (filter helps ES: 20_50_5m filtered +1.25 PF1.19 n181 vs raw -1.18 PF0.84 n493). This config's ES=raw rests on the independent-deduped read, which is NOT yet in the dashboard data. Do not load ES=raw until the deduped tracks are published (Hany's refresh-first choice)."},
+    "NQ": {"primary": "raw", "evidence": "INSUFFICIENT — assumption",
+           "basis_tag": "NQ defaults RAW intraday like ES — ASSUMPTION (little/no n yet), not evidence. Revisit when NQ's own scorecard reaches n>=30."},
+    "RTY": {"primary": "raw", "evidence": "INSUFFICIENT — assumption",
+           "basis_tag": "RTY defaults RAW intraday like ES — ASSUMPTION, not evidence."},
+    "YM": {"primary": "raw", "evidence": "INSUFFICIENT — assumption",
+           "basis_tag": "YM defaults RAW intraday like ES — ASSUMPTION, not evidence."}
+  },
+  "default_rule": "If an instrument lacks n>=30 on BOTH legs, default 'raw' + 'assumption' tag (not evidence).",
+  "measurement_intact": "tracks_summary keeps BOTH raw+filtered for every instrument; the Performance/scorecard tab is unchanged. We keep watching in case ES filtered improves or GC raw catches up.",
+  "reversible": "Change a value in primary_by_instrument to revert; no strategy/threshold change involved.",
+  "shadow": "SHADOW / non-voting — does not vote in the meter or feed live actionable lists."
+}
