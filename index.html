@@ -2551,6 +2551,8 @@ const Auction=(function(){
       return ['<span style="color:'+(p.kind==="buy-side"?C.neg:C.pos)+'">'+esc(p.kind)+'</span>',esc(p.price),(p.dist_pts!=null?((p.dist_pts>0?'+':'')+p.dist_pts):'—'),(atN?'<b style="color:'+C.amber+'">⚑ '+atN.toFixed(0)+'</b>':'—')]; }));
     if(pools.some(p=>vp&&[vp.poc,vp.vah,vp.val].concat(vp.hvn||[]).some(n=>Math.abs(n-p.price)<=(vp.vah-vp.val)*0.04)))
       h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">⚑ = a pool sitting AT a VP node — liquidity meets value = the higher-quality confluence (still location, not a signal).</div>';
+    if(ict.swept_recent&&ict.swept_recent.length){ h+='<div class="src" style="margin-top:7px;font-weight:700">Recently swept \u2014 liquidity already taken (buy-side above / sell-side below):</div>'+_dataTable([{t:'Side'},{t:'Price',a:'right'},{t:'When (ET)'}],ict.swept_recent.slice(0,8).map(p=>['<span style="color:'+(p.kind==="buy-side"?C.neg:C.pos)+'">'+esc(p.kind)+'</span>',esc(p.price),esc(String(p.ts||'').replace('T',' ').slice(5,16))])); }
+    else if(ict.swept_recent) h+='<div class="src" style="margin-top:7px;color:'+C.mut+'">No swept pools recorded in the current window.</div>';
     if(ict.last_sweep) h+='<div class="src" style="margin-top:5px">Last sweep: pool '+esc(ict.last_sweep.pool)+' ('+esc(ict.last_sweep.dir)+') @ '+esc(ict.last_sweep.ts)+(ict.mss_state?(ict.mss_state.confirmed?' → MSS confirmed '+esc(ict.mss_state.opp_level):' → MSS pending'):'')+'. '+(liveOk?'':'<span style="color:'+C.amber+'">(historical — live sweep needs fresh ticks)</span>')+'</div>';
     if(ict.bias) h+='<div class="src">Engine bias <b>'+esc(ict.bias)+'</b> · '+(ict.killzone_active?'killzone ACTIVE':'off-killzone')+'.</div>';
     return h+'</div>';
