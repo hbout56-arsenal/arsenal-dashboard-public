@@ -1648,7 +1648,10 @@ const ActiveTrades=(function(){
       ghFetch("screener_v2_funnel.json").then(d=>o.scr=d).catch(()=>{}),
       ghFetch("orb_aplus.json").then(d=>o.orbs=d).catch(()=>{}),
       ghFetch("orb_futures.json").then(d=>o.orbf=d).catch(()=>{}),
-      ghFetch("ict_state.json").then(d=>o.ict=d).catch(()=>{})
+      ghFetch("ict_state.json").then(d=>o.ict=d).catch(()=>{}),
+      ghFetch("es_wave_15m.json").then(d=>o.w15=d).catch(()=>{}),
+      ghFetch("es_wave_60m.json").then(d=>o.w60=d).catch(()=>{}),
+      ghFetch("es_wave_daily.json").then(d=>o.wd=d).catch(()=>{})
     ]);
     el.innerHTML=render(o);
   }
@@ -1665,6 +1668,8 @@ const ActiveTrades=(function(){
     rows+=tr("ORB futures","today","session: "+cnt(o.orbf&&o.orbf.raw_triggers)+" raw / "+cnt(o.orbf&&o.orbf.aplus_triggers)+" A+","\u2014","SHADOW","idle");
     const ictLive=o.ict&&o.ict.live_setup; const ictDark=!o.ict||/DARK/i.test((o.ict.feed_status||""));
     rows+=tr("Liquidity/ICT","@ES#",ictLive?"live setup \u2014 see ICT tab":(ictDark?"DARK \u2014 no live setup":"no live setup"),"\u2014",ictDark?"DARK":"INFO",ictDark?"neg":"idle");
+    [["15m",o.w15],["60m",o.w60],["daily",o.wd]].forEach(function(x){ const r=(x[1]||{}).recommendation; if(r&&r.status==="setup"){
+      rows+=tr("Wave chart "+x[0],"ES "+r.direction.toUpperCase(),"entry "+r.entry+" · stop "+r.stop+" · tgt "+r.target+" · R:R "+r.rr,(r.conviction||"")+"·"+r.confluence+"cf",(r.direction==="up"?"SHADOW":"SHADOW"),(r.rr&&r.rr>=1.5?"info":"idle")); } });
     const cell='text-align:left;color:var(--mut);font-size:10px;text-transform:uppercase;padding:3px 8px 3px 0;border-bottom:1px solid var(--gbrd)';
     let h='<h2 style="font-size:16px;margin:4px 0 2px">\u2605 Active Trades \u2014 all systems</h2>'
       +'<div class="src" style="margin-bottom:10px">Every system\u2019s live or pending item in one place. Roll-up of paper/SHADOW tracks \u2014 NOT a combined recommendation. Pending = a trigger not yet hit (its presence here is not an entry). Each system\u2019s own tab has the full detail.</div>';
@@ -1703,7 +1708,7 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,fib:true};
+  const layers={waves:true,alt:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
   let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,view={start:0,count:0},total=0;
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
@@ -1747,7 +1752,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ return '<div class="tabs" style="margin-bottom:8px">'+["15m","60m","daily"].map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1811,6 +1816,19 @@ const WaveChart=(function(){
       +'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"><span class="gmut" style="font-size:9px">EMA</span>'+ema.map(p=>ch("ema"+p,""+p)).join("")
       +'<span class="gmut" style="font-size:9px;margin-left:7px">SMA</span>'+sma.map(p=>ch("sma"+p,""+p)).join("")+'</div>';
   }
+  function computeVP(BB,nb){ nb=nb||40; if(!BB||!BB.length)return null; let lo=Math.min.apply(null,BB.map(b=>b.l)),hi=Math.max.apply(null,BB.map(b=>b.h)); if(hi<=lo)return null; const bw=(hi-lo)/nb,vol=new Array(nb).fill(0);
+    BB.forEach(b=>{const v=b.v||0,tp=(b.h+b.l+b.c)/3; vol[Math.min(nb-1,Math.max(0,Math.floor((tp-lo)/bw)))]+=v;});
+    const total=vol.reduce((a,c)=>a+c,0)||1; let pi=0; vol.forEach((v,i)=>{if(v>vol[pi])pi=i;}); let li=pi,hii=pi,acc=vol[pi],tgt=total*0.7;
+    while(acc<tgt&&(li>0||hii<nb-1)){const up=hii<nb-1?vol[hii+1]:-1,dn=li>0?vol[li-1]:-1; if(up>=dn&&hii<nb-1){hii++;acc+=vol[hii];}else if(li>0){li--;acc+=vol[li];}else break;}
+    const avg=total/nb; return {lo:lo,hi:hi,bw:bw,vol:vol,maxv:Math.max.apply(null,vol),poc:lo+(pi+0.5)*bw,vah:lo+(hii+1)*bw,val:lo+li*bw,hvn:vol.map((v,i)=>v>avg*1.8?lo+(i+0.5)*bw:null).filter(x=>x!=null)}; }
+  function recCard(){ const r=wave&&wave.recommendation; if(!r)return "";
+    if(r.status!=="setup") return '<div class="card" style="border-left:3px solid '+C.axis+'"><div style="font-size:11px;font-weight:700">Trade idea \u2014 SHADOW synthesis</div><div class="src" style="margin-top:3px">\u2014 '+esc(r.reason||"stand aside")+'</div></div>';
+    const dcol=r.direction==="up"?C.up:C.dn,rrcol=(r.rr&&r.rr>=1.5)?C.up:((r.rr&&r.rr>=1)?C.alt:C.dn);
+    let h='<div class="card" style="border-left:3px solid '+dcol+'"><div style="font-size:12px;font-weight:750">Trade idea (SHADOW) \u2014 <span style="color:'+dcol+'">'+r.direction.toUpperCase()+'</span> <span style="font-size:9px;border:1px solid '+C.axis+';color:'+C.axis+';border-radius:4px;padding:0 5px;margin-left:4px">'+r.conviction+' conviction \u00b7 '+r.confluence+' confl</span></div>';
+    h+='<div class="setup" style="margin-top:6px;font-size:12.5px;line-height:1.7">entry <b>'+r.entry+'</b> \u00b7 stop <b style="color:'+C.dn+'">'+r.stop+'</b> \u00b7 target <b style="color:'+C.up+'">'+r.target+'</b> \u00b7 <b style="color:'+rrcol+'">R:R '+r.rr+'</b> \u00b7 size 1\u20132%/R</div>';
+    h+='<div class="src" style="margin-top:4px">'+esc(r.basis)+'</div>';
+    h+='<div class="src" style="margin-top:4px;color:'+C.alt+'">'+esc(r.note)+'</div>';
+    return h; }
   function trainerNote(){
     return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:'+C.pri+';margin-bottom:6px">ℹ︎ How to read</div>'
       +'<div class="src" style="line-height:1.55"><b style="color:var(--ink)">Levels are the backbone</b> — price breaking a level is the trigger, not the wave label. The two counts are CANDIDATES (analyzer.py), valid only while their <b style="color:'+C.inval+'">invalidation</b> holds. 15m is low-reliability (sub-1h, re-labels often). Bars are exchange-DELAYED (Polygon) — redraws on publish cadence ~60–75s, not per tick; for live ticks use ToS.</div></div>';
@@ -1824,7 +1842,7 @@ const WaveChart=(function(){
     el.innerHTML=tfSwitcher()+toggleBar()+maBar()
       +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
       +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
-      +legend()+trainerNote()+scorecardCard();
+      +recCard()+legend()+trainerNote()+scorecardCard();
     wireControls(); const cv=document.getElementById("wcv"); wireCanvas(cv); draw();
   }
   function wireControls(){
@@ -1903,6 +1921,14 @@ const WaveChart=(function(){
       const lbl="\u2933 PROJECTED "+tnum(zlo)+"\u2013"+tnum(zhi); const tw=ctx.measureText(lbl).width;
       ctx.fillStyle="rgba(0,0,0,.5)"; ctx.fillRect(xR-tw-7,Y(zhi)-12,tw+6,12);
       ctx.fillStyle=prim?"rgba(110,168,255,.95)":"rgba(255,207,107,.95)"; ctx.fillText(lbl,xR-3,Y(zhi)-3); ctx.textAlign="left"; ctx.restore(); }
+    // VOLUME PROFILE (VRVP visible-range / SVP latest-session) — computed from real bar volume
+    if(layers.vp||layers.svp){ let vb=B; if(layers.svp&&n){ const ld=new Date(B[n-1].t); vb=B.filter(b=>{const x=new Date(b.t); return x.getDate()===ld.getDate()&&x.getMonth()===ld.getMonth();}); if(vb.length<3)vb=B; }
+      const vp=computeVP(vb); if(vp){ const pw=Math.min(96,(W-PADL-PADR)*0.30);
+        for(let i=0;i<vp.vol.length;i++){ const p0=vp.lo+i*vp.bw,yp0=Y(p0),yp1=Y(p0+vp.bw),wd=vp.maxv>0?vp.vol[i]/vp.maxv*pw:0; const mid=p0+vp.bw/2,inVA=(mid>=vp.val&&mid<=vp.vah); ctx.fillStyle=inVA?"rgba(110,168,255,.20)":"rgba(139,151,171,.12)"; ctx.fillRect(W-PADR-wd,Math.min(yp0,yp1),wd,Math.max(1,Math.abs(yp1-yp0)-1)); }
+        hline(vp.poc,"#ffcf6b","POC "+vp.poc.toFixed(1)); hline(vp.vah,"rgba(110,168,255,.65)","VAH "+vp.vah.toFixed(1)); hline(vp.val,"rgba(110,168,255,.65)","VAL "+vp.val.toFixed(1));
+        (vp.hvn||[]).forEach(function(p){ const y=Y(p); ctx.fillStyle="rgba(255,207,107,.5)"; ctx.fillRect(W-PADR-3,y-1,3,2); });
+        shown.push("VP"); }
+    }
     // EMA/SMA overlays (visual context)
     function drawMA(key){ const ser=bars.mas&&bars.mas[key]; if(!ser)return; const per=parseInt(key.replace(/[^0-9]/g,""),10),col=MACOL[per]||C.axis,isSma=key.indexOf("sma")===0;
       const seg=ser.slice(view.start,view.start+n); ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1; ctx.globalAlpha=.8; if(isSma)ctx.setLineDash([3,3]); ctx.beginPath(); let st=false;
