@@ -278,11 +278,16 @@
     <div class="toptab" data-v="futures">Futures</div>
     <div class="toptab" data-v="orb">ORB</div>
     <div class="toptab" data-v="wavechart">Wave Chart</div>
+    <div class="toptab" data-v="performance">Performance</div>
     <div class="toptab" data-v="stocks">Stocks/Swing</div>
     <div class="toptab" data-v="proscreen">Pro Screener</div>
     <div class="toptab" data-v="alerts">Alerts</div>
     <div class="toptab" data-v="account">$15K / Risk</div>
     <div class="toptab" data-v="journal">Journal</div>
+  </div>
+
+  <div id="performance" hidden>
+    <div id="performance-content"><div class="loading">Loading…</div></div>
   </div>
 
   <div id="wavechart" hidden>
@@ -1897,6 +1902,96 @@ const WaveChart=(function(){
 })();
 window.WaveChart=WaveChart;
 
+/* ════════════ PERFORMANCE (Dispatch 69) — CI-banded scorecard visualization ════════════
+   Reads perf_summary.json (real Wilson + bootstrap CIs from per-trade net_points). Expectancy bars
+   whose 95% CI crosses 0 are MUTED + "unproven"; DESCRIPTIVE(n<30) badged; negative tracks show their
+   real down equity curve. NET POINTS headline; win-rate beside it. SHADOW — nothing votes. No data invented. */
+const Perf=(function(){
+  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff"};
+  const SC={proven:C.pos,negative:C.neg,candidate:C.amber,descriptive:C.mut,empty:C.mut};
+  let d=null,period="all";
+  function pick(t){ if(period==="all"||!t.periods||!t.periods[period]) return t; const p=t.periods[period]; return Object.assign({},t,p,{n_progress:[p.n_matured||0,30]}); }
+  function periodSel(){ const o=[["all","All"],["90d","3M"],["30d","1M"],["7d","1W"],["1d","1D"]]; return '<div class="tabs" style="margin-bottom:8px">'+o.map(x=>'<div class="tab'+(x[0]===period?" active":"")+'" data-perfperiod="'+x[0]+'">'+x[1]+'</div>').join("")+'</div><div class="src" style="margin:-3px 0 9px;font-size:10px;color:var(--mut)">timeline = each track\u2019s own last window (short windows \u2192 small n \u2192 DESCRIPTIVE; honest)</div>'; }
+  async function load(){
+    const el=document.getElementById("performance-content"); el.innerHTML='<div class="loading">Loading…</div>';
+    try{ d=await ghFetch("perf_summary.json"); }catch(e){ d=null; }
+    render();
+  }
+  function chip(txt,col){ return '<span style="font-size:10px;font-weight:700;color:'+col+';border:1px solid '+col+';border-radius:999px;padding:1px 8px;margin:0 5px 4px 0;display:inline-block">'+txt+'</span>'; }
+  function expBar(t,rmin,rmax){
+    if(!t.n_matured||t.expectancy==null) return '<div style="display:flex;gap:7px;margin:4px 0;opacity:.5"><div style="flex:0 0 104px;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(t.track)+'</div><div class="gmut" style="font-size:10px">no trades in window</div></div>';
+    const span=(rmax-rmin)||1, pc=v=>((v-rmin)/span*100), col=SC[t.status_class]||C.mut;
+    const muted=(t.status_class==="candidate"||t.status_class==="descriptive");
+    const z=pc(0), e=pc(t.expectancy), ci=t.exp_ci||[t.expectancy,t.expectancy];
+    const lo=pc(ci[0]==null?t.expectancy:ci[0]), hi=pc(ci[1]==null?t.expectancy:ci[1]);
+    return '<div style="display:flex;align-items:center;gap:7px;margin:4px 0;opacity:'+(muted?.6:1)+'">'
+      +'<div style="flex:0 0 104px;font-size:10px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(t.track)+' <span class="gmut">n'+t.n_matured+'</span></div>'
+      +'<div style="flex:1 1 auto;position:relative;height:15px;background:rgba(255,255,255,.025);border-radius:3px">'
+        +'<div style="position:absolute;left:'+z+'%;top:0;bottom:0;width:1px;background:var(--gbrd)"></div>'
+        +'<div style="position:absolute;left:'+Math.min(z,e)+'%;width:'+Math.abs(e-z)+'%;top:4px;height:7px;background:'+col+';border-radius:2px"></div>'
+        +'<div style="position:absolute;left:'+Math.min(lo,hi)+'%;width:'+Math.abs(hi-lo)+'%;top:6.5px;height:2px;background:'+col+'"></div>'
+        +'<div style="position:absolute;left:'+lo+'%;top:3px;height:9px;width:1.5px;background:'+col+'"></div>'
+        +'<div style="position:absolute;left:'+hi+'%;top:3px;height:9px;width:1.5px;background:'+col+'"></div>'
+      +'</div>'
+      +'<div style="flex:0 0 84px;text-align:right;font-size:10px;font-variant-numeric:tabular-nums;color:'+col+'">'+(t.expectancy>0?"+":"")+t.expectancy+'<span class="gmut" style="font-size:8px"> '+(t.exp_ci_crosses_0?"CI∋0":"")+'</span></div>'
+    +'</div>';
+  }
+  function equitySVG(eq){ if(!eq||eq.length<2) return '<div class="gmut" style="font-size:10px">equity: n<2</div>';
+    const w=300,h=46,lo=Math.min.apply(null,eq),hi=Math.max.apply(null,eq),span=(hi-lo)||1;
+    const pts=eq.map((v,i)=>(i/(eq.length-1)*w).toFixed(1)+","+(h-(v-lo)/span*h).toFixed(1)).join(" ");
+    const up=eq[eq.length-1]>=0, col=up?C.pos:C.neg, zy=(h-(0-lo)/span*h);
+    return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" style="width:100%;height:46px;display:block">'
+      +((0>=lo&&0<=hi)?'<line x1="0" y1="'+zy.toFixed(1)+'" x2="'+w+'" y2="'+zy.toFixed(1)+'" stroke="var(--gbrd)" stroke-width="0.5"/>':'')
+      +'<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.5"/></svg>';
+  }
+  function nProgress(t){ const n=t.n_matured, g=(t.n_progress&&t.n_progress[1])||30, p=Math.min(100,n/g*100);
+    return '<div style="display:flex;align-items:center;gap:6px;margin:2px 0"><span class="gmut" style="flex:0 0 104px;font-size:9.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(t.track)+'</span>'
+      +'<div style="flex:1 1 auto;height:6px;background:rgba(255,255,255,.04);border-radius:3px"><div style="width:'+p+'%;height:6px;background:'+(n>=g?C.pos:C.mut)+';border-radius:3px"></div></div>'
+      +'<span class="gmut" style="flex:0 0 44px;text-align:right;font-size:9.5px">'+n+'/'+g+'</span></div>'; }
+  function card(pref,S){
+    const cls={proven:0,candidate:0,descriptive:0,negative:0}; S.tracks.forEach(t=>cls[t.status_class]=(cls[t.status_class]||0)+1);
+    const allDesc=S.tracks.every(t=>t.status_class==="descriptive");
+    const PT=S.tracks.map(pick);
+    const lows=PT.flatMap(t=>(t.exp_ci&&t.exp_ci[0]!=null)?[t.exp_ci[0]]:[]).concat([0]);
+    const his=PT.flatMap(t=>(t.exp_ci&&t.exp_ci[1]!=null)?[t.exp_ci[1]]:[(t.expectancy!=null?t.expectancy:0)]).concat([0]);
+    const rmin=Math.min.apply(null,lows), rmax=Math.max.apply(null,his);
+    const top=PT.slice(0,10), best=PT[0];
+    let h='<div class="card" style="'+(allDesc?"border-style:dashed;":"")+'">';
+    h+='<div class="secttl" style="font-size:12px;color:var(--ink);font-weight:700">'+esc(S.label)+' <span class="gmut" style="font-weight:400;font-size:10px">'+S.tracks.length+' tracks</span></div>';
+    h+='<div style="margin:4px 0 8px">'+(cls.proven?chip(cls.proven+" proven",C.pos):"")+(cls.candidate?chip(cls.candidate+" candidate",C.amber):"")+(cls.descriptive?chip(cls.descriptive+" n<30",C.mut):"")+(cls.negative?chip(cls.negative+" negative",C.neg):"")+'</div>';
+    h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Expectancy (net pts/trade) · 95% CI whisker · muted = CI crosses 0</div>';
+    h+=top.map(t=>expBar(t,rmin,rmax)).join("");
+    if(S.tracks.length>10) h+='<div class="gmut" style="font-size:9.5px;margin-top:3px">+'+(S.tracks.length-10)+' more tracks (sorted proven→candidate→n<30→negative)</div>';
+    h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:9px 0 2px">Equity curve — '+esc(best.track)+' (cum net pts, '+esc(best.status)+')</div>'+equitySVG(best.equity);
+    h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:9px 0 2px">n toward 30</div>'+top.map(nProgress).join("");
+    if(S.pairs&&S.pairs.length){ h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:9px 0 3px">Filtered vs RAW</div>';
+      h+=S.pairs.slice(0,6).map(p=>'<div class="src" style="margin:2px 0"><b>'+esc(p.base)+'</b> '+(p.separated?'<span style="color:'+C.pos+'">✓ '+esc(p.note)+'</span>':'<span style="color:'+C.amber+'">⚠ '+esc(p.note)+'</span>')+'</div>').join(""); }
+    h+='<details class="src" style="margin-top:8px"><summary style="cursor:pointer;color:'+C.blue+';font-size:11px">details — CI table</summary><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums;margin-top:5px;min-width:380px">'
+      +'<tr><th style="text-align:left;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">track</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">n</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">exp</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">95% CI</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">win%</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">net</th><th style="text-align:left;color:var(--mut);font-size:9px;padding:2px 0;border-bottom:1px solid var(--gbrd)">status</th></tr>'
+      +S.tracks.map(t=>'<tr><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line)">'+esc(t.track)+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right">'+t.n_matured+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right;color:'+(SC[t.status_class])+'">'+t.expectancy+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right">'+(t.exp_ci?("["+t.exp_ci[0]+", "+t.exp_ci[1]+"]"):"—")+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right" class="gmut">'+t.win_rate+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right">'+t.net_total+'</td><td style="padding:2px 0;border-bottom:1px solid var(--line);font-size:9px;color:'+SC[t.status_class]+'">'+esc(t.status_class)+'</td></tr>').join("")
+      +'</table></div></details>';
+    return h+'</div>';
+  }
+  function render(){
+    const el=document.getElementById("performance-content");
+    if(!d||!d.systems){ el.innerHTML='<div class="card">No scorecard data yet (perf_summary.json not published). Draws only real per-trade data; nothing invented.</div>'; return; }
+    const r=d.rollup||{};
+    let h='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-size:13px;font-weight:750">Performance — forward scorecards, CI-banded</div>';
+    h+='<div style="margin:6px 0">'+chip((r.proven||0)+" proven edges",C.pos)+chip((r.candidate||0)+" candidate (CI∋0)",C.amber)+chip((r.descriptive||0)+" DESCRIPTIVE n<30",C.mut)+chip((r.negative||0)+" negative",C.neg)+'</div>';
+    if((r.proven_tracks||[]).length) h+='<div class="src"><b style="color:'+C.pos+'">Proven (n≥30, CI clears 0):</b> '+r.proven_tracks.map(esc).join(" · ")+'</div>';
+    h+='<div style="font-size:10px;color:var(--mut);border:1px dashed var(--mut);border-radius:7px;padding:6px 9px;margin-top:7px;line-height:1.5">'+esc(d.honesty||"")+' CI method: '+esc(d.ci_method||"")+'</div></div>';
+    // systems sorted: ones with proven first
+    const wt=S=>Math.min.apply(null,S.tracks.map(t=>({proven:0,candidate:1,descriptive:2,negative:3,empty:4})[t.status_class]));
+    const keys=Object.keys(d.systems).sort((a,b)=>wt(d.systems[a])-wt(d.systems[b]));
+    h+=periodSel();
+    h+=keys.map(k=>card(k,d.systems[k])).join("");
+    el.innerHTML=h;
+    document.querySelectorAll("[data-perfperiod]").forEach(b=>b.onclick=()=>{period=b.getAttribute("data-perfperiod");render();});
+  }
+  return {load};
+})();
+window.Perf=Perf;
+
 /* ════════════ PRO SCREENER (v2) — SHADOW education tab (Dispatch 54) ════════════
    REAL DATA ONLY. Reads screener_v2_funnel.json (written by run_funnel.run_real in the
    engine). If absent OR source is not REAL OR no qualified picks -> honest state. The
@@ -1995,6 +2090,7 @@ function showView(v){
   document.getElementById("prices").hidden=(v!=="prices");
   document.getElementById("orb").hidden=(v!=="orb");
   document.getElementById("wavechart").hidden=(v!=="wavechart");
+  document.getElementById("performance").hidden=(v!=="performance");
   document.getElementById("overview").hidden=(v!=="overview");
   document.getElementById("fut").hidden=(v!=="futures");
   document.getElementById("stk").hidden=(v!=="stocks");
@@ -2005,6 +2101,7 @@ function showView(v){
   if(v==="active")ActiveTrades.load();
   else if(v==="orb")ORB.load();
   else if(v==="wavechart")WaveChart.load();
+  else if(v==="performance")Perf.load();
   else if(v==="overview")Overview.load();
   else if(v==="alerts")Alerts.load();
   else if(v==="account")Account.load();
