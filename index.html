@@ -1708,8 +1708,8 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,trend:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
+  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
@@ -1727,6 +1727,7 @@ const WaveChart=(function(){
     try{ verdict=await ghFetch("verdict.json"); }catch(e){}
     try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
     snap=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} }
+    try{ tlsc=await ghFetch("trendline_scorecard_summary.json"); }catch(e){}
     total=(bars&&bars.bars)?bars.bars.length:0;
     view.count=Math.min(total, tf==="daily"?total:140); view.start=Math.max(0,total-view.count);
     render();
@@ -1766,7 +1767,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1849,7 +1850,7 @@ const WaveChart=(function(){
   function exp(k){ const M={
     inst:"Subtabs \u2014 <b>ES</b> uses live equity internals; <b>GC/CL</b> are delayed futures with NO internals (direction confluence shows <i>n/a</i>, never faked); <b>Stocks</b> are on-demand swing charts built from the current screener picks.",
     tf:"Timeframe = the degree you read. <b>15m</b> is noisy and re-labels often (low reliability); <b>60m</b> swing; <b>daily</b> position. Stocks are swing \u2014 daily is the default.",
-    layers:"What\u2019s drawn \u2014 <b>Primary/Alt</b> = the two candidate counts; <b>Trend</b> = swing-pivot support/resistance; <b>Projection</b> = the conditional next-move zone; <b>VP/SVP</b> = volume profile (POC/VAH/VAL); Liquidity/FVG/Fib appear only when the engine publishes them.",
+    layers:"What\u2019s drawn \u2014 <b>Primary/Alt</b> = the two candidate counts; <b>Trend</b> = OBJECTIVE auto-trendlines (pivot-anchored, ATR touch-counted, \u22653 touches = validated, marked with/against the higher-TF EMA filter); <b>Regress</b> = least-squares regression channel \u00b11\u03c3/\u00b12\u03c3; <b>Projection</b> = the conditional next-move zone; <b>VP/SVP</b> = volume profile (POC/VAH/VAL); Liquidity/FVG/Fib appear only when the engine publishes them.",
     ma:"Moving averages are visual <b>context only</b> \u2014 they don\u2019t vote. The EMA crossover system is scored separately on the Performance tab.",
     rec:"The trade idea is <b>SHADOW</b> (informational, never votes). <b>R:R</b> = reward\u00f7risk; under 1.0 it\u2019s flagged NOT ACTIONABLE. The $ figure is SIMULATED at one micro / $100 stock risk \u2014 not your account."
    }; return '<div class="src" style="margin:-2px 0 9px;padding:7px 9px;background:rgba(110,168,255,.06);border-left:2px solid '+C.pri+';border-radius:0 6px 6px 0;line-height:1.5">\u24d8 '+(M[k]||"")+'</div>'; }
@@ -1864,7 +1865,8 @@ const WaveChart=(function(){
     ["SHADOW","Informational \u2014 never votes or fires. The TRIGGER is price breaking the level, not the card."],
     ["DELAYED / EOD","Bars are Polygon exchange-delayed (futures) or end-of-day (stocks). Use ToS for live ticks."],
     ["Internals n/a","GC/CL/stocks have no equity-index internals (TICK/TRIN/ADD) \u2014 that pillar is honestly blank, not fabricated."]];
-    return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-weight:700;font-size:12px;margin-bottom:5px">\u24d8 Wave chart \u2014 what every term means</div>'+rows.map(x=>'<div class="src" style="margin:3px 0"><b style="color:var(--ink)">'+x[0]+'.</b> '+x[1]+'</div>').join("")+'</div>'; }
+    var sc=''; if(tlsc&&tlsc.overall){ const o=tlsc.overall; sc='<div class="src" style="margin:5px 0 0;color:'+C.alt+'"><b style="color:var(--ink)">Trendline forward-scorecard.</b> hold-rate '+(o.hold_rate==null?'\u2014':o.hold_rate)+' \u00b7 break-continuation '+(o.break_cont_rate==null?'\u2014':o.break_cont_rate)+' \u00b7 n='+o.n_matured+' ('+o.status+'). Lines are DESCRIPTIVE context until n\u226530 \u2014 the close-break is the trigger, not the line.</div>'; }
+    return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-weight:700;font-size:12px;margin-bottom:5px">\u24d8 Wave chart \u2014 what every term means</div>'+rows.map(x=>'<div class="src" style="margin:3px 0"><b style="color:var(--ink)">'+x[0]+'.</b> '+x[1]+'</div>').join("")+sc+'</div>'; }
   function trainerNote(){
     return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:'+C.pri+';margin-bottom:6px">ℹ︎ How to read</div>'
       +'<div class="src" style="line-height:1.55"><b style="color:var(--ink)">Levels are the backbone</b> — price breaking a level is the trigger, not the wave label. The two counts are CANDIDATES (analyzer.py), valid only while their <b style="color:'+C.inval+'">invalidation</b> holds. 15m is low-reliability (sub-1h, re-labels often). Bars are exchange-DELAYED (Polygon) — redraws on publish cadence ~60–75s, not per tick; for live ticks use ToS.</div></div>';
@@ -1981,12 +1983,27 @@ const WaveChart=(function(){
         ctx.save(); ctx.strokeStyle="rgba(156,195,255,.45)"; ctx.lineWidth=.8; ctx.setLineDash([1,2]); ctx.beginPath(); sp.forEach((p,k)=>{const x=X(p.pos),y=Y(p.price); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}); ctx.stroke(); ctx.setLineDash([]);
         ctx.fillStyle="rgba(156,195,255,.85)"; ctx.font="10px -apple-system,sans-serif"; sp.forEach(p=>{const x=X(p.pos),y=Y(p.price); ctx.fillText(p.label,x-4,y-3);}); ctx.restore(); }); }); }
     if(wave){ if(layers.alt)drawWave(wave.alternative,false); if(layers.waves)drawWave(wave.primary,true); }
-    // trend lines — connect recent swing highs (resistance) / lows (support) from analyzer pivots, extended
-    if(layers.trend&&wave&&Array.isArray(wave.pivots)){ const pv=wave.pivots.map(p=>({price:p.price,type:p.type,pos:inView(p.t)})).filter(p=>p.pos!=null);
-      function tl(type,col){ const ps=pv.filter(p=>p.type===type); if(ps.length<2)return; const a=ps[ps.length-2],b=ps[ps.length-1]; const x1=X(a.pos),y1=Y(a.price),x2=X(b.pos),y2=Y(b.price); if(x2===x1)return; const m=(y2-y1)/(x2-x1); const xL=PADL,xR=W-PADR;
-        ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([6,4]);ctx.globalAlpha=.65;ctx.beginPath();ctx.moveTo(xL,y1+m*(xL-x1));ctx.lineTo(xR,y1+m*(xR-x1));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-        ctx.fillStyle=col;ctx.font="10px -apple-system";ctx.fillText("trend",xL+2,y1+m*(xL-x1)-3);ctx.restore(); }
-      tl("L","rgba(63,208,122,.7)"); tl("H","rgba(240,97,109,.7)"); }
+    // D74 OBJECTIVE trendlines — drawn straight from the published engine (reconstructable: which pivots, touch count, angle). NOT eyeballed.
+    (function(){ const TL=wave&&wave.trendlines; if(!TL||TL.status!=="ok")return;
+      function lineY(L,i){ return L.p1.price + L.slope*((view.start+i) - L.p1.idx); }
+      if(layers.regress&&TL.regression){ const R=TL.regression; function ry(i){ return R.at_first + R.slope*((view.start+i) - R.n_first); }
+        [[2,"rgba(156,195,255,.16)",1,true],[-2,"rgba(156,195,255,.16)",1,true],[1,"rgba(156,195,255,.30)",1,true],[-1,"rgba(156,195,255,.30)",1,true],[0,"rgba(156,195,255,.85)",1.5,false]].forEach(function(bd){
+          ctx.save();ctx.strokeStyle=bd[1];ctx.lineWidth=bd[2];if(bd[3])ctx.setLineDash([3,3]);ctx.beginPath();
+          for(let i=0;i<n;i++){const y=Y(ry(i)+bd[0]*R.sigma); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
+        if(R.extended){ ctx.save();ctx.fillStyle="rgba(156,195,255,.95)";ctx.font="bold 10px -apple-system";ctx.fillText("regression "+R.extended+" \u2014 stretched",PADL+3,Y(ry(0))-5);ctx.restore(); }
+        shown.push("Regress"); }
+      if(layers.trend&&Array.isArray(TL.auto)){ TL.auto.forEach(function(L){
+        const sup=L.kind==="support", base=sup?"63,208,122":"240,97,109", val=L.validated;
+        ctx.save(); ctx.strokeStyle="rgba("+base+","+(val?0.95:0.45)+")"; ctx.lineWidth=val?1.8:1; ctx.setLineDash(val?[]:[5,4]);
+        ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke(); ctx.setLineDash([]);
+        if(layers.channel&&L.channel){ const off=L.channel.opp_at_last-L.at_last; ctx.globalAlpha=.5; ctx.setLineDash([2,3]); ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)+off); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; }
+        const lab=(val?("\u2713 "+L.touches+" touches"):(L.touches+" touches \u00b7 prov"))+(L.with_filter===true?" \u00b7 w/trend":(L.with_filter===false?" \u00b7 counter":""));
+        const ly=Y(lineY(L,0)); ctx.font=(val?"bold ":"")+"10px -apple-system"; const tw=ctx.measureText(lab).width;
+        ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(PADL+1,ly-12,tw+6,14); ctx.fillStyle="rgba("+base+",1)"; ctx.fillText(lab,PADL+4,ly-2);
+        if(L.break&&!L.break.poke_only){ const by=Y(L.break.line_at),up=L.break.direction==="up"; const t2="\u26a1 broke "+L.break.direction+" \u00b7 close-confirmed"; ctx.font="bold 9px -apple-system"; const w2=ctx.measureText(t2).width; const bx=W-PADR-w2-7; ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(bx-2,by+(up?-15:3),w2+6,14); ctx.fillStyle="rgba("+base+",1)";ctx.fillText(t2,bx+1,by+(up?-4:13)); }
+        ctx.restore();
+      }); }
+    })();
     // current-price line (LIVE/DELAYED/STALE honored)
     (function(){ let px=null,tag="DELAYED",pcol=C.alt;
       if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
