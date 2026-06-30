@@ -1708,7 +1708,7 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
+  const layers={waves:true,alt:true,trend:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
   let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,view={start:0,count:0},total=0;
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
@@ -1752,7 +1752,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ return '<div class="tabs" style="margin-bottom:8px">'+["15m","60m","daily"].map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1823,9 +1823,11 @@ const WaveChart=(function(){
     const avg=total/nb; return {lo:lo,hi:hi,bw:bw,vol:vol,maxv:Math.max.apply(null,vol),poc:lo+(pi+0.5)*bw,vah:lo+(hii+1)*bw,val:lo+li*bw,hvn:vol.map((v,i)=>v>avg*1.8?lo+(i+0.5)*bw:null).filter(x=>x!=null)}; }
   function recCard(){ const r=wave&&wave.recommendation; if(!r)return "";
     if(r.status!=="setup") return '<div class="card" style="border-left:3px solid '+C.axis+'"><div style="font-size:11px;font-weight:700">Trade idea \u2014 SHADOW synthesis</div><div class="src" style="margin-top:3px">\u2014 '+esc(r.reason||"stand aside")+'</div></div>';
-    const dcol=r.direction==="up"?C.up:C.dn,rrcol=(r.rr&&r.rr>=1.5)?C.up:((r.rr&&r.rr>=1)?C.alt:C.dn);
-    let h='<div class="card" style="border-left:3px solid '+dcol+'"><div style="font-size:12px;font-weight:750">Trade idea (SHADOW) \u2014 <span style="color:'+dcol+'">'+r.direction.toUpperCase()+'</span> <span style="font-size:9px;border:1px solid '+C.axis+';color:'+C.axis+';border-radius:4px;padding:0 5px;margin-left:4px">'+r.conviction+' conviction \u00b7 '+r.confluence+' confl</span></div>';
+    const act=(r.actionable!==false)&&!r.poor_rr; const dcol=act?(r.direction==="up"?C.up:C.dn):C.axis,rrcol=(r.rr&&r.rr>=1.5)?C.up:((r.rr&&r.rr>=1)?C.alt:C.dn);
+    let h='<div class="card" style="border-left:3px solid '+dcol+';opacity:'+(act?1:0.85)+'"><div style="font-size:12px;font-weight:750">Trade idea (SHADOW) \u2014 <span style="color:'+dcol+'">'+r.direction.toUpperCase()+'</span> <span style="font-size:9px;border:1px solid '+C.axis+';color:'+C.axis+';border-radius:4px;padding:0 5px;margin-left:4px">'+r.conviction+' conviction \u00b7 '+r.confluence+' confl</span>'+(act?'':' <span style="font-size:9px;font-weight:800;border:1px solid '+C.dn+';color:'+C.dn+';border-radius:4px;padding:0 5px">NOT ACTIONABLE</span>')+'</div>';
+    if(r.flag) h+='<div style="margin-top:6px;font-size:11px;font-weight:700;color:'+C.dn+';border:1px dashed '+C.dn+';border-radius:6px;padding:5px 8px">\u26a0 '+esc(r.flag)+'</div>';
     h+='<div class="setup" style="margin-top:6px;font-size:12.5px;line-height:1.7">entry <b>'+r.entry+'</b> \u00b7 stop <b style="color:'+C.dn+'">'+r.stop+'</b> \u00b7 target <b style="color:'+C.up+'">'+r.target+'</b> \u00b7 <b style="color:'+rrcol+'">R:R '+r.rr+'</b> \u00b7 size 1\u20132%/R</div>';
+    if(r.risk_pts!=null) h+='<div class="src" style="margin-top:2px">risk '+r.risk_pts+' pts \u2248 <b>$'+r.usd_risk+'</b> /micro (SIMULATED 1 contract)</div>';
     h+='<div class="src" style="margin-top:4px">'+esc(r.basis)+'</div>';
     h+='<div class="src" style="margin-top:4px;color:'+C.alt+'">'+esc(r.note)+'</div>';
     return h; }
@@ -1940,6 +1942,12 @@ const WaveChart=(function(){
         ctx.save(); ctx.strokeStyle="rgba(156,195,255,.45)"; ctx.lineWidth=.8; ctx.setLineDash([1,2]); ctx.beginPath(); sp.forEach((p,k)=>{const x=X(p.pos),y=Y(p.price); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}); ctx.stroke(); ctx.setLineDash([]);
         ctx.fillStyle="rgba(156,195,255,.8)"; ctx.font="8px -apple-system,sans-serif"; sp.forEach(p=>{const x=X(p.pos),y=Y(p.price); ctx.fillText(p.label,x-4,y-3);}); ctx.restore(); }); }); }
     if(wave){ if(layers.alt)drawWave(wave.alternative,false); if(layers.waves)drawWave(wave.primary,true); }
+    // trend lines — connect recent swing highs (resistance) / lows (support) from analyzer pivots, extended
+    if(layers.trend&&wave&&Array.isArray(wave.pivots)){ const pv=wave.pivots.map(p=>({price:p.price,type:p.type,pos:inView(p.t)})).filter(p=>p.pos!=null);
+      function tl(type,col){ const ps=pv.filter(p=>p.type===type); if(ps.length<2)return; const a=ps[ps.length-2],b=ps[ps.length-1]; const x1=X(a.pos),y1=Y(a.price),x2=X(b.pos),y2=Y(b.price); if(x2===x1)return; const m=(y2-y1)/(x2-x1); const xL=PADL,xR=W-PADR;
+        ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([6,4]);ctx.globalAlpha=.65;ctx.beginPath();ctx.moveTo(xL,y1+m*(xL-x1));ctx.lineTo(xR,y1+m*(xR-x1));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+        ctx.fillStyle=col;ctx.font="8px -apple-system";ctx.fillText("trend",xL+2,y1+m*(xL-x1)-3);ctx.restore(); }
+      tl("L","rgba(63,208,122,.7)"); tl("H","rgba(240,97,109,.7)"); }
     // current-price line (LIVE/DELAYED/STALE honored)
     (function(){ let px=null,tag="DELAYED",pcol=C.alt;
       if(snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
