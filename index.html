@@ -1698,8 +1698,8 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,liquidity:true,fvg:true,vp:true,fib:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,view={start:0,count:0},total=0;
+  const layers={waves:true,alt:true,projection:true,liquidity:true,fvg:true,vp:true,fib:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,view={start:0,count:0},total=0;
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
   async function load(){
@@ -1710,14 +1710,36 @@ const WaveChart=(function(){
     try{ ict=await ghFetch("ict_state.json"); }catch(e){}
     try{ fvg=await ghFetch("fvg_state.json"); }catch(e){}
     try{ verdict=await ghFetch("verdict.json"); }catch(e){}
+    try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
     total=(bars&&bars.bars)?bars.bars.length:0;
     view.count=Math.min(total, tf==="daily"?total:140); view.start=Math.max(0,total-view.count);
     render();
   }
+  function scorecardCard(){
+    if(!sc||!sc.by_timeframe) return "";
+    const since=sc.forward_tracking_since?new Date(sc.forward_tracking_since).toLocaleDateString():"\u2014";
+    const th='text-align:left;color:var(--mut);font-size:9.5px;text-transform:uppercase;padding:3px 6px 3px 0;border-bottom:1px solid var(--gbrd);white-space:nowrap';
+    let h='<div class="card"><div class="secttl" style="font-size:10px;letter-spacing:.5px;color:var(--mut);text-transform:uppercase;font-weight:700">Wave-count accuracy \u2014 forward, per timeframe</div>';
+    h+='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;margin-top:6px;min-width:330px">';
+    h+='<tr><th style="'+th+'">TF</th><th style="'+th+'">n</th><th style="'+th+'">matured</th><th style="'+th+';text-align:right">hit%</th><th style="'+th+';text-align:right">held%</th><th style="'+th+';text-align:right">exp pts</th><th style="'+th+'">status</th></tr>';
+    ["15m","60m","daily"].forEach(function(tf){ const a=((sc.by_timeframe[tf]||{}).all)||{};
+      const held=(a.invalidation_break_rate!=null)?(100-a.invalidation_break_rate).toFixed(1):"\u2014";
+      const td='padding:3px 6px 3px 0;border-bottom:1px solid var(--line)';
+      h+='<tr><td style="'+td+';font-weight:700">'+tf+'</td><td style="'+td+'">'+(a.n_counts||0)+'</td><td style="'+td+'">'+(a.n_matured||0)+'</td>'
+        +'<td style="'+td+';text-align:right">'+(a.target_hit_rate==null?"\u2014":a.target_hit_rate)+'</td>'
+        +'<td style="'+td+';text-align:right">'+held+'</td>'
+        +'<td style="'+td+';text-align:right">'+(a.net_points_expectancy==null?"\u2014":a.net_points_expectancy)+'</td>'
+        +'<td style="'+td+';color:var(--warn-ink);font-size:10px;white-space:nowrap">'+((a.status||"").indexOf("candidate")>=0?"cand n\u226530":"DESC n<30")+'</td></tr>';
+    });
+    h+='</table></div>';
+    h+='<div class="src" style="margin-top:6px">Primary vs alt (matured): '+["15m","60m","daily"].map(function(tf){const x=sc.by_timeframe[tf]||{};return tf+" P"+((x.primary||{}).n_matured||0)+"/A"+((x.alternative||{}).n_matured||0);}).join(" \u00b7 ")+'</div>';
+    h+='<div style="font-size:10.5px;color:var(--warn-ink);border:1px dashed var(--warn-ink);border-radius:7px;padding:6px 9px;margin-top:7px;line-height:1.5">FORWARD-tracked from '+esc(since)+'. Accuracy = did price hit the projected target BEFORE invalidation (objective, not subjective). DESCRIPTIVE until n\u226530 per timeframe. NOT a backtest \u2014 counts re-label in hindsight. Measures whether each TF\u2019s counts are worth trusting; does NOT auto-promote any count to voting (SHADOW \u2014 Hany\u2019s call after n\u226530 + edge).</div>';
+    return h+'</div>';
+  }
   function tfSwitcher(){ return '<div class="tabs" style="margin-bottom:8px">'+["15m","60m","daily"].map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1732,6 +1754,14 @@ const WaveChart=(function(){
     const miss=unf.map(t=>esc(t.reason)).concat((cf.unavailable||[]).map(esc));
     if(miss.length) s+='<div class="src" style="margin-top:3px;color:'+C.axis+';font-size:10.5px">\u25cb '+miss.join(' \u00b7 ')+'</div>';
     return s+'</div>'; }
+  function projLine(side){ if(!side||!side.projection)return ""; const pj=side.projection;
+    if(pj.status!=="ok") return '<div class="src" style="margin-top:5px;color:'+C.axis+';font-size:10.5px">\u2933 projection: <span class="gmut">'+esc(pj.reason||"no clean projection")+'</span></div>';
+    const inv=(pj.invalidation||{}).level, zlo=Math.min(pj.zone[0],pj.zone[1]), zhi=Math.max(pj.zone[0],pj.zone[1]);
+    return '<div class="src" style="margin-top:6px;padding-top:5px;border-top:1px dotted var(--gbrd)">'
+      +'<span style="font-weight:800;color:'+C.axis+'">\u2933 PROJECTED next move</span> <span style="border:1px solid '+C.axis+';border-radius:3px;padding:0 4px;font-size:8px;color:'+C.axis+'">NOT CONFIRMED</span>'
+      +'<div style="margin-top:3px;color:var(--ink)">IF this count holds (invalid '+tnum(inv)+'), next \u2192 <b>'+tnum(zlo)+'\u2013'+tnum(zhi)+'</b> zone <span class="gmut">('+esc(pj.basis)+')</span></div>'
+      +'<div class="gmut" style="margin-top:2px;font-size:10px">'+esc(pj.zone_confluence_note)+'</div>'
+      +'<div class="gmut" style="margin-top:2px;font-size:10px">conditional on the count, not a prediction \u2014 price breaking '+tnum(inv)+' voids it \u00b7 one wave ahead, zone not point.</div></div>'; }
   function legend(){
     if(!wave||wave.status!=="ok") return '<div class="card"><div class="src">Wave count not published for '+tf+'.</div></div>';
     const p=wave.primary||{}, a=wave.alternative||{};
@@ -1746,6 +1776,7 @@ const WaveChart=(function(){
     h+='<div class="src" style="margin-top:4px"><span style="color:'+C.inval+'">⛔ invalidation '+tnum(invP.level)+'</span>'+(invP.rule?' <span class="gmut">— '+esc(invP.rule)+'</span>':'')+'</div>';
     if(Object.keys(tP).length) h+='<div class="src" style="margin-top:2px;color:'+C.tgt+'">▸ targets '+esc(tgtStr(tP))+'</div>';
     h+=cfLine(p);
+    h+=projLine(p);
     h+='</div>';
     // ALT
     if(a&&a.name){ const invA=(a.invalidation||{}), tA=a.targets||{};
@@ -1756,6 +1787,7 @@ const WaveChart=(function(){
       h+='<div class="src" style="margin-top:4px"><span style="color:'+C.inval+'">⛔ invalidation '+tnum(invA.level)+'</span></div>';
       if(Object.keys(tA).length) h+='<div class="src" style="margin-top:2px;color:'+C.tgt+'">▸ targets '+esc(tgtStr(tA))+'</div>';
       h+=cfLine(a);
+      h+=projLine(a);
       h+='</div>';
     } else {
       h+='<div style="border-left:3px dashed var(--gbrd);padding:2px 0 2px 9px"><div style="font-size:12px;color:'+C.axis+'"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--gbrd);color:'+C.axis+';text-align:center;line-height:14px;font-size:10px;font-weight:800;margin-right:6px">B</span>ALT · no strong alternative — engine sees a single clean count here.</div></div>';
@@ -1776,7 +1808,7 @@ const WaveChart=(function(){
     el.innerHTML=tfSwitcher()+toggleBar()
       +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
       +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
-      +legend()+trainerNote();
+      +legend()+trainerNote()+scorecardCard();
     wireControls(); const cv=document.getElementById("wcv"); wireCanvas(cv); draw();
   }
   function wireControls(){
@@ -1811,6 +1843,7 @@ const WaveChart=(function(){
     const ext=[]; if(wave&&layers.waves&&wave.primary){const iv=wave.primary.invalidation;if(iv&&iv.level!=null&&inView(__t(wave.primary))!=null)ext.push(iv.level);}
     // include visible wave point prices in scale
     [wave&&wave.primary,wave&&layers.alt&&wave.alternative].forEach(s=>{ if(s&&s.points)s.points.forEach(p=>{if(inView(p.t)!=null)ext.push(p.price);}); });
+    [wave&&wave.primary,wave&&wave.alternative].forEach(s=>{ if(layers.projection&&s&&s.projection&&s.projection.status==="ok"){ext.push(s.projection.zone[0]);ext.push(s.projection.zone[1]);} });
     ext.forEach(v=>{ if(v>hi&&v<hi+(hi-lo))hi=v; if(v<lo&&v>lo-(hi-lo))lo=v; });
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
     const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
@@ -1841,7 +1874,20 @@ const WaveChart=(function(){
       const iv=side.invalidation; if(iv&&iv.level!=null){const cfHit=side.confluence&&side.confluence.trace.some(t=>t.pillar==='invalidation'&&t.fired);hline(iv.level,prim?C.inval:"rgba(240,97,109,.55)",(prim?"inval A ":"inval B ")+tnum(iv.level)+(cfHit?" \u25c6confl":""),[5,4]);}
       const tz=side.targets; if(tz)Object.keys(tz).forEach(k=>{if(typeof tz[k]==="number")hline(tz[k],C.tgt,"tgt "+tnum(tz[k]),[1,3]);});
     }
+    function drawProjection(side,prim){ if(!layers.projection||!side||!side.projection||side.projection.status!=="ok")return;
+      const pj=side.projection, zlo=Math.min(pj.zone[0],pj.zone[1]), zhi=Math.max(pj.zone[0],pj.zone[1]);
+      const xL=X(n-1), xR=W-PADR;
+      ctx.fillStyle=prim?"rgba(110,168,255,.09)":"rgba(255,207,107,.07)"; ctx.fillRect(xL,Y(zhi),Math.max(2,xR-xL),Math.max(2,Y(zlo)-Y(zhi)));
+      const oi=pj.origin&&pj.origin.t!=null?inView(pj.origin.t):null;
+      const ox=oi!=null?X(oi):X(n-1), oy=(pj.origin&&pj.origin.price!=null)?Y(pj.origin.price):Y(B[n-1].c);
+      ctx.save(); ctx.strokeStyle=prim?"rgba(110,168,255,.5)":"rgba(255,207,107,.45)"; ctx.lineWidth=1.3; ctx.setLineDash([2,4]);
+      ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(xR-3,Y((zlo+zhi)/2)); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+      ctx.save(); ctx.font="bold 8px -apple-system,sans-serif"; ctx.textAlign="right";
+      const lbl="\u2933 PROJECTED "+tnum(zlo)+"\u2013"+tnum(zhi); const tw=ctx.measureText(lbl).width;
+      ctx.fillStyle="rgba(0,0,0,.5)"; ctx.fillRect(xR-tw-7,Y(zhi)-12,tw+6,12);
+      ctx.fillStyle=prim?"rgba(110,168,255,.95)":"rgba(255,207,107,.95)"; ctx.fillText(lbl,xR-3,Y(zhi)-3); ctx.textAlign="left"; ctx.restore(); }
     if(wave){ if(layers.alt)drawWave(wave.alternative,false); if(layers.waves)drawWave(wave.primary,true); }
+    if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
     // freshness + layer status
     const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed;fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+(dly?"DELAYED":"LIVE")+'</span> '+esc(bars.contract||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon futures, exchange-delayed — ToS for live ticks)';}
     const ls=document.getElementById("wc-layers"); if(ls){const want=[];if(layers.liquidity)want.push("Liquidity");if(layers.fvg)want.push("FVG");if(layers.vp)want.push("VP");if(layers.fib)want.push("Fib");const miss=want.filter(w=>shown.indexOf(w)<0);ls.innerHTML=miss.length?'<span style="color:'+C.axis+'">Level layers with no published data right now (shown empty, not invented): <b>'+miss.join(", ")+'</b> — ICT/FVG go dark off-hours; VP/fib publish when the engine has them.</span>':'';}
