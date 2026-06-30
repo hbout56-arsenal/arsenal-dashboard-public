@@ -2390,14 +2390,16 @@ const Audit=(function(){
   function sc(v){return v==="FRESH"?"live":(v==="STALE"?"stale":(v==="DARK"?"dark":"delayed"));}
   async function load(){ const el=document.getElementById("audit-content"); el.innerHTML='<div class="loading">Loading\u2026</div>';
     let a=null; try{ a=await ghFetch("daily_audit_latest.json"); }catch(e){}
+    let adec={}; try{ const _ad=await ghFetch("audit_decisions.json"); adec=(_ad&&_ad.decisions)||{}; }catch(e){}
     if(!a){ el.innerHTML='<div class="card">No audit yet (daily_audit_latest.json not published). The audit runs after close \u2014 nothing invented.</div>'; return; }
     let h='';
     h+='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-size:13px;font-weight:800">\u29c9 Daily Audit \u2014 '+esc(a.date)+'</div><div class="src" style="margin-top:3px">Automated observe + measure + <b>propose</b> across every system. <b style="color:'+C.amber+'">SHADOW / advisory \u2014 nothing here auto-tunes any parameter.</b> Machine proposes, you decide.</div></div>';
     const props=a.section_5_proposals||[];
     h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2464 Proposals \u2014 '+props.length+' <span class="src" style="font-weight:400">(ranked by evidence \u00b7 all REVIEW)</span></div>';
     if(!props.length) h+='<div class="src">No proposals today \u2014 nothing crossed a threshold worth flagging.</div>';
-    if(props.length) h+='<div class="src" style="margin:-2px 0 7px;color:'+C.mut+'">Approve / Ignore = your triage (this session) \u2014 nothing auto-applies; tell Claude at EOD to action the approved ones.</div>';
-    h+=props.map((p,i)=>'<div class="audprop" data-pi="'+i+'" style="border:1px solid var(--gbrd);border-radius:9px;padding:8px 10px;margin:5px 0;transition:opacity .2s,border-color .2s,background .2s"><div style="font-size:11px;font-weight:800"><span style="color:'+(p.strength>=3?C.pos:(p.strength>=2?C.amber:C.dim))+'">'+star(p.strength)+'</span> <span style="color:'+C.ink+'">'+esc(p.kind.toUpperCase())+'</span></div><div class="src" style="margin-top:3px;color:var(--ink)">'+esc(p.observation)+'</div><div class="src" style="margin-top:2px">\u2192 '+esc(p.action)+'</div><div style="margin-top:4px;font-size:9px;font-weight:800;color:'+C.amber+';border:1px solid '+C.amber+';display:inline-block;border-radius:5px;padding:1px 6px">'+esc(p.tag)+'</div><div style="margin-top:8px;display:flex;gap:8px;align-items:center"><span class="audbtn ok" data-audok="'+i+'">\u2713 Approve</span><span class="audbtn no" data-audno="'+i+'">Ignore</span><span class="auddec" style="font-size:9.5px;font-weight:700"></span></div></div>').join("");
+    if(props.length) h+='<div class="src" style="margin:-2px 0 7px;color:'+C.mut+'">Approve / Ignore opens a 1-tap email to yourself (same round-trip as the Alerts toggles) \u2014 logged + reflected here within ~5\u201310 min. Nothing auto-applies.</div>';
+    h+=props.map(function(p,i){ var pd=adec[p.pid], appr=pd&&pd.decision==="approve", ign=pd&&pd.decision==="ignore";
+      return '<div class="audprop" data-pi="'+i+'" data-pid="'+(p.pid||"")+'" style="border:1px solid '+(appr?C.pos:"var(--gbrd)")+';border-radius:9px;padding:8px 10px;margin:5px 0;opacity:'+(ign?".45":"1")+';background:'+(appr?"rgba(63,208,122,.07)":"transparent")+';transition:opacity .2s,border-color .2s,background .2s"><div style="font-size:11px;font-weight:800"><span style="color:'+(p.strength>=3?C.pos:(p.strength>=2?C.amber:C.dim))+'">'+star(p.strength)+'</span> <span style="color:'+C.ink+'">'+esc(p.kind.toUpperCase())+'</span></div><div class="src" style="margin-top:3px;color:var(--ink)">'+esc(p.observation)+'</div><div class="src" style="margin-top:2px">\u2192 '+esc(p.action)+'</div><div style="margin-top:4px;font-size:9px;font-weight:800;color:'+C.amber+';border:1px solid '+C.amber+';display:inline-block;border-radius:5px;padding:1px 6px">'+esc(p.tag)+'</div><div style="margin-top:8px;display:flex;gap:8px;align-items:center"><span class="audbtn ok" data-audok="'+i+'">\u2713 Approve</span><span class="audbtn no" data-audno="'+i+'">Ignore</span><span class="auddec" style="font-size:9.5px;font-weight:700;color:'+(appr?C.pos:C.mut)+'">'+(appr?("\u2713 APPROVED \u00b7 logged "+String(pd.at||"").slice(0,10)):(ign?"ignored \u00b7 logged":""))+'</span></div></div>'; }).join("");
     h+='</div>';
     const hh=a.section_1_ran_broke||{},feeds=hh.feeds||[];
     h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2460 Ran / Broke <span class="src" style="font-weight:400">('+hh.n_stale+' stale \u00b7 '+hh.n_dark+' dark)</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">'+feeds.map(r=>'<span class="schip '+sc(r.state)+'">'+esc(r.feed)+' '+esc(r.state)+(r.age_min!=null?' '+r.age_min+'m':'')+'</span>').join("")+'</div></div>';
@@ -2407,9 +2409,12 @@ const Audit=(function(){
     h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2463 What went right <span class="src" style="font-weight:400">('+wins.length+')</span></div>'+(wins.slice(0,10).map(w=>'<div class="src" style="margin:2px 0;color:'+C.pos+'">\u2713 <b>'+esc(w.track)+'</b> \u2014 exp '+w.exp+', n '+w.n+'</div>').join("")||'<div class="src">no new clean maturations today.</div>')+'</div>';
     h+='<div class="card src" style="color:'+C.mut+'">'+esc(a.discipline||"")+'</div>';
     el.innerHTML=h;
-    function _decide(card,kind){ if(!card)return; const d=card.querySelector(".auddec");
-      if(kind==="approve"){ card.style.borderColor=C.pos; card.style.background="rgba(63,208,122,.07)"; card.style.opacity=1; d.textContent="\u2713 APPROVED \u2014 your call (nothing auto-applies; action at EOD)"; d.style.color=C.pos; }
-      else { card.style.opacity=.45; d.textContent="ignored"; d.style.color=C.mut; } }
+    function _decide(card,kind){ if(!card)return; const d=card.querySelector(".auddec"); const pid=card.getAttribute("data-pid")||""; const obs=((card.querySelector(".src")||{}).textContent||"").slice(0,160);
+      if(kind==="approve"){ card.style.borderColor=C.pos; card.style.background="rgba(63,208,122,.07)"; card.style.opacity=1; d.textContent="\u2713 sending 1-tap email\u2026 (logs within ~5\u201310min)"; d.style.color=C.pos; }
+      else { card.style.opacity=.45; d.textContent="sending 1-tap email\u2026"; d.style.color=C.mut; }
+      const subj="ARSENAL_AUDIT "+pid+"="+kind;
+      const body=subj+"\n\n"+obs+"\n\n(Audit decision round-trip \u2014 logged on the next poller cycle. Nothing auto-applies; advisory only.)";
+      window.location.href="mailto:"+OWNER+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body); }
     el.querySelectorAll("[data-audok]").forEach(b=>b.onclick=()=>_decide(b.closest(".audprop"),"approve"));
     el.querySelectorAll("[data-audno]").forEach(b=>b.onclick=()=>_decide(b.closest(".audprop"),"ignore"));
   }
