@@ -353,6 +353,7 @@
       <div class="toptab" data-v="journal">Journal</div>
     </div>
   </div>
+  <div id="freshbar" style="font-size:10.5px;font-weight:650;margin:-9px 2px 14px;min-height:15px;letter-spacing:.2px"></div>
 
   <div id="audit" hidden><div id="audit-content"><div class="loading">Loading…</div></div></div>
 
@@ -2589,6 +2590,22 @@ function _updateStatus(){ var p=document.getElementById("statuspill"),t=document
     if(age<12){ p.className="statuspill live"; t.textContent="LIVE \u00b7 "+Math.max(0,Math.round(age))+"m"; }
     else { p.className="statuspill stale"; t.textContent="STALE \u00b7 "+(age<120?Math.round(age)+"m":Math.round(age/60)+"h"); }
   }).catch(function(){ p.className="statuspill"; t.textContent="feeds"; }); }
+var _VF={active:"internals_snapshot.json",overview:"verdict.json",alerts:"alert_prefs.json",audit:"daily_audit_latest.json",wavechart:"es_wave_daily.json",performance:"perf_summary.json",proscreen:"screener_v2_funnel.json",stocks:"stock_dashboard.json",account:"swing_account_sim.json",auction:"ict_state.json",prices:"internals_snapshot.json",futures:"internals_snapshot.json",orb:"internals_snapshot.json",journal:"internals_snapshot.json"};
+var _VFHB={prices:1,futures:1,orb:1,journal:1,active:1};   // these use the data heartbeat (no single own feed)
+function _fmtT(ts){ try{ var d=new Date(ts); return d.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }catch(e){ return String(ts); } }
+function _updateFresh(v){ var el=document.getElementById("freshbar"); if(!el)return; var fn=_VF[v];
+  if(!fn){ el.innerHTML=""; return; }
+  el.innerHTML='<span style="color:var(--mut)">\u27f3 checking last update\u2026</span>';
+  fetch(API_BASE+fn+"?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+    if(!d){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 feed not available</span>'; return; }
+    var ts=d.generated_at||d.pushed_at||d.as_of||d._updated||d.updated||d.timestamp||d.date||null;
+    if(!ts){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 n/a</span>'; return; }
+    var age=(Date.now()-Date.parse(ts))/60000, fresh=age<15;
+    var ago=age<1?"just now":(age<60?Math.round(age)+"m ago":(age<1440?Math.round(age/60)+"h ago":Math.round(age/1440)+"d ago"));
+    var col=fresh?"var(--pos-ink)":"var(--warn-ink)", dot=fresh?"var(--green)":"var(--amber)";
+    el.innerHTML='<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dot+';margin-right:6px;vertical-align:middle"></span><span style="color:'+col+'">'+(_VFHB[v]?"data heartbeat":"this tab\u2019s data")+' \u00b7 updated '+ago+'</span><span style="color:var(--mut)"> \u00b7 '+_fmtT(ts)+(fresh?"":" \u00b7 STALE")+'</span>';
+  }).catch(function(){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 n/a</span>'; });
+}
 function showView(v){
   view=v;
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
@@ -2610,7 +2627,8 @@ function showView(v){
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
     proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"]};
   const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
-  if(typeof _enhanceCollapse==="function"){ setTimeout(_enhanceCollapse,60); setTimeout(_enhanceCollapse,420); }   // re-scan now-visible sections at real heights
+  if(typeof _enhanceCollapse==="function"){ setTimeout(_enhanceCollapse,60); setTimeout(_enhanceCollapse,420); }
+  if(typeof _updateFresh==="function") _updateFresh(v);   // re-scan now-visible sections at real heights
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
 
