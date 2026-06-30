@@ -281,11 +281,12 @@
   .statuspill.live{color:var(--pos-ink);border-color:var(--green-g)} .statuspill.live .dot{background:var(--green);animation:livepulse 1.8s ease-in-out infinite}
   .statuspill.stale{color:var(--warn-ink);border-color:var(--amber-g)} .statuspill.stale .dot{background:var(--amber)}
   @keyframes livepulse{0%,100%{box-shadow:0 0 0 0 rgba(37,233,110,.6)}50%{box-shadow:0 0 0 5px rgba(37,233,110,0)}}
-  .topbar{flex-direction:column;align-items:stretch;gap:7px;padding:10px}
+  .topbar{flex-direction:row;flex-wrap:wrap;align-items:stretch;gap:7px;padding:10px}
   .navgroup{display:flex;flex-wrap:wrap;gap:6px}
-  .navgroup{align-items:center;gap:5px}
+  .navgroup{display:contents}
+  .navlabel{display:none}
   .navlabel{flex:0 0 auto;font-size:8.5px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin:0 6px 0 2px;align-self:center}
-  .toptab{flex:0 0 auto;padding:6px 10px;font-size:11.5px;border:1px solid transparent;font-weight:700}
+  .toptab{flex:0 0 auto;padding:11px 17px;font-size:15px;border:1px solid transparent;font-weight:750}
   .toptab:not(.active):hover{background:var(--glass2);color:var(--ink)}
   .toptab.active{background:linear-gradient(180deg,#5a97ff,#3f7df0);color:#08101e;box-shadow:0 0 0 1px var(--accent-g),0 8px 22px -8px var(--accent-g)}
   .card{box-shadow:var(--elev);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s}
@@ -305,6 +306,19 @@
   .newhint .x{float:right;margin:-1px 0 6px 12px}
   .newhint b{font-style:normal}
   .panelerr{border:1px solid var(--amber-g);background:var(--amber-d);border-radius:14px;padding:16px;color:var(--warn-ink);font-size:12.5px;line-height:1.5}
+  /* D78: Dollars toggle made noticeable (green accent) */
+  [data-unit="$"]{font-weight:850;letter-spacing:.3px}
+  [data-unit="$"]:not(.active){border:1px solid rgba(37,233,110,.5)!important;color:#7ee0a6!important}
+  [data-unit="$"].active{background:linear-gradient(180deg,#2fd07a,#1f9d5a)!important;color:#06140c!important;box-shadow:0 0 0 1px rgba(37,233,110,.55),0 7px 18px -6px rgba(37,233,110,.6)!important}
+  /* D78: collapsible cards — collapse a section, the rest reflow up to fill */
+  .collapsehead{cursor:pointer;position:relative;padding-right:22px!important}
+  .collapsehead::after{content:"\25be";position:absolute;right:3px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:12px;transition:transform .2s}
+  .card.collapsed > .collapsehead::after{transform:translateY(-50%) rotate(-90deg)}
+  .card.collapsed > *:not(.collapsehead){display:none!important}
+  /* D78: Audit approve/ignore */
+  .audbtn{font-size:10.5px;font-weight:850;border-radius:7px;padding:5px 13px;cursor:pointer;user-select:none}
+  .audbtn.ok{color:#06140c;background:linear-gradient(180deg,#2fd07a,#1f9d5a)}
+  .audbtn.no{color:var(--mut);border:1px solid var(--gbrd)}
 </style>
 </head>
 <body>
@@ -1823,6 +1837,8 @@ const WaveChart=(function(){
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
+      +'<span data-wcclear="1" style="font-size:11px;font-weight:800;color:'+C.dn+';border:1px solid '+C.dn+';border-radius:999px;padding:3px 12px;cursor:pointer;user-select:none;margin-left:3px">✕ Clear</span>'
+      +'<span data-wcdefault="1" style="font-size:11px;font-weight:650;color:'+C.axis+';border:1px solid var(--gbrd);border-radius:999px;padding:3px 12px;cursor:pointer;user-select:none">Default</span>'
       +'<span style="font-size:10px;color:'+C.axis+';align-self:center;margin-left:4px">drag = pan · pinch / wheel = zoom</span></div>';
   }
   function tnum(x){ return (x==null)?"—":(+x).toLocaleString(undefined,{maximumFractionDigits:2}); }
@@ -1954,6 +1970,8 @@ const WaveChart=(function(){
   function wireControls(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
+    const _cl=document.querySelector("[data-wcclear]"); if(_cl)_cl.onclick=()=>{Object.keys(layers).forEach(k=>layers[k]=false); if(typeof maOn==="object")Object.keys(maOn).forEach(k=>maOn[k]=false); render();};
+    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true}); render();};
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
     document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
     const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
@@ -2378,7 +2396,8 @@ const Audit=(function(){
     const props=a.section_5_proposals||[];
     h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2464 Proposals \u2014 '+props.length+' <span class="src" style="font-weight:400">(ranked by evidence \u00b7 all REVIEW)</span></div>';
     if(!props.length) h+='<div class="src">No proposals today \u2014 nothing crossed a threshold worth flagging.</div>';
-    h+=props.map(p=>'<div style="border:1px solid var(--gbrd);border-radius:9px;padding:8px 10px;margin:5px 0"><div style="font-size:11px;font-weight:800"><span style="color:'+(p.strength>=3?C.pos:(p.strength>=2?C.amber:C.dim))+'">'+star(p.strength)+'</span> <span style="color:'+C.ink+'">'+esc(p.kind.toUpperCase())+'</span></div><div class="src" style="margin-top:3px;color:var(--ink)">'+esc(p.observation)+'</div><div class="src" style="margin-top:2px">\u2192 '+esc(p.action)+'</div><div style="margin-top:4px;font-size:9px;font-weight:800;color:'+C.amber+';border:1px solid '+C.amber+';display:inline-block;border-radius:5px;padding:1px 6px">'+esc(p.tag)+'</div></div>').join("");
+    if(props.length) h+='<div class="src" style="margin:-2px 0 7px;color:'+C.mut+'">Approve / Ignore = your triage (this session) \u2014 nothing auto-applies; tell Claude at EOD to action the approved ones.</div>';
+    h+=props.map((p,i)=>'<div class="audprop" data-pi="'+i+'" style="border:1px solid var(--gbrd);border-radius:9px;padding:8px 10px;margin:5px 0;transition:opacity .2s,border-color .2s,background .2s"><div style="font-size:11px;font-weight:800"><span style="color:'+(p.strength>=3?C.pos:(p.strength>=2?C.amber:C.dim))+'">'+star(p.strength)+'</span> <span style="color:'+C.ink+'">'+esc(p.kind.toUpperCase())+'</span></div><div class="src" style="margin-top:3px;color:var(--ink)">'+esc(p.observation)+'</div><div class="src" style="margin-top:2px">\u2192 '+esc(p.action)+'</div><div style="margin-top:4px;font-size:9px;font-weight:800;color:'+C.amber+';border:1px solid '+C.amber+';display:inline-block;border-radius:5px;padding:1px 6px">'+esc(p.tag)+'</div><div style="margin-top:8px;display:flex;gap:8px;align-items:center"><span class="audbtn ok" data-audok="'+i+'">\u2713 Approve</span><span class="audbtn no" data-audno="'+i+'">Ignore</span><span class="auddec" style="font-size:9.5px;font-weight:700"></span></div></div>').join("");
     h+='</div>';
     const hh=a.section_1_ran_broke||{},feeds=hh.feeds||[];
     h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2460 Ran / Broke <span class="src" style="font-weight:400">('+hh.n_stale+' stale \u00b7 '+hh.n_dark+' dark)</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">'+feeds.map(r=>'<span class="schip '+sc(r.state)+'">'+esc(r.feed)+' '+esc(r.state)+(r.age_min!=null?' '+r.age_min+'m':'')+'</span>').join("")+'</div></div>';
@@ -2388,9 +2407,27 @@ const Audit=(function(){
     h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2463 What went right <span class="src" style="font-weight:400">('+wins.length+')</span></div>'+(wins.slice(0,10).map(w=>'<div class="src" style="margin:2px 0;color:'+C.pos+'">\u2713 <b>'+esc(w.track)+'</b> \u2014 exp '+w.exp+', n '+w.n+'</div>').join("")||'<div class="src">no new clean maturations today.</div>')+'</div>';
     h+='<div class="card src" style="color:'+C.mut+'">'+esc(a.discipline||"")+'</div>';
     el.innerHTML=h;
+    function _decide(card,kind){ if(!card)return; const d=card.querySelector(".auddec");
+      if(kind==="approve"){ card.style.borderColor=C.pos; card.style.background="rgba(63,208,122,.07)"; card.style.opacity=1; d.textContent="\u2713 APPROVED \u2014 your call (nothing auto-applies; action at EOD)"; d.style.color=C.pos; }
+      else { card.style.opacity=.45; d.textContent="ignored"; d.style.color=C.mut; } }
+    el.querySelectorAll("[data-audok]").forEach(b=>b.onclick=()=>_decide(b.closest(".audprop"),"approve"));
+    el.querySelectorAll("[data-audno]").forEach(b=>b.onclick=()=>_decide(b.closest(".audprop"),"ignore"));
   }
   return {load};
 })();
+function _enhanceCollapse(){ document.querySelectorAll('[id$="-content"], #active, #fut, #stk').forEach(function(cont){
+    Array.prototype.forEach.call(cont.children, function(card){
+      if(!card.classList||!card.classList.contains("card"))return;
+      var head=card.firstElementChild; if(!head||head.__cc)return;
+      if(card.querySelector("input,select,canvas,textarea"))return;       // never break interactive cards
+      if(((head.textContent)||"").trim().length<2)return;
+      if(head.querySelector("a,button,label,select,input,[data-unit],[data-explain],[data-perfperiod],[data-wclayer],[data-wctf],[data-wcinst],[data-wcstock],[data-audok],[data-audno]"))return; // header has controls -> not collapsible
+      head.__cc=true; head.classList.add("collapsehead");
+      head.addEventListener("click",function(ev){ if(ev.target.closest("a,button,label,input,select,.audbtn,[data-unit],[data-explain],[data-audok],[data-audno]"))return; card.classList.toggle("collapsed"); });
+    });
+  }); }
+function _initCollapse(){ document.querySelectorAll('[id$="-content"], #active, #fut, #stk').forEach(function(c){
+    try{ new MutationObserver(function(){ _enhanceCollapse(); }).observe(c,{childList:true}); }catch(e){} }); _enhanceCollapse(); }
 function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
 function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
 function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
@@ -2476,7 +2513,7 @@ const Journal=(function(){
 window.Journal=Journal;
 
 Futures.init(); Stocks.init();
-showView("active"); _updateStatus(); setInterval(_updateStatus,60000);
+showView("active"); _updateStatus(); setInterval(_updateStatus,60000); _initCollapse();
 loadCalCtx();
 loadRegime();
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
