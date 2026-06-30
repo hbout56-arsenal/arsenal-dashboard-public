@@ -1,20 +1,14 @@
 {
- "generated_at": "2026-06-30T03:47:50.150215+00:00",
+ "generated_at": "2026-06-30T04:03:01.960595+00:00",
  "symbol": "ES",
  "timeframe": "60m",
  "status": "ok",
- "verdict": "CORRECTIVE_ABC",
- "conviction": "MODERATE",
- "as_of": "2026-06-28",
- "last_price": 7438.5,
- "n_pivots": 30,
+ "verdict": "BULLISH_IMPULSE_CONTINUATION",
+ "conviction": "LOW",
+ "as_of": "2026-06-29",
+ "last_price": 7492.5,
+ "n_pivots": 31,
  "pivots": [
-  {
-   "t": 1772413200000,
-   "price": 6952.25,
-   "type": "H",
-   "date": "2026-03-01"
-  },
   {
    "t": 1772550000000,
    "price": 6821.25,
@@ -188,69 +182,46 @@
    "price": 7357.25,
    "type": "L",
    "date": "2026-06-25"
+  },
+  {
+   "t": 1782759600000,
+   "price": 7505,
+   "type": "H",
+   "date": "2026-06-29"
   }
  ],
  "primary": {
-  "name": "CORRECTIVE_ABC",
-  "narrative": "Recent structure fits an irregular ABC correction; the rally from A is a B-wave, with C to follow down.",
-  "type": "correction",
-  "direction": "down",
-  "points": [
-   {
-    "label": "0",
-    "price": 7648.75,
-    "t": 1781539200000,
-    "date": "2026-06-15",
-    "type": "H"
-   },
-   {
-    "label": "A",
-    "price": 7472.25,
-    "t": 1781722800000,
-    "date": "2026-06-17",
-    "type": "L"
-   },
-   {
-    "label": "B",
-    "price": 7599.25,
-    "t": 1782136800000,
-    "date": "2026-06-22",
-    "type": "H"
-   },
-   {
-    "label": "C",
-    "price": 7357.25,
-    "t": 1782442800000,
-    "date": "2026-06-25",
-    "type": "L"
-   }
-  ],
+  "name": "BULLISH_IMPULSE_CONTINUATION",
+  "narrative": "Trend is up (higher highs and higher lows). Treating the advance as impulsive \u2014 continuation higher after shallow pullbacks favored.",
+  "type": null,
+  "direction": "up",
+  "points": [],
   "invalidation": {
-   "level": 7648.75,
-   "rule": "Break beyond wave 0 (7648.75) invalidates ABC correction"
+   "level": 7342.54,
+   "rule": "Break of last higher-low (7357.25) negates continuation"
   },
   "targets": {
-   "c_equals_a": 7775.75,
-   "c_1.618_a": 7884.83
+   "1.272_ext": 7545.19,
+   "1.618_ext": 7596.31
   },
   "confluence": {
-   "count": 2,
+   "count": 1,
    "trace": [
     {
      "pillar": "invalidation",
      "fired": true,
-     "level": 7648.75,
-     "reason": "invalidation 7648.75 = prior swing H 7648.75"
+     "level": 7342.54,
+     "reason": "invalidation 7342.54 = prior swing L 7307.75 + prior swing L 7357.25"
     },
     {
      "pillar": "direction",
      "fired": false,
-     "reason": "internals breadth mixed vs scenario down (mixed \u2014 no agreement)"
+     "reason": "internals breadth mixed vs scenario up (mixed \u2014 no agreement)"
     },
     {
      "pillar": "structure",
-     "fired": true,
-     "reason": "analyzer rates the primary count clean (MODERATE conviction)"
+     "fired": false,
+     "reason": "analyzer conviction LOW \u2014 count not rated clean"
     }
    ],
    "unavailable": [
@@ -259,16 +230,107 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "mixed",
-   "scenario_direction": "down",
+   "scenario_direction": "up",
+   "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
+  },
+  "projection": {
+   "status": "ok",
+   "zone": [
+    7545.19,
+    7596.31
+   ],
+   "targets_named": {
+    "1.272_ext": 7545.19,
+    "1.618_ext": 7596.31
+   },
+   "direction": "up",
+   "origin": null,
+   "from_price": 7492.5,
+   "invalidation": {
+    "level": 7342.54,
+    "rule": "Break of last higher-low (7357.25) negates continuation"
+   },
+   "basis": "fib targets the analyzer already computes (1.272_ext, 1.618_ext)",
+   "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
+   "one_wave_ahead": true,
+   "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
+  },
+  "subwaves": []
+ },
+ "alternative": {
+  "name": "CORRECTIVE_ABC",
+  "narrative": "Recent structure fits an expanded_flat ABC correction; the rally from A is a B-wave, with C to follow up.",
+  "type": "correction",
+  "direction": "up",
+  "points": [
+   {
+    "label": "0",
+    "price": 7472.25,
+    "t": 1781722800000,
+    "date": "2026-06-17",
+    "type": "L"
+   },
+   {
+    "label": "A",
+    "price": 7599.25,
+    "t": 1782136800000,
+    "date": "2026-06-22",
+    "type": "H"
+   },
+   {
+    "label": "B",
+    "price": 7357.25,
+    "t": 1782442800000,
+    "date": "2026-06-25",
+    "type": "L"
+   },
+   {
+    "label": "C",
+    "price": 7505,
+    "t": 1782759600000,
+    "date": "2026-06-29",
+    "type": "H"
+   }
+  ],
+  "invalidation": {
+   "level": 7472.25,
+   "rule": "Break beyond wave 0 (7472.25) invalidates ABC correction"
+  },
+  "targets": {
+   "c_equals_a": 7230.25,
+   "c_1.618_a": 7151.76
+  },
+  "confluence": {
+   "count": 1,
+   "trace": [
+    {
+     "pillar": "invalidation",
+     "fired": true,
+     "level": 7472.25,
+     "reason": "invalidation 7472.25 = prior swing H 7466.25 + prior swing L 7472.25"
+    },
+    {
+     "pillar": "direction",
+     "fired": false,
+     "reason": "internals breadth mixed vs scenario up (mixed \u2014 no agreement)"
+    }
+   ],
+   "unavailable": [
+    "VP (VAH/VAL/POC/HVN) \u2014 not published right now",
+    "liquidity pools \u2014 ICT dark / none near",
+    "fib clusters \u2014 no published cluster feed"
+   ],
+   "internals_bias": "mixed",
+   "scenario_direction": "up",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
    "status": "none",
-   "reason": "target is up (7775.75\u20137884.83) but invalidation 7648.75 sits at/above current 7438.5 \u2014 count likely complete/transitioning; no clean one-wave projection (not fabricated)"
+   "reason": "target is down but invalidation 7472.25 sits at/below current 7492.5; no clean one-wave projection (not fabricated)"
   },
   "subwaves": [
    {
-    "leg": "A-B",
+    "leg": "0-A",
     "points": [
      {
       "label": "(1)",
@@ -284,13 +346,26 @@
    }
   ]
  },
- "alternative": null,
  "reliability": "candidate count \u2014 not a prediction; valid only while invalidation holds",
  "honesty": "analyzer.py CANDIDATE read \u2014 counts are candidates, NOT predictions. Primary + alternative, each with its invalidation. The count is valid ONLY while its invalidation holds. Levels are the backbone; price breaking a level is the trigger, not the wave label.",
  "privacy": "prices/levels only; no $/positions.",
  "subwave_note": "Subwaves = ONE finer-degree ZigZag pass (lower-degree, lower-reliability \u2014 esp. sub-1h). Cap 2 degrees. A leg with no clean subdivision shows none (not invented).",
  "recommendation": {
-  "status": "stand_aside",
-  "reason": "no clean projected setup on the primary count \u2014 stand aside (the chart isn't offering a trade right now)."
+  "status": "setup",
+  "direction": "up",
+  "entry": 7492.5,
+  "stop": 7342.54,
+  "target": 7545.19,
+  "rr": 0.35,
+  "conviction": "LOW",
+  "confluence": 1,
+  "actionable": false,
+  "poor_rr": true,
+  "far_inval": true,
+  "risk_pts": 149.96,
+  "usd_risk": 749.8,
+  "flag": "POOR R:R 0.35 \u2014 invalidation far from entry (risking 150.0 pts to make 52.7); NOT an actionable setup.",
+  "basis": "primary BULLISH_IMPULSE_CONTINUATION + projection + invalidation + 1 confluence(s) \u00b7 target sits at VP VAH 7548.69",
+  "note": "SHADOW / informational synthesis of the whole chart \u2014 NOT a validated signal, does not vote. The TRIGGER is price breaking the level, not this card. Stop = the count's invalidation; target = the projected zone edge; conviction factors R:R; R:R<1 is not actionable. Counts re-label (esp. sub-1h)."
  }
 }
