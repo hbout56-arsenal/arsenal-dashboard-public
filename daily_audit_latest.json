@@ -1,6 +1,6 @@
 {
  "date": "2026-06-30",
- "generated_at": "2026-06-30T01:36:48.260403-04:00",
+ "generated_at": "2026-06-30T07:43:13.657921-04:00",
  "kind": "daily_audit",
  "mode": "OBSERVE + PROPOSE (no auto-tune)",
  "section_1_ran_broke": {
@@ -8,31 +8,31 @@
    {
     "feed": "internals/snapshot",
     "state": "STALE",
-    "age_min": 572,
+    "age_min": 939,
     "detail": "stale/missed run"
    },
    {
     "feed": "performance scorecard",
     "state": "FRESH",
-    "age_min": 28,
+    "age_min": 2,
     "detail": "ran/fresh"
    },
    {
     "feed": "trendline scorecard",
     "state": "FRESH",
-    "age_min": 43,
+    "age_min": 12,
     "detail": "ran/fresh"
    },
    {
     "feed": "candle scorecard",
     "state": "FRESH",
-    "age_min": 43,
+    "age_min": 12,
     "detail": "ran/fresh"
    },
    {
     "feed": "wave scorecard",
     "state": "FRESH",
-    "age_min": 43,
+    "age_min": 12,
     "detail": "ran/fresh"
    },
    {
@@ -44,7 +44,7 @@
    {
     "feed": "wave-chart bars",
     "state": "FRESH",
-    "age_min": 1777,
+    "age_min": 2143,
     "detail": "ran/fresh"
    }
   ],
@@ -54,7 +54,79 @@
  },
  "section_2_system_assessment": {
   "n_tracks": 42,
-  "deltas": [],
+  "deltas": [
+   {
+    "key": "perf:ema_gccl|GC_20_50_30m_filtered",
+    "system": "perf:ema_gccl",
+    "track": "GC_20_50_30m_filtered",
+    "n": 60,
+    "dn": 5,
+    "exp": 8.34,
+    "ci_excl_0": true,
+    "status": "matured"
+   },
+   {
+    "key": "perf:ema_gccl|CL_9_21_30m_filtered",
+    "system": "perf:ema_gccl",
+    "track": "CL_9_21_30m_filtered",
+    "n": 105,
+    "dn": 6,
+    "exp": 0.18,
+    "ci_excl_0": true,
+    "status": "matured"
+   },
+   {
+    "key": "perf:ema_gccl|CL_20_50_30m_filtered",
+    "system": "perf:ema_gccl",
+    "track": "CL_20_50_30m_filtered",
+    "n": 64,
+    "dn": 5,
+    "exp": 0.14,
+    "ci_excl_0": false,
+    "status": "matured",
+    "ci_event": "CI newly INCLUDES 0 (edge weakened)"
+   },
+   {
+    "key": "perf:ema_gccl|CL_20_50_15m_raw",
+    "system": "perf:ema_gccl",
+    "track": "CL_20_50_15m_raw",
+    "n": 287,
+    "dn": 26,
+    "exp": 0.04,
+    "ci_excl_0": false,
+    "status": "matured"
+   },
+   {
+    "key": "perf:ema_gccl|CL_9_21_15m_raw",
+    "system": "perf:ema_gccl",
+    "track": "CL_9_21_15m_raw",
+    "n": 363,
+    "dn": 22,
+    "exp": -0.02,
+    "ci_excl_0": false,
+    "status": "matured"
+   },
+   {
+    "key": "perf:ema_gccl|CL_9_21_30m_raw",
+    "system": "perf:ema_gccl",
+    "track": "CL_9_21_30m_raw",
+    "n": 255,
+    "dn": 14,
+    "exp": 0.02,
+    "ci_excl_0": false,
+    "status": "matured"
+   },
+   {
+    "key": "perf:inside_bar|CL_RAW",
+    "system": "perf:inside_bar",
+    "track": "CL_RAW",
+    "n": 33,
+    "dn": 1,
+    "exp": 0.58,
+    "ci_excl_0": false,
+    "status": "matured"
+   }
+  ],
   "note": "today vs yesterday from each scorecard's own D68 CIs/n \u2014 no recompute, no auto-tune."
  },
  "section_3_drift": {
@@ -64,19 +136,13 @@
  "section_4_what_went_right": [
   {
    "track": "perf:ema_gccl|GC_20_50_30m_filtered",
-   "n": 55,
-   "exp": 8.67,
+   "n": 60,
+   "exp": 8.34,
    "note": "matured (n>=30) AND CI excludes 0 AND positive"
   },
   {
    "track": "perf:ema_gccl|CL_9_21_30m_filtered",
-   "n": 99,
-   "exp": 0.19,
-   "note": "matured (n>=30) AND CI excludes 0 AND positive"
-  },
-  {
-   "track": "perf:ema_gccl|CL_20_50_30m_filtered",
-   "n": 59,
+   "n": 105,
    "exp": 0.18,
    "note": "matured (n>=30) AND CI excludes 0 AND positive"
   },
@@ -101,33 +167,36 @@
  ],
  "section_5_proposals": [
   {
+   "pid": "76ba10f0",
    "kind": "feed-health",
-   "observation": "feed 'internals/snapshot' is STALE (age 572m) \u2014 2 days running.",
-   "evidence": "one-day (off-hours staleness can be normal)",
-   "action": "note only \u2014 one stale read is often just off-hours.",
+   "observation": "feed 'internals/snapshot' is STALE (age 939m) \u2014 3 days running.",
+   "evidence": "multi-day",
+   "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
-   "strength": 1
+   "strength": 3
   },
   {
+   "pid": "9d0a0771",
    "kind": "feed-health",
-   "observation": "feed 'breadth' is DARK (age Nonem) \u2014 2 days running.",
-   "evidence": "one-day (off-hours staleness can be normal)",
-   "action": "note only \u2014 one stale read is often just off-hours.",
+   "observation": "feed 'breadth' is DARK (age Nonem) \u2014 3 days running.",
+   "evidence": "multi-day",
+   "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
-   "strength": 1
+   "strength": 3
   },
   {
-   "kind": "gating",
-   "observation": "trendline logged 8 new instances today (> 4).",
-   "evidence": "one-day volume",
-   "action": "propose tightening the location/quality filter IF this persists \u2014 one busy day is not proof.",
+   "pid": "3ed2de9d",
+   "kind": "watch",
+   "observation": "perf:ema_gccl|CL_20_50_30m_filtered CI newly includes 0 \u2014 edge weakened.",
+   "evidence": "one-day CI move",
+   "action": "WATCH \u2014 one-day move is NOT significant (multiple-comparison); confirm over days before acting.",
    "tag": "REVIEW \u2014 not auto-applied",
    "strength": 1
   }
  ],
  "alert_volume": {
   "candle_added_today": 0,
-  "trendline_added_today": 8
+  "trendline_added_today": 0
  },
  "discipline": "OBSERVE + MEASURE + PROPOSE only. ZERO auto-tuning of any parameter/threshold/weight/strategy (D33 anti-overfit; the founding rule). Every proposal is REVIEW \u2014 not auto-applied. SHADOW/advisory. Many systems x daily = high multiple-comparison; one-day flags are NOT significant \u2014 trend over days is.",
  "privacy": "analysis data only \u2014 no real account $/positions."
