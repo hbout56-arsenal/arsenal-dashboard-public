@@ -1708,8 +1708,8 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
+  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
@@ -1728,6 +1728,7 @@ const WaveChart=(function(){
     try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
     snap=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} }
     try{ tlsc=await ghFetch("trendline_scorecard_summary.json"); }catch(e){}
+    try{ cpsc=await ghFetch("scorecard_summary_candle_patterns.json"); }catch(e){}
     total=(bars&&bars.bars)?bars.bars.length:0;
     view.count=Math.min(total, tf==="daily"?total:140); view.start=Math.max(0,total-view.count);
     render();
@@ -1767,7 +1768,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1850,7 +1851,7 @@ const WaveChart=(function(){
   function exp(k){ const M={
     inst:"Subtabs \u2014 <b>ES</b> uses live equity internals; <b>GC/CL</b> are delayed futures with NO internals (direction confluence shows <i>n/a</i>, never faked); <b>Stocks</b> are on-demand swing charts built from the current screener picks.",
     tf:"Timeframe = the degree you read. <b>15m</b> is noisy and re-labels often (low reliability); <b>60m</b> swing; <b>daily</b> position. Stocks are swing \u2014 daily is the default.",
-    layers:"What\u2019s drawn \u2014 <b>Primary/Alt</b> = the two candidate counts; <b>Trend</b> = OBJECTIVE auto-trendlines (pivot-anchored, ATR touch-counted, \u22653 touches = validated, marked with/against the higher-TF EMA filter); <b>Regress</b> = least-squares regression channel \u00b11\u03c3/\u00b12\u03c3; <b>Projection</b> = the conditional next-move zone; <b>VP/SVP</b> = volume profile (POC/VAH/VAL); Liquidity/FVG/Fib appear only when the engine publishes them.",
+    layers:"What\u2019s drawn \u2014 <b>Primary/Alt</b> = the two candidate counts; <b>Trend</b> = OBJECTIVE auto-trendlines (pivot-anchored, ATR touch-counted, \u22653 touches = validated, marked with/against the higher-TF EMA filter); <b>Regress</b> = least-squares regression channel \u00b11\u03c3/\u00b12\u03c3; <b>Patterns</b> = candle patterns (\u25b2/\u25bc A+ context-gated, faint=raw\u2248null), <b>Tier2</b> = folklore patterns (scored not trusted); <b>Projection</b> = the conditional next-move zone; <b>VP/SVP</b> = volume profile (POC/VAH/VAL); Liquidity/FVG/Fib appear only when the engine publishes them.",
     ma:"Moving averages are visual <b>context only</b> \u2014 they don\u2019t vote. The EMA crossover system is scored separately on the Performance tab.",
     rec:"The trade idea is <b>SHADOW</b> (informational, never votes). <b>R:R</b> = reward\u00f7risk; under 1.0 it\u2019s flagged NOT ACTIONABLE. The $ figure is SIMULATED at one micro / $100 stock risk \u2014 not your account."
    }; return '<div class="src" style="margin:-2px 0 9px;padding:7px 9px;background:rgba(110,168,255,.06);border-left:2px solid '+C.pri+';border-radius:0 6px 6px 0;line-height:1.5">\u24d8 '+(M[k]||"")+'</div>'; }
@@ -1867,6 +1868,20 @@ const WaveChart=(function(){
     ["Internals n/a","GC/CL/stocks have no equity-index internals (TICK/TRIN/ADD) \u2014 that pillar is honestly blank, not fabricated."]];
     var sc=''; if(tlsc&&tlsc.overall){ const o=tlsc.overall; sc='<div class="src" style="margin:5px 0 0;color:'+C.alt+'"><b style="color:var(--ink)">Trendline forward-scorecard.</b> hold-rate '+(o.hold_rate==null?'\u2014':o.hold_rate)+' \u00b7 break-continuation '+(o.break_cont_rate==null?'\u2014':o.break_cont_rate)+' \u00b7 n='+o.n_matured+' ('+o.status+'). Lines are DESCRIPTIVE context until n\u226530 \u2014 the close-break is the trigger, not the line.</div>'; }
     return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-weight:700;font-size:12px;margin-bottom:5px">\u24d8 Wave chart \u2014 what every term means</div>'+rows.map(x=>'<div class="src" style="margin:3px 0"><b style="color:var(--ink)">'+x[0]+'.</b> '+x[1]+'</div>').join("")+sc+'</div>'; }
+  function patternCard(){ if(!layers.patterns||!Array.isArray(wave.patterns)||!wave.patterns.length)return "";
+    const ps=wave.patterns, aplus=ps.filter(p=>p.filtered&&p.tier===1);
+    const latestA=aplus.length?aplus[aplus.length-1]:null;
+    function fscore(t){ return (cpsc&&cpsc.by_pattern&&cpsc.by_pattern[t])||null; }
+    let h='<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:'+C.pri+';margin-bottom:5px">\u29c9 Candle patterns (SHADOW)</div>';
+    h+='<div class="src" style="margin-bottom:6px">'+ps.length+' shown \u00b7 '+aplus.length+' A+ (context-gated) \u00b7 rest RAW (\u2248null \u2014 context is the edge, not the name). \u25b2/\u25bc filled+ring = A+, faint = raw; \u25e6 = doji. Tier-2 dim (folklore, scored not trusted).</div>';
+    if(latestA){ const rr=latestA.rr,poor=(rr!=null&&rr<1),dcol=latestA.direction==="up"?C.up:C.dn;
+      h+='<div style="border:1px solid '+(poor?C.axis:dcol)+';border-radius:7px;padding:6px 8px;margin-bottom:6px"><b style="color:'+dcol+'">'+esc(latestA.type)+' '+latestA.direction.toUpperCase()+'</b> '+(poor?'<span style="color:'+C.dn+';font-weight:700;font-size:10px"> \u00b7 R:R '+rr+' NOT ACTIONABLE</span>':'<span style="font-size:10px;color:'+C.alt+'"> \u00b7 R:R '+rr+'</span>')+'<div class="src" style="margin-top:3px">entry '+latestA.entry+' \u00b7 stop '+latestA.stop+' \u00b7 target '+latestA.target+' \u2014 break of the bar is the trigger</div><div class="src" style="margin-top:2px">'+esc((latestA.trace||[]).join("  \u00b7  "))+'</div></div>'; }
+    const types=Array.from(new Set(ps.map(p=>p.type)));
+    h+=types.map(function(t){ const f=fscore(t),tier=(ps.find(p=>p.type===t)||{}).tier;
+      const sc=f?('RAW '+(f.RAW.target_hit_rate==null?'\u2014':Math.round(f.RAW.target_hit_rate*100)+'%')+' n='+f.RAW.n_matured+' \u00b7 A+ '+(f.FILTERED.target_hit_rate==null?'\u2014':Math.round(f.FILTERED.target_hit_rate*100)+'%')+' n='+f.FILTERED.n_matured):'no score yet';
+      return '<div class="src" style="margin:2px 0"><b style="color:var(--ink)">'+esc(t)+'</b>'+(tier===2?' <span style="color:'+C.axis+'">\u00b7folklore</span>':'')+' \u2014 '+sc+((f&&f.FILTERED.n_matured>=30)?'':' <span style="color:'+C.axis+'">(DESCRIPTIVE)</span>')+'</div>'; }).join("");
+    h+='<div class="src" style="margin-top:5px;color:'+C.alt+'">SHADOW \u2014 does not vote. RAW=control (expected null); each A+ must beat its OWN RAW past n\u226530. Hundreds of pattern\u00d7instrument\u00d7TF cells \u2014 high false-discovery risk; expect most null. The break of the bar is the trigger, not the pattern.</div>';
+    return h+'</div>'; }
   function trainerNote(){
     return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:'+C.pri+';margin-bottom:6px">ℹ︎ How to read</div>'
       +'<div class="src" style="line-height:1.55"><b style="color:var(--ink)">Levels are the backbone</b> — price breaking a level is the trigger, not the wave label. The two counts are CANDIDATES (analyzer.py), valid only while their <b style="color:'+C.inval+'">invalidation</b> holds. 15m is low-reliability (sub-1h, re-labels often). Bars are exchange-DELAYED (Polygon) — redraws on publish cadence ~60–75s, not per tick; for live ticks use ToS.</div></div>';
@@ -1882,7 +1897,7 @@ const WaveChart=(function(){
     el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+tfSwitcher()+(explain?exp('tf'):'')+toggleBar()+(explain?exp('layers'):'')+maBar()+(explain?exp('ma'):'')
       +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
       +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
-      +recCard()+(explain?exp('rec'):'')+legend()+trainerNote()+(explain?waveGlossary():'')+scorecardCard();
+      +recCard()+(explain?exp('rec'):'')+patternCard()+legend()+trainerNote()+(explain?waveGlossary():'')+scorecardCard();
     wireControls(); const cv=document.getElementById("wcv"); wireCanvas(cv); draw();
   }
   function wireControls(){
@@ -2004,6 +2019,22 @@ const WaveChart=(function(){
         ctx.restore();
       }); }
     })();
+    // D75 candle-pattern glyphs at the pattern bar — A+ (filtered) filled+ringed / raw faint; \u25b2up \u25bcdown \u25e6doji; Tier-2 dim (sub-toggle)
+    if(layers.patterns&&Array.isArray(wave.patterns)){ wave.patterns.forEach(function(P){
+      if(P.tier===2&&!layers.patterns2)return;
+      const vi=P.idx-view.start; if(vi<0||vi>=n)return; const bar=B[vi]; if(!bar)return; const x=X(vi);
+      const up=P.direction==="up",dn=P.direction==="down",ap=P.filtered;
+      const col=up?"63,208,122":(dn?"240,97,109":"139,151,171");
+      const yy=up?Y(bar.l)+13:(dn?Y(bar.h)-13:Y((bar.h+bar.l)/2));
+      ctx.save(); ctx.globalAlpha=ap?1:(P.tier===2?0.4:0.55); ctx.fillStyle="rgba("+col+",1)"; ctx.strokeStyle="rgba("+col+",1)";
+      ctx.beginPath();
+      if(up){ctx.moveTo(x,yy-5);ctx.lineTo(x-4.5,yy+3);ctx.lineTo(x+4.5,yy+3);ctx.closePath();}
+      else if(dn){ctx.moveTo(x,yy+5);ctx.lineTo(x-4.5,yy-3);ctx.lineTo(x+4.5,yy-3);ctx.closePath();}
+      else {ctx.arc(x,yy,3,0,7);}
+      if(ap){ctx.fill(); ctx.lineWidth=1.3; ctx.beginPath(); ctx.arc(x,yy,8,0,7); ctx.stroke();}
+      else {ctx.lineWidth=1.2; ctx.stroke();}
+      ctx.restore();
+    }); }
     // current-price line (LIVE/DELAYED/STALE honored)
     (function(){ let px=null,tag="DELAYED",pcol=C.alt;
       if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
@@ -2028,10 +2059,24 @@ window.WaveChart=WaveChart;
 const Perf=(function(){
   const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff"};
   const SC={proven:C.pos,negative:C.neg,candidate:C.amber,descriptive:C.mut,empty:C.mut};
-  let d=null,period="all",unit="pts",explain=false;
+  let d=null,period="all",unit="pts",explain=false,cpat=null;
   const SYS_DESC={ema_gccl:"EMA crossover system · Gold & Crude futures (per param/TF/RAW-vs-filtered)",ema:"EMA crossover system · ES futures",ema_stocks:"EMA crossover system · stocks (daily)",fvg:"Fair-value-gap fills · ES",ict:"ICT liquidity sweeps · ES",inside_bar:"Inside-bar breakouts · ES/GC/CL/stocks",wave:"Elliott wave-count accuracy",verdict:"Meter / verdict confluence"};
   function glossary(){ const rows=[["Net points / $ expectancy","Average result per trade. $ is SIMULATED at 1 micro contract (or $100 risk/stock). + = made money on average."],["95% CI","The range the true average likely sits in. If it CROSSES 0 the edge is NOT proven (could be luck) \u2014 shown muted."],["Payoff ratio","avg win \u00f7 avg loss. >1 = wins bigger than losses (durable). <1 with a high win-rate = small wins, big losses (FRAGILE)."],["Profit factor ($PF)","gross won \u00f7 gross lost. >1 = profitable; higher = more cushion."],["Max drawdown","worst peak-to-trough \u2014 the losing stretch you\u2019d have had to stomach."],["Win-rate","% of trades that won. Misleading alone \u2014 always read it WITH payoff / net-points."],["Grade (A\u2013F)","0\u2013100 of expectancy, profit factor, CI-excludes-0 & n. CI\u220b0 capped \u226455; n<30 = provisional."],["DESCRIPTIVE n<30","Too few trades to trust yet. Nothing is \u201cproven\u201d until n\u226530 and the CI clears 0."],["Filtered vs RAW","A filter only \u201chelps\u201d if its CI separates from RAW \u2014 else unproven."]];
     return '<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-weight:700;font-size:12px;margin-bottom:4px">\u24d8 What the numbers mean</div>'+rows.map(x=>'<div class="src" style="margin:3px 0"><b style="color:var(--ink)">'+x[0]+'.</b> '+x[1]+'</div>').join("")+'</div>'; }
+  function candlePatternGroup(){ if(!cpat||!cpat.by_pattern)return "";
+    const ks=Object.keys(cpat.by_pattern); if(!ks.length)return "";
+    const R=cpat.overall_RAW||{},F=cpat.overall_FILTERED||{};
+    let h='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-weight:750;font-size:13px">\u29c9 Candle patterns \u2014 RAW vs A+ (SHADOW)</div>';
+    h+='<div class="src" style="margin:2px 0 7px">Generalized inside-bar discipline. RAW=control (expected null); A+/FILTERED=context-gated. Overall: RAW n='+(R.n_matured||0)+' hit '+(R.target_hit_rate==null?'\u2014':Math.round(R.target_hit_rate*100)+'%')+' exp '+(R.net_points_exp==null?'\u2014':R.net_points_exp)+' \u00b7 A+ n='+(F.n_matured||0)+' hit '+(F.target_hit_rate==null?'\u2014':Math.round(F.target_hit_rate*100)+'%')+' exp '+(F.net_points_exp==null?'\u2014':F.net_points_exp)+'.</div>';
+    h+='<table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums"><tr>'+["Pattern","RAW hit (n)","A+ hit (n)","A+&gt;RAW?"].map(x=>'<th style="text-align:left;color:var(--mut);font-size:8.5px;padding:2px;border-bottom:1px solid var(--gbrd)">'+x+'</th>').join("")+'</tr>';
+    h+=ks.map(function(k){const c=cpat.by_pattern[k],r=c.RAW,f=c.FILTERED;
+      const rr=r.target_hit_rate==null?'\u2014':Math.round(r.target_hit_rate*100)+'% ('+r.n_matured+')';
+      const ff=f.target_hit_rate==null?'\u2014':Math.round(f.target_hit_rate*100)+'% ('+f.n_matured+')';
+      const beat=c.filtered_beats_raw?'<span style="color:'+C.pos+'">\u2713</span>':'<span style="color:var(--mut)">\u2014</span>';
+      return '<tr style="opacity:'+((f.n_matured>=30)?1:0.6)+'"><td style="padding:3px 2px;border-bottom:1px solid var(--line)">'+esc(k)+(c.tier===2?' <span class="gmut">\u00b7folk</span>':'')+'</td><td style="padding:3px 2px;border-bottom:1px solid var(--line)">'+rr+'</td><td style="padding:3px 2px;border-bottom:1px solid var(--line)">'+ff+'</td><td style="padding:3px 2px;border-bottom:1px solid var(--line)">'+beat+'</td></tr>';}).join("");
+    h+='</table><div class="gmut" style="font-size:9px;margin-top:7px">'+esc(cpat.multiple_comparison||"")+'</div>';
+    h+='<div class="gmut" style="font-size:9px;margin-top:3px">Greyed = n&lt;30 (DESCRIPTIVE). SHADOW \u2014 non-voting. Each A+ must beat ITS OWN RAW past n\u226530.</div>';
+    return h+'</div>'; }
   function rankChart(){ if(!d||!d.systems) return ""; const rows=Object.keys(d.systems).map(k=>{const S=d.systems[k],g=(S.grade||{}),t=S.tracks[0]||{};return {k:k,label:S.label,g:(g.grade||0),letter:(g.letter||"\u2014"),prov:!!g.provisional,exp:t.expectancy,usd:(t.usd||{}).exp,lc:((t.exp_ci||[0])[0]||0)};});
     rows.sort((a,b)=>b.g-a.g||b.lc-a.lc); const best=rows[0];
     let h='<div class="card" style="border-left:3px solid '+C.pos+'"><div style="font-weight:750;font-size:13px">\ud83c\udfc6 System ranking \u2014 by grade</div>';
@@ -2086,6 +2131,7 @@ const Perf=(function(){
   async function load(){
     const el=document.getElementById("performance-content"); el.innerHTML='<div class="loading">Loading…</div>';
     try{ d=await ghFetch("perf_summary.json"); }catch(e){ d=null; }
+    try{ cpat=await ghFetch("scorecard_summary_candle_patterns.json"); }catch(e){ cpat=null; }
     render();
   }
   function chip(txt,col){ return '<span style="font-size:10px;font-weight:700;color:'+col+';border:1px solid '+col+';border-radius:999px;padding:1px 8px;margin:0 5px 4px 0;display:inline-block">'+txt+'</span>'; }
@@ -2168,7 +2214,7 @@ const Perf=(function(){
     const keys=Object.keys(d.systems).sort((a,b)=>wt(d.systems[a])-wt(d.systems[b]));
     h+=periodSel()+unitToggle();
     if(explain) h+=glossary();
-    h+=keys.map(k=>card(k,d.systems[k])).join("")+rankChart();
+    h+=keys.map(k=>card(k,d.systems[k])).join("")+rankChart()+candlePatternGroup();
     el.innerHTML=h;
     document.querySelectorAll("[data-perfperiod]").forEach(b=>b.onclick=()=>{period=b.getAttribute("data-perfperiod");render();});
     document.querySelectorAll("[data-unit]").forEach(b=>b.onclick=()=>{unit=b.getAttribute("data-unit");render();});
