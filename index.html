@@ -265,25 +265,73 @@
   /* ── coincident regime badge (Dispatch 39) — what regime we're IN now, NOT a forecast ── */
   .regime{margin:0 0 14px;padding:9px 13px;border:1px solid var(--gbrd);border-radius:12px;
     background:rgba(255,255,255,.03);font-size:12.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4}
+
+  /* ============ D76 sleek pass — presentational only (no data/logic change) ============ */
+  :root{ --elev:0 1px 0 rgba(255,255,255,.05) inset, 0 16px 34px -16px rgba(0,0,0,.75); --accent:#4d8dff; --accent-g:rgba(77,141,255,.5); }
+  body::before{ background:
+    radial-gradient(50% 30% at 8% -4%, rgba(77,141,255,.15), transparent 62%),
+    radial-gradient(40% 26% at 106% 4%, rgba(46,230,110,.06), transparent 60%),
+    radial-gradient(72% 46% at 50% 106%, rgba(77,141,255,.05), transparent 66%); }
+  .head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .head h1{font-size:19px;font-weight:850;letter-spacing:.3px;margin:0;
+    background:linear-gradient(92deg,#eef3fb 30%,#9cc3ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .statuspill{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:750;letter-spacing:.4px;color:var(--mut);
+    border:1px solid var(--gbrd);background:var(--glass);border-radius:999px;padding:6px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .statuspill .dot{width:7px;height:7px;border-radius:50%;background:var(--mut)}
+  .statuspill.live{color:var(--pos-ink);border-color:var(--green-g)} .statuspill.live .dot{background:var(--green);animation:livepulse 1.8s ease-in-out infinite}
+  .statuspill.stale{color:var(--warn-ink);border-color:var(--amber-g)} .statuspill.stale .dot{background:var(--amber)}
+  @keyframes livepulse{0%,100%{box-shadow:0 0 0 0 rgba(37,233,110,.6)}50%{box-shadow:0 0 0 5px rgba(37,233,110,0)}}
+  .topbar{flex-direction:column;align-items:stretch;gap:7px;padding:10px}
+  .navgroup{display:flex;flex-wrap:wrap;gap:6px}
+  .navgroup{align-items:center;gap:5px}
+  .navlabel{flex:0 0 auto;font-size:8.5px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin:0 6px 0 2px;align-self:center}
+  .toptab{flex:0 0 auto;padding:6px 10px;font-size:11.5px;border:1px solid transparent;font-weight:700}
+  .toptab:not(.active):hover{background:var(--glass2);color:var(--ink)}
+  .toptab.active{background:linear-gradient(180deg,#5a97ff,#3f7df0);color:#08101e;box-shadow:0 0 0 1px var(--accent-g),0 8px 22px -8px var(--accent-g)}
+  .card{box-shadow:var(--elev);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s}
+  .card:hover{border-color:rgba(255,255,255,.12)}
+  .loading{position:relative;min-height:96px;color:transparent;font-size:0}
+  .loading::after{content:"";position:absolute;inset:8px;border-radius:13px;
+    background:linear-gradient(100deg,rgba(255,255,255,.025) 28%,rgba(255,255,255,.075) 50%,rgba(255,255,255,.025) 72%);
+    background-size:200% 100%;animation:shimmer 1.25s linear infinite}
+  @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+  .schip{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:850;letter-spacing:.6px;border-radius:999px;padding:2px 9px;border:1px solid var(--gbrd);vertical-align:middle}
+  .schip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+  .schip.live{color:var(--pos-ink);border-color:var(--green-g)} .schip.live::before{background:var(--green);animation:livepulse 1.8s ease-in-out infinite}
+  .schip.delayed{color:var(--warn-ink);border-color:var(--amber-g)} .schip.stale{color:var(--neg-ink);border-color:var(--red-g)}
+  .schip.dark{color:var(--dim);border-color:var(--gbrd)} .schip.empty{color:var(--mut)}
+  #active,#overview,#alerts,#wavechart,#performance,#orb,#proscreen,#prices,#fut,#stk,#account,#journal{animation:rise .3s cubic-bezier(.22,1,.36,1) both}
+  .newhint{display:block !important;line-height:1.5}
+  .newhint .x{float:right;margin:-1px 0 6px 12px}
+  .newhint b{font-style:normal}
+  .panelerr{border:1px solid var(--amber-g);background:var(--amber-d);border-radius:14px;padding:16px;color:var(--warn-ink);font-size:12.5px;line-height:1.5}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="head"><h1>Arsenal Dashboard</h1><span class="meta">refresh 60s</span></div>
+  <div class="head"><h1>Arsenal</h1><span class="statuspill" id="statuspill"><span class="dot"></span><span id="statustxt">checking…</span></span></div>
   <div class="newhint" id="newhint">New here? Tap the <b>&#9432;</b> icons on each section to learn what it is, how to read it, and its honest limits. <span class="x" id="newhint-x">dismiss</span></div>
   <div class="topbar" id="topbar">
-    <div class="toptab active" data-v="active">★ Active</div>
-    <div class="toptab" data-v="overview">Overview</div>
-    <div class="toptab" data-v="prices">Prices</div>
-    <div class="toptab" data-v="futures">Futures</div>
-    <div class="toptab" data-v="orb">ORB</div>
-    <div class="toptab" data-v="wavechart">Wave Chart</div>
-    <div class="toptab" data-v="performance">Performance</div>
-    <div class="toptab" data-v="stocks">Stocks/Swing</div>
-    <div class="toptab" data-v="proscreen">Pro Screener</div>
-    <div class="toptab" data-v="alerts">Alerts</div>
-    <div class="toptab" data-v="account">$15K / Risk</div>
-    <div class="toptab" data-v="journal">Journal</div>
+    <div class="navgroup"><span class="navlabel">Now</span>
+      <div class="toptab active" data-v="active">★ Active</div>
+      <div class="toptab" data-v="overview">Overview</div>
+      <div class="toptab" data-v="alerts">Alerts</div>
+    </div>
+    <div class="navgroup"><span class="navlabel">Analyze</span>
+      <div class="toptab" data-v="wavechart">Wave Chart</div>
+      <div class="toptab" data-v="performance">Performance</div>
+      <div class="toptab" data-v="orb">ORB</div>
+      <div class="toptab" data-v="proscreen">Pro Screener</div>
+    </div>
+    <div class="navgroup"><span class="navlabel">Markets</span>
+      <div class="toptab" data-v="prices">Prices</div>
+      <div class="toptab" data-v="futures">Futures</div>
+      <div class="toptab" data-v="stocks">Stocks/Swing</div>
+    </div>
+    <div class="navgroup"><span class="navlabel">Desk</span>
+      <div class="toptab" data-v="account">$15K / Risk</div>
+      <div class="toptab" data-v="journal">Journal</div>
+    </div>
   </div>
 
   <div id="performance" hidden>
@@ -2315,6 +2363,15 @@ const ProScreen=(function(){
 let view="overview";
 function redraw(){ if(view==="futures")Futures.redraw(); else if(view==="stocks")Stocks.redraw(); }
 window.redraw=redraw;
+function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
+function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
+function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
+  fetch(API_BASE+"internals_snapshot.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(function(d){
+    if(!d||!d.pushed_at){ p.className="statuspill"; t.textContent="feeds"; return; }
+    var age=(Date.now()-Date.parse(d.pushed_at))/60000;
+    if(age<12){ p.className="statuspill live"; t.textContent="LIVE \u00b7 "+Math.max(0,Math.round(age))+"m"; }
+    else { p.className="statuspill stale"; t.textContent="STALE \u00b7 "+(age<120?Math.round(age)+"m":Math.round(age/60)+"h"); }
+  }).catch(function(){ p.className="statuspill"; t.textContent="feeds"; }); }
 function showView(v){
   view=v;
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
@@ -2330,16 +2387,10 @@ function showView(v){
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
   document.getElementById("journal").hidden=(v!=="journal");
-  if(v==="active")ActiveTrades.load();
-  else if(v==="orb")ORB.load();
-  else if(v==="wavechart")WaveChart.load();
-  else if(v==="performance")Perf.load();
-  else if(v==="overview")Overview.load();
-  else if(v==="alerts")Alerts.load();
-  else if(v==="account")Account.load();
-  else if(v==="journal")Journal.load();
-  else if(v==="proscreen")ProScreen.load();
-  else (v==="futures"?Futures:Stocks).load();   // fetch only the active view
+  const _M={active:[ActiveTrades,"active"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
+    overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
+    proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"]};
+  const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
 
@@ -2396,7 +2447,7 @@ const Journal=(function(){
 window.Journal=Journal;
 
 Futures.init(); Stocks.init();
-showView("active");
+showView("active"); _updateStatus(); setInterval(_updateStatus,60000);
 loadCalCtx();
 loadRegime();
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
