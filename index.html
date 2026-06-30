@@ -1709,7 +1709,8 @@ const WaveChart=(function(){
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
   const layers={waves:true,alt:true,trend:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,view={start:0,count:0},total=0;
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,inst="es",stockTicker=null,view={start:0,count:0},total=0;
+  function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -1717,13 +1718,15 @@ const WaveChart=(function(){
   async function load(){
     const el=document.getElementById("wavechart-content"); el.innerHTML='<div class="loading">Loading…</div>';
     bars=wave=ict=fvg=verdict=null;
-    try{ bars=await ghFetch("es_bars_"+tf+".json"); }catch(e){}
-    try{ wave=await ghFetch("es_wave_"+tf+".json"); }catch(e){}
+    try{ picks=await ghFetch("stk_picks.json"); }catch(e){}
+    if(inst==="stk"&&!stockTicker){ bars=null; wave=null; render(); return; }
+    try{ bars=await ghFetch(pfx()+"_bars_"+tf+".json"); }catch(e){ bars=null; }
+    try{ wave=await ghFetch(pfx()+"_wave_"+tf+".json"); }catch(e){ wave=null; }
     try{ ict=await ghFetch("ict_state.json"); }catch(e){}
     try{ fvg=await ghFetch("fvg_state.json"); }catch(e){}
     try{ verdict=await ghFetch("verdict.json"); }catch(e){}
     try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
-    try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){}
+    snap=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} }
     total=(bars&&bars.bars)?bars.bars.length:0;
     view.count=Math.min(total, tf==="daily"?total:140); view.start=Math.max(0,total-view.count);
     render();
@@ -1749,7 +1752,18 @@ const WaveChart=(function(){
     h+='<div style="font-size:10.5px;color:var(--warn-ink);border:1px dashed var(--warn-ink);border-radius:7px;padding:6px 9px;margin-top:7px;line-height:1.5">FORWARD-tracked from '+esc(since)+'. Accuracy = did price hit the projected target BEFORE invalidation (objective, not subjective). DESCRIPTIVE until n\u226530 per timeframe. NOT a backtest \u2014 counts re-label in hindsight. Measures whether each TF\u2019s counts are worth trusting; does NOT auto-promote any count to voting (SHADOW \u2014 Hany\u2019s call after n\u226530 + edge).</div>';
     return h+'</div>';
   }
-  function tfSwitcher(){ return '<div class="tabs" style="margin-bottom:8px">'+["15m","60m","daily"].map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
+  function instSwitcher(){
+    const I=[["es","ES"],["gc","GC"],["cl","CL"],["stk","Stocks"]];
+    let h='<div class="tabs" style="margin-bottom:6px">'+I.map(x=>'<div class="tab'+(x[0]===inst?" active":"")+'" data-wcinst="'+x[0]+'">'+x[1]+'</div>').join("")+'</div>';
+    if(inst==="stk"){ const ps=(picks&&picks.picks)||[];
+      if(!ps.length) h+='<div class="src" style="margin:2px 0 8px;color:var(--mut)">No screener picks currently — nothing to chart.</div>';
+      else h+='<select data-wcstock style="width:100%;padding:8px;margin:2px 0 6px;background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--gbrd);border-radius:8px;font-size:13px"><option value="">\u2014 select a screener pick \u2014</option>'+ps.map(p=>'<option value="'+esc(p.ticker)+'"'+(stockTicker===p.ticker?" selected":"")+'>'+esc(p.ticker)+' \u00b7 '+esc(p.bucket)+(p.built?'':' (no clean count)')+'</option>').join("")+'</select>';
+    }
+    if(inst==="gc"||inst==="cl") h+='<div class="src" style="margin:-2px 0 8px;color:'+C.alt+'">DELAYED ~10-15min (Polygon) \u00b7 no equity internals \u2014 direction confluence n/a for this instrument.</div>';
+    if(inst==="stk"&&stockTicker) h+='<div class="src" style="margin:-2px 0 8px;color:var(--mut)">Swing-degree \u2014 DAILY default (60m offered, 15m not). Market regime is context; no per-name internals.</div>';
+    return h;
+  }
+  function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
     const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
@@ -1838,10 +1852,12 @@ const WaveChart=(function(){
   function render(){
     const el=document.getElementById("wavechart-content");
     if(!bars||!Array.isArray(bars.bars)||!bars.bars.length){
-      el.innerHTML=tfSwitcher()+'<div class="card">ES bars not published for <b>'+tf+'</b> (draws only real feeds; nothing invented).</div>'; wireControls(); return;
+      if(inst==="stk"&&!stockTicker){ el.innerHTML=instSwitcher()+'<div class="card">Select a screener pick above to build its DAILY wave chart (swing-degree, on demand).</div>'; wireControls(); return; }
+      const _nm=(stockTicker||inst.toUpperCase()); const _msg=(wave&&wave.status==="no_read")?("No clean count for "+_nm+" "+tf+" \u2014 analyzer couldn\u2019t resolve a structure (thin history?)."):("Wave data not published for "+_nm+" "+tf+".");
+      el.innerHTML=instSwitcher()+tfSwitcher()+'<div class="card">'+_msg+'</div>'; wireControls(); return;
     }
     const ch=Math.max(320, Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)));
-    el.innerHTML=tfSwitcher()+toggleBar()+maBar()
+    el.innerHTML=instSwitcher()+tfSwitcher()+toggleBar()+maBar()
       +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
       +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
       +recCard()+legend()+trainerNote()+scorecardCard();
@@ -1851,6 +1867,8 @@ const WaveChart=(function(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
+    document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
+    const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
   }
   function zoom(f,frac){ const oc=view.count, nc=clamp(Math.round(oc*f),20,total); const focal=view.start+frac*oc; view.count=nc; view.start=clamp(Math.round(focal-frac*nc),0,total-nc); }
   function wireCanvas(cv){
@@ -1950,14 +1968,14 @@ const WaveChart=(function(){
       tl("L","rgba(63,208,122,.7)"); tl("H","rgba(240,97,109,.7)"); }
     // current-price line (LIVE/DELAYED/STALE honored)
     (function(){ let px=null,tag="DELAYED",pcol=C.alt;
-      if(snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
+      if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
         if(!isNaN(es)){ px=es; if(age<10){tag="LIVE";pcol=C.up;} else {tag="STALE";pcol=C.axis;} } }
       if(px==null&&n){ px=B[n-1].c; tag="DELAYED"; pcol=C.alt; }
       if(px!=null){ const y=Y(px); ctx.save(); ctx.strokeStyle=pcol; ctx.lineWidth=1.1; ctx.setLineDash([2,2]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]);
         ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(W-PADR-tw-7,y-7,tw+6,13); ctx.fillStyle=pcol; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,y+3); ctx.textAlign="left"; ctx.restore(); } })();
     if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
     // freshness + layer status
-    const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed;fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+(dly?"DELAYED":"LIVE")+'</span> '+esc(bars.contract||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon futures, exchange-delayed — ToS for live ticks)';}
+    const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed,_tag=dly?"DELAYED":(inst==="es"?"LIVE":"EOD");fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+_tag+'</span> '+esc(bars.contract||bars.symbol||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon · delayed/EOD — ToS for live ticks)';}
     const ls=document.getElementById("wc-layers"); if(ls){const want=[];if(layers.liquidity)want.push("Liquidity");if(layers.fvg)want.push("FVG");if(layers.vp)want.push("VP");if(layers.fib)want.push("Fib");const miss=want.filter(w=>shown.indexOf(w)<0);ls.innerHTML=miss.length?'<span style="color:'+C.axis+'">Level layers with no published data right now (shown empty, not invented): <b>'+miss.join(", ")+'</b> — ICT/FVG go dark off-hours; VP/fib publish when the engine has them.</span>':'';}
   }
   function __t(side){ const p=(side&&side.points)||[]; return p.length?p[p.length-1].t:null; }
