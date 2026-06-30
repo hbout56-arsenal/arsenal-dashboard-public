@@ -1782,11 +1782,11 @@ window.ORB=ORB;
 const WaveChart=(function(){
   const C={up:"#3fd07a",dn:"#f0616d",grid:"rgba(255,255,255,.05)",axis:"#8b97ab",ink:"#eef3fb",
            pri:"#6ea8ff",priText:"#06101f",alt:"#ffcf6b",inval:"#f0616d",tgt:"rgba(63,208,122,.55)",
-           liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
+           liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff",nl:"#ff9e64"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
+  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true,newsletter:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,nl=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
@@ -1803,7 +1803,7 @@ const WaveChart=(function(){
     try{ fvg=await ghFetch("fvg_state.json"); }catch(e){}
     try{ verdict=await ghFetch("verdict.json"); }catch(e){}
     try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
-    snap=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} }
+    snap=null; nl=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} let _tm=null,_tt=null; try{_tm=await ghFetch("tammy_levels.json");}catch(e){} try{_tt=await ghFetch("tictoc_levels.json");}catch(e){} nl=[]; if(_tm&&_tm.levels)_tm.levels.forEach(function(l){nl.push({level:l.level,role:l.role,src:"Tammy"});}); if(_tt&&_tt.levels)_tt.levels.forEach(function(l){nl.push({level:l.level,role:l.role,src:"TicToc"});}); }
     try{ tlsc=await ghFetch("trendline_scorecard_summary.json"); }catch(e){}
     try{ cpsc=await ghFetch("scorecard_summary_candle_patterns.json"); }catch(e){}
     total=(bars&&bars.bars)?bars.bars.length:0;
@@ -1845,7 +1845,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"],["newsletter","Newsletter"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -2000,7 +2000,7 @@ const WaveChart=(function(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
     const _cl=document.querySelector("[data-wcclear]"); if(_cl)_cl.onclick=()=>{Object.keys(layers).forEach(k=>layers[k]=false); if(typeof maOn==="object")Object.keys(maOn).forEach(k=>maOn[k]=false); render();};
-    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true}); render();};
+    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,newsletter:true}); render();};
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
     document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
     const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
@@ -2035,6 +2035,7 @@ const WaveChart=(function(){
     // include visible wave point prices in scale
     [wave&&wave.primary,wave&&layers.alt&&wave.alternative].forEach(s=>{ if(s&&s.points)s.points.forEach(p=>{if(inView(p.t)!=null)ext.push(p.price);}); });
     [wave&&wave.primary,wave&&wave.alternative].forEach(s=>{ if(layers.projection&&s&&s.projection&&s.projection.status==="ok"){ext.push(s.projection.zone[0]);ext.push(s.projection.zone[1]);} });
+    if(layers.newsletter&&inst==="es"&&Array.isArray(nl))nl.forEach(function(l){ if(l.level!=null)ext.push(l.level); });
     ext.forEach(v=>{ if(v>hi&&v<hi+(hi-lo))hi=v; if(v<lo&&v>lo-(hi-lo))lo=v; });
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
     const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
@@ -2059,6 +2060,7 @@ const WaveChart=(function(){
     if(layers.liquidity&&ict&&Array.isArray(ict.untapped_pools_near)&&ict.untapped_pools_near.length){ict.untapped_pools_near.forEach(pl=>{const pr=pl.price!=null?pl.price:pl.level;if(pr==null)return;hline(pr,C.liq,(pl.side||"pool")+" "+tnum(pr));shown.push("Liquidity");});}
     if(layers.vp&&verdict){["vah","val","poc"].forEach(k=>{let v=verdict[k];if(v==null&&verdict.vp)v=verdict.vp[k];if(v!=null){hline(v,C.vp,k.toUpperCase()+" "+tnum(v));shown.push("VP");}});}
     if(layers.fib&&verdict&&Array.isArray(verdict.fib_levels)){verdict.fib_levels.forEach(f=>{if(f.price!=null){hline(f.price,C.fib,(f.label||"fib")+" "+tnum(f.price),[2,2]);shown.push("Fib");}});}
+    if(layers.newsletter&&inst==="es"&&Array.isArray(nl)&&nl.length){nl.forEach(function(l){if(l.level==null)return;hline(l.level,C.nl,l.src+" "+esc(l.role)+" "+tnum(l.level),[6,3]);shown.push("Newsletter");});}
     // waves with badge labels
     function badge(x,y,lbl,prim){ctx.beginPath();ctx.arc(x,y,10,0,7);if(prim){ctx.fillStyle=C.pri;ctx.fill();ctx.fillStyle=C.priText;}else{ctx.fillStyle="rgba(11,15,23,.85)";ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=C.alt;ctx.stroke();ctx.fillStyle=C.alt;}ctx.font="bold 12px -apple-system,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lbl,x,y+.5);ctx.textAlign="left";ctx.textBaseline="alphabetic";}
     function drawWave(side,prim){ if(!side)return; const pts=(side.points||[]).map(p=>({...p,pos:inView(p.t)})).filter(p=>p.pos!=null).sort((a,b)=>a.pos-b.pos);
@@ -2682,7 +2684,7 @@ const TicToc=(function(){
     h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">';
     h+='<div style="font-weight:800;font-size:15px">'+esc(s.ticker||"?")+' <span style="color:'+dirc+';font-size:12px">'+(s.direction||"").toUpperCase()+'</span> <span class="gmut" style="font-size:10px">'+esc(s.plan_type||"")+'</span></div>';
     h+='<div>'+statusBadge(s.status)+'</div></div>';
-    h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">call '+ageOf(s.date)+(s.price!=null?' · px '+s.price:'')+'</div>';
+    h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">call '+ageOf(s.date)+(s.price!=null?' · px '+s.price:'')+(s.valid_reason?' · '+esc(s.valid_reason):'')+'</div>';
     if(zrows.length) h+=_dataTable([{t:'Entry zone'},{t:'Basis'}],zrows);
     if(lvls) h+='<div style="font-size:12.5px;margin-top:'+(zrows.length?'6px':'0')+'"><b>Levels he cited:</b> '+esc(lvls)+'</div>';
     h+='<div style="margin-top:6px;font-size:12.5px"><b>Targets:</b> '+((s.targets&&s.targets.length)?s.targets.join(", "):'<span class="gmut">none given</span>')+'</div>';
@@ -2716,8 +2718,11 @@ const TicToc=(function(){
     h+='<div class="card"><div style="font-weight:750;font-size:13px">Why two tiers?</div><div class="src" style="margin-top:4px;line-height:1.55">His <b>framework</b> (volume profile / internals / 52-week filter) <b>IS</b> part of the Arsenal engine — that’s primary. But his <b>individual emailed picks</b> are <b>discretionary calls</b>, not validated engine outputs, so they’re tracked + scored like any source until the score earns trust. The methodology being primary does <b>not</b> mean every emailed pick is right — the forward score tells the truth, and his picks do <b>not</b> vote.</div></div>';
     h+=scoreCard(sc);
     h+=levelsCard(lv);
-    if(!ps.length) h+='<div class="card">No active Tic Toc stock picks parsed right now (his plans are often index-level only).</div>';
-    else h+='<div class="src" style="margin:8px 2px 2px;font-weight:700">Stock picks</div>'+ps.map(function(s){return s.kind==="needs_review"?reviewCard(s):pickCard(s);}).join("");
+    var valid=ps.filter(function(s){return s.valid!==false;});
+    var expired=ps.length-valid.length;
+    h+='<div class="src" style="margin:8px 2px 2px;font-weight:700">Watchlist — still-valid picks ('+valid.length+(expired?(' · '+expired+' expired/played-out hidden'):'')+')</div>';
+    if(!valid.length) h+='<div class="card">No still-valid stock picks right now — his plans are often index-level only.</div>';
+    else h+=valid.map(function(s){return s.kind==="needs_review"?reviewCard(s):pickCard(s);}).join("");
     h+='<div class="src" style="margin:8px 2px;color:'+C.mut+'">Source: '+esc(picks.source||"")+' · '+esc(picks.privacy||"")+'</div>';
     el.innerHTML=h;
   }
