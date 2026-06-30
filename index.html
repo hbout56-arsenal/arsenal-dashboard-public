@@ -316,6 +316,7 @@
       <div class="toptab active" data-v="active">★ Active</div>
       <div class="toptab" data-v="overview">Overview</div>
       <div class="toptab" data-v="alerts">Alerts</div>
+      <div class="toptab" data-v="audit">Audit</div>
     </div>
     <div class="navgroup"><span class="navlabel">Analyze</span>
       <div class="toptab" data-v="wavechart">Wave Chart</div>
@@ -333,6 +334,8 @@
       <div class="toptab" data-v="journal">Journal</div>
     </div>
   </div>
+
+  <div id="audit" hidden><div id="audit-content"><div class="loading">Loading…</div></div></div>
 
   <div id="performance" hidden>
     <div id="performance-content"><div class="loading">Loading…</div></div>
@@ -2363,6 +2366,31 @@ const ProScreen=(function(){
 let view="overview";
 function redraw(){ if(view==="futures")Futures.redraw(); else if(view==="stocks")Stocks.redraw(); }
 window.redraw=redraw;
+const Audit=(function(){
+  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff",dim:"#5a6678"};
+  function star(n){return "\u2605".repeat(n)+"\u2606".repeat(Math.max(0,3-n));}
+  function sc(v){return v==="FRESH"?"live":(v==="STALE"?"stale":(v==="DARK"?"dark":"delayed"));}
+  async function load(){ const el=document.getElementById("audit-content"); el.innerHTML='<div class="loading">Loading\u2026</div>';
+    let a=null; try{ a=await ghFetch("daily_audit_latest.json"); }catch(e){}
+    if(!a){ el.innerHTML='<div class="card">No audit yet (daily_audit_latest.json not published). The audit runs after close \u2014 nothing invented.</div>'; return; }
+    let h='';
+    h+='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-size:13px;font-weight:800">\u29c9 Daily Audit \u2014 '+esc(a.date)+'</div><div class="src" style="margin-top:3px">Automated observe + measure + <b>propose</b> across every system. <b style="color:'+C.amber+'">SHADOW / advisory \u2014 nothing here auto-tunes any parameter.</b> Machine proposes, you decide.</div></div>';
+    const props=a.section_5_proposals||[];
+    h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2464 Proposals \u2014 '+props.length+' <span class="src" style="font-weight:400">(ranked by evidence \u00b7 all REVIEW)</span></div>';
+    if(!props.length) h+='<div class="src">No proposals today \u2014 nothing crossed a threshold worth flagging.</div>';
+    h+=props.map(p=>'<div style="border:1px solid var(--gbrd);border-radius:9px;padding:8px 10px;margin:5px 0"><div style="font-size:11px;font-weight:800"><span style="color:'+(p.strength>=3?C.pos:(p.strength>=2?C.amber:C.dim))+'">'+star(p.strength)+'</span> <span style="color:'+C.ink+'">'+esc(p.kind.toUpperCase())+'</span></div><div class="src" style="margin-top:3px;color:var(--ink)">'+esc(p.observation)+'</div><div class="src" style="margin-top:2px">\u2192 '+esc(p.action)+'</div><div style="margin-top:4px;font-size:9px;font-weight:800;color:'+C.amber+';border:1px solid '+C.amber+';display:inline-block;border-radius:5px;padding:1px 6px">'+esc(p.tag)+'</div></div>').join("");
+    h+='</div>';
+    const hh=a.section_1_ran_broke||{},feeds=hh.feeds||[];
+    h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2460 Ran / Broke <span class="src" style="font-weight:400">('+hh.n_stale+' stale \u00b7 '+hh.n_dark+' dark)</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">'+feeds.map(r=>'<span class="schip '+sc(r.state)+'">'+esc(r.feed)+' '+esc(r.state)+(r.age_min!=null?' '+r.age_min+'m':'')+'</span>').join("")+'</div></div>';
+    const as=a.section_2_system_assessment||{},dr=a.section_3_drift||{},wins=a.section_4_what_went_right||[];
+    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2461 System assessment <span class="src" style="font-weight:400">('+(as.n_tracks||0)+' tracks \u00b7 '+((as.deltas||[]).length)+' moved)</span></div>'+((as.deltas||[]).slice(0,12).map(d=>'<div class="src" style="margin:2px 0"><b style="color:var(--ink)">'+esc(d.key)+'</b> \u2014 n '+d.n+' (+'+d.dn+')'+(d.ci_event?' \u00b7 <span style="color:'+C.amber+'">'+esc(d.ci_event)+'</span>':'')+(d.flip?' \u00b7 '+esc(d.flip):'')+'</div>').join("")||'<div class="src">no day-over-day movement (no fabricated deltas).</div>')+'<div class="src" style="margin-top:5px;color:'+C.mut+'">'+esc(as.note||"")+'</div></div>';
+    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2462 Drift <span class="src" style="font-weight:400">(multi-day only \u2014 one-day moves NOT significant)</span></div>'+((dr.flags||[]).map(f=>'<div class="src" style="margin:2px 0">\u26a0 <b>'+esc(f.key)+'</b> '+esc(f.detail)+' <span style="color:'+C.pos+'">(credible \u2014 multi-day)</span></div>').join("")||'<div class="src">no credible multi-day drift.</div>')+'</div>';
+    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2463 What went right <span class="src" style="font-weight:400">('+wins.length+')</span></div>'+(wins.slice(0,10).map(w=>'<div class="src" style="margin:2px 0;color:'+C.pos+'">\u2713 <b>'+esc(w.track)+'</b> \u2014 exp '+w.exp+', n '+w.n+'</div>').join("")||'<div class="src">no new clean maturations today.</div>')+'</div>';
+    h+='<div class="card src" style="color:'+C.mut+'">'+esc(a.discipline||"")+'</div>';
+    el.innerHTML=h;
+  }
+  return {load};
+})();
 function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
 function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
 function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
@@ -2376,6 +2404,7 @@ function showView(v){
   view=v;
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
   document.getElementById("active").hidden=(v!=="active");
+  document.getElementById("audit").hidden=(v!=="audit");
   document.getElementById("prices").hidden=(v!=="prices");
   document.getElementById("orb").hidden=(v!=="orb");
   document.getElementById("wavechart").hidden=(v!=="wavechart");
@@ -2387,7 +2416,7 @@ function showView(v){
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
   document.getElementById("journal").hidden=(v!=="journal");
-  const _M={active:[ActiveTrades,"active"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
+  const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
     proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"]};
   const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
