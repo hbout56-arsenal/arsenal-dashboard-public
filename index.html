@@ -2037,8 +2037,14 @@ const WaveChart=(function(){
     [wave&&wave.primary,wave&&wave.alternative].forEach(s=>{ if(layers.projection&&s&&s.projection&&s.projection.status==="ok"){ext.push(s.projection.zone[0]);ext.push(s.projection.zone[1]);} });
     if(inst==="es"&&Array.isArray(nl))nl.forEach(function(l){ if(l.level!=null&&((l.src==="Tammy"&&layers.tammy)||(l.src==="TicToc"&&layers.tictoc)))ext.push(l.level); });
     ext.forEach(v=>{ if(v>hi&&v<hi+(hi-lo))hi=v; if(v<lo&&v>lo-(hi-lo))lo=v; });
+    // D82: an ACTIVE projection reserves right-side future space (TradingView-style margin) so it isn't cut off,
+    // and its zone+invalidation are force-included in the y-range so it isn't vertically clipped.
+    const _projOK=s=>(s&&s.projection&&s.projection.status==="ok");
+    const projActive=layers.projection&&wave&&(_projOK(wave.primary)||(layers.alt&&_projOK(wave.alternative)));
+    if(projActive){ [wave.primary, layers.alt&&wave.alternative].forEach(function(sd){ if(_projOK(sd)){ hi=Math.max(hi,sd.projection.zone[0],sd.projection.zone[1]); lo=Math.min(lo,sd.projection.zone[0],sd.projection.zone[1]); if(sd.invalidation&&sd.invalidation.level!=null){hi=Math.max(hi,sd.invalidation.level);lo=Math.min(lo,sd.invalidation.level);} } }); }
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
-    const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
+    const futurePad=projActive?Math.min(plotW*0.26,140):0;          // empty space right of the last candle for the projection
+    const X=i=>PADL+(n<=1?(plotW-futurePad)/2:(i/(n-1))*(plotW-futurePad));
     const Y=p=>PADT+(hi-p)/(hi-lo)*plotH;
     const _yreg=[]; function placeY(yd){ var y=yd,G=14,g=0; while(_yreg.some(function(r){return Math.abs(r-y)<G;})&&g<60){ var st=Math.ceil((g+1)/2)*G; y=yd+((g%2)?-st:st); g++; } _yreg.push(y); return y; }
     function _conn(yd,y,col){ if(Math.abs(y-yd)<=2)return; ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle=col;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(W-PADR-3,yd);ctx.lineTo(W-PADR-3,y);ctx.stroke();ctx.restore(); }
@@ -2054,7 +2060,7 @@ const WaveChart=(function(){
     // FVG bands behind candles
     let shown=[]; if(layers.fvg&&fvg&&Array.isArray(fvg.fvgs)&&fvg.fvgs.length){fvg.fvgs.forEach(g=>{if(g.top==null||g.bottom==null)return;ctx.fillStyle=g.mitigated?C.fvgM:C.fvgU;ctx.fillRect(PADL,Y(g.top),plotW,Math.max(1,Y(g.bottom)-Y(g.top)));shown.push("FVG");});}
     // candles
-    const cw=Math.max(1.2,Math.min(14,plotW/n*0.66));
+    const cw=Math.max(1.2,Math.min(14,(plotW-futurePad)/n*0.66));   // D82: width matches the pad-aware spacing
     for(let i=0;i<n;i++){const b=B[i],x=X(i),up=b.c>=b.o;ctx.strokeStyle=ctx.fillStyle=up?C.up:C.dn;ctx.lineWidth=Math.max(.8,cw*0.12);ctx.beginPath();ctx.moveTo(x,Y(b.h));ctx.lineTo(x,Y(b.l));ctx.stroke();const yo=Y(b.o),yc=Y(b.c);ctx.fillRect(x-cw/2,Math.min(yo,yc),cw,Math.max(1,Math.abs(yc-yo)));}
     // levels
     if(layers.liquidity&&ict&&Array.isArray(ict.untapped_pools_near)&&ict.untapped_pools_near.length){ict.untapped_pools_near.forEach(pl=>{const pr=pl.price!=null?pl.price:pl.level;if(pr==null)return;hline(pr,C.liq,(pl.side||"pool")+" "+tnum(pr));shown.push("Liquidity");});}
