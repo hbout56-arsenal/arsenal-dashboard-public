@@ -2718,6 +2718,11 @@ const TicToc=(function(){
     h+='<div class="src" style="margin-top:5px;color:'+(n<30?C.amber:C.pos)+'">'+esc(sc.gate||"")+(n<30?' · not a verdict yet (need n≥30)':'')+'</div>';
     h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.invalidation_rule||"")+'</div>';
     h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.multiple_comparison_note||"")+'</div>';
+    if(sc.gauge){ var G=sc.gauge; var money=function(v){return (v>=0?'+$':'\u2212$')+Math.abs(Math.round(v)).toLocaleString();};
+      h+='<div style="margin-top:7px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">$ outcomes \u00b7 '+esc(G.size_basis)+'</div>';
+      if(G.n>0){ h+=_statGrid([{l:'net',v:money(G.net_total)},{l:'avg win',v:'+$'+Math.round(G.avg_win).toLocaleString()},{l:'avg loss',v:'\u2212$'+Math.abs(Math.round(G.avg_loss)).toLocaleString()},{l:'biggest win',v:'+$'+Math.round(G.largest_win).toLocaleString()},{l:'biggest loss',v:'\u2212$'+Math.abs(Math.round(G.largest_loss)).toLocaleString()},{l:'W / L',v:G.n_win+' / '+G.n_loss}],3); }
+      else h+='<div class="src" style="color:'+C.mut+'">Accruing \u2014 forward-only; the $ fills in (at 100 shares / 2 contracts) as the picks resolve.</div>';
+      h+='</div>'; }
     return h+'</div>';
   }
   async function load(){
@@ -2784,6 +2789,11 @@ const Tammy=(function(){
     h+='<div class="src" style="margin-top:5px;color:'+(n<30?C.amber:C.pos)+'">'+esc(sc.gate||"")+(n<30?' · not a verdict yet (need n≥30)':'')+'</div>';
     h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">Invalidation rule (ours, since she gives no stop): '+esc(sc.invalidation_rule||"")+'</div>';
     h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.multiple_comparison_note||"")+'</div>';
+    if(sc.gauge){ var G=sc.gauge; var money=function(v){return (v>=0?'+$':'\u2212$')+Math.abs(Math.round(v)).toLocaleString();};
+      h+='<div style="margin-top:7px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">$ outcomes \u00b7 '+esc(G.size_basis)+'</div>';
+      if(G.n>0){ h+=_statGrid([{l:'net',v:money(G.net_total)},{l:'avg win',v:'+$'+Math.round(G.avg_win).toLocaleString()},{l:'avg loss',v:'\u2212$'+Math.abs(Math.round(G.avg_loss)).toLocaleString()},{l:'biggest win',v:'+$'+Math.round(G.largest_win).toLocaleString()},{l:'biggest loss',v:'\u2212$'+Math.abs(Math.round(G.largest_loss)).toLocaleString()},{l:'W / L',v:G.n_win+' / '+G.n_loss}],3); }
+      else h+='<div class="src" style="color:'+C.mut+'">Accruing \u2014 forward-only; the $ fills in (at 100 shares / 2 contracts) as the picks resolve.</div>';
+      h+='</div>'; }
     h+='</div>';
     return h;
   }
