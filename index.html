@@ -1944,7 +1944,23 @@ const WaveChart=(function(){
     const latestA=aplus.length?aplus[aplus.length-1]:null;
     function fscore(t){ return (cpsc&&cpsc.by_pattern&&cpsc.by_pattern[t])||null; }
     let h='<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:'+C.pri+';margin-bottom:5px">\u29c9 Candle patterns (SHADOW)</div>';
-    h+='<div class="src" style="margin-bottom:6px">'+ps.length+' shown \u00b7 '+aplus.length+' A+ (context-gated) \u00b7 rest RAW (\u2248null \u2014 context is the edge, not the name). \u25b2/\u25bc filled+ring = A+, faint = raw; \u25e6 = doji. Tier-2 dim (folklore, scored not trusted).</div>';
+    h+='<div class="src" style="margin-bottom:5px">'+ps.length+' shown \u00b7 '+aplus.length+' A+ (context-gated) \u00b7 rest RAW (\u2248null \u2014 context is the edge, not the name).</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:7px 13px;align-items:center;margin:0 0 6px;font-size:11px">'
+      +'<span><span style="color:'+C.up+';font-size:13px">\u25b2</span> bull</span>'
+      +'<span><span style="color:'+C.dn+';font-size:13px">\u25bc</span> bear</span>'
+      +'<span><span style="color:'+C.axis+';font-size:13px">\u25e6</span> doji</span>'
+      +'<span><span style="display:inline-block;width:14px;height:14px;border:1.5px solid '+C.up+';border-radius:50%;text-align:center;line-height:12px;color:'+C.up+';font-size:8px;vertical-align:middle">\u25b2</span> <b>A+</b> ringed</span>'
+      +'<span style="opacity:.45"><span style="color:'+C.up+'">\u25b2</span> faint = raw</span>'
+      +'</div>';
+    h+='<details style="margin:0 0 7px"><summary style="cursor:pointer;font-size:11px;color:'+C.blue+';list-style:none;font-weight:650">\u24d8 What these arrows mean</summary>'
+      +'<div class="src" style="margin-top:5px;line-height:1.55">An arrow marks the bar where a candle pattern <b>completed</b> \u2014 it shows <b>where to look</b>, not a signal to act. '
+      +'<b style="color:'+C.up+'">\u25b2 green, below a bar</b> = bullish (engulfing, hammer, bullish outside); '
+      +'<b style="color:'+C.dn+'">\u25bc red, above a bar</b> = bearish (bearish engulfing, shooting star, bearish outside); '
+      +'<b>\u25e6 grey dot</b> = a doji (indecision).<br><br>'
+      +'<b>Filled + ringed = A+</b> \u2014 context-gated: it sits at a level, agrees with the higher-TF trend, and has strong candle quality. <b>Only A+ patterns alert.</b> '
+      +'<b style="opacity:.6">Faint / hollow = RAW</b> \u2014 it printed but failed the context filter; raw patterns are \u2248 a coin flip, shown for completeness, not to trade. '
+      +'<b>Tier-2 folklore</b> (doji / harami / star / soldiers) is dimmed and only shows with the <b>Tier2</b> toggle \u2014 scored to expose it, never trusted.<br><br>'
+      +'The <b>trigger is price BREAKING the pattern bar</b> (the entry level), not the arrow. SHADOW \u2014 it never votes.</div></details>';
     if(latestA){ const rr=latestA.rr,poor=(rr!=null&&rr<1),dcol=latestA.direction==="up"?C.up:C.dn;
       h+='<div style="border:1px solid '+(poor?C.axis:dcol)+';border-radius:7px;padding:6px 8px;margin-bottom:6px"><b style="color:'+dcol+'">'+esc(latestA.type)+' '+latestA.direction.toUpperCase()+'</b> '+(poor?'<span style="color:'+C.dn+';font-weight:700;font-size:10px"> \u00b7 R:R '+rr+' NOT ACTIONABLE</span>':'<span style="font-size:10px;color:'+C.alt+'"> \u00b7 R:R '+rr+'</span>')+'<div class="src" style="margin-top:3px">entry '+latestA.entry+' \u00b7 stop '+latestA.stop+' \u00b7 target '+latestA.target+' \u2014 break of the bar is the trigger</div><div class="src" style="margin-top:2px">'+esc((latestA.trace||[]).join("  \u00b7  "))+'</div></div>'; }
     const types=Array.from(new Set(ps.map(p=>p.type)));
