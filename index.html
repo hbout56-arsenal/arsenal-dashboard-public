@@ -315,10 +315,10 @@
   .card{position:relative}
   .collapsebtn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;border:1px solid var(--gbrd);background:var(--glass2);color:var(--mut);font-size:19px;font-weight:800;line-height:29px;text-align:center;cursor:pointer;user-select:none;z-index:4;transition:transform .25s cubic-bezier(.22,1,.36,1),background .2s,color .2s}
   .collapsebtn:hover{background:rgba(255,255,255,.08);color:var(--ink);border-color:rgba(255,255,255,.18)}
-  .collapsed > .collapsebtn{transform:rotate(-90deg)}
-  .collapsed > *:not(:first-child):not(.collapsebtn){display:none!important}
-  .collapsed > :first-child{margin-bottom:0!important}
-  .collapsed{position:relative}
+  .seccoll > .collapsebtn{transform:rotate(-90deg)}
+  .seccoll > *:not(:first-child):not(.collapsebtn){display:none!important}
+  .seccoll > :first-child{margin-bottom:0!important}
+  .seccoll{position:relative}
   /* D78: Audit approve/ignore */
   .audbtn{font-size:10.5px;font-weight:850;border-radius:7px;padding:5px 13px;cursor:pointer;user-select:none}
   .audbtn.ok{color:#06140c;background:linear-gradient(180deg,#2fd07a,#1f9d5a)}
@@ -2397,7 +2397,7 @@ const Audit=(function(){
     let adec={}; try{ const _ad=await ghFetch("audit_decisions.json"); adec=(_ad&&_ad.decisions)||{}; }catch(e){}
     if(!a){ el.innerHTML='<div class="card">No audit yet (daily_audit_latest.json not published). The audit runs after close \u2014 nothing invented.</div>'; return; }
     let h='';
-    h+='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-size:13px;font-weight:800">\u29c9 Daily Audit \u2014 '+esc(a.date)+'</div><div class="src" style="margin-top:3px">Automated observe + measure + <b>propose</b> across every system. <b style="color:'+C.amber+'">SHADOW / advisory \u2014 nothing here auto-tunes any parameter.</b> Machine proposes, you decide.</div></div>';
+    h+='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-size:13px;font-weight:800">\u29c9 Daily Audit \u2014 '+esc(a.date)+'</div><div class="src" style="margin-top:3px">Automated observe + measure + <b>propose</b> across every system. <b style="color:'+C.amber+'">SHADOW / advisory \u2014 nothing here auto-tunes any parameter.</b> Machine proposes, you decide.</div>'+(function(){ var ks=Object.keys(adec); if(!ks.length)return ''; var ap=ks.filter(function(k){return adec[k].decision==="approve";}).length; return '<div class="src" style="margin-top:5px;font-weight:700"><span style="color:'+C.pos+'">\u2713 '+ap+' approved</span> \u00b7 <span style="color:'+C.mut+'">'+(ks.length-ap)+' ignored</span> \u00b7 logged (advisory)</div>'; })()+'</div>';
     const props=a.section_5_proposals||[];
     h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2464 Proposals \u2014 '+props.length+' <span class="src" style="font-weight:400">(ranked by evidence \u00b7 all REVIEW)</span></div>';
     if(!props.length) h+='<div class="src">No proposals today \u2014 nothing crossed a threshold worth flagging.</div>';
@@ -2425,10 +2425,13 @@ const Audit=(function(){
   return {load};
 })();
 var _CV='#active,#overview,#prices,#orb,#wavechart,#performance,#proscreen,#alerts,#account,#journal,#fut,#stk,#audit';
+var _collapsedKeys=new Set();
+function _ckey(el){ var v=(el.closest(_CV)||{}).id||''; var h=el.firstElementChild; var t=((h&&h.textContent)||el.textContent||'').replace(/\s+/g,' ').trim().slice(0,48); return v+'|'+t; }
 function _addChevron(el){ if(el.__cb)return; el.__cb=true; if(getComputedStyle(el).position==='static')el.style.position='relative';
     var head=el.firstElementChild; if(head&&head.style)head.style.paddingRight='40px';
+    var key=_ckey(el); if(_collapsedKeys.has(key)) el.classList.add('seccoll');
     var b=document.createElement('div'); b.className='collapsebtn'; b.textContent='\u25be'; b.setAttribute('title','collapse / expand');
-    b.addEventListener('click',function(e){ e.stopPropagation(); el.classList.toggle('collapsed'); }); el.appendChild(b); }
+    b.addEventListener('click',function(e){ e.stopPropagation(); el.classList.toggle('seccoll'); if(el.classList.contains('seccoll'))_collapsedKeys.add(key); else _collapsedKeys.delete(key); }); el.appendChild(b); }
   var _SKIP=/(^|\s)(alrow|row|almaster|newhint|hint|src|bigbal|acch|meta|legend|collapsebtn)(\s|$)/;
 function _enhanceCollapse(){
     document.querySelectorAll('.card').forEach(function(card){                 // pass 1: every top-level card section
@@ -2443,6 +2446,9 @@ function _enhanceCollapse(){
         if(el.querySelector&&el.querySelector('canvas'))return;
         if(_SKIP.test(' '+(el.className||'')+' '))return;                       // skip rows/toggles/hints
         if(el.offsetHeight<120)return;                                          // only section-sized blocks
+        var fc=el.firstElementChild; if(!fc)return;
+        var isHdr=/^H[1-6]$/.test(fc.tagName)||((fc.textContent||'').trim().length<70 && (parseInt(getComputedStyle(fc).fontWeight)||400)>=600);
+        if(!isHdr)return;                                                       // no clear header -> don't collapse
         _addChevron(el);
       });
     });
