@@ -2168,6 +2168,18 @@ const WaveChart=(function(){
       if(layers.priceline&&px!=null){ const y=Y(px); ctx.save(); ctx.globalAlpha=.75; ctx.strokeStyle=pcol; ctx.lineWidth=1.4; ctx.setLineDash([4,3]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
         ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; var ply=placeY(y); _conn(y,ply,pcol); ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(W-PADR-tw-7,ply-7,tw+6,14); ctx.fillStyle=pcol; ctx.globalAlpha=.92; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,ply+3); ctx.textAlign="left"; ctx.restore(); } })();
     if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
+    // When the engine DECLINES to project (honest coherence guard, not a bug) or has no alt count, SAY SO on-chart
+    if(wave&&layers.projection){ var _pp=wave.primary&&wave.primary.projection;
+      if(_pp&&_pp.status!=="ok"){ ctx.save(); ctx.font="9.5px -apple-system,sans-serif";
+        var msg="\u2933 next-wave projection: engine declines on "+tf+" \u2014 count complete/transitioning (not fabricated). Switch to 60m or 15m to see a projection.";
+        var words=msg.split(" "),line="",lines=[],maxw=plotW-10;
+        for(var wi=0;wi<words.length;wi++){var tt=line?line+" "+words[wi]:words[wi]; if(ctx.measureText(tt).width>maxw){lines.push(line);line=words[wi];}else line=tt;} if(line)lines.push(line);
+        ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(PADL+3,PADT+3,maxw,lines.length*12+6);
+        ctx.fillStyle="rgba(255,207,107,.95)"; ctx.textAlign="left"; for(var li=0;li<lines.length;li++)ctx.fillText(lines[li],PADL+6,PADT+14+li*12);
+        ctx.restore(); } }
+    if(wave&&layers.alt&&!wave.alternative){ ctx.save(); ctx.font="9.5px -apple-system,sans-serif"; ctx.fillStyle="rgba(0,0,0,.55)";
+      var am="Alt count: none on "+tf+" \u2014 one dominant read, no clean alternative (not fabricated)."; var aw=ctx.measureText(am).width;
+      ctx.fillRect(PADL+3,H-PADB-16,Math.min(aw+8,plotW-6),14); ctx.fillStyle="rgba(156,195,255,.9)"; ctx.textAlign="left"; ctx.fillText(am,PADL+6,H-PADB-6); ctx.restore(); }
     // freshness + layer status
     const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed,_tag=dly?"DELAYED":(inst==="es"?"LIVE":"EOD");fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+_tag+'</span> '+esc(bars.contract||bars.symbol||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon · delayed/EOD — ToS for live ticks)';}
     const ls=document.getElementById("wc-layers"); if(ls){const want=[];if(layers.liquidity)want.push("Liquidity");if(layers.fvg)want.push("FVG");if(layers.vp)want.push("VP");if(layers.fib)want.push("Fib");const miss=want.filter(w=>shown.indexOf(w)<0);ls.innerHTML=miss.length?'<span style="color:'+C.axis+'">Level layers with no published data right now (shown empty, not invented): <b>'+miss.join(", ")+'</b> — ICT/FVG go dark off-hours; VP/fib publish when the engine has them.</span>':'';}
