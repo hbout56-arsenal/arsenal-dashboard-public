@@ -1709,7 +1709,7 @@ const WaveChart=(function(){
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
   const layers={waves:true,alt:true,trend:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,inst="es",stockTicker=null,view={start:0,count:0},total=0;
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
   const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
@@ -1845,6 +1845,26 @@ const WaveChart=(function(){
     h+='<div class="src" style="margin-top:4px">'+esc(r.basis)+'</div>';
     h+='<div class="src" style="margin-top:4px;color:'+C.alt+'">'+esc(r.note)+'</div>';
     return h; }
+  function explainPill(){ return '<div style="display:flex;justify-content:flex-end;margin:0 0 6px"><span data-wcexplain="1" style="font-size:11px;font-weight:650;color:'+(explain?C.pri:C.axis)+';border:1px solid '+(explain?C.pri:"var(--gbrd)")+';border-radius:999px;padding:4px 12px;cursor:pointer;user-select:none">\u24d8 '+(explain?"hide explainers":"explain & train")+'</span></div>'; }
+  function exp(k){ const M={
+    inst:"Subtabs \u2014 <b>ES</b> uses live equity internals; <b>GC/CL</b> are delayed futures with NO internals (direction confluence shows <i>n/a</i>, never faked); <b>Stocks</b> are on-demand swing charts built from the current screener picks.",
+    tf:"Timeframe = the degree you read. <b>15m</b> is noisy and re-labels often (low reliability); <b>60m</b> swing; <b>daily</b> position. Stocks are swing \u2014 daily is the default.",
+    layers:"What\u2019s drawn \u2014 <b>Primary/Alt</b> = the two candidate counts; <b>Trend</b> = swing-pivot support/resistance; <b>Projection</b> = the conditional next-move zone; <b>VP/SVP</b> = volume profile (POC/VAH/VAL); Liquidity/FVG/Fib appear only when the engine publishes them.",
+    ma:"Moving averages are visual <b>context only</b> \u2014 they don\u2019t vote. The EMA crossover system is scored separately on the Performance tab.",
+    rec:"The trade idea is <b>SHADOW</b> (informational, never votes). <b>R:R</b> = reward\u00f7risk; under 1.0 it\u2019s flagged NOT ACTIONABLE. The $ figure is SIMULATED at one micro / $100 stock risk \u2014 not your account."
+   }; return '<div class="src" style="margin:-2px 0 9px;padding:7px 9px;background:rgba(110,168,255,.06);border-left:2px solid '+C.pri+';border-radius:0 6px 6px 0;line-height:1.5">\u24d8 '+(M[k]||"")+'</div>'; }
+  function waveGlossary(){ const rows=[
+    ["Elliott count","A CANDIDATE structure (analyzer.py) \u2014 two shown (primary solid, alt dashed). Valid only while its invalidation holds."],
+    ["Invalidation","The price that voids the count. Cross it and the idea is dead \u2014 it is the stop."],
+    ["Projection","Where the next leg COULD go if the count holds \u2014 a conditional zone, not a prediction."],
+    ["Confluence / conviction","How many independent reads agree (count, projection, invalidation, VP, R:R). Conviction now factors R:R, not just the count."],
+    ["R:R","Reward \u00f7 risk. \u22651.5 strong, 1\u20131.5 ok, <1 = risking more than you\u2019d make \u2192 NOT ACTIONABLE."],
+    ["POC / VAH / VAL","Volume profile \u2014 the price where most volume traded (POC) and the value-area high/low. Magnets and shelves."],
+    ["Trend lines","Through the last two swing lows (support) / highs (resistance), extended. Context, not a signal."],
+    ["SHADOW","Informational \u2014 never votes or fires. The TRIGGER is price breaking the level, not the card."],
+    ["DELAYED / EOD","Bars are Polygon exchange-delayed (futures) or end-of-day (stocks). Use ToS for live ticks."],
+    ["Internals n/a","GC/CL/stocks have no equity-index internals (TICK/TRIN/ADD) \u2014 that pillar is honestly blank, not fabricated."]];
+    return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-weight:700;font-size:12px;margin-bottom:5px">\u24d8 Wave chart \u2014 what every term means</div>'+rows.map(x=>'<div class="src" style="margin:3px 0"><b style="color:var(--ink)">'+x[0]+'.</b> '+x[1]+'</div>').join("")+'</div>'; }
   function trainerNote(){
     return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:'+C.pri+';margin-bottom:6px">ℹ︎ How to read</div>'
       +'<div class="src" style="line-height:1.55"><b style="color:var(--ink)">Levels are the backbone</b> — price breaking a level is the trigger, not the wave label. The two counts are CANDIDATES (analyzer.py), valid only while their <b style="color:'+C.inval+'">invalidation</b> holds. 15m is low-reliability (sub-1h, re-labels often). Bars are exchange-DELAYED (Polygon) — redraws on publish cadence ~60–75s, not per tick; for live ticks use ToS.</div></div>';
@@ -1852,15 +1872,15 @@ const WaveChart=(function(){
   function render(){
     const el=document.getElementById("wavechart-content");
     if(!bars||!Array.isArray(bars.bars)||!bars.bars.length){
-      if(inst==="stk"&&!stockTicker){ el.innerHTML=instSwitcher()+'<div class="card">Select a screener pick above to build its DAILY wave chart (swing-degree, on demand).</div>'; wireControls(); return; }
+      if(inst==="stk"&&!stockTicker){ el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+'<div class="card">Select a screener pick above to build its DAILY wave chart (swing-degree, on demand).</div>'+(explain?waveGlossary():''); wireControls(); return; }
       const _nm=(stockTicker||inst.toUpperCase()); const _msg=(wave&&wave.status==="no_read")?("No clean count for "+_nm+" "+tf+" \u2014 analyzer couldn\u2019t resolve a structure (thin history?)."):("Wave data not published for "+_nm+" "+tf+".");
-      el.innerHTML=instSwitcher()+tfSwitcher()+'<div class="card">'+_msg+'</div>'; wireControls(); return;
+      el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+tfSwitcher()+'<div class="card">'+_msg+'</div>'+(explain?waveGlossary():''); wireControls(); return;
     }
     const ch=Math.max(320, Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)));
-    el.innerHTML=instSwitcher()+tfSwitcher()+toggleBar()+maBar()
+    el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+tfSwitcher()+(explain?exp('tf'):'')+toggleBar()+(explain?exp('layers'):'')+maBar()+(explain?exp('ma'):'')
       +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
       +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
-      +recCard()+legend()+trainerNote()+scorecardCard();
+      +recCard()+(explain?exp('rec'):'')+legend()+trainerNote()+(explain?waveGlossary():'')+scorecardCard();
     wireControls(); const cv=document.getElementById("wcv"); wireCanvas(cv); draw();
   }
   function wireControls(){
@@ -1869,6 +1889,7 @@ const WaveChart=(function(){
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
     document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
     const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
+    document.querySelectorAll("[data-wcexplain]").forEach(b=>b.onclick=()=>{explain=!explain;render();});
   }
   function zoom(f,frac){ const oc=view.count, nc=clamp(Math.round(oc*f),20,total); const focal=view.start+frac*oc; view.count=nc; view.start=clamp(Math.round(focal-frac*nc),0,total-nc); }
   function wireCanvas(cv){
