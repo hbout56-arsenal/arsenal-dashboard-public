@@ -277,11 +277,16 @@
     <div class="toptab" data-v="prices">Prices</div>
     <div class="toptab" data-v="futures">Futures</div>
     <div class="toptab" data-v="orb">ORB</div>
+    <div class="toptab" data-v="wavechart">Wave Chart</div>
     <div class="toptab" data-v="stocks">Stocks/Swing</div>
     <div class="toptab" data-v="proscreen">Pro Screener</div>
     <div class="toptab" data-v="alerts">Alerts</div>
     <div class="toptab" data-v="account">$15K / Risk</div>
     <div class="toptab" data-v="journal">Journal</div>
+  </div>
+
+  <div id="wavechart" hidden>
+    <div id="wavechart-content"><div class="loading">Loading…</div></div>
   </div>
 
   <div id="orb" hidden>
@@ -1683,6 +1688,169 @@ const ORB=(function(){
 })();
 window.ORB=ORB;
 
+/* ════════ WAVE CHART v2 (Dispatch 67b) — big professional 2-scenario ES terminal ════════
+   Draws PUBLISHED feeds only: es_bars_<tf>, es_wave_<tf> (analyzer primary+alternative),
+   ict_state, fvg_state, verdict (VP/fib). Exactly TWO counts (primary + best alt); if the
+   engine emits one, shows one + "no strong alternative". Pan (drag) + zoom (wheel/pinch). */
+const WaveChart=(function(){
+  const C={up:"#3fd07a",dn:"#f0616d",grid:"rgba(255,255,255,.05)",axis:"#8b97ab",ink:"#eef3fb",
+           pri:"#6ea8ff",priText:"#06101f",alt:"#ffcf6b",inval:"#f0616d",tgt:"rgba(63,208,122,.55)",
+           liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
+  const PADL=6, PADR=58, PADT=10, PADB=20;
+  let tf="daily";
+  const layers={waves:true,alt:true,liquidity:true,fvg:true,vp:true,fib:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,view={start:0,count:0},total=0;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+  async function load(){
+    const el=document.getElementById("wavechart-content"); el.innerHTML='<div class="loading">Loading…</div>';
+    bars=wave=ict=fvg=verdict=null;
+    try{ bars=await ghFetch("es_bars_"+tf+".json"); }catch(e){}
+    try{ wave=await ghFetch("es_wave_"+tf+".json"); }catch(e){}
+    try{ ict=await ghFetch("ict_state.json"); }catch(e){}
+    try{ fvg=await ghFetch("fvg_state.json"); }catch(e){}
+    try{ verdict=await ghFetch("verdict.json"); }catch(e){}
+    total=(bars&&bars.bars)?bars.bars.length:0;
+    view.count=Math.min(total, tf==="daily"?total:140); view.start=Math.max(0,total-view.count);
+    render();
+  }
+  function tfSwitcher(){ return '<div class="tabs" style="margin-bottom:8px">'+["15m","60m","daily"].map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
+  function chip(on){ return on?C.pri:C.axis; }
+  function toggleBar(){
+    const defs=[["waves","Primary"],["alt","Alt"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["fib","Fib"]];
+    return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
+      '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
+      +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
+      +'<span style="font-size:10px;color:'+C.axis+';align-self:center;margin-left:4px">drag = pan · pinch / wheel = zoom</span></div>';
+  }
+  function tnum(x){ return (x==null)?"—":(+x).toLocaleString(undefined,{maximumFractionDigits:2}); }
+  function cfLine(side){ if(!side||!side.confluence)return ""; const cf=side.confluence;
+    const fired=cf.trace.filter(t=>t.fired), unf=cf.trace.filter(t=>!t.fired);
+    let s='<div style="margin-top:6px;padding-top:5px;border-top:1px solid var(--gbrd)">';
+    s+='<span style="font-weight:800;color:'+(cf.count>=2?C.up:C.axis)+'">\u2696 '+cf.count+' confluence'+(cf.count===1?'':'s')+'</span> <span class="gmut" style="font-size:10px">(evidence count \u2014 not a probability)</span>';
+    if(fired.length) s+='<div class="src" style="margin-top:3px;color:'+C.up+'">'+fired.map(t=>'\u2713 '+esc(t.reason)).join('<br>')+'</div>';
+    const miss=unf.map(t=>esc(t.reason)).concat((cf.unavailable||[]).map(esc));
+    if(miss.length) s+='<div class="src" style="margin-top:3px;color:'+C.axis+';font-size:10.5px">\u25cb '+miss.join(' \u00b7 ')+'</div>';
+    return s+'</div>'; }
+  function legend(){
+    if(!wave||wave.status!=="ok") return '<div class="card"><div class="src">Wave count not published for '+tf+'.</div></div>';
+    const p=wave.primary||{}, a=wave.alternative||{};
+    const invP=(p.invalidation||{}), tP=p.targets||{};
+    const tgtStr=o=>Object.keys(o||{}).map(k=>k.replace(/_/g," ")+" "+tnum(o[k])).join(" · ")||"—";
+    let h='<div class="card" style="padding:11px"><div class="secttl" style="font-size:10px;letter-spacing:.5px;color:'+C.axis+';text-transform:uppercase;font-weight:700;margin-bottom:7px">Two scenarios — candidate counts</div>';
+    // PRIMARY
+    h+='<div style="border-left:3px solid '+C.pri+';padding:2px 0 2px 9px;margin-bottom:9px">'
+      +'<div style="font-size:13px;font-weight:750"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:'+C.pri+';color:'+C.priText+';text-align:center;line-height:16px;font-size:10px;font-weight:800;margin-right:6px">A</span>'
+      +'PRIMARY · '+esc(p.name||wave.verdict||"—")+' <span class="gmut" style="font-weight:500">('+esc(wave.conviction||"")+' conviction · engine’s pick)</span></div>';
+    if(p.narrative) h+='<div class="src" style="margin-top:3px">'+esc(p.narrative.slice(0,96)+(p.narrative.length>96?"…":""))+'</div>';
+    h+='<div class="src" style="margin-top:4px"><span style="color:'+C.inval+'">⛔ invalidation '+tnum(invP.level)+'</span>'+(invP.rule?' <span class="gmut">— '+esc(invP.rule)+'</span>':'')+'</div>';
+    if(Object.keys(tP).length) h+='<div class="src" style="margin-top:2px;color:'+C.tgt+'">▸ targets '+esc(tgtStr(tP))+'</div>';
+    h+=cfLine(p);
+    h+='</div>';
+    // ALT
+    if(a&&a.name){ const invA=(a.invalidation||{}), tA=a.targets||{};
+      h+='<div style="border-left:3px dashed '+C.alt+';padding:2px 0 2px 9px">'
+        +'<div style="font-size:13px;font-weight:750"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;border:1.5px solid '+C.alt+';color:'+C.alt+';text-align:center;line-height:14px;font-size:10px;font-weight:800;margin-right:6px">B</span>'
+        +'ALT · '+esc(a.name)+'</div>';
+      if(a.narrative) h+='<div class="src" style="margin-top:3px">'+esc(a.narrative)+'</div>';
+      h+='<div class="src" style="margin-top:4px"><span style="color:'+C.inval+'">⛔ invalidation '+tnum(invA.level)+'</span></div>';
+      if(Object.keys(tA).length) h+='<div class="src" style="margin-top:2px;color:'+C.tgt+'">▸ targets '+esc(tgtStr(tA))+'</div>';
+      h+=cfLine(a);
+      h+='</div>';
+    } else {
+      h+='<div style="border-left:3px dashed var(--gbrd);padding:2px 0 2px 9px"><div style="font-size:12px;color:'+C.axis+'"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--gbrd);color:'+C.axis+';text-align:center;line-height:14px;font-size:10px;font-weight:800;margin-right:6px">B</span>ALT · no strong alternative — engine sees a single clean count here.</div></div>';
+    }
+    h+='<div class="src" style="margin-top:8px;color:'+C.alt+'">'+esc(wave.reliability||"")+'</div>';
+    return h+'</div>';
+  }
+  function trainerNote(){
+    return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:'+C.pri+';margin-bottom:6px">ℹ︎ How to read</div>'
+      +'<div class="src" style="line-height:1.55"><b style="color:var(--ink)">Levels are the backbone</b> — price breaking a level is the trigger, not the wave label. The two counts are CANDIDATES (analyzer.py), valid only while their <b style="color:'+C.inval+'">invalidation</b> holds. 15m is low-reliability (sub-1h, re-labels often). Bars are exchange-DELAYED (Polygon) — redraws on publish cadence ~60–75s, not per tick; for live ticks use ToS.</div></div>';
+  }
+  function render(){
+    const el=document.getElementById("wavechart-content");
+    if(!bars||!Array.isArray(bars.bars)||!bars.bars.length){
+      el.innerHTML=tfSwitcher()+'<div class="card">ES bars not published for <b>'+tf+'</b> (draws only real feeds; nothing invented).</div>'; wireControls(); return;
+    }
+    const ch=Math.max(320, Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)));
+    el.innerHTML=tfSwitcher()+toggleBar()
+      +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
+      +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
+      +legend()+trainerNote();
+    wireControls(); const cv=document.getElementById("wcv"); wireCanvas(cv); draw();
+  }
+  function wireControls(){
+    document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
+    document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
+  }
+  function zoom(f,frac){ const oc=view.count, nc=clamp(Math.round(oc*f),20,total); const focal=view.start+frac*oc; view.count=nc; view.start=clamp(Math.round(focal-frac*nc),0,total-nc); }
+  function wireCanvas(cv){
+    let drag=null,pinch=null; const plotW=()=>cv.clientWidth-PADL-PADR; const left=()=>cv.getBoundingClientRect().left;
+    cv.addEventListener("wheel",e=>{e.preventDefault(); zoom(e.deltaY>0?1.12:0.89, clamp((e.offsetX-PADL)/plotW(),0,1)); draw();},{passive:false});
+    cv.addEventListener("mousedown",e=>{drag={x:e.clientX,start:view.start};});
+    window.addEventListener("mousemove",e=>{ if(!drag)return; const db=(e.clientX-drag.x)*(view.count/plotW()); view.start=clamp(Math.round(drag.start-db),0,total-view.count); draw(); });
+    window.addEventListener("mouseup",()=>drag=null);
+    cv.addEventListener("touchstart",e=>{ if(e.touches.length===1){drag={x:e.touches[0].clientX,start:view.start};pinch=null;}
+      else if(e.touches.length===2){const a=e.touches[0],b=e.touches[1];pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),count:view.count,start:view.start,cx:(a.clientX+b.clientX)/2};drag=null;} },{passive:false});
+    cv.addEventListener("touchmove",e=>{ e.preventDefault();
+      if(pinch&&e.touches.length===2){const a=e.touches[0],b=e.touches[1];const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);const f=pinch.d/Math.max(1,d);const frac=clamp((pinch.cx-left()-PADL)/plotW(),0,1);const nc=clamp(Math.round(pinch.count*f),20,total);const focal=pinch.start+frac*pinch.count;view.count=nc;view.start=clamp(Math.round(focal-frac*nc),0,total-nc);draw();}
+      else if(drag&&e.touches.length===1){const db=(e.touches[0].clientX-drag.x)*(view.count/plotW());view.start=clamp(Math.round(drag.start-db),0,total-view.count);draw();} },{passive:false});
+    cv.addEventListener("touchend",e=>{ if(e.touches.length===0){drag=null;pinch=null;} });
+    let rt; window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const cv2=document.getElementById("wcv");if(cv2){cv2.style.height=Math.max(320,Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)))+"px";draw();}},150);});
+  }
+  function fmtT(ms){const d=new Date(ms);const mm=d.getMonth()+1,dd=d.getDate();const p=x=>String(x).padStart(2,"0");return tf==="daily"?(mm+"/"+dd):(mm+"/"+dd+" "+p(d.getHours())+":"+p(d.getMinutes()));}
+  function draw(){
+    const cv=document.getElementById("wcv"); if(!cv) return;
+    const W=cv.clientWidth||320, H=cv.clientHeight||360, dpr=window.devicePixelRatio||1;
+    cv.width=W*dpr; cv.height=H*dpr; const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+    const ALL=bars.bars; total=ALL.length; view.count=clamp(view.count,20,total); view.start=clamp(view.start,0,total-view.count);
+    const B=ALL.slice(view.start,view.start+view.count), n=B.length;
+    const plotW=W-PADL-PADR, plotH=H-PADT-PADB;
+    let lo=Math.min.apply(null,B.map(b=>b.l)), hi=Math.max.apply(null,B.map(b=>b.h));
+    const inView=t=>{ if(t==null)return null; let fi=0,bd=Infinity; for(let i=0;i<total;i++){const d=Math.abs(ALL[i].t-t);if(d<bd){bd=d;fi=i;}} const pos=fi-view.start; return (pos<0||pos>=n)?null:pos; };
+    const ext=[]; if(wave&&layers.waves&&wave.primary){const iv=wave.primary.invalidation;if(iv&&iv.level!=null&&inView(__t(wave.primary))!=null)ext.push(iv.level);}
+    // include visible wave point prices in scale
+    [wave&&wave.primary,wave&&layers.alt&&wave.alternative].forEach(s=>{ if(s&&s.points)s.points.forEach(p=>{if(inView(p.t)!=null)ext.push(p.price);}); });
+    ext.forEach(v=>{ if(v>hi&&v<hi+(hi-lo))hi=v; if(v<lo&&v>lo-(hi-lo))lo=v; });
+    const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
+    const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
+    const Y=p=>PADT+(hi-p)/(hi-lo)*plotH;
+    // grid + right price axis
+    ctx.font="10px ui-monospace,SFMono-Regular,Menlo,monospace"; ctx.textBaseline="middle"; ctx.textAlign="left";
+    for(let g=0;g<=5;g++){const pr=lo+(hi-lo)*g/5,y=Y(pr);ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke();ctx.fillStyle=C.axis;ctx.fillText(pr.toFixed(1),W-PADR+4,y);}
+    // time axis
+    ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+    const ticks=Math.min(6,n); for(let k=0;k<ticks;k++){const i=Math.round(k*(n-1)/(ticks-1||1));const x=X(i);ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(x,PADT);ctx.lineTo(x,H-PADB);ctx.stroke();ctx.fillStyle=C.axis;ctx.font="9px ui-monospace,monospace";ctx.fillText(fmtT(B[i].t),Math.max(18,Math.min(W-PADR-18,x)),H-6);}
+    ctx.textAlign="left";
+    function hline(price,color,label,dash){const y=Y(price);ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.setLineDash(dash||[]);ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=color;ctx.font="9px ui-monospace,monospace";const t=label;const tw=ctx.measureText(t).width;ctx.fillStyle="rgba(0,0,0,.45)";ctx.fillRect(W-PADR-tw-6,y-7,tw+5,13);ctx.fillStyle=color;ctx.fillText(t,W-PADR-tw-3,y+3.5);ctx.restore();}
+    // FVG bands behind candles
+    let shown=[]; if(layers.fvg&&fvg&&Array.isArray(fvg.fvgs)&&fvg.fvgs.length){fvg.fvgs.forEach(g=>{if(g.top==null||g.bottom==null)return;ctx.fillStyle=g.mitigated?C.fvgM:C.fvgU;ctx.fillRect(PADL,Y(g.top),plotW,Math.max(1,Y(g.bottom)-Y(g.top)));shown.push("FVG");});}
+    // candles
+    const cw=Math.max(1.2,Math.min(14,plotW/n*0.66));
+    for(let i=0;i<n;i++){const b=B[i],x=X(i),up=b.c>=b.o;ctx.strokeStyle=ctx.fillStyle=up?C.up:C.dn;ctx.lineWidth=Math.max(.8,cw*0.12);ctx.beginPath();ctx.moveTo(x,Y(b.h));ctx.lineTo(x,Y(b.l));ctx.stroke();const yo=Y(b.o),yc=Y(b.c);ctx.fillRect(x-cw/2,Math.min(yo,yc),cw,Math.max(1,Math.abs(yc-yo)));}
+    // levels
+    if(layers.liquidity&&ict&&Array.isArray(ict.untapped_pools_near)&&ict.untapped_pools_near.length){ict.untapped_pools_near.forEach(pl=>{const pr=pl.price!=null?pl.price:pl.level;if(pr==null)return;hline(pr,C.liq,(pl.side||"pool")+" "+tnum(pr));shown.push("Liquidity");});}
+    if(layers.vp&&verdict){["vah","val","poc"].forEach(k=>{let v=verdict[k];if(v==null&&verdict.vp)v=verdict.vp[k];if(v!=null){hline(v,C.vp,k.toUpperCase()+" "+tnum(v));shown.push("VP");}});}
+    if(layers.fib&&verdict&&Array.isArray(verdict.fib_levels)){verdict.fib_levels.forEach(f=>{if(f.price!=null){hline(f.price,C.fib,(f.label||"fib")+" "+tnum(f.price),[2,2]);shown.push("Fib");}});}
+    // waves with badge labels
+    function badge(x,y,lbl,prim){ctx.beginPath();ctx.arc(x,y,8.5,0,7);if(prim){ctx.fillStyle=C.pri;ctx.fill();ctx.fillStyle=C.priText;}else{ctx.fillStyle="rgba(11,15,23,.85)";ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=C.alt;ctx.stroke();ctx.fillStyle=C.alt;}ctx.font="bold 10px -apple-system,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lbl,x,y+.5);ctx.textAlign="left";ctx.textBaseline="alphabetic";}
+    function drawWave(side,prim){ if(!side)return; const pts=(side.points||[]).map(p=>({...p,pos:inView(p.t)})).filter(p=>p.pos!=null).sort((a,b)=>a.pos-b.pos);
+      if(pts.length>1){ctx.strokeStyle=prim?C.pri:C.alt;ctx.lineWidth=prim?2:1.4;ctx.setLineDash(prim?[]:[6,4]);ctx.beginPath();pts.forEach((p,k)=>{const x=X(p.pos),y=Y(p.price);k?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+      pts.forEach(p=>badge(X(p.pos),Y(p.price),p.label,prim));
+      const iv=side.invalidation; if(iv&&iv.level!=null){const cfHit=side.confluence&&side.confluence.trace.some(t=>t.pillar==='invalidation'&&t.fired);hline(iv.level,prim?C.inval:"rgba(240,97,109,.55)",(prim?"inval A ":"inval B ")+tnum(iv.level)+(cfHit?" \u25c6confl":""),[5,4]);}
+      const tz=side.targets; if(tz)Object.keys(tz).forEach(k=>{if(typeof tz[k]==="number")hline(tz[k],C.tgt,"tgt "+tnum(tz[k]),[1,3]);});
+    }
+    if(wave){ if(layers.alt)drawWave(wave.alternative,false); if(layers.waves)drawWave(wave.primary,true); }
+    // freshness + layer status
+    const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed;fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+(dly?"DELAYED":"LIVE")+'</span> '+esc(bars.contract||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon futures, exchange-delayed — ToS for live ticks)';}
+    const ls=document.getElementById("wc-layers"); if(ls){const want=[];if(layers.liquidity)want.push("Liquidity");if(layers.fvg)want.push("FVG");if(layers.vp)want.push("VP");if(layers.fib)want.push("Fib");const miss=want.filter(w=>shown.indexOf(w)<0);ls.innerHTML=miss.length?'<span style="color:'+C.axis+'">Level layers with no published data right now (shown empty, not invented): <b>'+miss.join(", ")+'</b> — ICT/FVG go dark off-hours; VP/fib publish when the engine has them.</span>':'';}
+  }
+  function __t(side){ const p=(side&&side.points)||[]; return p.length?p[p.length-1].t:null; }
+  return {load};
+})();
+window.WaveChart=WaveChart;
+
 /* ════════════ PRO SCREENER (v2) — SHADOW education tab (Dispatch 54) ════════════
    REAL DATA ONLY. Reads screener_v2_funnel.json (written by run_funnel.run_real in the
    engine). If absent OR source is not REAL OR no qualified picks -> honest state. The
@@ -1780,6 +1948,7 @@ function showView(v){
   document.getElementById("active").hidden=(v!=="active");
   document.getElementById("prices").hidden=(v!=="prices");
   document.getElementById("orb").hidden=(v!=="orb");
+  document.getElementById("wavechart").hidden=(v!=="wavechart");
   document.getElementById("overview").hidden=(v!=="overview");
   document.getElementById("fut").hidden=(v!=="futures");
   document.getElementById("stk").hidden=(v!=="stocks");
@@ -1789,6 +1958,7 @@ function showView(v){
   document.getElementById("journal").hidden=(v!=="journal");
   if(v==="active")ActiveTrades.load();
   else if(v==="orb")ORB.load();
+  else if(v==="wavechart")WaveChart.load();
   else if(v==="overview")Overview.load();
   else if(v==="alerts")Alerts.load();
   else if(v==="account")Account.load();
