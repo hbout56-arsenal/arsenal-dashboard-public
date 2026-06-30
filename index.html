@@ -1498,8 +1498,8 @@ const Account=(function(){
     }
     const wl=pd.forward_only_watchlist||{};
     if(Object.keys(wl).length){
-      h+='<div class="accnote" style="margin-top:8px"><b>Forward-only watchlist</b> (would diversify the core once the stress / wide-universe test clears): '
-        +Object.entries(wl).map(([inst,w])=>esc(w.track.split('::').pop())+' <span style="color:var(--mut)">('+esc(inst)+')</span>').join(' · ')+'</div>';
+      h+='<div class="accnote" style="margin-top:8px"><b>Forward-only watchlist</b> (would diversify the core once the stress / wide-universe test clears):</div>'
+        +_dataTable([{t:'Track'},{t:'Instrument'}],Object.entries(wl).map(([inst,w])=>[esc(w.track.split('::').pop()),'<span style="color:var(--mut)">'+esc(inst)+'</span>']));
     }
     const ex=pd.excluded_validated_tracks||{};
     const exrows=Object.entries(ex).slice(0,8);
@@ -2352,8 +2352,8 @@ const ProScreen=(function(){
     const edu=(p.education||[]).map(e=>'• '+esc(e)).join('<br>');
     const rr=p.rr!=null?('<span class="ps-rr">'+esc(p.rr)+'</span>'):'–';
     return '<div class="setup"><div class="stk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.setup||"VCP base")+'</span> '+neChip(p.not_extended)+etfFlag(p)+'</div>'
-      +'<div class="params"><span class="lbl">entry</span> '+esc(p.entry)+' (pivot) · <span class="lbl">stop</span> '+esc(p.stop)+' (below base) · <span class="lbl">target</span> '+esc(p.target)+' (measured) · <span class="lbl">R:R</span> '+rr
-      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+advChip(p)+detTag(p)+'</div>'
+      +_statGrid([{l:'entry (pivot)',v:esc(p.entry)},{l:'stop (base)',v:esc(p.stop)},{l:'target (meas)',v:esc(p.target)},{l:'R:R',v:rr},{l:'RS rank',v:esc(p.rs_rank)},{l:'regime',v:esc(p.regime_at_signal||"–")},{l:'size',v:esc(p.size_band||"1–2% (sim)")}])
+      +'<div class="params" style="font-size:11px;margin-top:-2px">'+(p.adv!=null?'<span class="lbl">ADV</span> $'+(p.adv/1e6).toFixed(0)+'M <span style="color:var(--pos-ink)">(\u2265$'+((p.adv_floor||20000000)/1e6).toFixed(0)+'M\u2713'+(p.adv_headroom_x!=null?" \u00b7 "+p.adv_headroom_x+"\u00d7":"")+')</span>':'')+(p.detector?'  \u00b7  <span class="lbl">detector</span> '+esc(p.detector):'')+'</div>'
       +(edu?'<div class="edu"><b>Why it\'s a pro setup:</b><br>'+edu+'</div>':'')+'</div>';
   }
   function methodNote(){
@@ -2471,6 +2471,11 @@ function _dataTable(headers,rows,minW){
   var th=headers.map(function(h){return '<th style="text-align:'+(h.a||'left')+';color:var(--mut);font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;padding:4px 7px;border-bottom:1px solid var(--gbrd);white-space:nowrap">'+h.t+'</th>';}).join('');
   var body=rows.map(function(r){return '<tr>'+r.map(function(c,i){var a=(headers[i]&&headers[i].a)||'left';return '<td style="padding:4px 7px;border-bottom:1px solid rgba(255,255,255,.06);text-align:'+a+';white-space:nowrap">'+((c==null||c==='')?'\u2014':c)+'</td>';}).join('')+'</tr>';}).join('');
   return '<div style="overflow-x:auto;border:1px solid var(--gbrd);border-radius:10px;margin:6px 0"><table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums;min-width:'+(minW||260)+'px"><tr>'+th+'</tr>'+body+'</table></div>';
+}
+function _statGrid(pairs,cols){ var c=cols||3; var ps=pairs.filter(function(p){return p&&p.v!=null&&p.v!=='';});
+  return '<div style="display:grid;grid-template-columns:repeat('+c+',minmax(0,1fr));gap:5px;margin:6px 0">'+ps.map(function(p){
+    return '<div style="border:1px solid var(--gbrd);border-radius:8px;padding:4px 8px;background:rgba(255,255,255,.02);min-width:0"><div style="font-size:8px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.l+'</div><div style="font-size:12px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(p.t||'')+'">'+p.v+'</div></div>';
+  }).join('')+'</div>';
 }
 function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
 function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
@@ -2600,7 +2605,7 @@ function gcDxyPanel(){
     const R=(entry&&stop)?Math.abs(entry-stop).toFixed(2):"–";
     live+='<div class="setup" style="margin-top:7px"><div class="stk">GC '+esc(p.tf)+' '+esc(p.direction)
       +' <span style="font-weight:800;color:'+tagCol(p.tag)+'">'+esc(p.tag)+'</span></div>'
-      +'<div class="params" style="font-size:12px"><span class="lbl">entry</span> '+esc(entry)+' · <span class="lbl">stop</span> '+esc(stop?stop.toFixed(2):"–")+' (1.5·ATR) · <span class="lbl">target</span> '+esc(t1?t1.toFixed(2):"–")+' · <span class="lbl">R</span> '+R+'pts · <span class="lbl">R:R</span> 2.0 · <span class="lbl">size</span> 1–2% risk/R (sim)</div>'
+      +_statGrid([{l:'entry',v:esc(entry)},{l:'stop',v:esc(stop?stop.toFixed(2):"–")+' <span class="gmut">(1.5\u00b7ATR)</span>'},{l:'target',v:esc(t1?t1.toFixed(2):"–")},{l:'R',v:R+'pts'},{l:'R:R',v:'2.0'},{l:'size',v:'1\u20132% /R (sim)'}])
       +'<div class="edu" style="font-size:11px;color:var(--mut)">'+esc(p.reason||"")+' · '+esc(p.real_yield_context||"")+'</div></div>';
   });
   if(!live) live='<div class="statrow grey">No GC directional setup right now.</div>';
@@ -2641,8 +2646,7 @@ function orbPanel(){
     const f=t.filters||{};
     body+='<div class="setup" style="margin-top:7px"><div class="stk">'+esc(t.ticker)+' '+esc((t.side||"").toUpperCase())
       +' <span style="font-weight:800;color:'+tagCol+'">'+esc(tag)+'</span> <span class="gmut" style="font-weight:400">@ '+esc(t.trigger_time)+' · '+esc(t.vol_mult)+'x vol</span></div>'
-      +'<div class="params" style="font-size:12px"><span class="lbl">OR</span> '+esc(t.or_low)+'–'+esc(t.or_high)
-      +' · <span class="lbl">entry</span> '+esc(t.entry)+' · <span class="lbl">stop</span> '+esc(t.stop)+' ('+esc(t.stop_basis)+') · <span class="lbl">T1</span> '+esc(t.t1)+' · <span class="lbl">T2</span> '+esc(t.t2)+' · <span class="lbl">R:R</span> '+esc(t.rr_t2)+' · <span class="lbl">size</span> '+esc(t.size_band)+'</div>'
+      +_statGrid([{l:'OR',v:esc(t.or_low)+'\u2013'+esc(t.or_high)},{l:'entry',v:esc(t.entry)},{l:'stop',v:esc(t.stop)+' <span class="gmut">('+esc(t.stop_basis)+')</span>',t:esc(t.stop_basis)},{l:'T1',v:esc(t.t1)},{l:'T2',v:esc(t.t2)},{l:'R:R',v:esc(t.rr_t2)},{l:'size',v:esc(t.size_band)}])
       +'<div class="edu" style="font-size:11px;color:var(--mut)">filters: trend '+chip(f.trend&&f.trend.pass)+' · not-extended '+chip(f.not_extended&&f.not_extended.pass)+' · range '+chip(f.range_quality&&f.range_quality.pass)+' · RS '+chip(f.rs&&f.rs.pass)+' · regime '+chip(f.regime&&f.regime.pass)
       +' · <span class="lbl">regime</span> '+esc(t.regime_at_signal)+' · <span class="lbl">RS126</span> '+esc(t.rs_daily)+'</div></div>';
   });
@@ -2683,7 +2687,7 @@ function orbFuturesPanel(){
     body+='<div class="setup" style="margin-top:7px"><div class="stk">'+esc(t.micro)+' ('+esc(t.data)+') '+esc(t.side)
       +' <span style="font-weight:800;color:'+tagCol+'">'+esc(tag)+'</span> <span class="gmut" style="font-weight:400">@ '+esc(t.trigger_time)+' · '+esc(t.vol_mult)+'x vol · DELAYED</span></div>'
       +'<div class="params" style="font-size:12px"><span class="lbl">OR</span> '+esc(t.or_window_et)+' '+esc(t.or_low)+'–'+esc(t.or_high)+wf
-      +' · <span class="lbl">entry</span> '+esc(t.entry)+' · <span class="lbl">stop</span> '+esc(t.stop)+' ('+esc(t.stop_basis)+') · <span class="lbl">T1</span> '+esc(t.t1)+' · <span class="lbl">T2</span> '+esc(t.t2)+' · <span class="lbl">R:R</span> '+esc(t.rr_t2)+' · <span class="lbl">size</span> '+esc(t.size_band)+'</div>'
+      +'</div>'+_statGrid([{l:'entry',v:esc(t.entry)},{l:'stop',v:esc(t.stop)+' <span class="gmut">('+esc(t.stop_basis)+')</span>',t:esc(t.stop_basis)},{l:'T1',v:esc(t.t1)},{l:'T2',v:esc(t.t2)},{l:'R:R',v:esc(t.rr_t2)},{l:'size',v:esc(t.size_band)}])
       +'<div class="edu" style="font-size:11px;color:var(--mut)">filters: bias '+chip(f.trend&&f.trend.pass)+' · regime '+chip(f.regime&&f.regime.pass)+' · range '+chip(f.range_quality&&f.range_quality.pass)+' · not-ext '+chip(f.not_extended&&f.not_extended.pass)
       +' · <span class="lbl">regime</span> '+esc(t.regime_at_signal)+' · <span class="lbl">daily bias</span> '+esc(t.daily_bias)+'</div></div>';
   });
