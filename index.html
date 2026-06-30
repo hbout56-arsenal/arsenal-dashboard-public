@@ -2034,6 +2034,8 @@ const WaveChart=(function(){
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
     const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
     const Y=p=>PADT+(hi-p)/(hi-lo)*plotH;
+    const _yreg=[]; function placeY(yd){ var y=yd,G=14,g=0; while(_yreg.some(function(r){return Math.abs(r-y)<G;})&&g<60){ var st=Math.ceil((g+1)/2)*G; y=yd+((g%2)?-st:st); g++; } _yreg.push(y); return y; }
+    function _conn(yd,y,col){ if(Math.abs(y-yd)<=2)return; ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle=col;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(W-PADR-3,yd);ctx.lineTo(W-PADR-3,y);ctx.stroke();ctx.restore(); }
     // grid + right price axis
     ctx.font="12px ui-monospace,SFMono-Regular,Menlo,monospace"; ctx.textBaseline="middle"; ctx.textAlign="left";
     for(let g=0;g<=5;g++){const pr=lo+(hi-lo)*g/5,y=Y(pr);ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke();ctx.fillStyle=C.mut||C.ink;ctx.fillText(pr.toFixed(1),W-PADR+5,y);}
@@ -2042,7 +2044,7 @@ const WaveChart=(function(){
     const ticks=Math.min(6,n); for(let k=0;k<ticks;k++){const i=Math.round(k*(n-1)/(ticks-1||1));const x=X(i);ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(x,PADT);ctx.lineTo(x,H-PADB);ctx.stroke();ctx.fillStyle=C.mut||C.axis;ctx.font="11px ui-monospace,monospace";ctx.fillText(fmtT(B[i].t),Math.max(18,Math.min(W-PADR-18,x)),H-6);}
     ctx.textAlign="left";
     function hline(price,color,label,dash){const y=Y(price);ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.setLineDash(dash||[]);ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke();ctx.setLineDash([]);
-      ctx.fillStyle=color;ctx.font="bold 11px ui-monospace,monospace";const t=label;const tw=ctx.measureText(t).width;ctx.fillStyle="rgba(0,0,0,.74)";ctx.fillRect(W-PADR-tw-9,y-9,tw+8,18);ctx.fillStyle=color;ctx.fillText(t,W-PADR-tw-4,y+4);ctx.restore();}
+      ctx.fillStyle=color;ctx.font="bold 11px ui-monospace,monospace";const t=label;const tw=ctx.measureText(t).width;var ly=placeY(y);_conn(y,ly,color);ctx.fillStyle="rgba(0,0,0,.74)";ctx.fillRect(W-PADR-tw-9,ly-9,tw+8,18);ctx.fillStyle=color;ctx.fillText(t,W-PADR-tw-4,ly+4);ctx.restore();}
     // FVG bands behind candles
     let shown=[]; if(layers.fvg&&fvg&&Array.isArray(fvg.fvgs)&&fvg.fvgs.length){fvg.fvgs.forEach(g=>{if(g.top==null||g.bottom==null)return;ctx.fillStyle=g.mitigated?C.fvgM:C.fvgU;ctx.fillRect(PADL,Y(g.top),plotW,Math.max(1,Y(g.bottom)-Y(g.top)));shown.push("FVG");});}
     // candles
@@ -2109,7 +2111,7 @@ const WaveChart=(function(){
         const ly=Y(lineY(L,0)); ctx.font=(val?"bold ":"")+"10px -apple-system"; const tw=ctx.measureText(lab).width;
         ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(PADL+1,ly-12,tw+6,14); ctx.fillStyle="rgba("+base+",1)"; ctx.fillText(lab,PADL+4,ly-2);
         // right-edge price label — where the line is at the end of the chart
-        const _rp=lineY(L,n-1),_rpy=Y(_rp),_rpl=_rp.toFixed(2); ctx.font="bold 9px ui-monospace,monospace"; const _rpw=ctx.measureText(_rpl).width;
+        const _rp=lineY(L,n-1),_rpy0=Y(_rp),_rpl=_rp.toFixed(2); ctx.font="bold 9px ui-monospace,monospace"; const _rpw=ctx.measureText(_rpl).width; var _rpy=placeY(_rpy0); _conn(_rpy0,_rpy,"rgba("+base+",1)");
         ctx.fillStyle="rgba(0,0,0,.66)"; ctx.fillRect(W-PADR-_rpw-7,_rpy-7,_rpw+6,14); ctx.fillStyle="rgba("+base+",1)"; ctx.textAlign="right"; ctx.fillText(_rpl,W-PADR-3,_rpy+3.5); ctx.textAlign="left";
         if(L.break&&!L.break.poke_only){ const by=Y(L.break.line_at),up=L.break.direction==="up"; const t2="\u26a1 broke "+L.break.direction+" \u00b7 close-confirmed"; ctx.font="bold 9px -apple-system"; const w2=ctx.measureText(t2).width; const bx=W-PADR-w2-7; ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(bx-2,by+(up?-15:3),w2+6,14); ctx.fillStyle="rgba("+base+",1)";ctx.fillText(t2,bx+1,by+(up?-4:13)); }
         ctx.restore();
@@ -2137,7 +2139,7 @@ const WaveChart=(function(){
         if(!isNaN(es)){ px=es; if(age<10){tag="LIVE";pcol=C.up;} else {tag="STALE";pcol=C.axis;} } }
       if(px==null&&n){ px=B[n-1].c; tag="DELAYED"; pcol=C.alt; }
       if(layers.priceline&&px!=null){ const y=Y(px); ctx.save(); ctx.globalAlpha=.4; ctx.strokeStyle=pcol; ctx.lineWidth=0.8; ctx.setLineDash([2,5]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
-        ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(W-PADR-tw-7,y-7,tw+6,14); ctx.fillStyle=pcol; ctx.globalAlpha=.92; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,y+3); ctx.textAlign="left"; ctx.restore(); } })();
+        ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; var ply=placeY(y); _conn(y,ply,pcol); ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(W-PADR-tw-7,ply-7,tw+6,14); ctx.fillStyle=pcol; ctx.globalAlpha=.92; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,ply+3); ctx.textAlign="left"; ctx.restore(); } })();
     if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
     // freshness + layer status
     const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed,_tag=dly?"DELAYED":(inst==="es"?"LIVE":"EOD");fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+_tag+'</span> '+esc(bars.contract||bars.symbol||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon · delayed/EOD — ToS for live ticks)';}
