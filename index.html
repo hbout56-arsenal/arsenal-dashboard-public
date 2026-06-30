@@ -346,6 +346,7 @@
       <div class="toptab" data-v="prices">Prices</div>
       <div class="toptab" data-v="futures">Futures</div>
       <div class="toptab" data-v="stocks">Stocks/Swing</div>
+      <div class="toptab" data-v="auction">Auction</div>
     </div>
     <div class="navgroup"><span class="navlabel">Desk</span>
       <div class="toptab" data-v="account">$15K / Risk</div>
@@ -354,6 +355,8 @@
   </div>
 
   <div id="audit" hidden><div id="audit-content"><div class="loading">Loading…</div></div></div>
+
+  <div id="auction" hidden><div id="auction-content"><div class="loading">Loading…</div></div></div>
 
   <div id="performance" hidden>
     <div id="performance-content"><div class="loading">Loading…</div></div>
@@ -1978,7 +1981,7 @@ const WaveChart=(function(){
     const el=document.getElementById("wavechart-content");
     if(!bars||!Array.isArray(bars.bars)||!bars.bars.length){
       if(inst==="stk"&&!stockTicker){ el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+'<div class="card">Select a screener pick above to build its DAILY wave chart (swing-degree, on demand).</div>'+(explain?waveGlossary():''); wireControls(); return; }
-      const _nm=(stockTicker||inst.toUpperCase()); const _msg=(wave&&wave.status==="no_read")?("No clean count for "+_nm+" "+tf+" \u2014 analyzer couldn\u2019t resolve a structure (thin history?)."):("Wave data not published for "+_nm+" "+tf+".");
+      const _nm=(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase()); const _msg=(wave&&wave.status==="no_read")?("No clean count for "+_nm+" "+tf+" \u2014 analyzer couldn\u2019t resolve a structure (thin history?)."):("Wave data not published for "+_nm+" "+tf+".");
       el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+tfSwitcher()+'<div class="card">'+_msg+'</div>'+(explain?waveGlossary():''); wireControls(); return;
     }
     const ch=Math.max(320, Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)));
@@ -2493,6 +2496,83 @@ function _statGrid(pairs,cols){ var c=cols||3; var ps=pairs.filter(function(p){r
     return '<div style="border:1px solid var(--gbrd);border-radius:8px;padding:4px 8px;background:rgba(255,255,255,.02);min-width:0"><div style="font-size:8px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.l+'</div><div style="font-size:12px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(p.t||'')+'">'+p.v+'</div></div>';
   }).join('')+'</div>';
 }
+const Auction=(function(){
+  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff",dim:"#5a6678",poc:"#ffcf6b"};
+  let inst="es",stockTicker=null,picks=null;
+  function pre(){ return inst==="stk"?("stk_"+stockTicker):inst; }
+  function instSwitcher(){
+    const I=[["es","ES"],["gc","GC"],["cl","CL"],["stk","Stock"]];
+    let h='<div class="tabs" style="margin-bottom:6px">'+I.map(x=>'<div class="tab'+(x[0]===inst?" active":"")+'" data-auinst="'+x[0]+'">'+x[1]+'</div>').join("")+'</div>';
+    if(inst==="stk"){ const ps=(picks&&picks.picks)||[];
+      if(!ps.length) h+='<div class="src" style="margin:2px 0 8px;color:var(--mut)">No screener picks currently — nothing to read.</div>';
+      else h+='<select data-austock style="width:100%;padding:8px;margin:2px 0 6px;background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--gbrd);border-radius:8px;font-size:13px"><option value="">— select a pick —</option>'+ps.map(p=>'<option value="'+esc(p.ticker)+'"'+(stockTicker===p.ticker?" selected":"")+'>'+esc(p.ticker)+' · '+esc(p.bucket)+'</option>').join("")+'</select>';
+    }
+    return h;
+  }
+  function lvnZones(vp){ const b=vp.bins||[]; if(!b.length)return []; const avg=b.reduce((a,c)=>a+(c.v||0),0)/b.length; const vaw=(vp.vah-vp.val)||1; const out=[]; let run=null;
+    for(let i=0;i<b.length;i++){ if((b[i].v||0)<avg*0.35){ if(!run)run={lo:b[i].p,hi:b[i].p}; else run.hi=b[i].p; } else { if(run){out.push(run);run=null;} } } if(run)out.push(run);
+    return out.filter(function(z){ var mid=(z.lo+z.hi)/2,w=z.hi-z.lo; return w<=vaw*0.6 && mid>=vp.val-vaw*0.7 && mid<=vp.vah+vaw*0.7; }); }
+  function nearest(arr,px,dir){ const c=(arr||[]).filter(v=>dir>0?v>px:v<px).sort((a,b)=>dir>0?a-b:b-a); return c.length?c[0]:null; }
+  function vpSpark(vp,px){ const b=vp.bins||[]; if(!b.length)return ""; const mx=Math.max.apply(null,b.map(x=>x.v||0))||1; const lo=b[0].p,hi=b[b.length-1].p; const W=300,H=120; const y=p=>H-(p-lo)/((hi-lo)||1)*H;
+    const rects=b.map(x=>{const wd=(x.v||0)/mx*W*0.55; const yy=y(x.p); const inVA=(x.p>=vp.val&&x.p<=vp.vah); return '<rect x="0" y="'+(yy-1).toFixed(1)+'" width="'+wd.toFixed(1)+'" height="2.4" fill="'+(inVA?'rgba(110,168,255,.5)':'rgba(139,151,171,.3)')+'"/>';}).join("");
+    const ln=(v,col,w,d)=>v==null?"":'<line x1="0" y1="'+y(v).toFixed(1)+'" x2="'+W+'" y2="'+y(v).toFixed(1)+'" stroke="'+col+'" stroke-width="'+w+'" stroke-dasharray="'+(d||'')+'"/>';
+    return '<div style="margin:7px 0 2px;border:1px solid var(--gbrd);border-radius:8px;padding:6px;background:rgba(255,255,255,.02)"><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:88px" preserveAspectRatio="none">'+rects+ln(vp.poc,C.poc,1.4,'')+ln(vp.vah,'rgba(110,168,255,.55)',0.8,'3,3')+ln(vp.val,'rgba(110,168,255,.55)',0.8,'3,3')+(px!=null?ln(px,C.pos,1,'2,2'):'')+'</svg><div class="src" style="font-size:9px;text-align:center;color:'+C.mut+'">VRVP · value-area tinted · POC gold · price green</div></div>';
+  }
+  function vpCard(vp,px,pxtag,delayed,liveOk){
+    const loc=(px==null)?"":(px>vp.vah?"above":(px<vp.val?"below":"inside")); const lvns=lvnZones(vp),hvns=vp.hvn||[];
+    let h='<div class="card"><div style="font-weight:750;font-size:13px">Volume profile — the auction'+(delayed?' <span class="schip delayed">DELAYED</span>':'')+'</div>';
+    h+=_statGrid([{l:'POC',v:vp.poc},{l:'VAH',v:vp.vah},{l:'VAL',v:vp.val},{l:'price',v:(px!=null?px.toFixed(2)+' <span class="gmut">'+pxtag+'</span>':'—')},{l:'where',v:(loc==="inside"?'inside value':(loc==="above"?'above VAH':(loc==="below"?'below VAL':'—')))}]);
+    if(px!=null){ let read;
+      if(loc==="inside") read='Price is <b>inside value</b> — accepted here. POC '+vp.poc+' is the magnet; VAH '+vp.vah+' / VAL '+vp.val+' are the edges.';
+      else if(loc==="above") read='Price is <b>above value</b> (VAH '+vp.vah+') — accepted higher / upper edge. '+(liveOk?'Building value above = acceptance; snap back inside = rejection.':'<span style="color:'+C.amber+'">(live acceptance read needs fresh ticks — use ToS)</span>');
+      else read='Price is <b>below value</b> (VAL '+vp.val+') — accepted lower / lower edge. '+(liveOk?'Holding below = acceptance; reclaim into value = rejection.':'<span style="color:'+C.amber+'">(live acceptance read needs fresh ticks — use ToS)</span>');
+      const ha=nearest(hvns,px,1),hb=nearest(hvns,px,-1);
+      h+='<div class="src" style="margin:5px 0;line-height:1.5">'+read+'</div>';
+      h+='<div class="src" style="line-height:1.5"><b>HVN</b> (magnets/stall): '+(ha?'above '+ha.toFixed(2):'—')+' · '+(hb?'below '+hb.toFixed(2):'—')+'. '+(lvns.length?'<b>LVN</b> (thin/fast-through): '+lvns.slice(0,2).map(z=>z.lo.toFixed(2)+(z.hi!==z.lo?'–'+z.hi.toFixed(2):'')).join(', '):'')+'</div>';
+    }
+    h+=vpSpark(vp,px);
+    h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">Naked/untested POCs not tracked by the engine — not shown (no fabrication). VP from real bar volume.</div>';
+    return h+'</div>';
+  }
+  function liqCard(ict,perf,px,liveOk,vp){
+    let h='<div class="card"><div style="font-weight:750;font-size:13px">Liquidity pools — ICT (ES)</div>';
+    if(!ict){ return h+'<div class="src" style="margin-top:3px">ict_state not published right now — not available.</div></div>'; }
+    let ictt=null; if(perf&&perf.systems&&perf.systems.ict){ const tr=perf.systems.ict.tracks||[]; ictt=tr.find(t=>/RAW/.test(t.track))||tr[0]; }
+    if(ictt){ const ci=ictt.exp_ci||[]; const cross=!((ci[0]||0)>0||(ci[1]||0)<0);
+      h+='<div style="border:1px dashed '+C.amber+';border-radius:7px;padding:6px 9px;margin:5px 0;color:'+C.amber+';font-size:11px;line-height:1.5">⚠ ICT trading track <b>'+esc(ictt.track)+'</b>: exp '+ictt.expectancy+'/trade · PF '+ictt.profit_factor+' · n '+ictt.n+' · CI ['+(ci[0]!=null?ci[0]:'—')+', '+(ci[1]!=null?ci[1]:'—')+']'+(cross?' crosses 0 = <b>UNPROVEN</b>':'')+'. Pools are WHERE stops rest — location, NOT "price will run there."</div>'; }
+    const pools=ict.untapped_pools_near||[];
+    if(!pools.length) h+='<div class="src">No untapped pools near price right now.</div>';
+    else h+=_dataTable([{t:'Side'},{t:'Price',a:'right'},{t:'Dist',a:'right'},{t:'@ VP node'}],pools.slice(0,8).map(p=>{ const tol=vp?(vp.vah-vp.val)*0.04:0; const atN=vp?[vp.poc,vp.vah,vp.val].concat(vp.hvn||[]).find(n=>Math.abs(n-p.price)<=tol):null;
+      return ['<span style="color:'+(p.kind==="buy-side"?C.neg:C.pos)+'">'+esc(p.kind)+'</span>',esc(p.price),(p.dist_pts!=null?((p.dist_pts>0?'+':'')+p.dist_pts):'—'),(atN?'<b style="color:'+C.amber+'">⚑ '+atN.toFixed(0)+'</b>':'—')]; }));
+    if(pools.some(p=>vp&&[vp.poc,vp.vah,vp.val].concat(vp.hvn||[]).some(n=>Math.abs(n-p.price)<=(vp.vah-vp.val)*0.04)))
+      h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">⚑ = a pool sitting AT a VP node — liquidity meets value = the higher-quality confluence (still location, not a signal).</div>';
+    if(ict.last_sweep) h+='<div class="src" style="margin-top:5px">Last sweep: pool '+esc(ict.last_sweep.pool)+' ('+esc(ict.last_sweep.dir)+') @ '+esc(ict.last_sweep.ts)+(ict.mss_state?(ict.mss_state.confirmed?' → MSS confirmed '+esc(ict.mss_state.opp_level):' → MSS pending'):'')+'. '+(liveOk?'':'<span style="color:'+C.amber+'">(historical — live sweep needs fresh ticks)</span>')+'</div>';
+    if(ict.bias) h+='<div class="src">Engine bias <b>'+esc(ict.bias)+'</b> · '+(ict.killzone_active?'killzone ACTIVE':'off-killzone')+'.</div>';
+    return h+'</div>';
+  }
+  function wire(){ document.querySelectorAll("[data-auinst]").forEach(b=>b.onclick=()=>{inst=b.getAttribute("data-auinst"); if(inst==="stk")stockTicker=null; load();});
+    const sel=document.querySelector("[data-austock]"); if(sel)sel.onchange=()=>{stockTicker=sel.value||null; load();}; }
+  async function load(){
+    const el=document.getElementById("auction-content"); el.innerHTML='<div class="loading">Loading…</div>';
+    let snap=null; try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){}
+    const age=(snap&&snap.pushed_at)?(Date.now()-Date.parse(snap.pushed_at))/60000:null; const fresh=(age!=null&&age<12);
+    try{ picks=await ghFetch("stk_picks.json"); }catch(e){}
+    let h=instSwitcher();
+    if(inst==="stk"&&!stockTicker){ el.innerHTML=h+'<div class="card">Select a screener pick above to read its auction (volume profile) — daily-degree, built on demand.</div>'; wire(); return; }
+    let bars=null; try{ bars=await ghFetch(pre()+"_bars_daily.json"); }catch(e){}
+    if(!bars||!bars.vp){ el.innerHTML=h+'<div class="card">Volume profile not available for <b>'+(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase())+'</b> right now (no published VP — nothing invented).</div>'; wire(); return; }
+    const vp=bars.vp, B=bars.bars||[]; let px=null,pxtag="DELAYED";
+    if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const es=parseFloat(snap.rows[snap.rows.length-1].es_last); if(!isNaN(es)){px=es;pxtag=fresh?"LIVE":"STALE";} }
+    if(px==null&&B.length){ px=B[B.length-1].c; pxtag=(inst==="stk"?"EOD":"DELAYED"); }
+    const liveOk=(inst==="es"&&fresh);
+    h+='<div class="card" style="border-left:3px solid '+(liveOk?C.pos:C.amber)+'"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:'+(liveOk?C.pos:C.amber)+'">⛲ Auction / Liquidity — '+(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase())+'</div><div class="src" style="margin-top:3px">VP = where price was ACCEPTED (value) · liquidity = where stops rest. Both are LOCATION context, not prophecy. SHADOW — the break of a level is the trigger, not this panel.</div><div class="src" style="margin-top:4px">Levels as of '+esc(bars.as_of||"?")+(liveOk?' · <b style="color:'+C.pos+'">LIVE</b> internals':' · <b style="color:'+C.amber+'">internals stale/delayed</b> — levels still useful (slow-moving); use ToS for live acceptance/sweeps')+'.</div></div>';
+    h+=vpCard(vp,px,pxtag,bars.delayed,liveOk);
+    if(inst==="es"){ let ict=null,perf=null; try{ict=await ghFetch("ict_state.json");}catch(e){} try{perf=await ghFetch("perf_summary.json");}catch(e){} h+=liqCard(ict,perf,px,liveOk,vp); }
+    else h+='<div class="card"><div style="font-weight:750;font-size:13px">Liquidity pools</div><div class="src" style="margin-top:3px">Not available for '+(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase())+' — the ICT pool engine runs on ES only (no fabricated pools).</div></div>';
+    el.innerHTML=h; wire();
+  }
+  return {load};
+})();
 function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
 function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
 function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
@@ -2507,6 +2587,7 @@ function showView(v){
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
   document.getElementById("active").hidden=(v!=="active");
   document.getElementById("audit").hidden=(v!=="audit");
+  document.getElementById("auction").hidden=(v!=="auction");
   document.getElementById("prices").hidden=(v!=="prices");
   document.getElementById("orb").hidden=(v!=="orb");
   document.getElementById("wavechart").hidden=(v!=="wavechart");
@@ -2518,7 +2599,7 @@ function showView(v){
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
   document.getElementById("journal").hidden=(v!=="journal");
-  const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
+  const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],auction:[Auction,"auction"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
     proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"]};
   const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
