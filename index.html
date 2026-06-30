@@ -33,6 +33,7 @@
       radial-gradient(48% 32% at 102% 8%, rgba(46,230,110,.07), transparent 60%),
       radial-gradient(60% 40% at 50% 102%, rgba(255,77,94,.06), transparent 60%);}
   .wrap{max-width:640px;margin:0 auto;padding:18px 16px 48px}
+  @media (orientation:landscape) and (max-height:600px){ .wrap{max-width:100%;padding:12px 22px 36px} }
   .head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
   h1{font-size:18px;font-weight:700;margin:0;letter-spacing:.2px;
      background:linear-gradient(90deg,#eaf1ff,#9fb6d9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
@@ -311,10 +312,13 @@
   [data-unit="$"]:not(.active){border:1px solid rgba(37,233,110,.5)!important;color:#7ee0a6!important}
   [data-unit="$"].active{background:linear-gradient(180deg,#2fd07a,#1f9d5a)!important;color:#06140c!important;box-shadow:0 0 0 1px rgba(37,233,110,.55),0 7px 18px -6px rgba(37,233,110,.6)!important}
   /* D78: collapsible cards — collapse a section, the rest reflow up to fill */
-  .collapsehead{cursor:pointer;position:relative;padding-right:22px!important}
-  .collapsehead::after{content:"\25be";position:absolute;right:3px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:12px;transition:transform .2s}
-  .card.collapsed > .collapsehead::after{transform:translateY(-50%) rotate(-90deg)}
-  .card.collapsed > *:not(.collapsehead){display:none!important}
+  .card{position:relative}
+  .collapsebtn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;border:1px solid var(--gbrd);background:var(--glass2);color:var(--mut);font-size:19px;font-weight:800;line-height:29px;text-align:center;cursor:pointer;user-select:none;z-index:4;transition:transform .25s cubic-bezier(.22,1,.36,1),background .2s,color .2s}
+  .collapsebtn:hover{background:rgba(255,255,255,.08);color:var(--ink);border-color:rgba(255,255,255,.18)}
+  .collapsed > .collapsebtn{transform:rotate(-90deg)}
+  .collapsed > *:not(:first-child):not(.collapsebtn){display:none!important}
+  .collapsed > :first-child{margin-bottom:0!important}
+  .collapsed{position:relative}
   /* D78: Audit approve/ignore */
   .audbtn{font-size:10.5px;font-weight:850;border-radius:7px;padding:5px 13px;cursor:pointer;user-select:none}
   .audbtn.ok{color:#06140c;background:linear-gradient(180deg,#2fd07a,#1f9d5a)}
@@ -2420,19 +2424,31 @@ const Audit=(function(){
   }
   return {load};
 })();
-function _enhanceCollapse(){ document.querySelectorAll('[id$="-content"], #active, #fut, #stk').forEach(function(cont){
-    Array.prototype.forEach.call(cont.children, function(card){
-      if(!card.classList||!card.classList.contains("card"))return;
-      var head=card.firstElementChild; if(!head||head.__cc)return;
-      if(card.querySelector("input,select,canvas,textarea"))return;       // never break interactive cards
-      if(((head.textContent)||"").trim().length<2)return;
-      if(head.querySelector("a,button,label,select,input,[data-unit],[data-explain],[data-perfperiod],[data-wclayer],[data-wctf],[data-wcinst],[data-wcstock],[data-audok],[data-audno]"))return; // header has controls -> not collapsible
-      head.__cc=true; head.classList.add("collapsehead");
-      head.addEventListener("click",function(ev){ if(ev.target.closest("a,button,label,input,select,.audbtn,[data-unit],[data-explain],[data-audok],[data-audno]"))return; card.classList.toggle("collapsed"); });
+var _CV='#active,#overview,#prices,#orb,#wavechart,#performance,#proscreen,#alerts,#account,#journal,#fut,#stk,#audit';
+function _addChevron(el){ if(el.__cb)return; el.__cb=true; if(getComputedStyle(el).position==='static')el.style.position='relative';
+    var head=el.firstElementChild; if(head&&head.style)head.style.paddingRight='40px';
+    var b=document.createElement('div'); b.className='collapsebtn'; b.textContent='\u25be'; b.setAttribute('title','collapse / expand');
+    b.addEventListener('click',function(e){ e.stopPropagation(); el.classList.toggle('collapsed'); }); el.appendChild(b); }
+  var _SKIP=/(^|\s)(alrow|row|almaster|newhint|hint|src|bigbal|acch|meta|legend|collapsebtn)(\s|$)/;
+function _enhanceCollapse(){
+    document.querySelectorAll('.card').forEach(function(card){                 // pass 1: every top-level card section
+      if(card.__cb)return; if(card.parentElement && card.parentElement.closest('.card'))return;
+      if(card.querySelector('canvas'))return; if(!card.closest(_CV))return; _addChevron(card);
     });
-  }); }
-function _initCollapse(){ document.querySelectorAll('[id$="-content"], #active, #fut, #stk').forEach(function(c){
-    try{ new MutationObserver(function(){ _enhanceCollapse(); }).observe(c,{childList:true}); }catch(e){} }); _enhanceCollapse(); }
+    document.querySelectorAll(_CV).forEach(function(view){                      // pass 2: tall non-card sections (legacy tabs)
+      var cont=view.querySelector('[id$="-content"]')||view;
+      Array.prototype.forEach.call(cont.children,function(el){
+        if(el.nodeType!==1||el.__cb)return;
+        if(el.classList.contains('card')||el.tagName==='DETAILS')return;        // cards handled; <details> already collapses
+        if(el.querySelector&&el.querySelector('canvas'))return;
+        if(_SKIP.test(' '+(el.className||'')+' '))return;                       // skip rows/toggles/hints
+        if(el.offsetHeight<120)return;                                          // only section-sized blocks
+        _addChevron(el);
+      });
+    });
+  }
+function _initCollapse(){ document.querySelectorAll(_CV).forEach(function(c){
+    try{ new MutationObserver(function(){ _enhanceCollapse(); }).observe(c,{childList:true,subtree:true}); }catch(e){} }); _enhanceCollapse(); }
 function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
 function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
 function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
@@ -2462,6 +2478,7 @@ function showView(v){
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
     proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"]};
   const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
+  if(typeof _enhanceCollapse==="function"){ setTimeout(_enhanceCollapse,60); setTimeout(_enhanceCollapse,420); }   // re-scan now-visible sections at real heights
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
 
