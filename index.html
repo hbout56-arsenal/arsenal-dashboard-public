@@ -1785,7 +1785,7 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff",nl:"#ff9e64"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true,tammy:false,tictoc:false};
+  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true,keltner:false,tammy:false,tictoc:false};
   let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,nl=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
@@ -1845,7 +1845,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"],["tammy","Tammy"],["tictoc","TicToc"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"],["keltner","Keltner"],["tammy","Tammy"],["tictoc","TicToc"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -2000,7 +2000,7 @@ const WaveChart=(function(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
     const _cl=document.querySelector("[data-wcclear]"); if(_cl)_cl.onclick=()=>{Object.keys(layers).forEach(k=>layers[k]=false); if(typeof maOn==="object")Object.keys(maOn).forEach(k=>maOn[k]=false); render();};
-    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,tammy:false,tictoc:false}); render();};
+    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,keltner:false,tammy:false,tictoc:false}); render();};
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
     document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
     const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
@@ -2041,10 +2041,13 @@ const WaveChart=(function(){
     // and its zone+invalidation are force-included in the y-range so it isn't vertically clipped.
     const _projOK=s=>(s&&s.projection&&s.projection.status==="ok");
     const projActive=layers.projection&&wave&&(_projOK(wave.primary)||(layers.alt&&_projOK(wave.alternative)));
+    const _tlOK=wave&&wave.trendlines&&wave.trendlines.status==="ok";
+    const lineExtend=_tlOK&&((layers.regress&&wave.trendlines.regression)||(layers.trend&&(wave.trendlines.auto||[]).length)||(layers.channel&&(wave.trendlines.auto||[]).length));
     if(projActive){ [wave.primary, layers.alt&&wave.alternative].forEach(function(sd){ if(_projOK(sd)){ hi=Math.max(hi,sd.projection.zone[0],sd.projection.zone[1]); lo=Math.min(lo,sd.projection.zone[0],sd.projection.zone[1]); if(sd.invalidation&&sd.invalidation.level!=null){hi=Math.max(hi,sd.invalidation.level);lo=Math.min(lo,sd.invalidation.level);} } }); }
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
-    const futurePad=projActive?Math.min(plotW*0.26,140):0;          // empty space right of the last candle for the projection
+    const futurePad=(projActive||lineExtend)?Math.min(plotW*0.26,140):Math.min(plotW*0.07,46);   // always a small right margin; bigger when projection/trend/regress/channel are active
     const X=i=>PADL+(n<=1?(plotW-futurePad)/2:(i/(n-1))*(plotW-futurePad));
+    const iEdge=futurePad>0?((n-1)*plotW/(plotW-futurePad)):(n-1);   // bar index at the right edge (extend straight lines into the pad)
     const Y=p=>PADT+(hi-p)/(hi-lo)*plotH;
     const _yreg=[]; function placeY(yd){ var y=yd,G=14,g=0; while(_yreg.some(function(r){return Math.abs(r-y)<G;})&&g<60){ var st=Math.ceil((g+1)/2)*G; y=yd+((g%2)?-st:st); g++; } _yreg.push(y); return y; }
     function _conn(yd,y,col){ if(Math.abs(y-yd)<=2)return; ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle=col;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(W-PADR-3,yd);ctx.lineTo(W-PADR-3,y);ctx.stroke();ctx.restore(); }
@@ -2100,6 +2103,17 @@ const WaveChart=(function(){
       const seg=ser.slice(view.start,view.start+n); ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1; ctx.globalAlpha=.8; if(isSma)ctx.setLineDash([3,3]); ctx.beginPath(); let st=false;
       for(let i=0;i<n;i++){ const v=seg[i]; if(v==null){st=false;continue;} const x=X(i),y=Y(v); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; ctx.restore(); }
     Object.keys(maOn).forEach(k=>{ if(maOn[k]) drawMA(k); });
+    // KELTNER CHANNEL — EMA(20) basis ± 2×ATR(14). Volatility envelope (visual context, not a signal).
+    if(layers.keltner){ const basisSer=(bars.mas&&(bars.mas.ema20||bars.mas.ema21)); if(basisSer){ const bas=basisSer.slice(view.start,view.start+n);
+      const tr=[]; for(let i=0;i<B.length;i++){ tr.push(i===0?(B[i].h-B[i].l):Math.max(B[i].h-B[i].l,Math.abs(B[i].h-B[i-1].c),Math.abs(B[i].l-B[i-1].c))); }
+      const atr=[]; for(let i=0;i<tr.length;i++){ const p=Math.min(14,i+1); let sum=0; for(let j=i-p+1;j<=i;j++)sum+=tr[j]; atr.push(sum/p); }
+      const KMULT=2, KC="120,210,190";
+      [[1,"rgba("+KC+",.55)"],[-1,"rgba("+KC+",.55)"],[0,"rgba("+KC+",.85)"]].forEach(function(bd){
+        ctx.save();ctx.strokeStyle=bd[1];ctx.lineWidth=bd[0]===0?1:1.1;if(bd[0]!==0)ctx.setLineDash([4,3]);ctx.beginPath();let st=false;
+        for(let i=0;i<n;i++){ const v=bas[i]; if(v==null){st=false;continue;} const y=Y(v+bd[0]*KMULT*atr[i]); st?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y); st=true; }
+        ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
+      ctx.save();ctx.fillStyle="rgba("+KC+",.9)";ctx.font="9px -apple-system";const yl=Y(bas[n-1]+KMULT*atr[n-1]);ctx.fillText("Keltner EMA20\u00b12ATR",PADL+3,(isNaN(yl)?PADT+10:yl)-3);ctx.restore();
+      shown.push("Keltner"); } }
     // subwaves (one degree, subordinate) — only when toggled
     if(layers.subwaves&&wave){ [wave.primary, layers.alt?wave.alternative:null].forEach(function(side){ if(!side||!side.subwaves)return;
       side.subwaves.forEach(function(leg){ const sp=(leg.points||[]).map(p=>({label:p.label,price:p.price,pos:inView(p.t)})).filter(p=>p.pos!=null); if(!sp.length)return;
@@ -2112,14 +2126,14 @@ const WaveChart=(function(){
       if(layers.regress&&TL.regression){ const R=TL.regression; function ry(i){ return R.at_first + R.slope*((view.start+i) - R.n_first); }
         [[2,"rgba(156,195,255,.16)",1,true],[-2,"rgba(156,195,255,.16)",1,true],[1,"rgba(156,195,255,.30)",1,true],[-1,"rgba(156,195,255,.30)",1,true],[0,"rgba(156,195,255,.85)",1.5,false]].forEach(function(bd){
           ctx.save();ctx.strokeStyle=bd[1];ctx.lineWidth=bd[2];if(bd[3])ctx.setLineDash([3,3]);ctx.beginPath();
-          for(let i=0;i<n;i++){const y=Y(ry(i)+bd[0]*R.sigma); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
+          for(let i=0;i<n;i++){const y=Y(ry(i)+bd[0]*R.sigma); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} if(iEdge>n-1)ctx.lineTo(X(iEdge),Y(ry(iEdge)+bd[0]*R.sigma)); ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
         if(R.extended){ ctx.save();ctx.fillStyle="rgba(156,195,255,.95)";ctx.font="bold 10px -apple-system";ctx.fillText("regression "+R.extended+" \u2014 stretched",PADL+3,Y(ry(0))-5);ctx.restore(); }
         shown.push("Regress"); }
       if(layers.trend&&Array.isArray(TL.auto)){ TL.auto.forEach(function(L){
         const sup=L.kind==="support", base=sup?"63,208,122":"240,97,109", val=L.validated;
         ctx.save(); ctx.strokeStyle="rgba("+base+","+(val?0.95:0.45)+")"; ctx.lineWidth=val?1.8:1; ctx.setLineDash(val?[]:[5,4]);
-        ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke(); ctx.setLineDash([]);
-        if(layers.channel&&L.channel){ const off=L.channel.opp_at_last-L.at_last; ctx.globalAlpha=.5; ctx.setLineDash([2,3]); ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)+off); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; }
+        ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} if(iEdge>n-1)ctx.lineTo(X(iEdge),Y(lineY(L,iEdge))); ctx.stroke(); ctx.setLineDash([]);
+        if(layers.channel&&L.channel){ const off=L.channel.opp_at_last-L.at_last; ctx.globalAlpha=.5; ctx.setLineDash([2,3]); ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)+off); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} if(iEdge>n-1)ctx.lineTo(X(iEdge),Y(lineY(L,iEdge)+off)); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; }
         const lab=(val?("\u2713 "+L.touches+" touches"):(L.touches+" touches \u00b7 prov"))+(L.with_filter===true?" \u00b7 w/trend":(L.with_filter===false?" \u00b7 counter":""));
         const ly=Y(lineY(L,0)); ctx.font=(val?"bold ":"")+"10px -apple-system"; const tw=ctx.measureText(lab).width;
         ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(PADL+1,ly-12,tw+6,14); ctx.fillStyle="rgba("+base+",1)"; ctx.fillText(lab,PADL+4,ly-2);
