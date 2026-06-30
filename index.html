@@ -1785,7 +1785,7 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff",nl:"#ff9e64"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true,newsletter:true};
+  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true,tammy:false,tictoc:false};
   let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,nl=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
@@ -1845,7 +1845,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"],["newsletter","Newsletter"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"],["tammy","Tammy"],["tictoc","TicToc"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -2000,7 +2000,7 @@ const WaveChart=(function(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
     const _cl=document.querySelector("[data-wcclear]"); if(_cl)_cl.onclick=()=>{Object.keys(layers).forEach(k=>layers[k]=false); if(typeof maOn==="object")Object.keys(maOn).forEach(k=>maOn[k]=false); render();};
-    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,newsletter:true}); render();};
+    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,tammy:false,tictoc:false}); render();};
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
     document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
     const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
@@ -2035,7 +2035,7 @@ const WaveChart=(function(){
     // include visible wave point prices in scale
     [wave&&wave.primary,wave&&layers.alt&&wave.alternative].forEach(s=>{ if(s&&s.points)s.points.forEach(p=>{if(inView(p.t)!=null)ext.push(p.price);}); });
     [wave&&wave.primary,wave&&wave.alternative].forEach(s=>{ if(layers.projection&&s&&s.projection&&s.projection.status==="ok"){ext.push(s.projection.zone[0]);ext.push(s.projection.zone[1]);} });
-    if(layers.newsletter&&inst==="es"&&Array.isArray(nl))nl.forEach(function(l){ if(l.level!=null)ext.push(l.level); });
+    if(inst==="es"&&Array.isArray(nl))nl.forEach(function(l){ if(l.level!=null&&((l.src==="Tammy"&&layers.tammy)||(l.src==="TicToc"&&layers.tictoc)))ext.push(l.level); });
     ext.forEach(v=>{ if(v>hi&&v<hi+(hi-lo))hi=v; if(v<lo&&v>lo-(hi-lo))lo=v; });
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
     const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
@@ -2060,7 +2060,7 @@ const WaveChart=(function(){
     if(layers.liquidity&&ict&&Array.isArray(ict.untapped_pools_near)&&ict.untapped_pools_near.length){ict.untapped_pools_near.forEach(pl=>{const pr=pl.price!=null?pl.price:pl.level;if(pr==null)return;hline(pr,C.liq,(pl.side||"pool")+" "+tnum(pr));shown.push("Liquidity");});}
     if(layers.vp&&verdict){["vah","val","poc"].forEach(k=>{let v=verdict[k];if(v==null&&verdict.vp)v=verdict.vp[k];if(v!=null){hline(v,C.vp,k.toUpperCase()+" "+tnum(v));shown.push("VP");}});}
     if(layers.fib&&verdict&&Array.isArray(verdict.fib_levels)){verdict.fib_levels.forEach(f=>{if(f.price!=null){hline(f.price,C.fib,(f.label||"fib")+" "+tnum(f.price),[2,2]);shown.push("Fib");}});}
-    if(layers.newsletter&&inst==="es"&&Array.isArray(nl)&&nl.length){nl.forEach(function(l){if(l.level==null)return;hline(l.level,C.nl,l.src+" "+esc(l.role)+" "+tnum(l.level),[6,3]);shown.push("Newsletter");});}
+    if(inst==="es"&&Array.isArray(nl)&&nl.length){nl.forEach(function(l){if(l.level==null)return; var on=(l.src==="Tammy"&&layers.tammy)||(l.src==="TicToc"&&layers.tictoc); if(!on)return; ctx.save(); ctx.globalAlpha=.5; ctx.strokeStyle=(l.src==="Tammy"?C.nl:"#7aa2ff"); ctx.lineWidth=0.7; ctx.setLineDash([1,5]); var yy=Y(l.level); ctx.beginPath();ctx.moveTo(PADL,yy);ctx.lineTo(W-PADR,yy);ctx.stroke(); ctx.setLineDash([]); ctx.font="8px ui-monospace,monospace"; ctx.fillStyle=(l.src==="Tammy"?C.nl:"#7aa2ff"); ctx.globalAlpha=.85; ctx.textAlign="left"; ctx.fillText((l.src==="Tammy"?"T":"TT")+":"+esc((l.role||"").slice(0,3))+" "+tnum(l.level), PADL+3, yy-2); ctx.textAlign="left"; ctx.restore(); shown.push(l.src);});}
     // waves with badge labels
     function badge(x,y,lbl,prim){ctx.beginPath();ctx.arc(x,y,10,0,7);if(prim){ctx.fillStyle=C.pri;ctx.fill();ctx.fillStyle=C.priText;}else{ctx.fillStyle="rgba(11,15,23,.85)";ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=C.alt;ctx.stroke();ctx.fillStyle=C.alt;}ctx.font="bold 12px -apple-system,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lbl,x,y+.5);ctx.textAlign="left";ctx.textBaseline="alphabetic";}
     function drawWave(side,prim){ if(!side)return; const pts=(side.points||[]).map(p=>({...p,pos:inView(p.t)})).filter(p=>p.pos!=null).sort((a,b)=>a.pos-b.pos);
@@ -2145,7 +2145,7 @@ const WaveChart=(function(){
       if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
         if(!isNaN(es)){ px=es; if(age<10){tag="LIVE";pcol=C.up;} else {tag="STALE";pcol=C.axis;} } }
       if(px==null&&n){ px=B[n-1].c; tag="DELAYED"; pcol=C.alt; }
-      if(layers.priceline&&px!=null){ const y=Y(px); ctx.save(); ctx.globalAlpha=.4; ctx.strokeStyle=pcol; ctx.lineWidth=0.8; ctx.setLineDash([2,5]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+      if(layers.priceline&&px!=null){ const y=Y(px); ctx.save(); ctx.globalAlpha=.75; ctx.strokeStyle=pcol; ctx.lineWidth=1.4; ctx.setLineDash([4,3]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
         ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; var ply=placeY(y); _conn(y,ply,pcol); ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(W-PADR-tw-7,ply-7,tw+6,14); ctx.fillStyle=pcol; ctx.globalAlpha=.92; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,ply+3); ctx.textAlign="left"; ctx.restore(); } })();
     if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
     // freshness + layer status
@@ -2223,6 +2223,19 @@ const Perf=(function(){
     return '<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 2px">Distribution / trade — lopsided = one fluke</div>'
       +'<div style="display:flex;align-items:flex-end;gap:1px;height:32px">'+hh.counts.map((c,i)=>'<div style="flex:1;background:'+(i<zb?C.neg:C.pos)+';opacity:.7;height:'+Math.max(2,c/mx*32)+'px;border-radius:1px 1px 0 0"></div>').join("")+'</div>'
       +'<div class="gmut" style="display:flex;justify-content:space-between;font-size:8px;margin-top:1px"><span>'+hh.lo+' pts</span><span>0</span><span>+'+hh.hi+' pts</span></div>'; }
+  function gaugeBlock(t){ var g=t.gauge; if(!g||!g.trades||!g.trades.length) return "";
+    var money=function(v){return (v>=0?'+$':'−$')+Math.abs(Math.round(v)).toLocaleString();};
+    var mx=Math.max.apply(null,g.trades.map(function(x){return Math.abs(x);}))||1;
+    var strip='<div style="display:flex;align-items:stretch;gap:1px;height:46px;margin:6px 0">'+g.trades.map(function(x){var hp=Math.max(2,Math.abs(x)/mx*21);return '<div title="'+money(x)+'" style="flex:1;display:flex;flex-direction:column">'+'<div style="height:23px;display:flex;align-items:flex-end"><div style="width:100%;height:'+(x>0?hp:0)+'px;background:'+C.pos+';opacity:.85;border-radius:1px 1px 0 0"></div></div>'+'<div style="height:23px;display:flex;align-items:flex-start"><div style="width:100%;height:'+(x<0?hp:0)+'px;background:'+C.neg+';opacity:.85;border-radius:0 0 1px 1px"></div></div></div>';}).join("")+'</div>';
+    return '<details style="margin-top:8px;border:1px solid var(--gbrd);border-radius:8px;padding:7px 10px;background:rgba(255,255,255,.015)">'
+      +'<summary style="cursor:pointer;font-size:11.5px;font-weight:750;color:var(--ink);list-style:none">▸ Trades sized — '+esc(g.size_label)+' <span class="gmut" style="font-weight:400">· tap to see every winner & loser</span></summary>'
+      +'<div style="margin-top:7px">'
+      +_statGrid([{l:'net ('+g.n+' trades)',v:money(g.net_total)},{l:'avg win',v:'+$'+Math.round(g.avg_win).toLocaleString()},{l:'avg loss',v:'−$'+Math.abs(Math.round(g.avg_loss)).toLocaleString()},{l:'biggest win',v:'+$'+Math.round(g.largest_win).toLocaleString()},{l:'biggest loss',v:'−$'+Math.abs(Math.round(g.largest_loss)).toLocaleString()},{l:'payoff',v:(g.payoff==null?'—':g.payoff)}],3)
+      +'<div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px;margin:8px 0 0">Each trade ($, last '+g.trades.length+') — green↑ winner, red↓ loser, height = size</div>'
+      +strip
+      +'<div class="gmut" style="font-size:9px;margin-top:2px">'+g.n_win+' winners / '+g.n_loss+' losers · SIMULATED at a FIXED '+esc(g.size_label)+' — a yardstick to gauge magnitude, not a position size.</div>'
+      +'</div></details>';
+  }
   function usdBlock(S){ const t=S.tracks[0]||{},u=t.usd;
     let h='<div style="font-size:9px;color:#ffcf6b;border:1px dashed #ffcf6b;border-radius:6px;padding:5px 8px;margin:2px 0 7px">'+esc(u?u.convention:"SIMULATED fixed-size $")+'</div>';
     if(!u){ return h+'<div class="gmut" style="font-size:10.5px">No $ — instrument not tagged (points only).</div>'; }
@@ -2231,6 +2244,7 @@ const Perf=(function(){
     h+=winLossBar(u)+dollarExpBar(u)+statChips(u)+histBars(t);
     h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 2px">$ equity curve (cum, SIMULATED)</div>'+equitySVG(u.equity);
     h+='<div class="src" style="margin-top:5px;color:'+dcol+';font-weight:600">'+esc(t.usd_shape_line)+'</div>';
+    h+=gaugeBlock(t);
     return h; }
   function periodSel(){ const o=[["all","All"],["90d","3M"],["30d","1M"],["7d","1W"],["1d","1D"]]; return '<div class="tabs" style="margin-bottom:8px">'+o.map(x=>'<div class="tab'+(x[0]===period?" active":"")+'" data-perfperiod="'+x[0]+'">'+x[1]+'</div>').join("")+'</div><div class="src" style="margin:-3px 0 9px;font-size:10px;color:var(--mut)">timeline = each track\u2019s own last window (short windows \u2192 small n \u2192 DESCRIPTIVE; honest)</div>'; }
   async function load(){
@@ -2689,7 +2703,7 @@ const TicToc=(function(){
     if(lvls) h+='<div style="font-size:12.5px;margin-top:'+(zrows.length?'6px':'0')+'"><b>Levels he cited:</b> '+esc(lvls)+'</div>';
     h+='<div style="margin-top:6px;font-size:12.5px"><b>Targets:</b> '+((s.targets&&s.targets.length)?s.targets.join(", "):'<span class="gmut">none given</span>')+'</div>';
     if(s.context) h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">"'+esc(s.context)+'"</div>';
-    h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">No stop — set your own at structure. R:R depends on your stop.</div>';
+    if(s.params){ var p=s.params; h+='<div style="margin-top:6px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">Trade plan '+(p.computed?'<span style="color:'+C.amber+'">· stop/target computed by Arsenal (he gave none)</span>':'<span style="color:'+C.pos+'">· all his\u2019s</span>')+'</div>'; h+=_statGrid([{l:'entry (trigger)',v:p.entry},{l:'stop',v:p.stop},{l:'R:R',v:(p.rr==null?'\u2014':p.rr)}],3); h+='<div style="font-size:12px;margin-top:5px"><b>Targets:</b> '+(p.targets||[]).join(', ')+'</div>'; h+='<div class="gmut" style="font-size:8.5px;margin-top:3px">stop: '+esc(p.stop_src)+' \u00b7 targets: '+esc(p.tgt_src)+(p.atr14?' \u00b7 ATR14 '+p.atr14:'')+'</div></div>'; } else h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">No clean trade plan from the note \u2014 review the raw text.</div>';
     h+='<div class="src" style="margin-top:5px">'+engineLine(s)+'</div>';
     return h+'</div>';
   }
@@ -2757,7 +2771,7 @@ const Tammy=(function(){
     h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">'+(s.catalyst?esc(s.catalyst)+' · ':'')+'call '+ageOf(s.date)+(s.price!=null?' · px '+s.price:'')+'</div>';
     h+=_dataTable([{t:'Entry zone'},{t:'MA basis'}],zrows);
     h+='<div style="margin-top:6px;font-size:12.5px"><b>Targets:</b> '+((s.targets&&s.targets.length)?s.targets.join(", "):'<span class="gmut">none given</span>')+'</div>';
-    h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">No stop — Tammy doesn’t publish stops; set your own at structure. R:R depends on your stop.</div>';
+    if(s.params){ var p=s.params; h+='<div style="margin-top:6px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">Trade plan '+(p.computed?'<span style="color:'+C.amber+'">· stop/target computed by Arsenal (she gave none)</span>':'<span style="color:'+C.pos+'">· all her\u2019s</span>')+'</div>'; h+=_statGrid([{l:'entry (trigger)',v:p.entry},{l:'stop',v:p.stop},{l:'R:R',v:(p.rr==null?'\u2014':p.rr)}],3); h+='<div style="font-size:12px;margin-top:5px"><b>Targets:</b> '+(p.targets||[]).join(', ')+'</div>'; h+='<div class="gmut" style="font-size:8.5px;margin-top:3px">stop: '+esc(p.stop_src)+' \u00b7 targets: '+esc(p.tgt_src)+(p.atr14?' \u00b7 ATR14 '+p.atr14:'')+'</div></div>'; } else h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">No clean trade plan from the note \u2014 review the raw text.</div>';
     h+='<div class="src" style="margin-top:5px">'+crosscheckLine(s)+'</div>';
     h+='</div>';
     return h;
