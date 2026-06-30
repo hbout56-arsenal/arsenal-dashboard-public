@@ -2274,13 +2274,24 @@ const Perf=(function(){
       +'</table></div></details>';
     return h+'</div>';
   }
+  function provenTable(tracks){
+    var rows=tracks.map(function(s){ var m=String(s).match(/^(.+?):(.+?)\s*\(([+-][\d.]+)pts,\s*CI \[([^,]+),\s*([^\]]+)\]\)/);
+      if(!m){ var m2=String(s).match(/^(.+?)\s*\(([+-][\d.]+)pts,\s*CI \[([^,]+),\s*([^\]]+)\]\)/); if(m2)return {sys:'',trk:m2[1],pts:m2[2],lo:m2[3].trim(),hi:m2[4].trim()}; return {sys:'',trk:String(s),pts:'',lo:'',hi:''}; }
+      return {sys:m[1],trk:m[2],pts:m[3],lo:m[4].trim(),hi:m[5].trim()}; });
+    var th=function(t,a){return '<th style="text-align:'+(a||'left')+';color:var(--mut);font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;padding:5px 8px;border-bottom:1px solid var(--gbrd);white-space:nowrap">'+t+'</th>';};
+    var td=function(c,st){return '<td style="padding:4px 6px;border-bottom:1px solid var(--line);'+(st||'')+'">'+c+'</td>';};
+    var h='<div style="overflow-x:auto;border:1px solid var(--gbrd);border-radius:10px;margin-top:6px"><table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums;min-width:300px">';
+    h+='<tr>'+th('System')+th('Track')+th('Net pts','right')+th('95% CI','right')+'</tr>';
+    h+=rows.map(function(r){ return '<tr>'+td(esc(r.sys),'color:var(--mut);white-space:nowrap')+td(esc(r.trk),'color:var(--ink);font-weight:650')+td(r.pts?('<b style="color:'+C.pos+'">'+esc(r.pts)+'</b>'):'\u2014','text-align:right;white-space:nowrap')+td(r.lo!==''?('<span style="color:var(--mut)">['+esc(r.lo)+', '+esc(r.hi)+']</span>'):'\u2014','text-align:right;white-space:nowrap')+'</tr>'; }).join('');
+    return h+'</table></div>';
+  }
   function render(){
     const el=document.getElementById("performance-content");
     if(!d||!d.systems){ el.innerHTML='<div class="card">No scorecard data yet (perf_summary.json not published). Draws only real per-trade data; nothing invented.</div>'; return; }
     const r=d.rollup||{};
     let h='<div class="card" style="border-left:3px solid '+C.blue+'"><div style="font-size:13px;font-weight:750">Performance — forward scorecards, CI-banded</div>';
     h+='<div style="margin:6px 0">'+chip((r.proven||0)+" proven edges",C.pos)+chip((r.candidate||0)+" candidate (CI∋0)",C.amber)+chip((r.descriptive||0)+" DESCRIPTIVE n<30",C.mut)+chip((r.negative||0)+" negative",C.neg)+'</div>';
-    if((r.proven_tracks||[]).length) h+='<div class="src"><b style="color:'+C.pos+'">Proven (n≥30, CI clears 0):</b> '+r.proven_tracks.map(esc).join(" · ")+'</div>';
+    if((r.proven_tracks||[]).length) h+='<div class="src" style="margin-top:5px"><b style="color:'+C.pos+'">Proven \u2014 n\u226530, CI clears 0 ('+r.proven_tracks.length+'):</b></div>'+provenTable(r.proven_tracks);
     h+='<div style="font-size:10px;color:var(--mut);border:1px dashed var(--mut);border-radius:7px;padding:6px 9px;margin-top:7px;line-height:1.5">'+esc(d.honesty||"")+' CI method: '+esc(d.ci_method||"")+'</div></div>';
     // systems sorted: ones with proven first
     const wt=S=>Math.min.apply(null,S.tracks.map(t=>({proven:0,candidate:1,descriptive:2,negative:3,empty:4})[t.status_class]));
