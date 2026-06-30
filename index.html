@@ -1703,8 +1703,10 @@ const WaveChart=(function(){
            liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,projection:true,liquidity:true,fvg:true,vp:true,fib:true};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,view={start:0,count:0},total=0;
+  const layers={waves:true,alt:true,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,fib:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,view={start:0,count:0},total=0;
+  const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
+  const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
   async function load(){
@@ -1716,6 +1718,7 @@ const WaveChart=(function(){
     try{ fvg=await ghFetch("fvg_state.json"); }catch(e){}
     try{ verdict=await ghFetch("verdict.json"); }catch(e){}
     try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
+    try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){}
     total=(bars&&bars.bars)?bars.bars.length:0;
     view.count=Math.min(total, tf==="daily"?total:140); view.start=Math.max(0,total-view.count);
     render();
@@ -1744,7 +1747,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ return '<div class="tabs" style="margin-bottom:8px">'+["15m","60m","daily"].map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["fib","Fib"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1800,6 +1803,14 @@ const WaveChart=(function(){
     h+='<div class="src" style="margin-top:8px;color:'+C.alt+'">'+esc(wave.reliability||"")+'</div>';
     return h+'</div>';
   }
+  function maBar(){
+    const ema=[9,21,20,50,200],sma=[9,21,20,50,200];
+    const ch=(k,lbl)=>{const per=parseInt(k.replace(/[^0-9]/g,""),10),col=MACOL[per]||C.pri,on=maOn[k];
+      return '<label style="font-size:9.5px;font-weight:650;color:'+(on?col:C.axis)+';border:1px solid '+(on?col:"var(--gbrd)")+';border-radius:999px;padding:2px 7px;cursor:pointer;user-select:none"><input type="checkbox" data-ma="'+k+'" '+(on?"checked":"")+' style="display:none">'+lbl+'</label>';};
+    return '<div style="margin:7px 0 2px;font-size:9px;color:var(--axis,#8b97ab);text-transform:uppercase;letter-spacing:.4px">Moving averages <span class="gmut" style="text-transform:none">\u2014 visual context, not signals (the EMA system is scored separately)</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"><span class="gmut" style="font-size:9px">EMA</span>'+ema.map(p=>ch("ema"+p,""+p)).join("")
+      +'<span class="gmut" style="font-size:9px;margin-left:7px">SMA</span>'+sma.map(p=>ch("sma"+p,""+p)).join("")+'</div>';
+  }
   function trainerNote(){
     return '<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:'+C.pri+';margin-bottom:6px">ℹ︎ How to read</div>'
       +'<div class="src" style="line-height:1.55"><b style="color:var(--ink)">Levels are the backbone</b> — price breaking a level is the trigger, not the wave label. The two counts are CANDIDATES (analyzer.py), valid only while their <b style="color:'+C.inval+'">invalidation</b> holds. 15m is low-reliability (sub-1h, re-labels often). Bars are exchange-DELAYED (Polygon) — redraws on publish cadence ~60–75s, not per tick; for live ticks use ToS.</div></div>';
@@ -1810,7 +1821,7 @@ const WaveChart=(function(){
       el.innerHTML=tfSwitcher()+'<div class="card">ES bars not published for <b>'+tf+'</b> (draws only real feeds; nothing invented).</div>'; wireControls(); return;
     }
     const ch=Math.max(320, Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)));
-    el.innerHTML=tfSwitcher()+toggleBar()
+    el.innerHTML=tfSwitcher()+toggleBar()+maBar()
       +'<div class="card" style="padding:6px"><canvas id="wcv" style="width:100%;height:'+ch+'px;display:block;touch-action:none"></canvas>'
       +'<div id="wc-fresh" class="src" style="margin-top:6px"></div><div id="wc-layers" class="src" style="margin-top:3px"></div></div>'
       +legend()+trainerNote()+scorecardCard();
@@ -1819,6 +1830,7 @@ const WaveChart=(function(){
   function wireControls(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
+    document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
   }
   function zoom(f,frac){ const oc=view.count, nc=clamp(Math.round(oc*f),20,total); const focal=view.start+frac*oc; view.count=nc; view.start=clamp(Math.round(focal-frac*nc),0,total-nc); }
   function wireCanvas(cv){
@@ -1891,7 +1903,24 @@ const WaveChart=(function(){
       const lbl="\u2933 PROJECTED "+tnum(zlo)+"\u2013"+tnum(zhi); const tw=ctx.measureText(lbl).width;
       ctx.fillStyle="rgba(0,0,0,.5)"; ctx.fillRect(xR-tw-7,Y(zhi)-12,tw+6,12);
       ctx.fillStyle=prim?"rgba(110,168,255,.95)":"rgba(255,207,107,.95)"; ctx.fillText(lbl,xR-3,Y(zhi)-3); ctx.textAlign="left"; ctx.restore(); }
+    // EMA/SMA overlays (visual context)
+    function drawMA(key){ const ser=bars.mas&&bars.mas[key]; if(!ser)return; const per=parseInt(key.replace(/[^0-9]/g,""),10),col=MACOL[per]||C.axis,isSma=key.indexOf("sma")===0;
+      const seg=ser.slice(view.start,view.start+n); ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1; ctx.globalAlpha=.8; if(isSma)ctx.setLineDash([3,3]); ctx.beginPath(); let st=false;
+      for(let i=0;i<n;i++){ const v=seg[i]; if(v==null){st=false;continue;} const x=X(i),y=Y(v); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; ctx.restore(); }
+    Object.keys(maOn).forEach(k=>{ if(maOn[k]) drawMA(k); });
+    // subwaves (one degree, subordinate) — only when toggled
+    if(layers.subwaves&&wave){ [wave.primary, layers.alt?wave.alternative:null].forEach(function(side){ if(!side||!side.subwaves)return;
+      side.subwaves.forEach(function(leg){ const sp=(leg.points||[]).map(p=>({label:p.label,price:p.price,pos:inView(p.t)})).filter(p=>p.pos!=null); if(!sp.length)return;
+        ctx.save(); ctx.strokeStyle="rgba(156,195,255,.45)"; ctx.lineWidth=.8; ctx.setLineDash([1,2]); ctx.beginPath(); sp.forEach((p,k)=>{const x=X(p.pos),y=Y(p.price); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle="rgba(156,195,255,.8)"; ctx.font="8px -apple-system,sans-serif"; sp.forEach(p=>{const x=X(p.pos),y=Y(p.price); ctx.fillText(p.label,x-4,y-3);}); ctx.restore(); }); }); }
     if(wave){ if(layers.alt)drawWave(wave.alternative,false); if(layers.waves)drawWave(wave.primary,true); }
+    // current-price line (LIVE/DELAYED/STALE honored)
+    (function(){ let px=null,tag="DELAYED",pcol=C.alt;
+      if(snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
+        if(!isNaN(es)){ px=es; if(age<10){tag="LIVE";pcol=C.up;} else {tag="STALE";pcol=C.axis;} } }
+      if(px==null&&n){ px=B[n-1].c; tag="DELAYED"; pcol=C.alt; }
+      if(px!=null){ const y=Y(px); ctx.save(); ctx.strokeStyle=pcol; ctx.lineWidth=1.1; ctx.setLineDash([2,2]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]);
+        ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(W-PADR-tw-7,y-7,tw+6,13); ctx.fillStyle=pcol; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,y+3); ctx.textAlign="left"; ctx.restore(); } })();
     if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
     // freshness + layer status
     const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed;fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+(dly?"DELAYED":"LIVE")+'</span> '+esc(bars.contract||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon futures, exchange-delayed — ToS for live ticks)';}
@@ -1957,8 +1986,18 @@ const Perf=(function(){
     const rmin=Math.min.apply(null,lows), rmax=Math.max.apply(null,his);
     const top=PT.slice(0,10), best=PT[0];
     let h='<div class="card" style="'+(allDesc?"border-style:dashed;":"")+'">';
-    h+='<div class="secttl" style="font-size:12px;color:var(--ink);font-weight:700">'+esc(S.label)+' <span class="gmut" style="font-weight:400;font-size:10px">'+S.tracks.length+' tracks</span></div>';
+    const _g=S.grade,_gc=_g?({A:C.pos,B:C.pos,C:C.amber,D:C.amber,F:C.neg}[_g.letter]||C.mut):C.mut;
+    h+='<div class="secttl" style="font-size:12px;color:var(--ink);font-weight:700">'+esc(S.label)+' <span class="gmut" style="font-weight:400;font-size:10px">'+S.tracks.length+' tracks</span>'+(_g?'<span title="'+esc((_g.basis||""))+'" style="font-weight:800;font-size:12px;color:'+(_g.provisional?C.mut:_gc)+';border:1.5px solid '+(_g.provisional?C.mut:_gc)+';border-radius:6px;padding:1px 7px;margin-left:7px">'+_g.letter+' '+_g.grade+(_g.provisional?' \u00b7prov':'')+'</span>':'')+'</div>';
+    if(S.plain) h+='<div class="src" style="margin:3px 0 2px;color:var(--ink)">'+esc(S.plain)+'</div>';
+    if(_g&&_g.inputs){const ip=_g.inputs;h+='<div class="gmut" style="font-size:9px;margin-bottom:3px">grade = f(exp '+ip.expectancy+', PF '+ip.profit_factor+', CI '+(ip.ci?('['+ip.ci[0]+','+ip.ci[1]+']'):'—')+(ip.ci_excludes_0?' \u2209 0':' \u2208 0')+', n '+ip.n+')</div>';}
     h+='<div style="margin:4px 0 8px">'+(cls.proven?chip(cls.proven+" proven",C.pos):"")+(cls.candidate?chip(cls.candidate+" candidate",C.amber):"")+(cls.descriptive?chip(cls.descriptive+" n<30",C.mut):"")+(cls.negative?chip(cls.negative+" negative",C.neg):"")+'</div>';
+    const _tod=(S.tracks[0]||{}).tod;
+    if(_tod){ h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:2px 0 2px">Time of day \u2014 '+esc((S.tracks[0]||{}).track||'')+' (ET session · expectancy · greyed = n<30)</div>';
+      h+='<table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums;margin-bottom:6px">';
+      h+='<tr>'+[["OPEN","09:30-11"],["MIDDAY","11-14"],["CLOSE","14-16"]].map(x=>'<th style="text-align:center;color:var(--mut);font-size:8.5px;padding:2px;border-bottom:1px solid var(--gbrd)">'+x[0]+'<br><span class="gmut" style="font-weight:400">'+x[1]+'</span></th>').join("")+'</tr>';
+      h+='<tr>'+["OPEN","MIDDAY","CLOSE"].map(function(sn){const b=_tod[sn]||{};const e=b.expectancy;const prov=(b.provisional||((b.n||0)<30));const col=(e==null)?C.mut:(e>0?C.pos:C.neg);return '<td style="text-align:center;padding:4px 2px;border-bottom:1px solid var(--line);opacity:'+(prov?0.55:1)+'"><div style="font-weight:700;color:'+col+'">'+(e==null?"\u2014":((e>0?"+":"")+e))+'</div><div class="gmut" style="font-size:8.5px">n'+(b.n||0)+(prov&&(b.n||0)?" prov":"")+'</div></td>';}).join("")+'</tr>';
+      h+='</table>'; }
+    else if((S.tracks[0]||{}).tod===null){ h+='<div class="gmut" style="font-size:9.5px;margin:2px 0 6px">Time of day: daily set \u2014 no intraday breakdown.</div>'; }
     h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Expectancy (net pts/trade) · 95% CI whisker · muted = CI crosses 0</div>';
     h+=top.map(t=>expBar(t,rmin,rmax)).join("");
     if(S.tracks.length>10) h+='<div class="gmut" style="font-size:9.5px;margin-top:3px">+'+(S.tracks.length-10)+' more tracks (sorted proven→candidate→n<30→negative)</div>';
