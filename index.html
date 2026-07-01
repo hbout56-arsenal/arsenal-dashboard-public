@@ -2899,7 +2899,7 @@ const Journal=(function(){
 window.Journal=Journal;
 
 Futures.init(); Stocks.init();
-showView("active"); _updateStatus(); setInterval(_updateStatus,60000); _initCollapse();
+showView("active"); _updateStatus(); setInterval(_updateStatus,25000); _initCollapse();
 loadCalCtx();
 loadRegime();
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
@@ -3102,14 +3102,14 @@ var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
       +'<div class="pa-note">ES/NQ/YM = LIVE IQFeed when fresh, else delayed-Polygon fallback. SOX/VIX/GC/CL/BZ = '
       +'exchange-delayed (Polygon). For live execution prices use ToS.</div>';
   }
-  async function load(){
-    try{ SNAP=await ghFetch("internals_snapshot.json"); }catch(e){ SNAP=null; }
-    try{ PF=await ghFetch("prices_futures.json"); }catch(e){}
-    try{ PS=await ghFetch("prices_stocks.json"); }catch(e){}
-    render();
-  }
+  // D87: separate cadence per feed-class — LIVE IQFeed internals fast (25s), Polygon-DELAYED slow (60s, source-capped)
+  async function loadLive(){ try{ SNAP=await ghFetch("internals_snapshot.json"); }catch(e){ SNAP=null; } render(); }
+  async function loadDelayed(){ try{ PF=await ghFetch("prices_futures.json"); }catch(e){} try{ PS=await ghFetch("prices_stocks.json"); }catch(e){} render(); }
+  async function load(){ await loadLive(); await loadDelayed(); }
   function rth(){ try{const n=etNow(); return n&&n.dow<=5&&n.hm>=930&&n.hm<=1600;}catch(e){return false;} }
-  function schedule(){ load(); setTimeout(schedule, rth()?70000:300000); }
+  function loopLive(){ loadLive(); setTimeout(loopLive, rth()?25000:60000); }         // IQFeed internals/ES-NQ-YM — 25s RTH
+  function loopDelayed(){ loadDelayed(); setTimeout(loopDelayed, rth()?60000:300000); } // Polygon GC/CL/SOX/stocks — 60s RTH (delayed at source)
+  function schedule(){ loopLive(); loopDelayed(); }
   setInterval(render, 5000);   // keep "(M:SS ago)" honest between fetches
   if(document.readyState!=="loading") schedule(); else document.addEventListener("DOMContentLoaded", schedule);
 })();
