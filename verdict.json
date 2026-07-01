@@ -1,49 +1,49 @@
 {
-  "timestamp": "2026-07-01T09:38:24",
+  "timestamp": "2026-07-01T09:44:02",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
-  "es_price": 7533.0,
-  "es_change": -15.25,
-  "price": 7533.0,
-  "change": -15.25,
+  "es_price": 7513.0,
+  "es_change": -35.25,
+  "price": 7513.0,
+  "change": -35.25,
   "price_source": "internals_live (IQFeed @ES#)",
-  "price_age_s": 3,
+  "price_age_s": 4,
   "internals_fresh": true,
-  "internals_age_s": 3,
+  "internals_age_s": 4,
   "structure_fresh": true,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
-  "hold_pct": 100.0,
-  "short_pct": 0.0,
+  "hold_pct": 53.8,
+  "short_pct": 46.2,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 7533.00 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 7513.00 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
       "pillar": "Breadth",
       "verdict": "HOLD",
       "confidence": 30.0,
-      "reason": "ADD +76 flat \u2014 no breadth edge"
+      "reason": "ADD +75 flat \u2014 no breadth edge"
     },
     {
       "name": "TickMomentum",
       "pillar": "Internals",
       "verdict": "HOLD",
       "confidence": 25.0,
-      "reason": "TICK +59 chop (<400) \u2014 no momentum edge"
+      "reason": "TICK +138 chop (<400) \u2014 no momentum edge"
     },
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price/vwap missing"
+      "verdict": "SHORT",
+      "confidence": 50.0,
+      "reason": "price 7513.00 < VWAP 7516.75 & prior_close 7544.75 (inside OR)"
     },
     {
       "name": "SectorDivergence",
@@ -69,23 +69,23 @@
     {
       "name": "EMA_Context",
       "pillar": "EMA_Context",
-      "verdict": "HOLD",
+      "verdict": "SHORT",
       "confidence": 0.0,
-      "reason": "EMA: 9>21 5m \u00b7 15m trend down \u2014 context, NON-VOTING (weight 0)"
+      "reason": "EMA: 9<21 5m \u00b7 15m trend down \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "FVG_Context",
       "pillar": "FVG_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "FVG: nearest bear gap 7541.5-7544.75 unmitigated floating (no confluence) (9.5pt away) \u2014 context, NON-VOTING (weight 0)"
+      "reason": "FVG: nearest bear gap 7541.5-7544.75 unmitigated floating (no confluence) (32.75pt away) \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "ICT_Context",
       "pillar": "ICT_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "ICT: bias SHORT \u00b7 untapped sell-side 7524.0 \u00b7 swept 7450.0 + MSS confirmed \u2014 context, NON-VOTING (weight 0)"
+      "reason": "ICT: bias SHORT \u00b7 untapped sell-side 7524.0 \u00b7 swept 7447.75 + MSS confirmed \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "InsideBar_Context",
@@ -108,42 +108,42 @@
     "5m": {
       "timeframe": "5m",
       "long_pct": 0.0,
-      "hold_pct": 38.0,
-      "short_pct": 62.0,
-      "price": 7532.0,
+      "hold_pct": 36.8,
+      "short_pct": 63.2,
+      "price": 7508.75,
       "internals_fresh": true,
       "structure_fresh": true,
       "structure_source": "IQFeed @ES# 5m (in-guest)",
       "state": "live",
-      "bar_age_min": 13.4,
+      "bar_age_min": 14.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "SHORT",
           "confidence": 30.0,
-          "reason": "price 7532.00 at 1-method confluence (VP) near 7534.39 (resistance)"
+          "reason": "price 7508.75 at 1-method confluence (VP) near 7511.52 (resistance)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "HOLD",
           "confidence": 30.0,
-          "reason": "ADD +76 flat \u2014 no breadth edge"
+          "reason": "ADD +75 flat \u2014 no breadth edge"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK +59 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK +138 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
           "verdict": "SHORT",
-          "confidence": 45.0,
-          "reason": "price 7532.00 < prior_close 7544.75 (daily fallback)"
+          "confidence": 50.0,
+          "reason": "price 7508.75 < VWAP 7516.75 & prior_close 7544.75 (intraday)"
         },
         {
           "name": "SectorDivergence",
@@ -170,37 +170,23 @@
       "confluence_zones": [
         {
           "method": "VP",
-          "label": "VAL",
-          "price": 7527.72,
-          "dist": -4.28,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
           "label": "HVN",
-          "price": 7528.67,
-          "dist": -3.33,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7536.3,
-          "dist": 4.3,
+          "price": 7505.8,
+          "dist": -2.95,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "LVN",
-          "price": 7534.39,
-          "dist": 2.39,
+          "price": 7501.98,
+          "dist": -6.77,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "LVN",
-          "price": 7538.2,
-          "dist": 6.2,
+          "price": 7511.52,
+          "dist": 2.77,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -209,43 +195,43 @@
     },
     "15m": {
       "timeframe": "15m",
-      "long_pct": 46.2,
-      "hold_pct": 53.8,
-      "short_pct": 0.0,
-      "price": 7532.0,
+      "long_pct": 0.0,
+      "hold_pct": 26.9,
+      "short_pct": 73.1,
+      "price": 7516.5,
       "internals_fresh": true,
-      "structure_fresh": false,
+      "structure_fresh": true,
       "structure_source": "IQFeed @ES# 15m (in-guest)",
       "state": "live",
-      "bar_age_min": 23.4,
+      "bar_age_min": 14.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7532.00 at 1-method confluence (VP) near 7528.80 (support)"
+          "verdict": "SHORT",
+          "confidence": 65.0,
+          "reason": "price 7516.50 at 2-method confluence (FIB+VP) near 7518.03 (resistance)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "HOLD",
           "confidence": 30.0,
-          "reason": "ADD +76 flat \u2014 no breadth edge"
+          "reason": "ADD +75 flat \u2014 no breadth edge"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK +59 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK +138 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "structure unavailable"
+          "verdict": "SHORT",
+          "confidence": 50.0,
+          "reason": "price 7516.50 < VWAP 7518.75 & prior_close 7544.75 (intraday)"
         },
         {
           "name": "SectorDivergence",
@@ -272,16 +258,16 @@
       "confluence_zones": [
         {
           "method": "VP",
-          "label": "HVN",
-          "price": 7528.8,
-          "dist": -3.2,
+          "label": "LVN",
+          "price": 7513.22,
+          "dist": -3.28,
           "vp_timeframe": "daily_swing"
         },
         {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7539.18,
-          "dist": 7.18,
+          "method": "FIB",
+          "label": "C9",
+          "price": 7518.03,
+          "dist": 1.53,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -290,36 +276,36 @@
     },
     "60m": {
       "timeframe": "60m",
-      "long_pct": 0.0,
+      "long_pct": 46.2,
       "hold_pct": 53.8,
-      "short_pct": 46.2,
-      "price": 7510.0,
+      "short_pct": 0.0,
+      "price": 7517.25,
       "internals_fresh": true,
       "structure_fresh": false,
       "structure_source": "IQFeed @ES# 60m (in-guest)",
       "state": "live",
-      "bar_age_min": 38.4,
+      "bar_age_min": 44.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "SHORT",
+          "verdict": "LONG",
           "confidence": 30.0,
-          "reason": "price 7510.00 at 1-method confluence (VP) near 7513.93 (resistance)"
+          "reason": "price 7517.25 at 1-method confluence (VP) near 7513.93 (support)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "HOLD",
           "confidence": 30.0,
-          "reason": "ADD +76 flat \u2014 no breadth edge"
+          "reason": "ADD +75 flat \u2014 no breadth edge"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK +59 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK +138 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
@@ -355,7 +341,7 @@
           "method": "VP",
           "label": "LVN",
           "price": 7513.93,
-          "dist": 3.93,
+          "dist": -3.32,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -379,21 +365,21 @@
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "price 7533.00 not at any VP/fib level (\u00b10.1%)"
+          "reason": "price 7513.00 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "HOLD",
           "confidence": 30.0,
-          "reason": "ADD +76 flat \u2014 no breadth edge"
+          "reason": "ADD +75 flat \u2014 no breadth edge"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK +59 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK +138 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
