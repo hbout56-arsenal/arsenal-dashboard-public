@@ -1062,7 +1062,7 @@ const Futures = (function(){
     if(ntext) news='<div class="card"><h2>Newsletter cross-check</h2><div class="news">'+esc(ntext)+(ndate?' <span class="date">(as of '+esc(ndate)+')</span>':'')+'</div></div>';
     document.getElementById("fut-content").innerHTML=
       nowLine(esNowText(d,state,price))+'<div class="hero"><div style="margin-bottom:9px">'+chip+hI("fresh")+'</div>'+hP("fresh")
-        +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
+        +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+(d.price_age_s!=null?' <span class="gmut" style="font-size:11px" title="'+esc(d.price_source||"")+'">('+(d.price_age_s<90?d.price_age_s+'s':Math.round(d.price_age_s/60)+'m')+' old)</span>':'')+'</div>'
         +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+hI("internals")+'</div>'+hP("internals")
         +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
         +'<span class="pill2">tf: '+(d.internals_applicable===false?"daily swing (fallback)":(esc(d.primary_timeframe||"15m")+" (decision)"))+'</span>'
@@ -1448,8 +1448,8 @@ const Account=(function(){
         h+='<table class="acct" style="margin-top:8px"><tr><th>setup</th><th>n</th><th>W</th><th>pay</th><th>¼-K</th><th>1%·P(-25)</th><th>2%·P(-25)</th><th>safe·P(-25)</th></tr>';
         setups.forEach(s=>{ const k=s.kelly||{}, b=s.size_band||{}, c1=b.conservative_1pct||{}, c2=b.standard_2pct||{}, ms=b.max_safe||{};
           const pr=o=>o&&o.p_ruin?(o.p_ruin["p_hit_-25pct"]*100).toFixed(1)+"%":"—";
-          const val=(s.n||0)>=30;
-          h+='<tr><td>'+esc((s.setup||'').replace('::','/'))+(val?'<span class="val-tag">n≥30</span>':'<span class="desc-tag">DESC</span>')+'</td>'
+          const val=(s.n||0)>=30;   /* D88 Fix 4: risk_model carries no CI -> n>=30 is 'unconfirmed', not a green VALIDATED tag */
+          h+='<tr><td>'+esc((s.setup||'').replace('::','/'))+(val?'<span class="desc-tag">n≥30 · unconfirmed</span>':'<span class="desc-tag">DESC</span>')+'</td>'
             +'<td>'+(s.n!=null?s.n:'—')+'</td>'
             +'<td>'+(s.win_rate_derived!=null?(s.win_rate_derived*100).toFixed(0)+'%':'—')+'</td>'
             +'<td>'+(s.payoff!=null?s.payoff:'—')+'</td>'
@@ -1940,7 +1940,7 @@ const WaveChart=(function(){
     ["Projection","Where the next leg COULD go if the count holds \u2014 a conditional zone, not a prediction."],
     ["Confluence / conviction","How many independent reads agree (count, projection, invalidation, VP, R:R). Conviction now factors R:R, not just the count."],
     ["R:R","Reward \u00f7 risk. \u22651.5 strong, 1\u20131.5 ok, <1 = risking more than you\u2019d make \u2192 NOT ACTIONABLE."],
-    ["POC / VAH / VAL","Volume profile \u2014 the price where most volume traded (POC) and the value-area high/low. Magnets and shelves."],
+    ["POC / VAH / VAL","Volume profile \u2014 the price where most volume traded (POC) and the value-area high/low. LOCATION context only, NOT a signal: the VP fade-edge backtest was UNSUPPORTED (no measured edge). The trigger is price breaking a level, not the level itself."],
     ["Trend lines","Through the last two swing lows (support) / highs (resistance), extended. Context, not a signal."],
     ["SHADOW","Informational \u2014 never votes or fires. The TRIGGER is price breaking the level, not the card."],
     ["DELAYED / EOD","Bars are Polygon exchange-delayed (futures) or end-of-day (stocks). Use ToS for live ticks."],
@@ -2579,9 +2579,10 @@ const Auction=(function(){
   function vpCard(vp,px,pxtag,delayed,liveOk){
     const loc=(px==null)?"":(px>vp.vah?"above":(px<vp.val?"below":"inside")); const lvns=lvnZones(vp),hvns=vp.hvn||[];
     let h='<div class="card"><div style="font-weight:750;font-size:13px">Volume profile — the auction'+(delayed?' <span class="schip delayed">DELAYED</span>':'')+'</div>';
+    h+='<div class="src" style="margin:2px 0 4px;color:'+C.mut+'">◇ Structural / location context — SHADOW, not a signal. The VP fade-edge backtest was UNSUPPORTED (no measured edge); the TRIGGER is price breaking a level, not the level itself.</div>';
     h+=_statGrid([{l:'POC',v:vp.poc},{l:'VAH',v:vp.vah},{l:'VAL',v:vp.val},{l:'price',v:(px!=null?px.toFixed(2)+' <span class="gmut">'+pxtag+'</span>':'—')},{l:'where',v:(loc==="inside"?'inside value':(loc==="above"?'above VAH':(loc==="below"?'below VAL':'—')))}]);
     if(px!=null){ let read;
-      if(loc==="inside") read='Price is <b>inside value</b> — accepted here. POC '+vp.poc+' is the magnet; VAH '+vp.vah+' / VAL '+vp.val+' are the edges.';
+      if(loc==="inside") read='Price is <b>inside value</b> — trading within the accepted range. POC '+vp.poc+' is the volume reference; VAH '+vp.vah+' / VAL '+vp.val+' are the value-area edges (context, not levels that must hold).';
       else if(loc==="above") read='Price is <b>above value</b> (VAH '+vp.vah+') — accepted higher / upper edge. '+(liveOk?'Building value above = acceptance; snap back inside = rejection.':'<span style="color:'+C.amber+'">(live acceptance read needs fresh ticks — use ToS)</span>');
       else read='Price is <b>below value</b> (VAL '+vp.val+') — accepted lower / lower edge. '+(liveOk?'Holding below = acceptance; reclaim into value = rejection.':'<span style="color:'+C.amber+'">(live acceptance read needs fresh ticks — use ToS)</span>');
       const ha=nearest(hvns,px,1),hb=nearest(hvns,px,-1);
