@@ -353,6 +353,7 @@
       <div class="toptab" data-v="journal">Journal</div>
       <div class="toptab" data-v="tammy">Tammy/Fib</div>
       <div class="toptab" data-v="tictoc">Tic Toc</div>
+      <div class="toptab" data-v="esswing">ES Swing</div>
     </div>
   </div>
   <div id="freshbar" style="font-size:10.5px;font-weight:650;margin:-9px 2px 14px;min-height:15px;letter-spacing:.2px"></div>
@@ -362,6 +363,7 @@
   <div id="auction" hidden><div id="auction-content"><div class="loading">Loading…</div></div></div>
   <div id="tammy" hidden><div id="tammy-content"><div class="loading">Loading…</div></div></div>
   <div id="tictoc" hidden><div id="tictoc-content"><div class="loading">Loading…</div></div></div>
+  <div id="esswing" hidden><div id="esswing-content"><div class="loading">Loading…</div></div></div>
 
   <div id="performance" hidden>
     <div id="performance-content"><div class="loading">Loading…</div></div>
@@ -2665,7 +2667,7 @@ function _updateStatus(){ var p=document.getElementById("statuspill"),t=document
     if(age<12){ p.className="statuspill live"; t.textContent="LIVE \u00b7 "+Math.max(0,Math.round(age))+"m"; }
     else { p.className="statuspill stale"; t.textContent="STALE \u00b7 "+(age<120?Math.round(age)+"m":Math.round(age/60)+"h"); }
   }).catch(function(){ p.className="statuspill"; t.textContent="feeds"; }); }
-var _VF={active:"internals_snapshot.json",overview:"verdict.json",alerts:"alert_prefs.json",audit:"daily_audit_latest.json",wavechart:"es_wave_daily.json",performance:"perf_summary.json",proscreen:"screener_v2_funnel.json",stocks:"stock_dashboard.json",account:"swing_account_sim.json",auction:"ict_state.json",prices:"internals_snapshot.json",futures:"internals_snapshot.json",orb:"internals_snapshot.json",journal:"internals_snapshot.json",tammy:"tammy_setups.json",tictoc:"tictoc_picks.json"};
+var _VF={active:"internals_snapshot.json",overview:"verdict.json",alerts:"alert_prefs.json",audit:"daily_audit_latest.json",wavechart:"es_wave_daily.json",performance:"perf_summary.json",proscreen:"screener_v2_funnel.json",stocks:"stock_dashboard.json",account:"swing_account_sim.json",auction:"ict_state.json",prices:"internals_snapshot.json",futures:"internals_snapshot.json",orb:"internals_snapshot.json",journal:"internals_snapshot.json",tammy:"tammy_setups.json",tictoc:"tictoc_picks.json",esswing:"es_swing_thesis.json"};
 var _VFHB={prices:1,futures:1,orb:1,journal:1,active:1};   // these use the data heartbeat (no single own feed)
 function _fmtT(ts){ try{ var d=new Date(ts); return d.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }catch(e){ return String(ts); } }
 function _updateFresh(v){ var el=document.getElementById("freshbar"); if(!el)return; var fn=_VF[v];
@@ -2700,9 +2702,10 @@ function showView(v){
   document.getElementById("journal").hidden=(v!=="journal");
   document.getElementById("tammy").hidden=(v!=="tammy");
   document.getElementById("tictoc").hidden=(v!=="tictoc");
+  document.getElementById("esswing").hidden=(v!=="esswing");
   const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],auction:[Auction,"auction"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
-    proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"],tammy:[Tammy,"tammy"],tictoc:[TicToc,"tictoc"]};
+    proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"],tammy:[Tammy,"tammy"],tictoc:[TicToc,"tictoc"],esswing:[ESSwing,"esswing"]};
   const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
   if(typeof _enhanceCollapse==="function"){ setTimeout(_enhanceCollapse,60); setTimeout(_enhanceCollapse,420); }
   if(typeof _updateFresh==="function") _updateFresh(v);   // re-scan now-visible sections at real heights
@@ -2710,6 +2713,44 @@ function showView(v){
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
 
 /* ════════════ JOURNAL tab (Dispatch 42) — discipline scorecard + entry round-trip ════════════ */
+const ESSwing=(function(){
+  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff"};
+  function thesisCard(t){
+    var isSetup=(t.state==="SETUP"&&t.thesis); var s=t.thesis||{};
+    var dcol=s.dir==="long"?C.pos:(s.dir==="short"?C.neg:C.mut);
+    var h='<div class="card" style="border-color:'+(isSetup?'rgba(63,208,122,.5)':'var(--gbrd)')+'">';
+    h+='<div style="font-weight:800;font-size:14px">ES SWING — hours-hold <span style="color:'+C.blue+';font-size:11px">SHADOW · advisory</span></div>';
+    h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">Trigger = a <b>60m close beyond a decision level</b> + ATR buffer (NOT an EMA cross). Target = next structural level, hold in HOURS, R:R≥2. Separate from the EMA <b>scalp (minutes)</b> book.</div>';
+    if(isSetup){
+      h+='<div style="font-size:15px;font-weight:800;color:'+dcol+'">'+s.dir.toUpperCase()+' SETUP — 60m close broke '+esc(s.kind)+' '+s.level+'</div>';
+      h+=_statGrid([{l:'entry (trigger)',v:s.entry},{l:'stop',v:s.stop},{l:'target',v:s.target},{l:'R:R',v:s.rr}],4);
+      h+='<div class="src" style="margin-top:5px">Stop = the invalidating level · scale partial at target, trail behind 60m higher-lows to let it run · posture '+esc(s.posture)+'.</div>';
+    } else {
+      h+='<div style="font-size:14px;font-weight:750;color:'+C.amber+'">'+esc(t.state)+'</div>';
+      h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">No level-break setup right now — honest, not a forced signal. Nearest decision levels below.</div>';
+    }
+    h+='<div style="margin-top:7px">'+_dataTable([{t:'Nearest level',a:'right'},{t:'Kind'}],(t.nearest_levels||[]).map(function(x){return [String(x.level),esc(x.kind)];}))+'</div>';
+    h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">price '+t.price+' · ATR14 '+t.atr14+' · breadth gate: <b style="color:'+(t.breadth_gate==='divergence'?C.neg:C.pos)+'">'+esc(t.breadth_gate)+'</b> · posture '+esc(t.posture)+(t.delayed?' · DELAYED':'')+'</div>';
+    return h+'</div>';
+  }
+  function scoreCard(sc){
+    if(!sc) return "";
+    var v=sc.VALIDATED;
+    var h='<div class="card"><div style="font-weight:750;font-size:13px">ES-SWING forward score — its OWN track (scalp untouched)</div>';
+    h+=_statGrid([{l:'net pts/trade',v:(sc.expectancy_pts==null?'—':sc.expectancy_pts)},{l:'95% CI',v:(sc.exp_ci&&sc.exp_ci[0]!=null?sc.exp_ci[0]+'–'+sc.exp_ci[1]:'—')},{l:'n',v:sc.n_scoreable},{l:'win%',v:(sc.win_rate==null?'—':sc.win_rate+'%')},{l:'avg hold (60m)',v:(sc.avg_hold_bars_60m==null?'—':sc.avg_hold_bars_60m)},{l:'open',v:sc.open_count}],3);
+    h+='<div class="src" style="margin-top:5px;color:'+(v?C.pos:C.amber)+'">'+esc(sc.gate||"")+'</div>';
+    h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.honesty||"")+'</div>';
+    return h+'</div>';
+  }
+  async function load(){
+    const el=document.getElementById("esswing-content"); el.innerHTML='<div class="loading">Loading…</div>';
+    let t,sc=null;
+    try{ t=await ghFetch("es_swing_thesis.json"); }catch(e){ el.innerHTML='<div class="card">ES-SWING feed not available yet.</div>'; return; }
+    try{ sc=await ghFetch("es_swing_scorecard.json"); }catch(e){}
+    el.innerHTML=thesisCard(t)+scoreCard(sc)+'<div class="src" style="margin:8px 2px;color:'+C.mut+'">'+esc(t.privacy||"")+'</div>';
+  }
+  return {load:load};
+})();
 const TicToc=(function(){
   const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff",dim:"#5a6678"};
   const ROLEC={resistance:C.neg,support:C.pos,"short-trigger":C.neg,"buy-shelf":C.pos,target:C.blue,pivot:C.amber,level:C.mut};
