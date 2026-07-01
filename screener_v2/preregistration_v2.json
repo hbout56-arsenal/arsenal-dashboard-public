@@ -42,10 +42,11 @@
       ],
       "thresholds": {"min_contractions": 2, "tightness_ratio_max": 0.75,
                      "vol_dryup_ratio_max": 0.85, "max_base_depth_pct": 35.0,
-                     "base_window_bars": 60, "swing_reversal_pct": 4.0},
-      "vcp_method_frozen": {"detector": "ZigZag swing-finder", "detector_id": "zigzag_v1_prereg_2026-06-29",
-                            "frozen_at": "2026-06-29", "doc": "screener_v2/vcp_method_prereg.json",
-                            "note": "ZigZag detector + swing_reversal_pct=4.0 frozen as a deliberate method decision (D55 follow-up; bug-fix replacing the degenerate D50 reference). Last post-hoc change; future changes start a new forward series."},
+                     "base_window_bars": 60, "swing_reversal_pct": 5.0, "max_contractions": 6},
+      "vcp_method_frozen": {"detector": "ZigZag swing-finder", "detector_id": "zigzag_vcp_prereg_2026-06-30",
+                            "frozen_at": "2026-06-30", "doc": "screener_v2/preregistration_vcp_detector.json",
+                            "supersedes": "zigzag_v1_prereg_2026-06-29",
+                            "note": "Method fully pre-registered by principle 2026-06-30 (reversal 5%, base 60, max-T 6, pivot/base_low anchoring). Corrects the superseded 4% doc: the engine has always run 5% and produced every pick at 5% (4% was never in effect); this ratifies the value in effect and completes the spec (max-T + anchoring). New pre-registered decision -> fresh /N haircut, own forward series."},
       "outputs": ["pivot_price", "base_depth_pct", "contraction_count"]
     },
     "stage4_rs_rank": {

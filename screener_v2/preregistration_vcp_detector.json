@@ -1,0 +1,55 @@
+{
+  "kind": "vcp_contraction_detector_preregistration",
+  "dispatch": "55-followup-2",
+  "frozen_at": "2026-06-30",
+  "detector_id": "zigzag_vcp_prereg_2026-06-30",
+  "supersedes": {
+    "detector_id": "zigzag_v1_prereg_2026-06-29",
+    "file": "screener_v2/vcp_method_prereg.json",
+    "why": [
+      "INCONSISTENT WITH THE ENGINE: the prior doc froze swing_reversal_pct=4.0, but the engine (screener_v2/filters.py VCP_ZZ_PCT) has run at 5.0 since it was built and produced EVERY forward pick (FTEC, AIRR) at 5%. The engine even stamped its 5% output with the 4% detector id. The 4% value was never in effect.",
+      "POST-HOC CONTAMINATED: the prior doc embedded a result (first_qualifier=FTEC), so it was written after seeing the outcome — it is not a clean pre-registration.",
+      "INCOMPLETE: it froze only reversal + base window. It did NOT freeze the max contraction (T) count or how the pivot / base_low are anchored — the remaining researcher degrees of freedom."
+    ],
+    "note": "This pre-registration RATIFIES the value the engine has actually computed (5%) rather than changing it, and COMPLETES the under-specified method. It does not alter any realized forward pick's math; prior 5%-computed picks remain valid and comparable."
+  },
+  "status": "FROZEN — the contraction-DETECTION METHOD and its parameters are set here by PRINCIPLE (Minervini VCP definition + the codebase's daily-bar ZigZag convention), BEFORE using any qualifier count as a selection criterion. Changing any value below is a NEW pre-registration and starts its own forward series.",
+  "scope": "Freezes the METHOD only (how contractions are detected). It does NOT touch the D50 VCP *thresholds* (min_contractions=2, tightness=0.75, dry-up=0.85, base-depth<=35%), which remain owned and frozen by screener_pro/preregistration.json (Dispatch 50).",
+  "problem_being_fixed": "The D50 reference contraction extractor (enhanced_filters.f_vcp) registered a 'contraction' at every new swing high (an effective reversal threshold of 0). On real daily bars that over-segments a base into 15-40 micro-contractions, so 'each <=0.75x the prior' can never hold across the chain and Stage 3 collapses to 0 — a DEGENERATE detector, not a market read. The fix is a faithful ZigZag with a real reversal threshold over a finite base, limited to the VCP regime of a small number of contractions.",
+  "method": {
+    "detector": "ZigZag swing-finder over the base window (past-only)",
+    "rule": "Walk the base window oldest->newest tracking a running extreme. Confirm a swing HIGH only after price closes/falls >= swing_reversal_pct below the running high; confirm a swing LOW only after price rises >= swing_reversal_pct above the running low. Alternate H/L. A CONTRACTION depth = each confirmed swing HIGH down to the following confirmed swing LOW, as a percent of the high (keep depths > 0.5%). Reject the base if it yields > max_contractions swings (noise, not a coiling base) or < min_contractions (no VCP).",
+    "anchoring": {
+      "pivot_buy_point": "highest swing high in the base = max high over the last 40 bars (PIVOT_WIN); the breakout/entry reference.",
+      "base_low_stop": "lowest low from the pivot bar FORWARD (the consolidation low UNDER the pivot), not a stale multi-month low; the structural stop reference. Fallback: min low of the last 10 bars if the pivot IS the latest bar.",
+      "contraction_depths": "swing-HIGH -> following swing-LOW, past-only over the base window."
+    },
+    "frozen_constants": {
+      "swing_reversal_pct": 5.0,
+      "base_window_bars": 60,
+      "min_base_bars": 25,
+      "max_contractions": 6,
+      "pivot_window_bars": 40
+    },
+    "anti_look_ahead": "The detector reads bars[0..signal_index] only; i is the last completed session bar. Proven by the truncation self-test in the engine."
+  },
+  "principled_basis": {
+    "swing_reversal_pct=5.0": "The codebase's daily-bar VCP swing convention (filters.py VCP_ZZ_PCT, documented as a 'meaningful daily swing pullback'). Minervini VCP contractions progressively tighten but the qualifying swings for a >=2-contraction, <=35%-deep base are comfortably above 5%; a 5% reversal registers them while rejecting intraday noise. The codebase's OTHER daily convention (polygon_data.find_pivots=3.0%, used for Elliott-wave labeling) is deliberately FINER for structural wave counts and would re-introduce over-segmentation for VCP. 4.0% (the superseded doc) was an un-principled split that never matched the engine.",
+    "base_window_bars=60": "~1 quarter of trading = a proper minimum VCP base-length proxy; matches the D50 reference i-60 window. min_base_bars=25 (~5 weeks) is Minervini's minimum base before a read is attempted.",
+    "max_contractions=6": "Minervini's VCP 'T-count' is a SMALL number (typically 2-4, up to ~6). More than 6 alternating swings over a 60-day base is a choppy range, not a coiling base. min_contractions stays 2 (owned by the D50 threshold, not re-frozen here).",
+    "anchoring": "Reuses the codebase's existing _base_levels convention: pivot = recent resistance high, base_low = consolidation low under it (structural stop), target = measured move. No new anchoring invented."
+  },
+  "selection_integrity": "Values were chosen by principle/codebase-convention, NOT to hit a target count. Disclosure: the current funnel count under 5% is a knife-edge of ~1 name (unflattering) — confirming the choice was not tuned to manufacture picks. The reversal knob is the parameter the funnel is most sensitive to (count swings ~0-4 across the {3,4,5}% codebase-plausible values); it is now frozen at 5% and any future change is a separate pre-registered decision.",
+  "haircut": {
+    "N": 4,
+    "basis": "3 method knobs ablated individually (swing_reversal_pct, base_window_bars, max_contractions) + 1 full method. Anchoring is definitional (reused convention), not an ablatable scalar.",
+    "dominant_dof": "swing_reversal_pct spans 3 codebase-plausible daily values {3,4,5}% -> any in-sample edge is additionally discounted for that multiplicity.",
+    "rule": "in-sample edge / N before any 'survives' claim. This decision re-incurs the divide-by-N overfitting haircut as a NEW pre-registered method choice."
+  },
+  "measurement": "Tag each FORWARD v2 pick detector=zigzag_vcp_prereg_2026-06-30 going forward. FORWARD never blended with HISTORICAL. n>=30 on both legs before any head-to-head 'beats' claim; until then ACCRUING.",
+  "open_flags_monitor_do_not_tune": [
+    "REPRESENTATIVENESS: recent survivors (FTEC, AIRR) are correlated tech-sector ETFs; single stocks rarely clear the VCP stage. Monitor across weekly runs. If single stocks ~never qualify under the frozen method, a loosening would be a SEPARATE pre-registered decision with its own forward series — never a quiet tweak.",
+    "TOO-STRICT: the VCP stage is the funnel's binding constraint and remains knife-edge. Reported as-is; nothing is promoted to live."
+  ],
+  "shadow": "SHADOW — educational, forward-validating. Does NOT feed the live actionable list / email / recommendations. Published JSON carries setup levels + size band (%/R) only, no $/positions."
+}

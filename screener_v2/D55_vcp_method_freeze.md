@@ -1,3 +1,10 @@
+> **⚠ SUPERSEDED 2026-06-30** by `PREREGISTRATION_VCP_DETECTOR.md` /
+> `preregistration_vcp_detector.json` (`zigzag_vcp_prereg_2026-06-30`). This page froze
+> `swing_reversal_pct = 4.0`, but the engine has always run **5.0** and produced every pick
+> (incl. FTEC) at 5% — 4% was never in effect. It was also post-hoc (embeds the FTEC result)
+> and incomplete (no max-T / anchoring). The superseding doc freezes the method by principle
+> at the value actually in effect and completes the spec. Kept for the audit trail.
+
 # Dispatch 55 follow-up — VCP method frozen (ZigZag = accepted bug-fix); FTEC stands
 
 Hany's decision: the degenerate D50 reference VCP detector was a **bug**; the faithful
