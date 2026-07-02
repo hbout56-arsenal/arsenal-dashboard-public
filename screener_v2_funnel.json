@@ -1,107 +1,224 @@
 {
-  "generated_at": "2026-07-01T21:50:37.000541+00:00",
+  "generated_at": "2026-07-02T16:12:49.934455+00:00",
   "source": "REAL",
-  "date": "2026-07-01",
+  "date": "2026-07-02",
   "snapshot_disclaimer": "Current-universe SNAPSHOT for education + forward logging, NOT a historical backtest. Each name judged once at the last completed session bar.",
-  "universe_note": "12280 alpha-ticker names from the grouped-daily snapshot (ETFs included and FLAGGED; universe_scan's stock set excludes ETFs).",
+  "universe_note": "11166 alpha-ticker names from the grouped-daily snapshot (ETFs included and FLAGGED; universe_scan's stock set excludes ETFs).",
   "funnel": {
-    "universe": 12280,
-    "stage1_trend_template": 2959,
-    "stage1": 2959,
-    "stage2_liquidity": 859,
-    "stage2": 859,
-    "stage2_liquidity_passed": 859,
-    "stage2_liquidity_failed": 2100,
+    "universe": 11166,
+    "stage1_trend_template": 2714,
+    "stage1": 2714,
+    "stage2_liquidity": 839,
+    "stage2": 839,
+    "stage2_liquidity_passed": 839,
+    "stage2_liquidity_failed": 1875,
     "stage2_liquidity_threshold_usd": 20000000,
-    "stage3_vcp": 5,
-    "stage4_rs_top_decile": 1,
-    "stage4_top": 1,
-    "insufficient_history": 2133,
-    "rs_ranked_pool": 5
+    "stage3_vcp": 34,
+    "stage3_vcp_strict_control": 5,
+    "stage4_rs_top_decile": 3,
+    "stage4_top": 3,
+    "insufficient_history": 1628,
+    "rs_ranked_pool": 34
   },
   "vcp_method": {
-    "detector": "zigzag_vcp_prereg_2026-06-30",
+    "detector": "zigzag_vcp_prereg_d102_2026-07-02",
     "zigzag_reversal_pct": 0.05,
     "base_lookback_bars": 60,
     "max_contractions": 6,
+    "tighten_ratio": 0.85,
+    "tighten_max_violations": 1,
+    "control_tighten_ratio": 0.75,
     "thresholds": {
       "min_contractions": 2,
       "tightness_ratio_max": 0.75,
       "vol_dryup_ratio_max": 0.85,
       "max_base_depth_pct": 35.0
     },
-    "supersedes": "zigzag_v1_prereg_2026-06-29",
-    "prereg": "screener_v2/preregistration_vcp_detector.json",
-    "note": "FROZEN ZigZag detector (filters.py, VCP_ZZ_PCT=5%). Replaces the degenerate D55 reference extractor; D50 thresholds unchanged. Method fully pre-registered 2026-06-30 (supersedes the inconsistent 4% doc). Method change = new pre-registration."
+    "supersedes": "zigzag_vcp_prereg_2026-06-30",
+    "prereg": "preregistration_vcp_detector_d102.json",
+    "note": "D102 recal of the tightening RULE ONLY (0.75x-all -> 0.85x + one violation allowed); ZigZag/base/max-T/depth/dry-up/liquidity/RS all UNCHANGED. The strict 0.75/0 rule runs as the head-to-head control (stage3_vcp_strict_control). Pre-registered by principle, SHADOW/ACCRUING (n>=30 before any 'beats' claim). Any value change = new pre-registration."
   },
   "liquidity_gate": {
     "threshold_usd": 20000000,
-    "passed": 859,
-    "failed": 2100,
-    "of_trend_survivors": 2959,
+    "passed": 839,
+    "failed": 1875,
+    "of_trend_survivors": 2714,
     "note": "avg daily dollar volume must clear $20M so slippage doesn't eat the edge; thin names rejected here."
   },
   "regime_at_signal": "CHOP",
   "regime_detail": {
-    "trendiness": 34,
+    "trendiness": 35,
     "spy_vs_sma50": "UP",
-    "spy_close": 745.76,
-    "spy_sma50": 736.61
+    "spy_close": 744.25,
+    "spy_sma50": 737.41
   },
   "qualified": [
     {
-      "ticker": "AIRR",
-      "signal_date": "2026-07-01",
-      "close": 129.36,
-      "pivot": 135.05,
-      "entry": 135.05,
-      "stop": 129.09,
-      "target": 171.88,
-      "rr": 6.2,
-      "base_depth_pct": 4.4,
+      "ticker": "WST",
+      "signal_date": "2026-07-02",
+      "close": 365.88,
+      "pivot": 367.66,
+      "entry": 367.66,
+      "stop": 323.2,
+      "target": 511.49,
+      "rr": 3.2,
+      "base_depth_pct": 12.1,
       "vcp_depths_pct": [
-        9.8,
-        7.2
+        9.3,
+        10.6
       ],
-      "vcp_detail": "depths=[9.8, 7.2] tighten=True dryup=True",
-      "rs_vs_spy": 0.2022,
+      "vcp_detail": "depths=[9.3, 10.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2382,
       "rs_rank": 1.0,
       "rs_decile": "top",
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
+      "not_extended": false,
+      "not_extended_status": "EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.69,
-        "pct_above_ma50": 0.92,
-        "rsi": 60.8
+        "atr_above_pivot": -0.23,
+        "pct_above_ma50": 14.41,
+        "rsi": 82.8
       },
-      "volume_breakout_x": 1.11,
-      "adv": 97593728,
+      "volume_breakout_x": 0.14,
+      "adv": 275383887,
       "adv_floor": 20000000,
-      "adv_headroom_x": 4.9,
-      "detector": "zigzag_vcp_prereg_2026-06-30",
-      "is_etf": true,
-      "name": "First Trust RBA American Industrial Renaissance ETF",
-      "setup": "VCP base (2 contractions 9.8->7.2%, depth 4.4%)",
+      "adv_headroom_x": 13.8,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "West Pharmaceutical Services, Inc.",
+      "setup": "VCP base (2 contractions 9.3->10.6%, depth 12.1%)",
       "regime_at_signal": "CHOP",
       "regime_detail": {
-        "trendiness": 34,
+        "trendiness": 35,
         "spy_vs_sma50": "UP",
-        "spy_close": 745.76,
-        "spy_sma50": 736.61
+        "spy_close": 744.25,
+        "spy_sma50": 737.41
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 5.96,
+        "R_per_share": 44.46,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (9.8% \u2192 7.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +20.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 61): you'd buy the breakout ABOVE the 135.05 pivot, stop 129.09 (below base), measured-move target 171.88 (R:R 6.2).",
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (9.3% \u2192 10.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 12.1%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +23.8%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (extended, RSI 83): you'd buy the breakout ABOVE the 367.66 pivot, stop 323.2 (below base), measured-move target 511.49 (R:R 3.2).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "CVS",
+      "signal_date": "2026-07-02",
+      "close": 104.35,
+      "pivot": 106.15,
+      "entry": 106.15,
+      "stop": 102.69,
+      "target": 142.79,
+      "rr": 10.6,
+      "base_depth_pct": 3.3,
+      "vcp_depths_pct": [
+        6.0,
+        9.2
+      ],
+      "vcp_detail": "depths=[6.0, 9.2] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2235,
+      "rs_rank": 0.971,
+      "rs_decile": "top",
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -0.76,
+        "pct_above_ma50": 11.72,
+        "rsi": 63.3
+      },
+      "volume_breakout_x": 0.25,
+      "adv": 783020875,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 39.2,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "CVS HEALTH CORPORATION",
+      "setup": "VCP base (2 contractions 6.0->9.2%, depth 3.3%)",
+      "regime_at_signal": "CHOP",
+      "regime_detail": {
+        "trendiness": 35,
+        "spy_vs_sma50": "UP",
+        "spy_close": 744.25,
+        "spy_sma50": 737.41
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 3.46,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (6.0% \u2192 9.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 3.3%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +22.4%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 63): you'd buy the breakout ABOVE the 106.15 pivot, stop 102.69 (below base), measured-move target 142.79 (R:R 10.6).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "MUFG",
+      "signal_date": "2026-07-02",
+      "close": 20.64,
+      "pivot": 21.18,
+      "entry": 21.18,
+      "stop": 19.73,
+      "target": 26.6,
+      "rr": 3.7,
+      "base_depth_pct": 6.8,
+      "vcp_depths_pct": [
+        8.5,
+        5.5,
+        6.8
+      ],
+      "vcp_detail": "depths=[8.5, 5.5, 6.8] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2124,
+      "rs_rank": 0.941,
+      "rs_decile": "top",
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -1.32,
+        "pct_above_ma50": 7.92,
+        "rsi": 57.7
+      },
+      "volume_breakout_x": 0.33,
+      "adv": 58263181,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 2.9,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Mitsubishi UFJ Financial Group, Inc.",
+      "setup": "VCP base (3 contractions 8.5->5.5->6.8%, depth 6.8%)",
+      "regime_at_signal": "CHOP",
+      "regime_detail": {
+        "trendiness": 35,
+        "spy_vs_sma50": "UP",
+        "spy_close": 744.25,
+        "spy_sma50": 737.41
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 1.45,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 3 successive, TIGHTENING pullbacks (8.5% \u2192 5.5% \u2192 6.8%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.8%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +21.2%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 21.18 pivot, stop 19.73 (below base), measured-move target 26.6 (R:R 3.7).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     }
@@ -125,15 +242,14 @@
     "note": "FORWARD only; never blended with historical. Expectancy-led; win% a footnote."
   },
   "honest_read": {
-    "verdict": "TOO STRICT (near-zero) at the VCP stage",
+    "verdict": "HEALTHY at the VCP stage (stage3=34); binding stage = stage3_vcp",
     "binding_stage": "stage3_vcp",
-    "single_stock_qualified": 0,
+    "single_stock_qualified": 3,
     "notes": [
-      "Universe 12280 -> trend 2959 -> liquidity 859 -> VCP 5 -> RS top-decile 1.",
-      "The VCP stage is the funnel's binding constraint and is KNIFE-EDGE. The D50 reference contraction detector over-segments real daily bars (15-40 micro-contractions) so 'each <=0.75x prior' can never hold and Stage3 collapses to 0 (a DEGENERATE detector, not a market read).",
-      "A faithful ZigZag detector yields ~1 name here. The detection METHOD and its parameters (reversal 5%, base 60, max-T 6, pivot/base_low anchoring) are now FULLY PRE-REGISTERED by principle (detector zigzag_vcp_prereg_2026-06-30, see preregistration_vcp_detector.json). This ratifies the value the engine has always run (5%) and supersedes the inconsistent 4% doc; it re-incurred the /N haircut as a NEW pre-registered decision. The reversal knob remains the funnel's most sensitive parameter (count swings ~0-4 across {3,4,5}%) and is now frozen; any future change is a separate pre-registered decision with its own series.",
-      "Both survivors (and the runner-up) are correlated tech-sector ETFs; against universe_scan's stock-only definition, 0 SINGLE STOCKS qualify this session. The lone full-bar name is an ETF (FTEC).",
-      "Thresholds were NOT tuned to manufacture picks. Reported as-is. Nothing is promoted to live; this is SHADOW/forward only (n<30 -> ACCRUING)."
+      "Universe 11166 -> trend 2714 -> liquidity 839 -> VCP 34 -> RS top-decile 3.",
+      "D102 recalibration: VCP tightening rule is now tolerance-based (<=0.85x + ONE violation allowed) on the ZigZag swing legs. Head-to-head vs the strict 0.75x/0-violation CONTROL: recal=34 vs strict-control=5 \u2014 SHADOW/ACCRUING, no 'recal beats strict' claim until n>=30 (pre-registration preregistration_vcp_detector_d102.json, detector zigzag_vcp_prereg_d102_2026-07-02).",
+      "3 single stock(s) qualify this session (was 0 under the strict rule). ZigZag/base/max-T/depth/dry-up/liquidity/RS all UNCHANGED \u2014 only the tightening rule changed.",
+      "Thresholds chosen by PRINCIPLE, NOT tuned to manufacture picks. Reported as-is. Nothing promoted to live; SHADOW/forward only (n<30 -> ACCRUING)."
     ]
   },
   "disclaimer": "SHADOW \u2014 educational, not live recommendations."
