@@ -620,14 +620,18 @@ function loadRegime(){
   try{if(localStorage.getItem("arsenal_newhint_dismissed")){n.remove();return;}}catch(e){}
   var x=document.getElementById("newhint-x");if(x)x.onclick=function(){n.remove();try{localStorage.setItem("arsenal_newhint_dismissed","1");}catch(e){}};})();
 
-const ageMin=iso=>{const t=Date.parse((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
+/* WebKit-safe timestamp parse (Dispatch 104): strip " ET" and truncate >3 fractional-second
+   digits before parsing. Feeds stamp Python isoformat() microseconds (e.g. ...:25.131562Z);
+   Safari <=14 returns NaN on >3 frac digits, silently breaking freshness. Chrome tolerates it. */
+function parseTs(s){return Date.parse(String(s==null?"":s).replace(" ET","").replace(/(\.\d{3})\d+/,"$1"));}
+const ageMin=iso=>{const t=parseTs((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
 function banner(id,cls,txt){const b=document.getElementById(id);if(!txt){b.style.display="none";return;}
   b.className="banner "+cls;b.textContent=txt;b.style.display="block";}
 /* ── pinned "last updated" freshness bar (Dispatch 24) — pure UI. Time from the DATA timestamp vs the
    viewer's clock; level (live/warn/bad/mut) is decided by each renderer's own honesty state. ── */
 function setFresh(prefix,tsIso,level){
   const el=document.getElementById(prefix+"-fresh"); if(!el) return;
-  const t=Date.parse((tsIso||"").replace(" ET",""));
+  const t=parseTs((tsIso||"").replace(" ET",""));
   if(isNaN(t)){ el.hidden=true; delete el.dataset.ts; return; }
   el.hidden=false; el.dataset.ts=String(t); el.dataset.level=level||"live";
   el.className="freshbar "+(level||"live");
@@ -758,7 +762,7 @@ const Futures = (function(){
         +'<div class="emanote">FILTERED = cross + 15m-trend gate (the version tested for edge). RAW = cross-only control — tracked under research detail.</div></div>'
       +sc;
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    const ms=parseTs(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="EMA updated "+local;
   }
   /* ── FVG entry-refinement panel (Dispatch FVG) — entry/stop layer, NOT a vote ── */
@@ -801,7 +805,7 @@ const Futures = (function(){
       +guid
       +'<div class="card"><h2>2-mode scorecard'+hI("scorecard")+'</h2>'+hP("scorecard")+fvgScore(d)+'</div>';
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    const ms=parseTs(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="FVG updated "+local+" · last bar "+esc(d.last_bar_ts||"");
   }
   function fvgScore(d){
@@ -877,7 +881,7 @@ const Futures = (function(){
       +offbox
       +'<div class="card"><h2>3-track scorecard'+hI("scorecard")+'</h2>'+hP("scorecard")+fvgScore(d)+'</div>';
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const ms2=Date.parse(d.generated_at||""),local=isNaN(ms2)?d.generated_at:new Date(ms2).toLocaleString();
+    const ms2=parseTs(d.generated_at||""),local=isNaN(ms2)?d.generated_at:new Date(ms2).toLocaleString();
     document.getElementById("fut-foot").textContent="ICT updated "+local+" · last bar "+esc(d.last_bar_ts||"");
   }
   const STALE_MIN=10;
@@ -1021,11 +1025,11 @@ const Futures = (function(){
     let _liveTs=null;   // D60: live IQFeed price override for ES (snapshot <=10min); null-safe fallback to verdict
     try{ const _k={ES:"es",NQ:"nq",YM:"ym"}[current];
       if(_k&&futSnap&&futSnap.rows&&futSnap.rows.length&&futSnap.pushed_at){
-        const _age=Date.now()-Date.parse(futSnap.pushed_at), _r=futSnap.rows[futSnap.rows.length-1], _v=_r[_k+"_last"];
+        const _age=Date.now()-parseTs(futSnap.pushed_at), _r=futSnap.rows[futSnap.rows.length-1], _v=_r[_k+"_last"];
         if(_age<600000&&_v!=null&&_v!==""){ d=Object.assign({},d,{price:parseFloat(_v)});
           const _c=_r[_k+"_chg"]; if(_c!=null&&_c!=="") d.change=parseFloat(_c); _liveTs=futSnap.pushed_at; } }
     }catch(e){}
-    const ts0=tsOf(d), tms0=Date.parse((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
+    const ts0=tsOf(d), tms0=parseTs((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
     // ── FROZEN / DARK / LIVE honesty layer ──
     const hasLive=(d.signals||[]).some(s=>Number(s.confidence)>0);   // >=1 signal actually voted (conf>0)
     let state;
@@ -1088,7 +1092,7 @@ const Futures = (function(){
       +(current==="GC"?gcDxyPanel():"");
     document.querySelectorAll("#fut-content .tftab").forEach(el=>el.onclick=()=>{futTF=el.getAttribute("data-tf");render(d,false);});
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
+    const t=tsOf(d), ms=parseTs((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="updated "+local+" · config "+esc(d.config_hash)+" · refresh "+esc(d.update_freq_seconds)+"s";
   }
   async function load(){
@@ -1236,14 +1240,14 @@ const Stocks = (function(){
   }
   function render(){
     const age=ageMin(data.generated_at);
-    if(age!=null&&age>STOCK_FREEZE_MIN){const ms=Date.parse((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
+    if(age!=null&&age>STOCK_FREEZE_MIN){const ms=parseTs((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
       banner("stk-banner","frozen","⚠ FEED FROZEN — last daily update "+ds+" ("+Math.round(age/60)+"h ago). The daily producer may have missed a run.");}
     else banner("stk-banner","",null);
     setFresh("stk",data.generated_at,(age!=null&&age>STOCK_FREEZE_MIN)?"bad":"live");
     document.getElementById("stk-posture").innerHTML=data.posture?'<span class="posture">'+esc(data.posture)+' · '+esc(data.date)+'</span>':'';
     buildTabs(); renderSection();
     document.getElementById("stk-disc").textContent=data.disclaimer||"";
-    const ms=Date.parse(data.generated_at||""),local=isNaN(ms)?data.generated_at:new Date(ms).toLocaleString();
+    const ms=parseTs(data.generated_at||""),local=isNaN(ms)?data.generated_at:new Date(ms).toLocaleString();
     document.getElementById("stk-foot").textContent="updated "+local+" · MIN_TRIGGERED "+esc(data.min_triggered)+" · MIN_MATURED "+esc(data.min_matured);
   }
   async function load(){
@@ -1816,7 +1820,7 @@ const WaveChart=(function(){
   }
   function scorecardCard(){
     if(!sc||!sc.by_timeframe) return "";
-    const since=sc.forward_tracking_since?new Date(sc.forward_tracking_since).toLocaleDateString():"\u2014";
+    const since=sc.forward_tracking_since?new Date(parseTs(sc.forward_tracking_since)).toLocaleDateString():"\u2014";
     const th='text-align:left;color:var(--mut);font-size:9.5px;text-transform:uppercase;padding:3px 6px 3px 0;border-bottom:1px solid var(--gbrd);white-space:nowrap';
     let h='<div class="card"><div class="secttl" style="font-size:10px;letter-spacing:.5px;color:var(--mut);text-transform:uppercase;font-weight:700">Wave-count accuracy \u2014 forward, per timeframe</div>';
     h+='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;margin-top:6px;min-width:330px">';
@@ -2201,7 +2205,7 @@ const WaveChart=(function(){
       levs.forEach(function(L){ hline(L.p,"#7ee0a6",L.p.toFixed(2)+" "+esc(L.k)+(L.c?(" ×"+L.c):""),[1,4]); }); if(levs.length)shown.push("Levels"); }
     // current-price line (LIVE/DELAYED/STALE honored)
     (function(){ let px=null,tag="DELAYED",pcol=C.alt;
-      if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
+      if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-parseTs(snap.pushed_at))/60000:999;
         if(!isNaN(es)){ px=es; if(age<10){tag="LIVE";pcol=C.up;} else {tag="STALE";pcol=C.axis;} } }
       if(px==null&&n){ px=B[n-1].c; tag="DELAYED"; pcol=C.alt; }
       if(layers.priceline&&px!=null){ const y=Y(px); ctx.save(); ctx.globalAlpha=.75; ctx.strokeStyle=pcol; ctx.lineWidth=1.4; ctx.setLineDash([4,3]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
@@ -2684,7 +2688,7 @@ const Auction=(function(){
   async function load(){
     const el=document.getElementById("auction-content"); el.innerHTML='<div class="loading">Loading…</div>';
     let snap=null; try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){}
-    const age=(snap&&snap.pushed_at)?(Date.now()-Date.parse(snap.pushed_at))/60000:null; const fresh=(age!=null&&age<12);
+    const age=(snap&&snap.pushed_at)?(Date.now()-parseTs(snap.pushed_at))/60000:null; const fresh=(age!=null&&age<12);
     try{ picks=await ghFetch("stk_picks.json"); }catch(e){}
     let h=instSwitcher();
     if(inst==="stk"&&!stockTicker){ el.innerHTML=h+'<div class="card">Select a screener pick above to read its auction (volume profile) — daily-degree, built on demand.</div>'; wire(); return; }
@@ -2707,13 +2711,13 @@ function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ 
 function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
   fetch(API_BASE+"internals_snapshot.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(function(d){
     if(!d||!d.pushed_at){ p.className="statuspill"; t.textContent="feeds"; return; }
-    var age=(Date.now()-Date.parse(d.pushed_at))/60000;
+    var age=(Date.now()-parseTs(d.pushed_at))/60000;
     if(age<12){ p.className="statuspill live"; t.textContent="LIVE \u00b7 "+Math.max(0,Math.round(age))+"m"; }
     else { p.className="statuspill stale"; t.textContent="STALE \u00b7 "+(age<120?Math.round(age)+"m":Math.round(age/60)+"h"); }
   }).catch(function(){ p.className="statuspill"; t.textContent="feeds"; }); }
 var _VF={active:"internals_snapshot.json",overview:"verdict.json",alerts:"alert_prefs.json",audit:"daily_audit_latest.json",wavechart:"es_wave_daily.json",performance:"perf_summary.json",proscreen:"screener_v2_funnel.json",stocks:"stock_dashboard.json",account:"swing_account_sim.json",auction:"ict_state.json",prices:"internals_snapshot.json",futures:"internals_snapshot.json",orb:"internals_snapshot.json",journal:"internals_snapshot.json",tammy:"tammy_setups.json",tictoc:"tictoc_picks.json",esswing:"es_swing_thesis.json"};
 var _VFHB={prices:1,futures:1,orb:1,journal:1,active:1};   // these use the data heartbeat (no single own feed)
-function _fmtT(ts){ try{ var d=new Date(ts); return d.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }catch(e){ return String(ts); } }
+function _fmtT(ts){ try{ var d=new Date(parseTs(ts)); return d.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }catch(e){ return String(ts); } }
 function _updateFresh(v){ var el=document.getElementById("freshbar"); if(!el)return; var fn=_VF[v];
   if(!fn){ el.innerHTML=""; return; }
   el.innerHTML='<span style="color:var(--mut)">\u27f3 checking last update\u2026</span>';
@@ -2721,7 +2725,7 @@ function _updateFresh(v){ var el=document.getElementById("freshbar"); if(!el)ret
     if(!d){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 feed not available</span>'; return; }
     var ts=d.generated_at||d.pushed_at||d.as_of||d._updated||d.updated||d.timestamp||d.date||null;
     if(!ts){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 n/a</span>'; return; }
-    var age=(Date.now()-Date.parse(ts))/60000, fresh=age<15;
+    var age=(Date.now()-parseTs(ts))/60000, fresh=age<15;
     var ago=age<1?"just now":(age<60?Math.round(age)+"m ago":(age<1440?Math.round(age/60)+"h ago":Math.round(age/1440)+"d ago"));
     var col=fresh?"var(--pos-ink)":"var(--warn-ink)", dot=fresh?"var(--green)":"var(--amber)";
     el.innerHTML='<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dot+';margin-right:6px;vertical-align:middle"></span><span style="color:'+col+'">'+(_VFHB[v]?"data heartbeat":"this tab\u2019s data")+' \u00b7 updated '+ago+'</span><span style="color:var(--mut)"> \u00b7 '+_fmtT(ts)+(fresh?"":" \u00b7 STALE")+'</span>';
@@ -2804,7 +2808,7 @@ const TicToc=(function(){
     var m={"WAITING":[C.mut,"WAITING"],"IN ZONE":[C.pos,"IN ZONE — actionable"],"TARGET-HIT":[C.blue,"TARGET-HIT"],"unknown":[C.dim,"—"]};
     var x=m[st]||m.unknown; return '<span style="font-weight:750;color:'+x[0]+';border:1px solid '+x[0]+';padding:1px 7px;border-radius:10px;font-size:11px">'+x[1]+'</span>';
   }
-  function ageOf(d){ try{var t=Date.parse(d);if(isNaN(t))return"";var h=(Date.now()-t)/3.6e6;return h<48?Math.round(h)+"h ago":Math.round(h/24)+"d ago";}catch(e){return"";} }
+  function ageOf(d){ try{var t=parseTs(d);if(isNaN(t))return"";var h=(Date.now()-t)/3.6e6;return h<48?Math.round(h)+"h ago":Math.round(h/24)+"d ago";}catch(e){return"";} }
   function engineLine(s){
     var av=(s.arsenal||{}).verdict; if(!av) return '<span style="color:'+C.mut+'">Engine cross-check: no verdict for this ticker</span>';
     var bull=s.direction==="long";
@@ -2889,7 +2893,7 @@ const Tammy=(function(){
     var agree=bull?["BUY","STRONG_BUY","PULLBACK_LONG","WATCH"].indexOf(av)>=0:["SELL","AVOID","SHORT"].indexOf(av)>=0;
     return 'Tammy '+(s.direction||"?")+' vs Arsenal <b>'+esc(av)+'</b> — <span style="color:'+(agree?C.pos:C.amber)+'">'+(agree?"ALIGNS (higher interest)":"CONFLICTS (caution)")+'</span>';
   }
-  function ageOf(d){ try{var t=Date.parse(d);if(isNaN(t))return"";var h=(Date.now()-t)/3.6e6;return h<48?Math.round(h)+"h ago":Math.round(h/24)+"d ago";}catch(e){return"";} }
+  function ageOf(d){ try{var t=parseTs(d);if(isNaN(t))return"";var h=(Date.now()-t)/3.6e6;return h<48?Math.round(h)+"h ago":Math.round(h/24)+"d ago";}catch(e){return"";} }
   function card(s){
     if(s.kind==="needs_review"){
       return '<div class="card"><div style="font-weight:750">'+esc(s.ticker||"?")+' <span style="color:'+C.amber+';font-size:11px">NEEDS REVIEW</span></div>'+
@@ -3157,7 +3161,7 @@ var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
   const POLY_ONLY = ["GC","CL","BZ"];
   let SNAP=null, PF=null, PS=null;
   const num=v=>{const n=parseFloat(v);return isNaN(n)?null:n;};
-  function snapAgeMs(){ if(!SNAP||!SNAP.pushed_at) return null; const t=Date.parse(SNAP.pushed_at); return isNaN(t)?null:Date.now()-t; }
+  function snapAgeMs(){ if(!SNAP||!SNAP.pushed_at) return null; const t=parseTs(SNAP.pushed_at); return isNaN(t)?null:Date.now()-t; }
   function iqfFresh(){ const a=snapAgeMs(); return a!=null && a < IQF_STALE_MS; }
   function row(){ return (SNAP&&SNAP.rows&&SNAP.rows.length)?SNAP.rows[SNAP.rows.length-1]:null; }
   function agoStr(ms){ if(ms==null) return "n/a"; const s=Math.max(0,Math.round(ms/1000));
