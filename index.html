@@ -2509,14 +2509,27 @@ const ProScreen=(function(){
       html+='<div class="card"><div class="secttl">Qualified setups — pro structure (educational)</div>'
         +q.map(setupCard).join("")+'</div>';
     }
+    if(_mp&&Array.isArray(_mp.candidates))html+=pullbackPanel(_mp);
     html+=honestRead(d);
     html+='<div class="card">'+dwrap("Head-to-head vs current engine (FORWARD · accruing)",
         '<div class="gmut" style="line-height:1.6">'+esc(rl||"screener_v2 vs current engine — ACCRUING (need n≥30 both sides).")
         +'<br>Verdict: '+esc(hh.verdict||"ACCRUING — keep logging.")+'</div>')+'</div>';
     el.innerHTML=html;
   }
+  let _mp=null;
+  function pullbackPanel(mp){
+    const c=Array.isArray(mp.candidates)?mp.candidates:[];
+    const trig=c.filter(x=>x.triggered), armed=c.filter(x=>!x.triggered);
+    const row=x=>'<tr><td><b>'+esc(x.ticker)+'</b></td><td>'+(x.triggered?'<span class="gok">TRIGGERED</span>':'<span class="gmut">armed</span>')+'</td><td>'+esc(x.rs_pct!=null?x.rs_pct:'–')+'</td><td>'+esc(x.entry)+'</td><td>'+esc(x.stop)+'</td><td>'+esc(x.target)+'</td><td>'+esc(x.rr)+'</td></tr>';
+    return '<div class="card"><div class="secttl">Leader-Pullback — class B <span class="gmut">· SHADOW · minervini_pullback</span></div>'
+      +'<div class="gmut" style="margin:2px 0 6px;line-height:1.5">Reverse-engineered from Minervini leader-reset buys (e.g. LLY 6/25). <b>'+esc(mp.n_armed||0)+' armed · '+esc(mp.n_triggered||0)+' triggered.</b> ARMED = the setup is present (leader + MA-zone pullback + RSI reset + dry-up + R:R≥1.5); the ENTRY executes only on the reversal trigger, as a pullback-LIMIT at the MA zone. Class-C power chases (e.g. ARM +35% vs 50MA) are excluded by construction.</div>'
+      +'<div style="overflow-x:auto"><table style="width:100%;font-size:11.5px;border-collapse:collapse;min-width:340px"><tr><th style="text-align:left">ticker</th><th style="text-align:left">state</th><th>RS%</th><th>entry(limit)</th><th>stop</th><th>target</th><th>R:R</th></tr>'
+      +trig.map(row).join("")+armed.slice(0,12).map(row).join("")+'</table></div>'
+      +'<div class="gmut" style="margin-top:5px">Own forward track — ACCRUING (no claim until n≥30 AND CI-excludes-0). SHADOW — educational, not live recommendations.</div></div>';
+  }
   async function load(){
     if(!tokenReady()){ document.getElementById("ps-content").innerHTML=emptyState("— paste your read-only GitHub token to load the feed."); return; }
+    _mp=null; try{ _mp=await ghFetch("minervini_pullback.json"); }catch(e){}
     try{ const d=await ghFetch(FEED); render(d); }
     catch(e){ render(null); }   // absent feed => honest empty state (graceful)
   }
