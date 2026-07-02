@@ -1,0 +1,358 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Arsenal — Paper Sim (PRACTICE)</title>
+<!-- Dispatch 100 — STAGED paper-trading simulator. Self-contained; live index.html UNTOUCHED. Reuses the
+     wave-chart drawing formulas (candles / EMA k=2/(p+1) / Keltner EMA55±4ATR / VP). PRACTICE book only:
+     journal is localStorage (best-effort, D63) + in-memory fallback + export; NEVER pushed, NEVER merged
+     into real scorecards. Honest fills (gap-through at open). No fabricated internals for pre-archive dates. -->
+<style>
+:root{--bg:#0b0f17;--card:#121826;--ink:#eef3fb;--mut:#8b97ab;--axis:#8b97ab;--brd:#22304a;--up:#3fd07a;--dn:#f0616d;--pri:#6ea8ff;--amber:#ffcf6b;--vp:#ffcf6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding:10px}
+h1{font-size:16px;margin:4px 0 2px}
+.banner{background:rgba(255,207,107,.12);border:1px solid rgba(255,207,107,.5);color:#ffe9bd;border-radius:8px;padding:8px 10px;font-size:11.5px;font-weight:600;margin:6px 0}
+.tabs{display:flex;gap:6px;margin:8px 0}
+.tab{flex:1;text-align:center;padding:8px;border:1px solid var(--brd);border-radius:8px;font-weight:700;cursor:pointer;user-select:none;color:var(--mut)}
+.tab.on{background:var(--pri);color:#06101f;border-color:var(--pri)}
+.card{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:10px;margin:8px 0}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+button,select,input{font:inherit}
+.btn{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--brd);border-radius:8px;padding:7px 12px;font-weight:650;cursor:pointer;user-select:none}
+.btn.big{padding:12px 16px;font-size:15px;font-weight:800}
+.btn.pri{background:var(--pri);color:#06101f;border-color:var(--pri)}
+.btn.up{background:rgba(63,208,122,.16);border-color:var(--up);color:var(--up)}
+.btn.dn{background:rgba(240,97,109,.16);border-color:var(--dn);color:var(--dn)}
+.btn.on{outline:2px solid var(--pri)}
+select,input{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--brd);border-radius:8px;padding:7px}
+.src{font-size:11px;color:var(--mut)}
+.chip{display:inline-block;font-size:10px;font-weight:700;border:1px solid var(--brd);border-radius:999px;padding:1px 7px;color:var(--mut)}
+.chip.tag{color:var(--amber);border-color:rgba(255,207,107,.5)}
+canvas{width:100%;display:block;background:#0a0e16;border-radius:8px;touch-action:none}
+table{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:3px 5px;border-bottom:1px solid var(--brd)}
+.ck{font-size:12px;margin:2px 0}
+.ck .ok{color:var(--up)} .ck .no{color:var(--dn)}
+.pos{font-weight:700}
+.hid{display:none}
+.big-step{width:100%;padding:16px;font-size:17px;font-weight:800;background:var(--pri);color:#06101f;border:none;border-radius:10px;cursor:pointer;margin-top:6px}
+.warn{color:var(--dn)} .good{color:var(--up)} .mut{color:var(--mut)}
+</style></head>
+<body><div class="wrap">
+<h1>Arsenal — Paper Trading Simulator <span class="chip">PRACTICE</span></h1>
+<div class="banner">⚠ PRACTICE — simulated fills, no slippage or emotion; paper results do NOT prove edge. <b>Rule adherence is the training metric</b>, not P&amp;L (small-n paper P&amp;L is noise). Nothing here touches real scorecards or is ever pushed.</div>
+<div class="tabs"><div class="tab on" data-m="replay">Replay</div><div class="tab" data-m="drill">Drill</div><div class="tab" data-m="review">Review</div></div>
+<div id="app"><div class="card">Loading replay bundle…</div></div>
+</div>
+<script>
+"use strict";
+/* ============ shared helpers (reuse the wave-chart drawing formulas) ============ */
+function emaSeries(cl,p){const k=2/(p+1),out=new Array(cl.length).fill(null);let e=null,seed=0,cnt=0;
+  for(let i=0;i<cl.length;i++){if(cnt<p){seed+=cl[i];cnt++;if(cnt===p){e=seed/p;out[i]=e;}}else{e=cl[i]*k+e*(1-k);out[i]=e;}}return out;}
+function atrSeries(B,p){const tr=[];for(let i=0;i<B.length;i++){tr.push(i===0?(B[i].h-B[i].l):Math.max(B[i].h-B[i].l,Math.abs(B[i].h-B[i-1].c),Math.abs(B[i].l-B[i-1].c)));}
+  const out=[];for(let i=0;i<tr.length;i++){const q=Math.min(p,i+1);let s=0;for(let j=i-q+1;j<=i;j++)s+=tr[j];out.push(s/q);}return out;}
+function computeVP(B,nb){nb=nb||40;if(!B||!B.length)return null;let lo=Math.min.apply(null,B.map(b=>b.l)),hi=Math.max.apply(null,B.map(b=>b.h));if(hi<=lo)return null;
+  const bw=(hi-lo)/nb,vol=new Array(nb).fill(0);B.forEach(b=>{const v=b.v||0,tp=(b.h+b.l+b.c)/3;vol[Math.min(nb-1,Math.max(0,Math.floor((tp-lo)/bw)))]+=v;});
+  const total=vol.reduce((a,c)=>a+c,0)||1;let pi=0;vol.forEach((v,i)=>{if(v>vol[pi])pi=i;});let li=pi,hii=pi,acc=vol[pi],tgt=total*0.7;
+  while(acc<tgt&&(li>0||hii<nb-1)){const up=hii<nb-1?vol[hii+1]:-1,dn=li>0?vol[li-1]:-1;if(up>=dn&&hii<nb-1){hii++;acc+=vol[hii];}else if(li>0){li--;acc+=vol[li];}else break;}
+  return {lo,hi,bw,vol,maxv:Math.max.apply(null,vol),poc:lo+(pi+0.5)*bw,vah:lo+(hii+1)*bw,val:lo+li*bw};}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function fmtT(t){const d=new Date(t);const et=(d.getUTCHours()*60+d.getUTCMinutes()+(24*60-4*60))%(24*60);return String((Math.floor(et/60))%24).padStart(2,"0")+":"+String(et%60).padStart(2,"0");}
+function esDay(t){return new Date(t).toISOString().slice(0,10);}
+
+/* ============ PRACTICE journal — localStorage best-effort (D63: may be blocked) + in-memory fallback ============ */
+const KEY="arsenal_practice_journal_v1";
+let mem=[];              // in-memory always-authoritative copy
+let lsOK=false;
+(function(){try{localStorage.setItem("__t","1");localStorage.removeItem("__t");lsOK=true;}catch(e){lsOK=false;}})();
+function jLoad(){if(lsOK){try{const r=localStorage.getItem(KEY);if(r)mem=JSON.parse(r)||[];}catch(e){}}return mem;}
+function jSave(rows){mem=rows;if(lsOK){try{localStorage.setItem(KEY,JSON.stringify(rows));}catch(e){lsOK=false;}}}
+function jAdd(rec){const r=jLoad();r.push(rec);jSave(r);}
+jLoad();
+
+/* ============ order simulator — honest fills incl gap-through-at-open ============ */
+/* pos: {dir, entry, stop, target, size, filled, entryBar, exit, exitBar, exitReason, pnl} */
+function newTicket(){return {dir:null,type:"market",limit:null,stop:null,target:null,size:1,pending:false};}
+function processBar(state,bar,barIdx){
+  const t=state.ticket, p=state.pos;
+  // 1) entry fill
+  if(t.pending&&!p){
+    let fill=null;
+    if(t.type==="market"){ fill=bar.o; }                                  // market = next bar open
+    else if(t.type==="limit"&&t.limit!=null){
+      if(t.dir==="long"&&bar.l<=t.limit) fill=Math.min(t.limit,bar.o);     // gap-through -> better (open)
+      if(t.dir==="short"&&bar.h>=t.limit) fill=Math.max(t.limit,bar.o);
+    }
+    if(fill!=null){ state.pos={dir:t.dir,entry:round2(fill),stop:t.stop,target:t.target,size:t.size,entryBar:barIdx,exit:null}; t.pending=false; state.log.push("FILLED "+t.dir.toUpperCase()+" @ "+round2(fill)+(t.type==="limit"&&(fill!==t.limit)?" (gap fill)":"")); }
+    return;
+  }
+  // 2) manage open position (stop first — conservative)
+  if(p&&!p.exit){
+    const long=p.dir==="long";
+    if(p.stop!=null){
+      const hit=long?(bar.l<=p.stop):(bar.h>=p.stop);
+      if(hit){ const gap=long?(bar.o<p.stop):(bar.o>p.stop); const px=gap?bar.o:p.stop; closePos(state,px,barIdx,gap?"STOP (gap-through @open)":"STOP"); return; }
+    }
+    if(p.target!=null){
+      const hit=long?(bar.h>=p.target):(bar.l<=p.target);
+      if(hit){ const gap=long?(bar.o>p.target):(bar.o<p.target); const px=gap?bar.o:p.target; closePos(state,px,barIdx,gap?"TARGET (gap @open)":"TARGET"); return; }
+    }
+  }
+}
+function closePos(state,px,barIdx,reason){const p=state.pos;p.exit=round2(px);p.exitBar=barIdx;p.exitReason=reason;
+  p.pnl=round2((p.dir==="long"?(px-p.entry):(p.entry-px))*p.size);state.log.push("CLOSED "+reason+" @ "+round2(px)+" · "+(p.pnl>=0?"+":"")+p.pnl+" pt");}
+function round2(x){return Math.round(x*100)/100;}
+
+/* ============ playbook (drill rule cards) ============ */
+const PLAYBOOK={
+ washout_long:{name:"WASHOUT LONG",tag:"WASHOUT",dir:"long",
+   card:"Flush INTO a level then a RECLAIM close back above it. Entry = on the reclaim CLOSE (not the flush). Stop = beyond the sweep extreme + ATR buffer. R:R ≥ 1.5. Eject if it fails to reclaim.",
+   checks:["Entered on/after the reclaim bar (not early into the flush)","Stop is BELOW the washout low (beyond the sweep extreme)","R:R ≥ 1.5 at entry","Size within rule (≤3 MES; half-size if unsure)"]},
+ failed_retest:{name:"FAILED RETEST",tag:"SWEEP_RECLAIM",dir:"short",
+   card:"Break, weak retest that FAILS to reclaim, then continuation. Entry = on the failed-retest rejection. Stop = beyond the retest swing high. R:R ≥ 1.5.",
+   checks:["Entered on the failed retest (rejection), not the first break","Stop beyond the retest swing extreme","R:R ≥ 1.5 at entry","Size within rule"]},
+ cluster_fade:{name:"CLUSTER FADE",tag:"CHOP",dir:"short",
+   card:"Fade INTO a multi-source level cluster with divergence. HALF-SIZE (mean-revert, lower conviction). Stop beyond the cluster. R:R ≥ 1.5.",
+   checks:["Faded into a real cluster (not mid-range)","HALF-SIZE respected (≤ half normal)","Stop beyond the cluster","R:R ≥ 1.5 at entry"]},
+ level_break_swing:{name:"LEVEL-BREAK SWING (D90)",tag:"TREND_UP",dir:"long",
+   card:"60m CLOSE through a confluence decision level (not a wick). Target = next level. R:R ≥ 2. This is the D90 swing rule.",
+   checks:["Entered on a 60m CLOSE through the level (not a wick poke)","Stop beyond the broken level + buffer","R:R ≥ 2 at entry (D90 floor)","Size within rule"]},
+};
+
+/* ============ app state + boot ============ */
+let BUNDLE=null, MODE="replay";
+let S=null;   // active sim state
+
+function boot(){
+  fetch("replay_bundle_es.json").then(r=>r.json()).then(d=>{BUNDLE=d;render();})
+    .catch(()=>{document.getElementById("app").innerHTML='<div class="card warn">Could not load replay_bundle_es.json (build it with build_replay_bundle_d100.py).</div>';});
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{MODE=t.getAttribute("data-m");document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));render();});
+
+function render(){ if(!BUNDLE)return; if(MODE==="replay")renderReplay(); else if(MODE==="drill")renderDrill(); else renderReview(); }
+
+/* ---------- REPLAY ---------- */
+function startSession(dateOrRandom,blind,forcedTag){
+  let sess;
+  const pool=BUNDLE.sessions.filter(s=>(s.bars15&&s.bars15.length>=5)&&(!forcedTag||s.tag===forcedTag));
+  if(dateOrRandom==="__random__"){ sess=pool[Math.floor((Date.now()%1000)/1000*pool.length)]||pool[pool.length-1]; if(!sess)sess=pool[0]; sess=pool[(pool.length-1)-(new Date().getSeconds()%pool.length)]; }
+  else sess=BUNDLE.sessions.find(s=>s.date===dateOrRandom)||pool[0];
+  S={sess,tf:"15m",idx:5,blind:!!blind,ticket:newTicket(),pos:null,log:[],playing:false,speed:700,timer:null,drill:forcedTag?arguments[3]:null};
+  render();
+}
+function curBars(){return S.tf==="15m"?S.sess.bars15:S.sess.bars60;}
+function renderReplay(){
+  const app=document.getElementById("app");
+  if(!S){ // picker
+    const opts=BUNDLE.sessions.map(s=>'<option value="'+s.date+'">'+s.date+' · '+s.tag+(s.internals_archived?" · internals✓":"")+'</option>').join("");
+    app.innerHTML='<div class="card"><b>REPLAY</b> — step a past session bar-by-bar; place paper orders; fills simulate as bars advance.'
+      +'<div class="row" style="margin-top:8px"><select id="pick" style="flex:1">'+opts+'</select><button class="btn pri" id="go">Load</button></div>'
+      +'<div class="row" style="margin-top:6px"><button class="btn" id="rand">🎲 Blind Random (date hidden)</button></div>'
+      +'<div class="src" style="margin-top:6px">Tags are a labeled heuristic. Blind mode hides the date until you finish — kills hindsight bias.</div></div>';
+    document.getElementById("go").onclick=()=>startSession(document.getElementById("pick").value,false);
+    document.getElementById("rand").onclick=()=>startSession("__random__",true);
+    return;
+  }
+  const B=curBars(), i=Math.min(S.idx,B.length-1), view=B.slice(0,i+1);
+  const last=view[view.length-1];
+  const hdr=S.blind?'<span class="chip">BLIND — date hidden</span>':'<span class="chip tag">'+esc(S.sess.date)+'</span> <span class="chip tag">'+esc(S.sess.tag)+'</span>';
+  let h='<div class="card"><div class="row" style="justify-content:space-between">'+hdr
+    +'<span><button class="btn '+(S.tf==="15m"?"on":"")+'" data-tf="15m">15m</button> <button class="btn '+(S.tf==="60m"?"on":"")+'" data-tf="60m">60m</button></span></div>'
+    +'<canvas id="cv" height="300"></canvas>'
+    +'<div class="src" id="barinfo"></div>'
+    // internals strip (archived only)
+    + internalsStrip()
+    +'</div>';
+  // order ticket
+  h+='<div class="card"><b>Order ticket</b> <span class="src">tap the chart to set a price into the focused field</span>'
+    +'<div class="row" style="margin-top:6px"><button class="btn up" data-dir="long">LONG</button><button class="btn dn" data-dir="short">SHORT</button>'
+    +'<select id="otype"><option value="market">market @ next open</option><option value="limit">limit</option></select></div>'
+    +'<div class="row" style="margin-top:6px">'
+    +'<label class="src">limit <input id="olimit" data-fld="limit" size="6" inputmode="decimal"></label>'
+    +'<label class="src">stop <input id="ostop" data-fld="stop" size="6" inputmode="decimal"></label>'
+    +'<label class="src">target <input id="otarget" data-fld="target" size="6" inputmode="decimal"></label>'
+    +'<label class="src">size <select id="osize"><option>1</option><option>2</option><option>3</option></select> MES</label>'
+    +'</div><div class="row" style="margin-top:6px"><button class="btn pri" id="place">Place order</button>'
+    +(S.pos&&!S.pos.exit?'<button class="btn dn" id="flat">Close @ next open</button>':'')
+    +' <span class="src" id="rr"></span></div>'
+    + posBox() +'</div>';
+  // step controls
+  h+='<div class="card"><div class="row"><button class="btn" id="jump">⏮ open</button>'
+    +'<button class="btn" id="play">'+(S.playing?"⏸ pause":"▶ play")+'</button>'
+    +'<select id="spd"><option value="1200">slow</option><option value="700" selected>med</option><option value="300">fast</option></select>'
+    +'<span class="src">bar '+(i+1)+'/'+B.length+'</span>'
+    +(i>=B.length-1?' <button class="btn pri" id="done">Finish session</button>':'')+'</div>'
+    +'<button class="big-step" id="next">▶▶ Next bar</button></div>';
+  app.innerHTML=h;
+  drawChart(view);
+  document.getElementById("barinfo").textContent="bar "+fmtT(last.t)+" · O"+last.o+" H"+last.h+" L"+last.l+" C"+last.c+" V"+(last.v||0);
+  wireReplay(view);
+}
+function internalsStrip(){
+  if(!S.sess.internals_archived) return '<div class="src" style="margin-top:5px">internals: <span class="mut">not archived for this date (D96 archive starts 2026-06-22) — not fabricated</span></div>';
+  const fileNote=S.blind?"(hidden until session end)":"overlay loads from internals_intraday_"+esc(S.sess.date)+".csv when integrated as a tab";
+  return '<div class="src" style="margin-top:5px">internals: <span class="good">archived ✓</span> (TICK/ADD/TRIN available — '+fileNote+')</div>';
+}
+function posBox(){
+  if(S.ticket.pending) return '<div class="src" style="margin-top:6px">⏳ '+esc(S.ticket.dir||"")+' '+esc(S.ticket.type)+' order PENDING — advance bars to fill.</div>';
+  if(!S.pos) return '<div class="src" style="margin-top:6px">no position.</div>';
+  const p=S.pos;
+  if(p.exit!=null) return '<div class="pos" style="margin-top:6px">'+p.dir.toUpperCase()+' '+p.entry+'→'+p.exit+' · <b class="'+(p.pnl>=0?"good":"warn")+'">'+(p.pnl>=0?"+":"")+p.pnl+' pt</b> · '+esc(p.exitReason)+'</div>';
+  return '<div class="pos" style="margin-top:6px">OPEN '+p.dir.toUpperCase()+' @'+p.entry+' stop '+p.stop+' tgt '+p.target+' × '+p.size+' MES</div>';
+}
+function drawChart(view){
+  const cv=document.getElementById("cv"); if(!cv)return; const W=cv.clientWidth||320,H=300,dpr=window.devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const PADL=4,PADR=54,PADT=8,PADB=16,n=view.length; if(!n)return;
+  let lo=Math.min.apply(null,view.map(b=>b.l)),hi=Math.max.apply(null,view.map(b=>b.h));
+  // include order lines in scale
+  [S.ticket.limit,S.ticket.stop,S.ticket.target,S.pos&&S.pos.entry,S.pos&&S.pos.stop,S.pos&&S.pos.target].forEach(v=>{if(v!=null){hi=Math.max(hi,v);lo=Math.min(lo,v);}});
+  const pr=(hi-lo)||1;lo-=pr*0.06;hi+=pr*0.06;const plotW=W-PADL-PADR,plotH=H-PADT-PADB;
+  const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW),Y=p=>PADT+(hi-p)/(hi-lo)*plotH;
+  cv._Y=Y;cv._hi=hi;cv._lo=lo;cv._plotH=plotH;cv._PADT=PADT;
+  x.font="11px ui-monospace,monospace";x.textBaseline="middle";
+  for(let g=0;g<=4;g++){const p=lo+(hi-lo)*g/4,y=Y(p);x.strokeStyle="rgba(255,255,255,.05)";x.beginPath();x.moveTo(PADL,y);x.lineTo(W-PADR,y);x.stroke();x.fillStyle="#8b97ab";x.fillText(p.toFixed(1),W-PADR+4,y);}
+  // VP (visible)
+  const vp=computeVP(view);if(vp){const pw=Math.min(70,plotW*0.28);for(let k=0;k<vp.vol.length;k++){const p0=vp.lo+k*vp.bw,y0=Y(p0),y1=Y(p0+vp.bw),wd=vp.maxv>0?vp.vol[k]/vp.maxv*pw:0,mid=p0+vp.bw/2,inva=(mid>=vp.val&&mid<=vp.vah);x.fillStyle=inva?"rgba(110,168,255,.16)":"rgba(139,151,171,.10)";x.fillRect(W-PADR-wd,Math.min(y0,y1),wd,Math.max(1,Math.abs(y1-y0)-1));}
+    line(x,Y(vp.poc),"#ffcf6b","POC",W,PADL,PADR);}
+  // candles
+  const cw=Math.max(1.2,Math.min(12,plotW/n*0.6));
+  for(let k=0;k<n;k++){const b=view[k],xx=X(k),up=b.c>=b.o;x.strokeStyle=x.fillStyle=up?"#3fd07a":"#f0616d";x.lineWidth=Math.max(.7,cw*.12);x.beginPath();x.moveTo(xx,Y(b.h));x.lineTo(xx,Y(b.l));x.stroke();const yo=Y(b.o),yc=Y(b.c);x.fillRect(xx-cw/2,Math.min(yo,yc),cw,Math.max(1,Math.abs(yc-yo)));}
+  // EMAs 9/21/50 + Keltner EMA55±4ATR (same formulas as the wave chart)
+  const cl=view.map(b=>b.c);
+  [[9,"#56c8d8"],[21,"#6ea8ff"],[50,"#ffcf6b"]].forEach(m=>{const s=emaSeries(cl,m[0]);x.strokeStyle=m[1];x.lineWidth=1;x.globalAlpha=.85;x.beginPath();let st=false;for(let k=0;k<n;k++){const v=s[k];if(v==null){st=false;continue;}st?x.lineTo(X(k),Y(v)):x.moveTo(X(k),Y(v));st=true;}x.stroke();x.globalAlpha=1;});
+  if(n>=55){const e55=emaSeries(cl,55),atr=atrSeries(view,55);[[1],[-1],[0]].forEach(bd=>{x.strokeStyle="rgba(120,210,190,.5)";x.lineWidth=bd[0]===0?1:1;if(bd[0]!==0)x.setLineDash([4,3]);x.beginPath();let st=false;for(let k=0;k<n;k++){const v=e55[k];if(v==null){st=false;continue;}const y=Y(v+bd[0]*4*atr[k]);st?x.lineTo(X(k),y):x.moveTo(X(k),y);st=true;}x.stroke();x.setLineDash([]);});}
+  // order/position lines
+  if(S.ticket.limit!=null)line(x,Y(S.ticket.limit),"#6ea8ff","limit "+S.ticket.limit,W,PADL,PADR,[3,3]);
+  if(S.pos){line(x,Y(S.pos.entry),"#eef3fb","entry "+S.pos.entry,W,PADL,PADR);
+    if(S.pos.stop!=null)line(x,Y(S.pos.stop),"#f0616d","stop "+S.pos.stop,W,PADL,PADR,[5,4]);
+    if(S.pos.target!=null)line(x,Y(S.pos.target),"#3fd07a","tgt "+S.pos.target,W,PADL,PADR,[1,3]);}
+  else{ if(S.ticket.stop!=null)line(x,Y(S.ticket.stop),"#f0616d","stop "+S.ticket.stop,W,PADL,PADR,[5,4]); if(S.ticket.target!=null)line(x,Y(S.ticket.target),"#3fd07a","tgt "+S.ticket.target,W,PADL,PADR,[1,3]); }
+}
+function line(x,y,col,lbl,W,PADL,PADR,dash){x.save();x.strokeStyle=col;x.lineWidth=1;if(dash)x.setLineDash(dash);x.beginPath();x.moveTo(PADL,y);x.lineTo(W-PADR,y);x.stroke();x.setLineDash([]);x.fillStyle=col;x.font="bold 9px ui-monospace,monospace";x.fillText(lbl,PADL+2,y-3);x.restore();}
+function wireReplay(view){
+  document.querySelectorAll("[data-tf]").forEach(b=>b.onclick=()=>{S.tf=b.getAttribute("data-tf");S.idx=Math.min(S.idx,curBars().length-1);render();});
+  document.querySelectorAll("[data-dir]").forEach(b=>b.onclick=()=>{S.ticket.dir=b.getAttribute("data-dir");document.querySelectorAll("[data-dir]").forEach(z=>z.classList.toggle("on",z===b));updRR();});
+  const ty=document.getElementById("otype");if(ty)ty.onchange=()=>{S.ticket.type=ty.value;};
+  ["limit","stop","target"].forEach(f=>{const el=document.querySelector('[data-fld="'+f+'"]');if(el)el.oninput=()=>{S.ticket[f]=el.value===""?null:parseFloat(el.value);updRR();};el&&(el.onfocus=()=>{S._focus=f;});});
+  const sz=document.getElementById("osize");if(sz)sz.onchange=()=>{S.ticket.size=parseInt(sz.value,10);};
+  const cv=document.getElementById("cv");
+  if(cv)cv.onclick=(e)=>{const rect=cv.getBoundingClientRect();const y=e.clientY-rect.top;const price=cv._hi-((y-cv._PADT)/cv._plotH)*(cv._hi-cv._lo);const f=S._focus||"stop";S.ticket[f]=round2(price);render();};
+  const pl=document.getElementById("place");if(pl)pl.onclick=placeOrder;
+  const fl=document.getElementById("flat");if(fl)fl.onclick=()=>{S._flat=true;stepBar();};
+  document.getElementById("next").onclick=stepBar;
+  const jp=document.getElementById("jump");if(jp)jp.onclick=()=>{S.idx=5;stopPlay();render();};
+  const pb=document.getElementById("play");if(pb)pb.onclick=togglePlay;
+  const sp=document.getElementById("spd");if(sp)sp.onchange=()=>{S.speed=parseInt(sp.value,10);if(S.playing){stopPlay();togglePlay();}};
+  const dn=document.getElementById("done");if(dn)dn.onclick=finishSession;
+  updRR();
+}
+function updRR(){const el=document.getElementById("rr");if(!el)return;const t=S.ticket;let entry=t.type==="limit"?t.limit:(curBars()[Math.min(S.idx+1,curBars().length-1)]||{}).o;
+  if(entry!=null&&t.stop!=null&&t.target!=null&&t.dir){const risk=Math.abs(entry-t.stop),rew=Math.abs(t.target-entry);const rr=risk>0?(rew/risk):0;el.innerHTML="R:R <b class='"+(rr>=1.5?"good":"warn")+"'>"+rr.toFixed(2)+"</b>"+(rr<1?" — below 1, risking more than target":"");S._rr=rr;}else el.textContent="";}
+function placeOrder(){const t=S.ticket;if(!t.dir){alert("pick LONG or SHORT");return;}if(t.stop==null||t.target==null){alert("set a stop and target");return;}t.pending=true;S.log.push("placed "+t.dir+" "+t.type+(t.type==="limit"?(" @"+t.limit):"")+" stop "+t.stop+" tgt "+t.target);render();}
+function stepBar(){const B=curBars();if(S.idx<B.length-1){S.idx++;const bar=B[S.idx];if(S._flat&&S.pos&&!S.pos.exit){closePos(S,bar.o,S.idx,"manual @open");S._flat=false;}else processBar(S,bar,S.idx);}else{stopPlay();}render();if(S.idx>=B.length-1)stopPlay();}
+function togglePlay(){if(S.playing)stopPlay();else{S.playing=true;S.timer=setInterval(()=>{if(S.idx>=curBars().length-1){stopPlay();render();return;}stepBar();},S.speed);render();}}
+function stopPlay(){S.playing=false;if(S.timer){clearInterval(S.timer);S.timer=null;}}
+function finishSession(){stopPlay();const p=S.pos;const rec={ts:new Date().toISOString(),mode:"replay",date:S.sess.date,tag:S.sess.tag,setup:"(free replay)",dir:p?p.dir:null,entry:p?p.entry:null,stop:p?p.stop:null,target:p?p.target:null,exit:p?p.exit:null,pnl:p?p.pnl:null,rr:S._rr||null,adherence:null};
+  if(p&&p.entry!=null)jAdd(rec);
+  const app=document.getElementById("app");
+  app.innerHTML='<div class="card"><b>Session complete</b> — <span class="chip tag">'+esc(S.sess.date)+'</span> <span class="chip tag">'+esc(S.sess.tag)+'</span>'
+    +'<div style="margin-top:6px">'+posBox().replace('style="margin-top:6px"','')+'</div>'
+    +'<div class="src" style="margin-top:6px">'+(p&&p.entry!=null?"Logged to the practice journal (localStorage "+(lsOK?"on":"BLOCKED — in-memory only, export to keep")+").":"No trade taken — nothing logged.")+'</div>'
+    +'<div class="row" style="margin-top:8px"><button class="btn pri" id="again">New session</button><button class="btn" id="rev">Review journal</button></div></div>';
+  document.getElementById("again").onclick=()=>{S=null;render();};
+  document.getElementById("rev").onclick=()=>{MODE="review";document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x.getAttribute("data-m")==="review"));render();};
+}
+
+/* ---------- DRILL ---------- */
+function renderDrill(){
+  const app=document.getElementById("app");
+  if(!S||!S.drill){
+    const opts=Object.keys(PLAYBOOK).map(k=>'<button class="btn" data-drill="'+k+'">'+esc(PLAYBOOK[k].name)+'</button>').join(" ");
+    app.innerHTML='<div class="card"><b>DRILL</b> — practice one sanctioned setup; the sim serves a matching session; your trade is GRADED on rule ADHERENCE (separate from P&amp;L).'
+      +'<div class="row" style="margin-top:8px">'+opts+'</div></div>';
+    document.querySelectorAll("[data-drill]").forEach(b=>b.onclick=()=>{const k=b.getAttribute("data-drill");const pb=PLAYBOOK[k];startSession("__random__",false,pb.tag,k);S.drill=k;render();});
+    return;
+  }
+  // reuse replay UI + show the rule card on top
+  const pb=PLAYBOOK[S.drill];
+  renderReplay();
+  const card='<div class="card" style="border-color:rgba(255,207,107,.5)"><b class="mut">RULE CARD — '+esc(pb.name)+'</b><div class="src" style="margin-top:4px;color:var(--ink)">'+esc(pb.card)+'</div></div>';
+  document.getElementById("app").insertAdjacentHTML("afterbegin",card);
+  // swap Finish to grade
+  const app2=document.getElementById("app");
+  if(S.idx>=curBars().length-1||(S.pos&&S.pos.exit)){ if(!document.getElementById("grade")){ app2.insertAdjacentHTML("beforeend",'<div class="card"><button class="btn pri" id="grade">Grade this drill</button></div>'); document.getElementById("grade").onclick=gradeDrill; } }
+}
+/* D90/D94 grade RECONSTRUCTION from the replay bars (not the live engine): cluster the session's
+   decision levels (2+ sources within ATR/3 = confluence, D94), R:R to the next level (D90 >=2 = A+). */
+function engineGrade(sess,entryPrice,dir){
+  const L=sess.levels||[]; if(!L.length||entryPrice==null) return {grade:"n/a",trace:"no reconstructed levels / no entry"};
+  const b60=sess.bars60||[]; const atr=b60.length>=2?atrSeries(b60,14).slice(-1)[0]:10; const band=Math.max(1,atr/3);
+  const near=L.slice().sort((a,b)=>Math.abs(a.price-entryPrice)-Math.abs(b.price-entryPrice))[0];
+  const cluster=L.filter(l=>Math.abs(l.price-near.price)<=band); const count=cluster.length;
+  const ahead=L.map(l=>l.price).filter(p=>dir==="long"?p>entryPrice+band:p<entryPrice-band).sort((a,b)=>dir==="long"?a-b:b-a)[0];
+  const stopL=L.map(l=>l.price).filter(p=>dir==="long"?p<entryPrice-band:p>entryPrice+band).sort((a,b)=>dir==="long"?b-a:a-b)[0];
+  let rr=null; if(ahead!=null&&stopL!=null){const risk=Math.abs(entryPrice-stopL),rew=Math.abs(ahead-entryPrice);rr=risk>0?rew/risk:null;}
+  let grade="C"; if(rr==null)grade="none"; else if(count>=2&&rr>=2)grade="A+"; else if(count>=2&&rr>=1.5)grade="A"; else if(rr>=1.5)grade="B";
+  return {grade,rr,count,trace:"cluster ×"+count+" @~"+near.price.toFixed(1)+" ("+cluster.map(l=>l.kind).join("+")+") · R:R "+(rr?rr.toFixed(2):"—")+" to next level "+(ahead?ahead.toFixed(1):"—")};
+}
+function gradeDrill(){
+  const pb=PLAYBOOK[S.drill],p=S.pos,B=curBars();
+  // derive scenario key bars for WASHOUT: low bar + reclaim bar
+  const loIdx=B.reduce((m,b,i)=>b.l<B[m].l?i:m,0);
+  const level=B[loIdx].l; let reclaimIdx=B.length-1;
+  for(let i=loIdx+1;i<B.length;i++){ if(B[i].c>B[loIdx].h){reclaimIdx=i;break;} }
+  const checks=[];
+  if(S.drill==="washout_long"){
+    checks.push([pb.checks[0], p&&p.entryBar!=null&&p.entryBar>=reclaimIdx, p&&p.entryBar<reclaimIdx?"entered at bar "+(p.entryBar+1)+" — BEFORE the reclaim (bar "+(reclaimIdx+1)+")":""]);
+    checks.push([pb.checks[1], p&&p.stop!=null&&p.stop<B[loIdx].l, p&&p.stop>=B[loIdx].l?"stop "+p.stop+" is not below the washout low "+B[loIdx].l:""]);
+    checks.push([pb.checks[2], (S._rr||0)>=1.5, (S._rr||0)<1.5?"R:R "+(S._rr||0).toFixed(2)+" < 1.5":""]);
+    checks.push([pb.checks[3], p&&p.size<=3, ""]);
+  } else {
+    // generic checks for the other setups (structure/R:R/size)
+    checks.push([pb.checks[0], !!(p&&p.entry!=null), p?"":"no entry taken"]);
+    checks.push([pb.checks[1], !!(p&&p.stop!=null), ""]);
+    checks.push([pb.checks[2], (S._rr||0)>=(S.drill==="level_break_swing"?2:1.5), (S._rr||0)+" vs floor"]);
+    checks.push([pb.checks[3], p&&p.size<=(S.drill==="cluster_fade"?2:3), ""]);
+  }
+  const passed=checks.filter(c=>c[1]).length,pct=Math.round(passed/checks.length*100);
+  const pnl=p?p.pnl:null;
+  const rec={ts:new Date().toISOString(),mode:"drill",date:S.sess.date,tag:S.sess.tag,setup:pb.name,dir:p?p.dir:null,entry:p?p.entry:null,stop:p?p.stop:null,target:p?p.target:null,exit:p?p.exit:null,pnl:pnl,rr:S._rr||null,adherence:pct};
+  jAdd(rec);
+  let h='<div class="card"><b>DRILL GRADED — '+esc(pb.name)+'</b> <span class="chip tag">'+esc(S.sess.date)+'</span>'
+    +'<div style="margin:6px 0;font-size:15px">Adherence <b class="'+(pct>=75?"good":"warn")+'">'+pct+'%</b> · P&amp;L <b class="'+((pnl||0)>=0?"good":"warn")+'">'+(pnl==null?"—":(pnl>=0?"+":"")+pnl+" pt")+'</b></div>';
+  checks.forEach(c=>{h+='<div class="ck">'+(c[1]?'<span class="ok">✓</span>':'<span class="no">✗</span>')+' '+esc(c[0])+(c[2]?' <span class="warn">— '+esc(c[2])+'</span>':'')+'</div>';});
+  // the teaching moment
+  const madeMoney=(pnl||0)>0, brokeRule=passed<checks.length;
+  h+='<div class="src" style="margin-top:8px;color:var(--ink)">'+(madeMoney&&brokeRule?'⚠ This trade MADE MONEY but BROKE a rule — that is a BAD habit reinforced. On small n, P&amp;L is noise; the checklist is the skill. Repeat until adherence is 100%.':(pct===100?'Clean execution — rules honored. Do it again to build the habit.':'Fix the ✗ items — adherence is the trainable metric.'))+'</div>';
+  const eg=engineGrade(S.sess,p?p.entry:null,p?p.dir:pb.dir);
+  h+='<div class="src" style="margin-top:6px;color:var(--ink)"><b>System (D90/D94 reconstruction</b> from the replay bars, not the live engine): would grade <b class="'+(eg.grade==="A+"||eg.grade==="A"?"good":"mut")+'">'+esc(eg.grade)+'</b> — '+esc(eg.trace)+'. Compare vs your own read — a teaching moment, not a leaderboard.</div>';
+  h+='<div class="row" style="margin-top:8px"><button class="btn pri" id="again2">Another drill</button></div></div>';
+  document.getElementById("app").innerHTML=h;
+  document.getElementById("again2").onclick=()=>{S=null;render();};
+}
+
+/* ---------- REVIEW ---------- */
+function renderReview(){
+  const rows=jLoad(),app=document.getElementById("app");
+  let h='<div class="card"><b>REVIEW</b> — practice journal ('+rows.length+' trades). Storage: '+(lsOK?'<span class="good">localStorage on</span>':'<span class="warn">localStorage BLOCKED — in-memory only; EXPORT to keep across reloads</span>')+'.'
+    +' <span class="src">This journal is PRACTICE-only — never pushed to the repo, never merged into real scorecards.</span></div>';
+  // stats by setup
+  const by={};rows.forEach(r=>{const k=r.setup||"(free)";(by[k]=by[k]||[]).push(r);});
+  h+='<div class="card"><b>By setup</b><table><tr><th>setup</th><th>n</th><th>avg pts</th><th>avg adherence</th></tr>';
+  Object.keys(by).forEach(k=>{const a=by[k],pn=a.filter(r=>r.pnl!=null),ad=a.filter(r=>r.adherence!=null);
+    const avgp=pn.length?(pn.reduce((s,r)=>s+r.pnl,0)/pn.length).toFixed(1):"—";const avga=ad.length?Math.round(ad.reduce((s,r)=>s+r.adherence,0)/ad.length)+"%":"—";
+    h+='<tr><td>'+esc(k)+'</td><td>'+a.length+'</td><td>'+avgp+'</td><td>'+avga+'</td></tr>';});
+  h+='</table><div class="src" style="margin-top:6px">Adherence is the training metric; small-n P&amp;L is noise.</div></div>';
+  // recent trades
+  h+='<div class="card"><b>Recent</b><table><tr><th>date</th><th>setup</th><th>dir</th><th>pts</th><th>adh</th></tr>';
+  rows.slice(-12).reverse().forEach(r=>{h+='<tr><td>'+esc(r.date)+'</td><td>'+esc((r.setup||"").slice(0,14))+'</td><td>'+esc(r.dir||"—")+'</td><td class="'+((r.pnl||0)>=0?"good":"warn")+'">'+(r.pnl==null?"—":r.pnl)+'</td><td>'+(r.adherence==null?"—":r.adherence+"%")+'</td></tr>';});
+  h+='</table></div>';
+  h+='<div class="card"><div class="row"><button class="btn pri" id="expj">Export JSON</button><button class="btn" id="expc">Export CSV</button><button class="btn dn" id="clr">Clear journal</button></div><textarea id="exp" class="hid" style="width:100%;height:120px;margin-top:6px"></textarea></div>';
+  app.innerHTML=h;
+  document.getElementById("expj").onclick=()=>{const t=document.getElementById("exp");t.classList.remove("hid");t.value=JSON.stringify(rows,null,1);t.select();};
+  document.getElementById("expc").onclick=()=>{const t=document.getElementById("exp");t.classList.remove("hid");const cols=["ts","mode","date","tag","setup","dir","entry","stop","target","exit","pnl","rr","adherence"];t.value=cols.join(",")+"\n"+rows.map(r=>cols.map(c=>r[c]==null?"":r[c]).join(",")).join("\n");t.select();};
+  document.getElementById("clr").onclick=()=>{if(confirm("Clear the practice journal?")){jSave([]);render();}};
+}
+boot();
+</script></body></html>

@@ -354,6 +354,7 @@
       <div class="toptab" data-v="tammy">Tammy/Fib</div>
       <div class="toptab" data-v="tictoc">Tic Toc</div>
       <div class="toptab" data-v="esswing">ES Swing</div>
+      <div class="toptab" data-v="sim">Sim 🎮</div>
     </div>
   </div>
   <div id="freshbar" style="font-size:10.5px;font-weight:650;margin:-9px 2px 14px;min-height:15px;letter-spacing:.2px"></div>
@@ -364,6 +365,7 @@
   <div id="tammy" hidden><div id="tammy-content"><div class="loading">Loading…</div></div></div>
   <div id="tictoc" hidden><div id="tictoc-content"><div class="loading">Loading…</div></div></div>
   <div id="esswing" hidden><div id="esswing-content"><div class="loading">Loading…</div></div></div>
+  <div id="sim" hidden><div class="src" style="margin:2px 0 6px">🎮 <b>Paper Trading Simulator</b> — PRACTICE book (isolated: localStorage-only, never merged into real scorecards). Replay / Drill / Review.</div><iframe id="simframe" data-src="sim_d100_staged.html" title="Paper sim" style="width:100%;height:80vh;border:1px solid var(--gbrd);border-radius:12px;background:#0b0f17"></iframe></div>
 
   <div id="performance" hidden>
     <div id="performance-content"><div class="loading">Loading…</div></div>
@@ -2745,6 +2747,8 @@ function showView(v){
   document.getElementById("tammy").hidden=(v!=="tammy");
   document.getElementById("tictoc").hidden=(v!=="tictoc");
   document.getElementById("esswing").hidden=(v!=="esswing");
+  document.getElementById("sim").hidden=(v!=="sim");
+  if(v==="sim"){var _sf=document.getElementById("simframe"); if(_sf&&!_sf.src)_sf.src=_sf.dataset.src;}   // lazy-load the isolated sim iframe on first open
   const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],auction:[Auction,"auction"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
     proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"],tammy:[Tammy,"tammy"],tictoc:[TicToc,"tictoc"],esswing:[ESSwing,"esswing"]};
