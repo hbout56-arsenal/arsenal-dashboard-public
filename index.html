@@ -3443,21 +3443,26 @@ body.d107 #subpills.show{display:flex}
         + '<span style="color:'+(live?"var(--pos-ink)":"var(--warn-ink)")+'">'+(live?"FEEDS LIVE":"FEEDS STALE")+'</span>'
         + '<span style="margin-left:auto;color:var(--mut);font-weight:650">'+(hbTs?freshText(hbTs):"—")+'</span></div>';
 
-      var posture = verdict && (verdict.posture||verdict.stance||verdict.regime||verdict.bias);
-      var level = verdict && (verdict.key_level||verdict.decision_level||verdict.pivot||(verdict.levels&&(verdict.levels.key||verdict.levels.pivot)));
+      var vg = (verdict && verdict.guidance) || {};
+      var posture = vg.direction || (verdict && verdict.long_pct!=null ? (verdict.long_pct>=verdict.hold_pct&&verdict.long_pct>=verdict.short_pct?"LONG":(verdict.short_pct>=verdict.hold_pct?"SHORT":"HOLD")) : null);
+      var conf = (verdict && verdict.long_pct!=null) ? Math.max(verdict.long_pct,verdict.hold_pct,verdict.short_pct) : null;
+      var level = vg.entry!=null ? vg.entry : (verdict && verdict.confluence_zones && verdict.confluence_zones[0] ? verdict.confluence_zones[0].price : null);
+      var pcol = posture==="LONG"?"var(--pos-ink)":(posture==="SHORT"?"var(--neg-ink)":"var(--ink)");
       h += card("Posture · key level","overview",
-            '<div style="font-size:22px;font-weight:850;color:var(--ink)">'+esc(posture||"—")+'</div>'
+            '<div style="font-size:22px;font-weight:850;color:'+pcol+'">'+esc(posture||"—")+(conf!=null?' <span style="font-size:13px;color:var(--mut);font-weight:700">'+esc(conf)+'%</span>':"")+'</div>'
           + '<div class="src" style="margin-top:4px;color:var(--mut)">Key decision level: <b style="color:var(--ink)">'+esc(level!=null?level:"see Overview")+'</b></div>');
 
       var st = esswing && (esswing.state||"");
       var grade = esswing && (esswing.grade || (esswing.thesis&&esswing.thesis.grade));
       if(!grade){ grade = (st==="SETUP")?"A":(st?"C":"—"); }
       var th = (esswing&&esswing.thesis)||{}, stale = esswing && esswing.delayed;
+      var nl = esswing && esswing.nearest_levels && esswing.nearest_levels[0];
+      var noSetupTxt = "No level-break setup right now — honest, not forced." + (nl?(" · nearest "+esc(nl.level)+" ("+esc(nl.kind)+")"):"");
       h += card("ES Swing — hours-hold","esswing",
             '<div style="display:flex;align-items:center;gap:14px">'
           + '<div class="grade '+gradeClass(grade)+'">'+esc(grade)+'</div>'
           + '<div style="min-width:0"><div style="font-weight:800;font-size:15px;color:var(--ink)">'+esc(st||"no setup")+(th.dir?" · "+esc(String(th.dir).toUpperCase()):"")+'</div>'
-          + '<div class="src" style="color:var(--mut);margin-top:3px">'+(th.level?("level "+esc(th.level)+" · R:R "+esc(th.rr||"—")):"No level-break setup right now — honest, not forced.")+(stale?' · <span style="color:var(--warn-ink)">bars stale</span>':"")+'</div></div></div>');
+          + '<div class="src" style="color:var(--mut);margin-top:3px">'+(th.level?("level "+esc(th.level)+" · R:R "+esc(th.rr||"—")):noSetupTxt)+(stale?' · <span style="color:var(--warn-ink)">bars stale</span>':"")+'</div></div></div>');
 
       var row = internals && (internals.rows&&internals.rows.length?internals.rows[internals.rows.length-1]:internals);
       function iv(keys){ if(!row) return "—"; for(var i=0;i<keys.length;i++){ if(row[keys[i]]!=null&&row[keys[i]]!=="") return row[keys[i]]; } return "—"; }
@@ -3468,10 +3473,15 @@ body.d107 #subpills.show{display:flex}
           + '<div class="m"><b>'+esc(iv(["trin","TRIN","nyse_trin"]))+'</b><span>TRIN</span></div>'
           + '</div><div style="margin-top:8px;font-size:11px">'+freshPill(hbTs)+'</div>');
 
-      var al = alerts && (alerts.latest || (alerts.recent&&alerts.recent[0]) || (Array.isArray(alerts.alerts)&&alerts.alerts[0]));
-      var altxt = al ? (al.text||al.message||al.label||al.title||null) : null;
-      h += card("Latest alert","alerts",
-            '<div style="font-size:13.5px;color:var(--ink);font-weight:650">'+esc(altxt||"No recent alert — feed quiet.")+'</div>');
+      // alert_prefs.json is toggles/thresholds (no live "latest alert" feed exists) → honest re-presentation: how many are armed.
+      var armed=0, atot=0;
+      if(alerts){ Object.keys(alerts).forEach(function(k){ if(k.charAt(0)==="_") return; var v=alerts[k];
+        if(v && typeof v==="object" && "enabled" in v){ atot++; if(v.enabled) armed++; }
+        else if(typeof v==="boolean"){ atot++; if(v) armed++; }
+        else if(typeof v==="number"){ atot++; armed++; } }); }
+      h += card("Alerts armed","alerts",
+            '<div style="font-size:22px;font-weight:850;color:var(--ink)">'+(atot?esc(armed)+' <span style="font-size:13px;color:var(--mut);font-weight:700">/ '+esc(atot)+' armed</span>':"—")+'</div>'
+          + '<div class="src" style="margin-top:3px;color:var(--mut)">Tap to review alert toggles &amp; thresholds.</div>');
 
       var ev = nextEvent(cal);
       h += card("Next event","overview",
