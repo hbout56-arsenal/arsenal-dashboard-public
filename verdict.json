@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-03T02:47:03",
+  "timestamp": "2026-07-03T03:52:02",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
-  "es_price": 7561.75,
+  "es_price": 7553.25,
   "es_change": null,
-  "price": 7561.75,
+  "price": 7553.25,
   "change": null,
   "price_source": "ema_state 5m (IQFeed @ES#, freshest)",
-  "price_age_s": 732,
+  "price_age_s": 768,
   "internals_fresh": false,
-  "internals_age_s": 38524,
+  "internals_age_s": 42423,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
-  "hold_pct": 100.0,
-  "short_pct": 0.0,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 7561.75 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 7553.25 at 1-method confluence (VP) near 7554.02 (resistance)"
     },
     {
       "name": "Breadth",
@@ -69,23 +69,23 @@
     {
       "name": "EMA_Context",
       "pillar": "EMA_Context",
-      "verdict": "LONG",
+      "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "EMA: 9>21 5m \u00b7 15m trend up \u2014 context, NON-VOTING (weight 0)"
+      "reason": "EMA: 9<21 5m \u00b7 15m trend up \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "FVG_Context",
       "pillar": "FVG_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "FVG: nearest bull gap 7558.25-7561.0 unmitigated floating (no confluence) (0.75pt away) \u2014 context, NON-VOTING (weight 0)"
+      "reason": "FVG: nearest bull gap 7531.5-7539.75 unmitigated floating (no confluence) (13.5pt away) \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "ICT_Context",
       "pillar": "ICT_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "ICT: bias LONG \u00b7 untapped sell-side 7551.5 \u00b7 swept 7553.75 + MSS confirmed \u2014 context, NON-VOTING (weight 0)"
+      "reason": "ICT: bias LONG \u00b7 untapped sell-side 7551.5 \u00b7 swept 7554.5 + MSS confirmed \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "InsideBar_Context",
@@ -95,7 +95,15 @@
       "reason": "Inside Bar: no A+ coil near price \u2014 context, NON-VOTING (weight 0)"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 7554.02,
+      "dist": 0.77,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
@@ -108,21 +116,21 @@
     "5m": {
       "timeframe": "5m",
       "long_pct": 0.0,
-      "hold_pct": 41.5,
-      "short_pct": 58.5,
-      "price": 7560.5,
+      "hold_pct": 90.0,
+      "short_pct": 10.0,
+      "price": 7553.25,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "IQFeed @ES# 5m (in-guest)",
       "state": "live",
-      "bar_age_min": 2.1,
+      "bar_age_min": 2.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "SHORT",
-          "confidence": 65.0,
-          "reason": "price 7560.50 at 2-method confluence (FIB+VP) near 7563.19 (resistance)"
+          "confidence": 30.0,
+          "reason": "price 7553.25 at 1-method confluence (VP) near 7555.19 (resistance)"
         },
         {
           "name": "Breadth",
@@ -143,7 +151,7 @@
           "pillar": "Structure",
           "verdict": "LONG",
           "confidence": 45.0,
-          "reason": "price 7560.50 > prior_close 7526.25 (daily fallback)"
+          "reason": "price 7553.25 > prior_close 7526.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -172,14 +180,14 @@
           "method": "VP",
           "label": "HVN",
           "price": 7555.19,
-          "dist": -5.31,
+          "dist": 1.94,
           "vp_timeframe": "daily_swing"
         },
         {
-          "method": "FIB",
-          "label": "C12",
-          "price": 7563.19,
-          "dist": 2.69,
+          "method": "VP",
+          "label": "LVN",
+          "price": 7549.48,
+          "dist": -3.77,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -188,22 +196,22 @@
     },
     "15m": {
       "timeframe": "15m",
-      "long_pct": 100.0,
-      "hold_pct": 0.0,
-      "short_pct": 0.0,
-      "price": 7558.75,
+      "long_pct": 0.0,
+      "hold_pct": 90.0,
+      "short_pct": 10.0,
+      "price": 7552.0,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "IQFeed @ES# 15m (in-guest)",
       "state": "live",
-      "bar_age_min": 2.1,
+      "bar_age_min": 7.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
+          "verdict": "SHORT",
           "confidence": 30.0,
-          "reason": "price 7558.75 at 1-method confluence (VP) near 7552.33 (support)"
+          "reason": "price 7552.00 at 1-method confluence (VP) near 7552.33 (resistance)"
         },
         {
           "name": "Breadth",
@@ -224,7 +232,7 @@
           "pillar": "Structure",
           "verdict": "LONG",
           "confidence": 45.0,
-          "reason": "price 7558.75 > prior_close 7526.25 (daily fallback)"
+          "reason": "price 7552.00 > prior_close 7526.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -253,21 +261,14 @@
           "method": "VP",
           "label": "POC",
           "price": 7552.33,
-          "dist": -6.42,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "VAH",
-          "price": 7565.19,
-          "dist": 6.44,
+          "dist": 0.33,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "HVN",
           "price": 7552.33,
-          "dist": -6.42,
+          "dist": 0.33,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -279,19 +280,19 @@
       "long_pct": 100.0,
       "hold_pct": 0.0,
       "short_pct": 0.0,
-      "price": 7558.75,
+      "price": 7552.0,
       "internals_fresh": false,
       "structure_fresh": false,
       "structure_source": "IQFeed @ES# 60m (in-guest)",
       "state": "live",
-      "bar_age_min": 47.1,
+      "bar_age_min": 52.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7558.75 at 1-method confluence (VP) near 7556.39 (support)"
+          "confidence": 65.0,
+          "reason": "price 7552.00 at 2-method confluence (FIB+VP) near 7548.48 (support)"
         },
         {
           "name": "Breadth",
@@ -341,14 +342,21 @@
           "method": "VP",
           "label": "POC",
           "price": 7556.39,
-          "dist": -2.36,
+          "dist": 4.39,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "HVN",
           "price": 7556.39,
-          "dist": -2.36,
+          "dist": 4.39,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "FIB",
+          "label": "C22",
+          "price": 7548.48,
+          "dist": -3.52,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -360,7 +368,7 @@
       "long_pct": 100.0,
       "hold_pct": 0.0,
       "short_pct": 0.0,
-      "price": 7560.25,
+      "price": 7626,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -372,7 +380,7 @@
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "price 7560.25 not at any VP/fib level (\u00b10.1%)"
+          "reason": "price 7626.00 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -393,7 +401,7 @@
           "pillar": "Structure",
           "verdict": "LONG",
           "confidence": 45.0,
-          "reason": "price 7560.25 > prior_close 7523.00 (daily fallback)"
+          "reason": "price 7626.00 > prior_close 7589.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -418,11 +426,28 @@
         }
       ],
       "confluence_zones": [],
-      "vp_available": true,
+      "vp_available": false,
       "fib_available": true
     }
   },
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 7553.25,
+    "stop": 7595.29,
+    "t1": 7466.25,
+    "t2": 7418.9,
+    "R": 42.04,
+    "rr": 2.07,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x3: session-level 7593.75, swing-pivot 7593.75, fib-cluster 7593.85",
+    "t1_trace": "single-source: swing-pivot 7466.25 only",
+    "t2_trace": "confluence x2: swing-pivot 7416.75, fib-cluster 7421.04"
   }
 }
