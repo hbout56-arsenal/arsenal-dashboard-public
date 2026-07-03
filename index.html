@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Arsenal Dashboard</title>
+<!-- D107 Phase 2 — PWA app shell (installable, offline-capable, fast repeat loads) -->
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#070a10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arsenal">
+<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="icon" href="./icon.svg">
 <style>
   :root{
     --bg:#070a10; --bg2:#0b111b; --card:#101826; --card2:#0c1320;
@@ -3524,6 +3532,12 @@ body.d107 #subpills.show{display:flex}
   var start = readHash();
   if(start && start!=="active"){ window.showView(start); } else { window.showView("today"); }
 })();
+</script>
+<script>
+/* D107 Phase 2 — register the app-shell service worker (progressive; no-op if unsupported) */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("./sw.js").catch(function(){}); });
+}
 </script>
 </body>
 </html>
