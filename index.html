@@ -358,6 +358,7 @@
     </div>
   </div>
   <div id="freshbar" style="font-size:10.5px;font-weight:650;margin:-9px 2px 14px;min-height:15px;letter-spacing:.2px"></div>
+  <div id="today" hidden><div id="today-content"><div class="loading">Loading…</div></div></div>
 
   <div id="audit" hidden><div id="audit-content"><div class="loading">Loading…</div></div></div>
 
@@ -3277,5 +3278,242 @@ HELP["liquidity"]={t:"Liquidity gate (ADV \u2265 $20M)",w:"Average daily dollar 
 })();
 </script>
 <style>.nowline{background:rgba(156,195,255,.06);border:1px solid rgba(156,195,255,.22);border-radius:9px;padding:8px 10px;font-size:12px;line-height:1.45;margin:0 0 10px}.nowtag{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--info-ink);border:1px solid var(--info-ink);border-radius:5px;padding:1px 5px;margin-right:6px}</style>
+<!-- ═══════════ D107 Phase 1 — Today command center + 5-group bottom nav + disclosure (STAGED, additive) ═══════════ -->
+<style id="d107css">
+body.d107 #topbar{display:none}
+body.d107{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+.d107 #active,.d107 #overview,.d107 #prices,.d107 #fut,.d107 #stk,.d107 #orb,.d107 #wavechart,.d107 #performance,
+.d107 #proscreen,.d107 #alerts,.d107 #account,.d107 #journal,.d107 #audit,.d107 #auction,.d107 #tammy,.d107 #tictoc,
+.d107 #esswing,.d107 #sim,.d107 #today{animation:d107rise .15s cubic-bezier(.22,1,.36,1) both}
+@keyframes d107rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+#botnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;
+  background:rgba(9,12,18,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+body.d107 #botnav{display:flex}
+#botnav .bg{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 2px;border-radius:12px;cursor:pointer;color:var(--mut);font-weight:750;font-size:10px;
+  min-height:44px;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent}
+#botnav .bg .ic{font-size:19px;line-height:1}
+#botnav .bg.active{color:var(--ink);background:var(--glass2)}
+#subpills{position:fixed;left:0;right:0;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:59;
+  display:none;gap:6px;overflow-x:auto;padding:8px 10px;scrollbar-width:none;
+  background:linear-gradient(180deg,transparent,rgba(9,12,18,.72) 45%)}
+#subpills::-webkit-scrollbar{display:none}
+body.d107 #subpills.show{display:flex}
+#subpills .pill{flex:0 0 auto;padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
+  border:1px solid var(--gbrd);background:var(--glass);color:var(--mut);cursor:pointer;min-height:36px;white-space:nowrap}
+#subpills .pill.active{background:linear-gradient(180deg,#5a97ff,#3f7df0);color:#08101e;border-color:transparent}
+#today-content .tcard{background:var(--glass);border:1px solid var(--gbrd);border-radius:16px;padding:14px;margin-bottom:12px;
+  box-shadow:var(--elev);cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#today-content .tcard:active{transform:scale(.995)}
+#today-content .tcard .go{position:absolute;top:12px;right:13px;color:var(--mut);font-size:15px}
+#today-content .tlabel{font-size:9.5px;font-weight:850;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+#today-content .grade{font-size:52px;font-weight:900;line-height:1;letter-spacing:-1px}
+#today-content .g-a{color:var(--green)} #today-content .g-b{color:var(--amber)} #today-content .g-c{color:var(--mut)}
+#today-content .mini{display:flex;gap:8px;flex-wrap:wrap}
+#today-content .mini .m{flex:1 1 0;min-width:66px;background:var(--glass2);border:1px solid var(--gbrd);border-radius:11px;padding:8px 6px;text-align:center}
+#today-content .mini .m b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
+#today-content .mini .m span{font-size:9px;color:var(--mut);letter-spacing:.6px}
+#today-content .hstrip{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;margin-bottom:12px;
+  border:1px solid var(--gbrd);background:var(--glass);font-size:12px;font-weight:700}
+#today-content .hstrip .hd{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 10px currentColor}
+.skl{position:relative;overflow:hidden;background:var(--glass2);border-radius:12px;min-height:14px;display:inline-block}
+.skl::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 28%,rgba(255,255,255,.06) 50%,transparent 72%);animation:sklsh 1.2s linear infinite}
+@keyframes sklsh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.ichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:750;color:var(--info-ink,#9cc3ff);
+  border:1px solid var(--gbrd);border-radius:999px;padding:3px 9px;cursor:pointer;background:var(--glass);min-height:26px;-webkit-tap-highlight-color:transparent}
+#discsheet{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+#discsheet.show{display:flex}
+#discsheet .sh{width:100%;max-height:76vh;overflow-y:auto;background:#0b0f16;border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;padding:18px 18px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 40px -12px rgba(0,0,0,.8)}
+#discsheet .sh h4{margin:0 0 8px;font-size:13px;font-weight:850;color:var(--ink)}
+#discsheet .sh .body{font-size:13px;line-height:1.55;color:var(--mut)}
+#discsheet .sh .close{margin-top:14px;text-align:center;font-weight:800;color:var(--ink);border:1px solid var(--gbrd);border-radius:12px;padding:11px;cursor:pointer}
+</style>
+<div id="subpills"></div>
+<nav id="botnav"></nav>
+<div id="discsheet"><div class="sh"><h4 id="dsh-t">Details</h4><div class="body" id="dsh-b"></div><div class="close" id="dsh-x">Close</div></div></div>
+<script>
+/* D107 Phase 1 — STAGED restructure (additive; drives existing showView). No feature removed; honesty text folded, never deleted. */
+(function(){
+  "use strict";
+  var G = [
+    {k:"today",  ic:"☀️", label:"Today", views:[["today","Today"]]},
+    {k:"trade",  ic:"📈", label:"Trade", views:[["wavechart","Wave"],["prices","Tape"],["futures","Futures"],["auction","Auction"],["active","Active"],["orb","ORB"],["esswing","ES Swing"]]},
+    {k:"scan",   ic:"🔍", label:"Scan",  views:[["stocks","Stocks"],["proscreen","Minervini"],["tictoc","Tic Toc"],["tammy","Tammy/Fib"]]},
+    {k:"system", ic:"⚙️", label:"System",views:[["overview","Overview"],["performance","Performance"],["audit","Audit"],["journal","Journal"],["alerts","Alerts"],["account","$15K/Risk"]]},
+    {k:"sim",    ic:"🎮", label:"Sim",   views:[["sim","Sim"]]}
+  ];
+  var VIEW2GROUP = {}; G.forEach(function(g){ g.views.forEach(function(v){ VIEW2GROUP[v[0]] = g.k; }); });
+  var ALLVIEWS = ["active","audit","auction","prices","orb","wavechart","performance","overview","fut","stk","proscreen","alerts","account","journal","tammy","tictoc","esswing","sim","today"];
+  var _routing = false, _cur = "today";   // local current-view tracker (first script's `view` is not in scope here)
+
+  document.body.classList.add("d107");
+
+  var bn = document.getElementById("botnav");
+  bn.innerHTML = G.map(function(g){ return '<div class="bg" data-g="'+g.k+'"><span class="ic">'+g.ic+'</span><span>'+g.label+'</span></div>'; }).join("");
+  bn.querySelectorAll(".bg").forEach(function(el){ el.onclick = function(){ selectGroup(el.dataset.g); }; });
+
+  function selectGroup(gk){ var g=G.filter(function(x){return x.k===gk;})[0]; if(!g) return; window.showView(g.views[0][0]); }
+  function renderPills(gk, activeView){
+    var g = G.filter(function(x){return x.k===gk;})[0];
+    var sp = document.getElementById("subpills");
+    if(!g || g.views.length < 2){ sp.className=""; sp.innerHTML=""; return; }
+    sp.innerHTML = g.views.map(function(v){ return '<div class="pill'+(v[0]===activeView?" active":"")+'" data-v="'+v[0]+'">'+v[1]+'</div>'; }).join("");
+    sp.className = "show";
+    sp.querySelectorAll(".pill").forEach(function(p){ p.onclick = function(){ window.showView(p.dataset.v); }; });
+  }
+  function syncNav(v){
+    var gk = VIEW2GROUP[v] || (v==="fut"?"trade":v==="stk"?"scan":null);
+    bn.querySelectorAll(".bg").forEach(function(el){ el.classList.toggle("active", el.dataset.g===gk); });
+    if(gk) renderPills(gk, v); else { var sp=document.getElementById("subpills"); sp.className=""; sp.innerHTML=""; }
+  }
+
+  function readHash(){ var h=(location.hash||"").replace(/^#/,""); var m=h.match(/^view=(.+)$/); return m?m[1]:(h||null); }
+  function setHash(v){ _routing=true; try{ history.replaceState(null,"","#view="+v); }catch(e){} setTimeout(function(){_routing=false;},0); }
+  window.addEventListener("hashchange", function(){ if(_routing) return; var v=readHash(); if(v) window.showView(v); });
+
+  var _orig = window.showView;
+  window.showView = function(v){
+    if(v==="today"){
+      ALLVIEWS.forEach(function(id){ var el=document.getElementById(id); if(el) el.hidden=true; });
+      var t=document.getElementById("today"); if(t) t.hidden=false;
+      if(window.Today && Today.load) Today.load();
+      var fb=document.getElementById("freshbar"); if(fb) fb.innerHTML="";
+    } else {
+      var t=document.getElementById("today"); if(t) t.hidden=true;
+      try{ _orig(v); }catch(e){}
+    }
+    _cur = v;
+    try{ syncNav(v); setHash(v); }catch(e){}
+  };
+
+  function openSheet(title, html){
+    document.getElementById("dsh-t").textContent = title || "Details";
+    document.getElementById("dsh-b").innerHTML = html;
+    document.getElementById("discsheet").classList.add("show");
+  }
+  var ds = document.getElementById("discsheet");
+  ds.addEventListener("click", function(e){ if(e.target===ds || e.target.id==="dsh-x") ds.classList.remove("show"); });
+  window._d107sheet = openSheet;
+
+  function foldHonesty(root){
+    if(!root) return;
+    var blocks = root.querySelectorAll('.src:not([data-folded]), [id$="-disc"]:not([data-folded])');
+    blocks.forEach(function(el){
+      var txt = (el.textContent||"").trim();
+      if(txt.length < 70) return;
+      if(el.querySelector(".ichip")) return;
+      el.setAttribute("data-folded","1");
+      var full = el.innerHTML;
+      var chip = document.createElement("span");
+      chip.className = "ichip"; chip.innerHTML = "ⓘ why / limits";
+      chip.onclick = function(ev){ ev.stopPropagation(); openSheet("Honesty & limits", full); };
+      el.innerHTML = ""; el.appendChild(chip);
+    });
+  }
+  window._d107fold = foldHonesty;
+  document.addEventListener("click", function(){ setTimeout(function(){ foldHonesty(document.querySelector(".wrap")); }, 120); });
+  setInterval(function(){ foldHonesty(document.querySelector(".wrap")); }, 2000);
+
+  var Today = (function(){
+    function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+    function get(file){ if(window.ghFetch) return window.ghFetch(file); return fetch((window.API_BASE||"")+file+"?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}); }
+    function ageMinOf(ts){ try{ var t=window.parseTs?parseTs(ts):Date.parse(ts); return isNaN(t)?null:(Date.now()-t)/60000; }catch(e){ return null; } }
+    function freshText(ts){ var a=ageMinOf(ts); if(a==null) return "—"; return a<1?"just now":(a<60?Math.round(a)+"m ago":(a<1440?Math.round(a/60)+"h ago":Math.round(a/1440)+"d ago")); }
+    function freshPill(ts){
+      var a=ageMinOf(ts); if(a==null) return '<span style="color:var(--mut)">no timestamp</span>';
+      var fresh=a<15, col=fresh?"var(--pos-ink)":"var(--warn-ink)", dot=fresh?"var(--green)":"var(--amber)";
+      return '<span class="hd" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+dot+';margin-right:5px"></span><span style="color:'+col+'">updated '+freshText(ts)+(fresh?"":" · STALE")+'</span>';
+    }
+    function card(label, view, inner){ return '<div class="tcard" data-goto="'+view+'"><span class="go">›</span><div class="tlabel">'+label+'</div>'+inner+'</div>'; }
+    function gradeClass(g){ g=(g||"").toUpperCase(); if(g[0]==="A") return "g-a"; if(g[0]==="B") return "g-b"; return "g-c"; }
+    function nextEvent(cal){
+      if(!cal || !Array.isArray(cal.events)) return null;
+      var now=Date.now(), best=null, bestT=Infinity;
+      cal.events.forEach(function(e){ var t=window.parseTs?parseTs(e.date+"T"+(e.time||"00:00")+":00"):Date.parse(e.date+"T"+(e.time||"00:00")+":00");
+        if(isNaN(t)) return; if(t>=now-6*3600e3 && t<bestT){ bestT=t; best=e; } });
+      return best;
+    }
+    function render(verdict, esswing, internals, alerts, cal){
+      var hbTs = internals && (internals.pushed_at||internals.generated_at);
+      var hbA = ageMinOf(hbTs), live = (hbA!=null && hbA<12);
+      var h = '<div class="hstrip"><span class="hd" style="background:'+(live?"var(--green)":"var(--amber)")+';color:'+(live?"var(--green)":"var(--amber)")+'"></span>'
+        + '<span style="color:'+(live?"var(--pos-ink)":"var(--warn-ink)")+'">'+(live?"FEEDS LIVE":"FEEDS STALE")+'</span>'
+        + '<span style="margin-left:auto;color:var(--mut);font-weight:650">'+(hbTs?freshText(hbTs):"—")+'</span></div>';
+
+      var posture = verdict && (verdict.posture||verdict.stance||verdict.regime||verdict.bias);
+      var level = verdict && (verdict.key_level||verdict.decision_level||verdict.pivot||(verdict.levels&&(verdict.levels.key||verdict.levels.pivot)));
+      h += card("Posture · key level","overview",
+            '<div style="font-size:22px;font-weight:850;color:var(--ink)">'+esc(posture||"—")+'</div>'
+          + '<div class="src" style="margin-top:4px;color:var(--mut)">Key decision level: <b style="color:var(--ink)">'+esc(level!=null?level:"see Overview")+'</b></div>');
+
+      var st = esswing && (esswing.state||"");
+      var grade = esswing && (esswing.grade || (esswing.thesis&&esswing.thesis.grade));
+      if(!grade){ grade = (st==="SETUP")?"A":(st?"C":"—"); }
+      var th = (esswing&&esswing.thesis)||{}, stale = esswing && esswing.delayed;
+      h += card("ES Swing — hours-hold","esswing",
+            '<div style="display:flex;align-items:center;gap:14px">'
+          + '<div class="grade '+gradeClass(grade)+'">'+esc(grade)+'</div>'
+          + '<div style="min-width:0"><div style="font-weight:800;font-size:15px;color:var(--ink)">'+esc(st||"no setup")+(th.dir?" · "+esc(String(th.dir).toUpperCase()):"")+'</div>'
+          + '<div class="src" style="color:var(--mut);margin-top:3px">'+(th.level?("level "+esc(th.level)+" · R:R "+esc(th.rr||"—")):"No level-break setup right now — honest, not forced.")+(stale?' · <span style="color:var(--warn-ink)">bars stale</span>':"")+'</div></div></div>');
+
+      var row = internals && (internals.rows&&internals.rows.length?internals.rows[internals.rows.length-1]:internals);
+      function iv(keys){ if(!row) return "—"; for(var i=0;i<keys.length;i++){ if(row[keys[i]]!=null&&row[keys[i]]!=="") return row[keys[i]]; } return "—"; }
+      h += card("Internals","prices",
+            '<div class="mini">'
+          + '<div class="m"><b>'+esc(iv(["tick","TICK","nyse_tick"]))+'</b><span>TICK</span></div>'
+          + '<div class="m"><b>'+esc(iv(["add","ADD","advdec","nyad","nyse_add"]))+'</b><span>ADD</span></div>'
+          + '<div class="m"><b>'+esc(iv(["trin","TRIN","nyse_trin"]))+'</b><span>TRIN</span></div>'
+          + '</div><div style="margin-top:8px;font-size:11px">'+freshPill(hbTs)+'</div>');
+
+      var al = alerts && (alerts.latest || (alerts.recent&&alerts.recent[0]) || (Array.isArray(alerts.alerts)&&alerts.alerts[0]));
+      var altxt = al ? (al.text||al.message||al.label||al.title||null) : null;
+      h += card("Latest alert","alerts",
+            '<div style="font-size:13.5px;color:var(--ink);font-weight:650">'+esc(altxt||"No recent alert — feed quiet.")+'</div>');
+
+      var ev = nextEvent(cal);
+      h += card("Next event","overview",
+            '<div style="font-size:13.5px;color:var(--ink);font-weight:700">'+esc(ev?ev.label:"No upcoming events on file")+'</div>'
+          + (ev?'<div class="src" style="color:var(--mut);margin-top:3px">'+esc(ev.date)+(ev.time&&ev.time!=="00:00"?" · "+esc(ev.time)+" ET":"")+'</div>':""));
+
+      var el = document.getElementById("today-content");
+      el.innerHTML = h;
+      el.querySelectorAll(".tcard").forEach(function(c){ c.onclick=function(){ var g=c.getAttribute("data-goto"); if(g) window.showView(g); }; });
+    }
+    function skeleton(){
+      var el=document.getElementById("today-content"); if(!el) return;
+      var s='<div class="hstrip"><span class="skl" style="width:130px;height:12px"></span></div>';
+      for(var i=0;i<5;i++){ s+='<div class="tcard"><div class="skl" style="width:40%;height:10px;margin-bottom:10px"></div><div class="skl" style="width:80%;height:20px"></div></div>'; }
+      el.innerHTML=s;
+    }
+    function load(){
+      skeleton();
+      Promise.all([
+        get("verdict.json").catch(function(){return null;}),
+        get("es_swing_thesis.json").catch(function(){return null;}),
+        get("internals_snapshot.json").catch(function(){return null;}),
+        get("alert_prefs.json").catch(function(){return null;}),
+        get("market_calendar.json").catch(function(){return null;})
+      ]).then(function(r){
+        try{ render(r[0],r[1],r[2],r[3],r[4]); }
+        catch(e){ var el=document.getElementById("today-content"); if(el) el.innerHTML='<div class="tcard"><div class="tlabel">Today</div><div style="color:var(--mut)">Some cards could not render — tap a tab below to open the full views.</div></div>'; }
+      });
+    }
+    return { load: load };
+  })();
+  window.Today = Today;
+
+  (function(){
+    var y0=null;
+    document.addEventListener("touchstart", function(e){ if(_cur==="today"&&window.scrollY<=0) y0=e.touches[0].clientY; else y0=null; }, {passive:true});
+    document.addEventListener("touchend", function(e){ if(y0!=null){ var dy=e.changedTouches[0].clientY-y0; if(dy>80&&window.Today) Today.load(); y0=null; } }, {passive:true});
+  })();
+
+  var start = readHash();
+  if(start && start!=="active"){ window.showView(start); } else { window.showView("today"); }
+})();
+</script>
 </body>
 </html>
