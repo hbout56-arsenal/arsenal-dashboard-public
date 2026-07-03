@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-07-03T02:14:03",
+  "timestamp": "2026-07-03T02:57:03",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4186.1,
-  "es_change": null,
-  "price": 4186.1,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 4220.9,
+  "es_change": 83.1,
+  "price": 4220.9,
+  "change": 83.1,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
-  "hold_pct": 100.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
   "short_pct": 0.0,
   "signals": [
     {
@@ -22,7 +22,7 @@
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 4186.10 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 4220.90 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 4220.90 > prior_close 4137.80 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -68,14 +68,31 @@
     }
   ],
   "confluence_zones": [],
-  "vp_available": false,
-  "fib_available": true,
+  "vp_available": true,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure GOLD NEUTRAL (6/25 flip from short-term BEARISH): low may be in at 3959 with positive divergence; prior W-v final-flush target (~4000\u00b1100) reached. Break >4453/4595 without a new low confirms the low is in. GDX W-ii 78-80, then W-iii 110-115.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 4220.9,
+    "stop": 4121.59,
+    "t1": 4405.16,
+    "t2": 4517.12,
+    "R": 99.31,
+    "rr": 1.86,
+    "stop_basis": "confluence",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "confluence x2: fib-cluster 4130.51, session-level 4135.6",
+    "t1_trace": "confluence x2: fib-cluster 4401.47, vp 4408.84",
+    "t2_trace": "confluence x2: fib-cluster 4506.64, vp 4527.6"
   }
 }
