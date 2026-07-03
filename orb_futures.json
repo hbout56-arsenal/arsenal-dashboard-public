@@ -1,20 +1,82 @@
 {
-  "generated_at": "2026-07-02T14:12:15.313595Z",
+  "generated_at": "2026-07-03T13:03:23.429209Z",
   "status": "SHADOW / INFORMATIONAL / DELAYED \u2014 NOT loaded, A+ not validated",
-  "sessions": {},
+  "sessions": {
+    "MCL": "2026-07-02"
+  },
   "instruments": [
     "MES",
     "MNQ",
     "MGC",
     "MCL"
   ],
-  "raw_triggers": 0,
+  "raw_triggers": 1,
   "aplus_triggers": 0,
   "correlation_flag": null,
   "half_day_flag": true,
   "delayed_note": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
   "preregistration": "ORB_FUTURES_PREREGISTRATION.md (FROZEN)",
-  "triggers": [],
+  "triggers": [
+    {
+      "micro": "MCL",
+      "data": "CL",
+      "side": "LONG",
+      "trigger_time": "09:35",
+      "trigger_price": 67.84,
+      "vol_mult": 2.06,
+      "or_high": 67.75,
+      "or_low": 67.47,
+      "or_window_et": "09:00-09:30",
+      "or_window_flag": "NYMEX open (assumption-under-test)",
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "trend",
+        "range_quality"
+      ],
+      "filters": {
+        "trend": {
+          "pass": false,
+          "detail": {
+            "bias": "SHORT",
+            "verdict": "CORRECTIVE_ABC"
+          }
+        },
+        "regime": {
+          "pass": true,
+          "detail": "proxy regime TRENDING_DOWN (trendiness 76)",
+          "tag": "TRENDING_DOWN"
+        },
+        "range_quality": {
+          "pass": false,
+          "detail": "OR/ATR 0.09 (band 0.2-0.8)",
+          "value": 0.09
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.09xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "TRENDING_DOWN",
+      "daily_bias": "SHORT",
+      "entry": 67.75,
+      "stop": 66.95,
+      "t1": 68.55,
+      "t2": 69.26,
+      "R_pts": 0.8,
+      "rr_t2": 1.9,
+      "stop_basis": "atr_floor",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 0.8,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-07-02"
+    }
+  ],
   "gauntlet": {
     "per_instrument": {
       "MES": {
