@@ -1,8 +1,10 @@
 {
-  "generated_at": "2026-07-03T16:06:54.174397Z",
+  "generated_at": "2026-07-03T17:06:06.531842Z",
   "status": "SHADOW / INFORMATIONAL / DELAYED \u2014 NOT loaded, A+ not validated",
   "sessions": {
-    "MGC": "2026-07-02"
+    "MES": "2026-07-02",
+    "MGC": "2026-07-02",
+    "MCL": "2026-07-02"
   },
   "instruments": [
     "MES",
@@ -10,13 +12,131 @@
     "MGC",
     "MCL"
   ],
-  "raw_triggers": 0,
+  "raw_triggers": 2,
   "aplus_triggers": 0,
   "correlation_flag": null,
   "half_day_flag": true,
   "delayed_note": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
   "preregistration": "ORB_FUTURES_PREREGISTRATION.md (FROZEN)",
-  "triggers": [],
+  "triggers": [
+    {
+      "micro": "MES",
+      "data": "ES",
+      "side": "SHORT",
+      "trigger_time": "10:40",
+      "trigger_price": 7549.25,
+      "vol_mult": 8.77,
+      "or_high": 7593.75,
+      "or_low": 7551.5,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "trend",
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": false,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "BULLISH_IMPULSE_CONTINUATION"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime CHOP (trendiness 34)",
+          "tag": "CHOP"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.43 (band 0.2-0.8)",
+          "value": 0.43
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.06xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "CHOP",
+      "daily_bias": "LONG",
+      "entry": 7551.5,
+      "stop": 7593.75,
+      "t1": 7509.25,
+      "t2": 7467.0,
+      "R_pts": 42.25,
+      "rr_t2": 2.0,
+      "stop_basis": "or_edge",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 42.25,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-07-02"
+    },
+    {
+      "micro": "MCL",
+      "data": "CL",
+      "side": "LONG",
+      "trigger_time": "09:35",
+      "trigger_price": 67.84,
+      "vol_mult": 2.06,
+      "or_high": 67.75,
+      "or_low": 67.47,
+      "or_window_et": "09:00-09:30",
+      "or_window_flag": "NYMEX open (assumption-under-test)",
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "range_quality"
+      ],
+      "filters": {
+        "trend": {
+          "pass": true,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "BULLISH_IMPULSE_CONTINUATION"
+          }
+        },
+        "regime": {
+          "pass": true,
+          "detail": "proxy regime TRENDING_DOWN (trendiness 76)",
+          "tag": "TRENDING_DOWN"
+        },
+        "range_quality": {
+          "pass": false,
+          "detail": "OR/ATR 0.09 (band 0.2-0.8)",
+          "value": 0.09
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.09xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "TRENDING_DOWN",
+      "daily_bias": "LONG",
+      "entry": 67.75,
+      "stop": 66.95,
+      "t1": 68.55,
+      "t2": 69.26,
+      "R_pts": 0.8,
+      "rr_t2": 1.9,
+      "stop_basis": "atr_floor",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 0.8,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-07-02"
+    }
+  ],
   "gauntlet": {
     "per_instrument": {
       "MES": {
