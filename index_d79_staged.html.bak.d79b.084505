@@ -346,26 +346,14 @@
       <div class="toptab" data-v="prices">Prices</div>
       <div class="toptab" data-v="futures">Futures</div>
       <div class="toptab" data-v="stocks">Stocks/Swing</div>
-      <div class="toptab" data-v="auction">Auction</div>
     </div>
     <div class="navgroup"><span class="navlabel">Desk</span>
       <div class="toptab" data-v="account">$15K / Risk</div>
       <div class="toptab" data-v="journal">Journal</div>
-      <div class="toptab" data-v="tammy">Tammy/Fib</div>
-      <div class="toptab" data-v="tictoc">Tic Toc</div>
-      <div class="toptab" data-v="esswing">ES Swing</div>
-      <div class="toptab" data-v="sim">Sim 🎮</div>
     </div>
   </div>
-  <div id="freshbar" style="font-size:10.5px;font-weight:650;margin:-9px 2px 14px;min-height:15px;letter-spacing:.2px"></div>
 
   <div id="audit" hidden><div id="audit-content"><div class="loading">Loading…</div></div></div>
-
-  <div id="auction" hidden><div id="auction-content"><div class="loading">Loading…</div></div></div>
-  <div id="tammy" hidden><div id="tammy-content"><div class="loading">Loading…</div></div></div>
-  <div id="tictoc" hidden><div id="tictoc-content"><div class="loading">Loading…</div></div></div>
-  <div id="esswing" hidden><div id="esswing-content"><div class="loading">Loading…</div></div></div>
-  <div id="sim" hidden><div class="src" style="margin:2px 0 6px">🎮 <b>Paper Trading Simulator</b> — PRACTICE book (isolated: localStorage-only, never merged into real scorecards). Replay / Drill / Review.</div><iframe id="simframe" data-src="sim_d100_staged.html" title="Paper sim" style="width:100%;height:80vh;border:1px solid var(--gbrd);border-radius:12px;background:#0b0f17"></iframe></div>
 
   <div id="performance" hidden>
     <div id="performance-content"><div class="loading">Loading…</div></div>
@@ -620,18 +608,14 @@ function loadRegime(){
   try{if(localStorage.getItem("arsenal_newhint_dismissed")){n.remove();return;}}catch(e){}
   var x=document.getElementById("newhint-x");if(x)x.onclick=function(){n.remove();try{localStorage.setItem("arsenal_newhint_dismissed","1");}catch(e){}};})();
 
-/* WebKit-safe timestamp parse (Dispatch 104): strip " ET" and truncate >3 fractional-second
-   digits before parsing. Feeds stamp Python isoformat() microseconds (e.g. ...:25.131562Z);
-   Safari <=14 returns NaN on >3 frac digits, silently breaking freshness. Chrome tolerates it. */
-function parseTs(s){return Date.parse(String(s==null?"":s).replace(" ET","").replace(/(\.\d{3})\d+/,"$1"));}
-const ageMin=iso=>{const t=parseTs((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
+const ageMin=iso=>{const t=Date.parse((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
 function banner(id,cls,txt){const b=document.getElementById(id);if(!txt){b.style.display="none";return;}
   b.className="banner "+cls;b.textContent=txt;b.style.display="block";}
 /* ── pinned "last updated" freshness bar (Dispatch 24) — pure UI. Time from the DATA timestamp vs the
    viewer's clock; level (live/warn/bad/mut) is decided by each renderer's own honesty state. ── */
 function setFresh(prefix,tsIso,level){
   const el=document.getElementById(prefix+"-fresh"); if(!el) return;
-  const t=parseTs((tsIso||"").replace(" ET",""));
+  const t=Date.parse((tsIso||"").replace(" ET",""));
   if(isNaN(t)){ el.hidden=true; delete el.dataset.ts; return; }
   el.hidden=false; el.dataset.ts=String(t); el.dataset.level=level||"live";
   el.className="freshbar "+(level||"live");
@@ -762,7 +746,7 @@ const Futures = (function(){
         +'<div class="emanote">FILTERED = cross + 15m-trend gate (the version tested for edge). RAW = cross-only control — tracked under research detail.</div></div>'
       +sc;
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const ms=parseTs(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="EMA updated "+local;
   }
   /* ── FVG entry-refinement panel (Dispatch FVG) — entry/stop layer, NOT a vote ── */
@@ -805,7 +789,7 @@ const Futures = (function(){
       +guid
       +'<div class="card"><h2>2-mode scorecard'+hI("scorecard")+'</h2>'+hP("scorecard")+fvgScore(d)+'</div>';
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const ms=parseTs(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="FVG updated "+local+" · last bar "+esc(d.last_bar_ts||"");
   }
   function fvgScore(d){
@@ -881,7 +865,7 @@ const Futures = (function(){
       +offbox
       +'<div class="card"><h2>3-track scorecard'+hI("scorecard")+'</h2>'+hP("scorecard")+fvgScore(d)+'</div>';
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const ms2=parseTs(d.generated_at||""),local=isNaN(ms2)?d.generated_at:new Date(ms2).toLocaleString();
+    const ms2=Date.parse(d.generated_at||""),local=isNaN(ms2)?d.generated_at:new Date(ms2).toLocaleString();
     document.getElementById("fut-foot").textContent="ICT updated "+local+" · last bar "+esc(d.last_bar_ts||"");
   }
   const STALE_MIN=10;
@@ -1025,11 +1009,11 @@ const Futures = (function(){
     let _liveTs=null;   // D60: live IQFeed price override for ES (snapshot <=10min); null-safe fallback to verdict
     try{ const _k={ES:"es",NQ:"nq",YM:"ym"}[current];
       if(_k&&futSnap&&futSnap.rows&&futSnap.rows.length&&futSnap.pushed_at){
-        const _age=Date.now()-parseTs(futSnap.pushed_at), _r=futSnap.rows[futSnap.rows.length-1], _v=_r[_k+"_last"];
+        const _age=Date.now()-Date.parse(futSnap.pushed_at), _r=futSnap.rows[futSnap.rows.length-1], _v=_r[_k+"_last"];
         if(_age<600000&&_v!=null&&_v!==""){ d=Object.assign({},d,{price:parseFloat(_v)});
           const _c=_r[_k+"_chg"]; if(_c!=null&&_c!=="") d.change=parseFloat(_c); _liveTs=futSnap.pushed_at; } }
     }catch(e){}
-    const ts0=tsOf(d), tms0=parseTs((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
+    const ts0=tsOf(d), tms0=Date.parse((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
     // ── FROZEN / DARK / LIVE honesty layer ──
     const hasLive=(d.signals||[]).some(s=>Number(s.confidence)>0);   // >=1 signal actually voted (conf>0)
     let state;
@@ -1070,7 +1054,7 @@ const Futures = (function(){
     if(ntext) news='<div class="card"><h2>Newsletter cross-check</h2><div class="news">'+esc(ntext)+(ndate?' <span class="date">(as of '+esc(ndate)+')</span>':'')+'</div></div>';
     document.getElementById("fut-content").innerHTML=
       nowLine(esNowText(d,state,price))+'<div class="hero"><div style="margin-bottom:9px">'+chip+hI("fresh")+'</div>'+hP("fresh")
-        +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+(d.price_age_s!=null?' <span class="gmut" style="font-size:11px" title="'+esc(d.price_source||"")+'">('+(d.price_age_s<90?d.price_age_s+'s':Math.round(d.price_age_s/60)+'m')+' old)</span>':'')+'</div>'
+        +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
         +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+hI("internals")+'</div>'+hP("internals")
         +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
         +'<span class="pill2">tf: '+(d.internals_applicable===false?"daily swing (fallback)":(esc(d.primary_timeframe||"15m")+" (decision)"))+'</span>'
@@ -1092,7 +1076,7 @@ const Futures = (function(){
       +(current==="GC"?gcDxyPanel():"");
     document.querySelectorAll("#fut-content .tftab").forEach(el=>el.onclick=()=>{futTF=el.getAttribute("data-tf");render(d,false);});
     document.getElementById("fut-disc").textContent=d.disclaimer||"";
-    const t=tsOf(d), ms=parseTs((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
+    const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
     document.getElementById("fut-foot").textContent="updated "+local+" · config "+esc(d.config_hash)+" · refresh "+esc(d.update_freq_seconds)+"s";
   }
   async function load(){
@@ -1240,14 +1224,14 @@ const Stocks = (function(){
   }
   function render(){
     const age=ageMin(data.generated_at);
-    if(age!=null&&age>STOCK_FREEZE_MIN){const ms=parseTs((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
+    if(age!=null&&age>STOCK_FREEZE_MIN){const ms=Date.parse((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
       banner("stk-banner","frozen","⚠ FEED FROZEN — last daily update "+ds+" ("+Math.round(age/60)+"h ago). The daily producer may have missed a run.");}
     else banner("stk-banner","",null);
     setFresh("stk",data.generated_at,(age!=null&&age>STOCK_FREEZE_MIN)?"bad":"live");
     document.getElementById("stk-posture").innerHTML=data.posture?'<span class="posture">'+esc(data.posture)+' · '+esc(data.date)+'</span>':'';
     buildTabs(); renderSection();
     document.getElementById("stk-disc").textContent=data.disclaimer||"";
-    const ms=parseTs(data.generated_at||""),local=isNaN(ms)?data.generated_at:new Date(ms).toLocaleString();
+    const ms=Date.parse(data.generated_at||""),local=isNaN(ms)?data.generated_at:new Date(ms).toLocaleString();
     document.getElementById("stk-foot").textContent="updated "+local+" · MIN_TRIGGERED "+esc(data.min_triggered)+" · MIN_MATURED "+esc(data.min_matured);
   }
   async function load(){
@@ -1456,8 +1440,8 @@ const Account=(function(){
         h+='<table class="acct" style="margin-top:8px"><tr><th>setup</th><th>n</th><th>W</th><th>pay</th><th>¼-K</th><th>1%·P(-25)</th><th>2%·P(-25)</th><th>safe·P(-25)</th></tr>';
         setups.forEach(s=>{ const k=s.kelly||{}, b=s.size_band||{}, c1=b.conservative_1pct||{}, c2=b.standard_2pct||{}, ms=b.max_safe||{};
           const pr=o=>o&&o.p_ruin?(o.p_ruin["p_hit_-25pct"]*100).toFixed(1)+"%":"—";
-          const val=(s.n||0)>=30;   /* D88 Fix 4: risk_model carries no CI -> n>=30 is 'unconfirmed', not a green VALIDATED tag */
-          h+='<tr><td>'+esc((s.setup||'').replace('::','/'))+(val?'<span class="desc-tag">n≥30 · unconfirmed</span>':'<span class="desc-tag">DESC</span>')+'</td>'
+          const val=(s.n||0)>=30;
+          h+='<tr><td>'+esc((s.setup||'').replace('::','/'))+(val?'<span class="val-tag">n≥30</span>':'<span class="desc-tag">DESC</span>')+'</td>'
             +'<td>'+(s.n!=null?s.n:'—')+'</td>'
             +'<td>'+(s.win_rate_derived!=null?(s.win_rate_derived*100).toFixed(0)+'%':'—')+'</td>'
             +'<td>'+(s.payoff!=null?s.payoff:'—')+'</td>'
@@ -1514,8 +1498,8 @@ const Account=(function(){
     }
     const wl=pd.forward_only_watchlist||{};
     if(Object.keys(wl).length){
-      h+='<div class="accnote" style="margin-top:8px"><b>Forward-only watchlist</b> (would diversify the core once the stress / wide-universe test clears):</div>'
-        +_dataTable([{t:'Track'},{t:'Instrument'}],Object.entries(wl).map(([inst,w])=>[esc(w.track.split('::').pop()),'<span style="color:var(--mut)">'+esc(inst)+'</span>']));
+      h+='<div class="accnote" style="margin-top:8px"><b>Forward-only watchlist</b> (would diversify the core once the stress / wide-universe test clears): '
+        +Object.entries(wl).map(([inst,w])=>esc(w.track.split('::').pop())+' <span style="color:var(--mut)">('+esc(inst)+')</span>').join(' · ')+'</div>';
     }
     const ex=pd.excluded_validated_tracks||{};
     const exrows=Object.entries(ex).slice(0,8);
@@ -1790,14 +1774,14 @@ window.ORB=ORB;
 const WaveChart=(function(){
   const C={up:"#3fd07a",dn:"#f0616d",grid:"rgba(255,255,255,.05)",axis:"#8b97ab",ink:"#eef3fb",
            pri:"#6ea8ff",priText:"#06101f",alt:"#ffcf6b",inval:"#f0616d",tgt:"rgba(63,208,122,.55)",
-           liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff",nl:"#ff9e64"};
+           liq:"#3fd07a",fvgU:"rgba(110,168,255,.13)",fvgM:"rgba(139,151,171,.07)",vp:"#ffcf6b",fib:"#c8a0ff"};
   const PADL=6, PADR=58, PADT=10, PADB=20;
   let tf="daily";
-  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,priceline:true,keltner:false,tammy:false,tictoc:false,vol:false,vwap:false,conf:false,session:false};
-  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,nl=null,esv=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
+  const layers={waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true};
+  let bars=null,wave=null,ict=null,fvg=null,verdict=null,sc=null,snap=null,picks=null,tlsc=null,cpsc=null,inst="es",stockTicker=null,explain=false,view={start:0,count:0},total=0;
   function pfx(){ return inst==="stk"?("stk_"+stockTicker):inst; }
   const MACOL={9:"#56c8d8",21:"#6ea8ff",20:"#7ee0a6",50:"#ffcf6b",200:"#c8a0ff"};
-  const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:true,sma200:true};
+  const maOn={ema9:true,ema21:true,ema20:false,ema50:false,ema200:false,sma9:false,sma21:false,sma20:false,sma50:false,sma200:false};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
   async function load(){
@@ -1811,7 +1795,7 @@ const WaveChart=(function(){
     try{ fvg=await ghFetch("fvg_state.json"); }catch(e){}
     try{ verdict=await ghFetch("verdict.json"); }catch(e){}
     try{ sc=await ghFetch("wave_scorecard_summary.json"); }catch(e){}
-    snap=null; nl=null; esv=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} try{ esv=await ghFetch("es_swing_verdict.json"); }catch(e){} let _tm=null,_tt=null; try{_tm=await ghFetch("tammy_levels.json");}catch(e){} try{_tt=await ghFetch("tictoc_levels.json");}catch(e){} nl=[]; if(_tm&&_tm.levels)_tm.levels.forEach(function(l){nl.push({level:l.level,role:l.role,src:"Tammy"});}); if(_tt&&_tt.levels)_tt.levels.forEach(function(l){nl.push({level:l.level,role:l.role,src:"TicToc"});}); }
+    snap=null; if(inst==="es"){ try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){} }
     try{ tlsc=await ghFetch("trendline_scorecard_summary.json"); }catch(e){}
     try{ cpsc=await ghFetch("scorecard_summary_candle_patterns.json"); }catch(e){}
     total=(bars&&bars.bars)?bars.bars.length:0;
@@ -1820,7 +1804,7 @@ const WaveChart=(function(){
   }
   function scorecardCard(){
     if(!sc||!sc.by_timeframe) return "";
-    const since=sc.forward_tracking_since?new Date(parseTs(sc.forward_tracking_since)).toLocaleDateString():"\u2014";
+    const since=sc.forward_tracking_since?new Date(sc.forward_tracking_since).toLocaleDateString():"\u2014";
     const th='text-align:left;color:var(--mut);font-size:9.5px;text-transform:uppercase;padding:3px 6px 3px 0;border-bottom:1px solid var(--gbrd);white-space:nowrap';
     let h='<div class="card"><div class="secttl" style="font-size:10px;letter-spacing:.5px;color:var(--mut);text-transform:uppercase;font-weight:700">Wave-count accuracy \u2014 forward, per timeframe</div>';
     h+='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;margin-top:6px;min-width:330px">';
@@ -1853,7 +1837,7 @@ const WaveChart=(function(){
   function tfSwitcher(){ const tfs=(inst==="stk")?["daily","60m"]:["15m","60m","daily"]; return '<div class="tabs" style="margin-bottom:8px">'+tfs.map(t=>'<div class="tab'+(t===tf?" active":"")+'" data-wctf="'+t+'">'+t+'</div>').join("")+'</div>'; }
   function chip(on){ return on?C.pri:C.axis; }
   function toggleBar(){
-    const defs=[["waves","Primary"],["alt","Alt"],["priceline","Price"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"],["keltner","Keltner"],["vol","Vol"],["vwap","VWAP"],["conf","Levels"],["session","Session"],["tammy","Tammy"],["tictoc","TicToc"]];
+    const defs=[["waves","Primary"],["alt","Alt"],["trend","Trend"],["regress","Regress"],["channel","Channel"],["patterns","Patterns"],["patterns2","Tier2"],["subwaves","Subwaves"],["projection","Projection"],["liquidity","Liquidity"],["fvg","FVG"],["vp","VP"],["svp","SVP"],["fib","Fib"]];
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+defs.map(d=>
       '<label style="font-size:11px;font-weight:650;color:'+chip(layers[d[0]])+';border:1px solid '+(layers[d[0]]?C.pri:"var(--gbrd)")+';border-radius:999px;padding:3px 10px;cursor:pointer;user-select:none">'
       +'<input type="checkbox" data-wclayer="'+d[0]+'" '+(layers[d[0]]?"checked":"")+' style="display:none">'+d[1]+'</label>').join("")
@@ -1917,8 +1901,7 @@ const WaveChart=(function(){
       return '<label style="font-size:9.5px;font-weight:650;color:'+(on?col:C.axis)+';border:1px solid '+(on?col:"var(--gbrd)")+';border-radius:999px;padding:2px 7px;cursor:pointer;user-select:none"><input type="checkbox" data-ma="'+k+'" '+(on?"checked":"")+' style="display:none">'+lbl+'</label>';};
     return '<div style="margin:7px 0 2px;font-size:9px;color:var(--axis,#8b97ab);text-transform:uppercase;letter-spacing:.4px">Moving averages <span class="gmut" style="text-transform:none">\u2014 visual context, not signals (the EMA system is scored separately)</span></div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"><span class="gmut" style="font-size:9px">EMA</span>'+ema.map(p=>ch("ema"+p,""+p)).join("")
-      +'<span class="gmut" style="font-size:9px;margin-left:7px">SMA</span>'+sma.map(p=>ch("sma"+p, p===200?"SMA 200":(p===50?"SMA 50":""+p))).join("")+'</div>'
-      +'<div class="gmut" style="font-size:8.5px;margin-top:2px">Daily <b>SMA 50</b> / <b>SMA 200</b> = the golden/death-cross pair (SMA 200 is the death-cross line). EMA 200 is a separate optional toggle.</div>';
+      +'<span class="gmut" style="font-size:9px;margin-left:7px">SMA</span>'+sma.map(p=>ch("sma"+p,""+p)).join("")+'</div>';
   }
   function computeVP(BB,nb){ nb=nb||40; if(!BB||!BB.length)return null; let lo=Math.min.apply(null,BB.map(b=>b.l)),hi=Math.max.apply(null,BB.map(b=>b.h)); if(hi<=lo)return null; const bw=(hi-lo)/nb,vol=new Array(nb).fill(0);
     BB.forEach(b=>{const v=b.v||0,tp=(b.h+b.l+b.c)/3; vol[Math.min(nb-1,Math.max(0,Math.floor((tp-lo)/bw)))]+=v;});
@@ -1949,7 +1932,7 @@ const WaveChart=(function(){
     ["Projection","Where the next leg COULD go if the count holds \u2014 a conditional zone, not a prediction."],
     ["Confluence / conviction","How many independent reads agree (count, projection, invalidation, VP, R:R). Conviction now factors R:R, not just the count."],
     ["R:R","Reward \u00f7 risk. \u22651.5 strong, 1\u20131.5 ok, <1 = risking more than you\u2019d make \u2192 NOT ACTIONABLE."],
-    ["POC / VAH / VAL","Volume profile \u2014 the price where most volume traded (POC) and the value-area high/low. LOCATION context only, NOT a signal: the VP fade-edge backtest was UNSUPPORTED (no measured edge). The trigger is price breaking a level, not the level itself."],
+    ["POC / VAH / VAL","Volume profile \u2014 the price where most volume traded (POC) and the value-area high/low. Magnets and shelves."],
     ["Trend lines","Through the last two swing lows (support) / highs (resistance), extended. Context, not a signal."],
     ["SHADOW","Informational \u2014 never votes or fires. The TRIGGER is price breaking the level, not the card."],
     ["DELAYED / EOD","Bars are Polygon exchange-delayed (futures) or end-of-day (stocks). Use ToS for live ticks."],
@@ -1961,30 +1944,13 @@ const WaveChart=(function(){
     const latestA=aplus.length?aplus[aplus.length-1]:null;
     function fscore(t){ return (cpsc&&cpsc.by_pattern&&cpsc.by_pattern[t])||null; }
     let h='<div class="card" style="border-left:3px solid '+C.pri+'"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:'+C.pri+';margin-bottom:5px">\u29c9 Candle patterns (SHADOW)</div>';
-    h+='<div class="src" style="margin-bottom:5px">'+ps.length+' shown \u00b7 '+aplus.length+' A+ (context-gated) \u00b7 rest RAW (\u2248null \u2014 context is the edge, not the name).</div>';
-    h+='<div style="display:flex;flex-wrap:wrap;gap:7px 13px;align-items:center;margin:0 0 6px;font-size:11px">'
-      +'<span><span style="color:'+C.up+';font-size:13px">\u25b2</span> bull</span>'
-      +'<span><span style="color:'+C.dn+';font-size:13px">\u25bc</span> bear</span>'
-      +'<span><span style="color:'+C.axis+';font-size:13px">\u25e6</span> doji</span>'
-      +'<span><span style="display:inline-block;width:14px;height:14px;border:1.5px solid '+C.up+';border-radius:50%;text-align:center;line-height:12px;color:'+C.up+';font-size:8px;vertical-align:middle">\u25b2</span> <b>A+</b> ringed</span>'
-      +'<span style="opacity:.45"><span style="color:'+C.up+'">\u25b2</span> faint = raw</span>'
-      +'</div>';
-    h+='<details style="margin:0 0 7px"><summary style="cursor:pointer;font-size:11px;color:'+C.blue+';list-style:none;font-weight:650">\u24d8 What these arrows mean</summary>'
-      +'<div class="src" style="margin-top:5px;line-height:1.55">An arrow marks the bar where a candle pattern <b>completed</b> \u2014 it shows <b>where to look</b>, not a signal to act. '
-      +'<b style="color:'+C.up+'">\u25b2 green, below a bar</b> = bullish (engulfing, hammer, bullish outside); '
-      +'<b style="color:'+C.dn+'">\u25bc red, above a bar</b> = bearish (bearish engulfing, shooting star, bearish outside); '
-      +'<b>\u25e6 grey dot</b> = a doji (indecision).<br><br>'
-      +'<b>Filled + ringed = A+</b> \u2014 context-gated: it sits at a level, agrees with the higher-TF trend, and has strong candle quality. <b>Only A+ patterns alert.</b> '
-      +'<b style="opacity:.6">Faint / hollow = RAW</b> \u2014 it printed but failed the context filter; raw patterns are \u2248 a coin flip, shown for completeness, not to trade. '
-      +'<b>Tier-2 folklore</b> (doji / harami / star / soldiers) is dimmed and only shows with the <b>Tier2</b> toggle \u2014 scored to expose it, never trusted.<br><br>'
-      +'The <b>trigger is price BREAKING the pattern bar</b> (the entry level), not the arrow. SHADOW \u2014 it never votes.</div></details>';
+    h+='<div class="src" style="margin-bottom:6px">'+ps.length+' shown \u00b7 '+aplus.length+' A+ (context-gated) \u00b7 rest RAW (\u2248null \u2014 context is the edge, not the name). \u25b2/\u25bc filled+ring = A+, faint = raw; \u25e6 = doji. Tier-2 dim (folklore, scored not trusted).</div>';
     if(latestA){ const rr=latestA.rr,poor=(rr!=null&&rr<1),dcol=latestA.direction==="up"?C.up:C.dn;
       h+='<div style="border:1px solid '+(poor?C.axis:dcol)+';border-radius:7px;padding:6px 8px;margin-bottom:6px"><b style="color:'+dcol+'">'+esc(latestA.type)+' '+latestA.direction.toUpperCase()+'</b> '+(poor?'<span style="color:'+C.dn+';font-weight:700;font-size:10px"> \u00b7 R:R '+rr+' NOT ACTIONABLE</span>':'<span style="font-size:10px;color:'+C.alt+'"> \u00b7 R:R '+rr+'</span>')+'<div class="src" style="margin-top:3px">entry '+latestA.entry+' \u00b7 stop '+latestA.stop+' \u00b7 target '+latestA.target+' \u2014 break of the bar is the trigger</div><div class="src" style="margin-top:2px">'+esc((latestA.trace||[]).join("  \u00b7  "))+'</div></div>'; }
     const types=Array.from(new Set(ps.map(p=>p.type)));
-    h+=(types.length?_dataTable([{t:'Pattern'},{t:'RAW hit (n)',a:'right'},{t:'A+ hit (n)',a:'right'}],types.map(function(t){ const f=fscore(t),tier=(ps.find(p=>p.type===t)||{}).tier;
-      var rawc=f?((f.RAW.target_hit_rate==null?'\u2014':Math.round(f.RAW.target_hit_rate*100)+'%')+' ('+f.RAW.n_matured+')'):'\u2014';
-      var apc=f?((f.FILTERED.target_hit_rate==null?'\u2014':Math.round(f.FILTERED.target_hit_rate*100)+'%')+' ('+f.FILTERED.n_matured+')'+((f.FILTERED.n_matured>=30)?'':' <span style="color:'+C.axis+';font-size:8px">DESC</span>')):'\u2014';
-      return ['<b style="color:var(--ink)">'+esc(t)+'</b>'+(tier===2?' <span style="color:'+C.axis+';font-size:8px">folk</span>':''),rawc,apc]; })):'');
+    h+=types.map(function(t){ const f=fscore(t),tier=(ps.find(p=>p.type===t)||{}).tier;
+      const sc=f?('RAW '+(f.RAW.target_hit_rate==null?'\u2014':Math.round(f.RAW.target_hit_rate*100)+'%')+' n='+f.RAW.n_matured+' \u00b7 A+ '+(f.FILTERED.target_hit_rate==null?'\u2014':Math.round(f.FILTERED.target_hit_rate*100)+'%')+' n='+f.FILTERED.n_matured):'no score yet';
+      return '<div class="src" style="margin:2px 0"><b style="color:var(--ink)">'+esc(t)+'</b>'+(tier===2?' <span style="color:'+C.axis+'">\u00b7folklore</span>':'')+' \u2014 '+sc+((f&&f.FILTERED.n_matured>=30)?'':' <span style="color:'+C.axis+'">(DESCRIPTIVE)</span>')+'</div>'; }).join("");
     h+='<div class="src" style="margin-top:5px;color:'+C.alt+'">SHADOW \u2014 does not vote. RAW=control (expected null); each A+ must beat its OWN RAW past n\u226530. Hundreds of pattern\u00d7instrument\u00d7TF cells \u2014 high false-discovery risk; expect most null. The break of the bar is the trigger, not the pattern.</div>';
     return h+'</div>'; }
   function trainerNote(){
@@ -1995,7 +1961,7 @@ const WaveChart=(function(){
     const el=document.getElementById("wavechart-content");
     if(!bars||!Array.isArray(bars.bars)||!bars.bars.length){
       if(inst==="stk"&&!stockTicker){ el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+'<div class="card">Select a screener pick above to build its DAILY wave chart (swing-degree, on demand).</div>'+(explain?waveGlossary():''); wireControls(); return; }
-      const _nm=(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase()); const _msg=(wave&&wave.status==="no_read")?("No clean count for "+_nm+" "+tf+" \u2014 analyzer couldn\u2019t resolve a structure (thin history?)."):("Wave data not published for "+_nm+" "+tf+".");
+      const _nm=(stockTicker||inst.toUpperCase()); const _msg=(wave&&wave.status==="no_read")?("No clean count for "+_nm+" "+tf+" \u2014 analyzer couldn\u2019t resolve a structure (thin history?)."):("Wave data not published for "+_nm+" "+tf+".");
       el.innerHTML=explainPill()+instSwitcher()+(explain?exp('inst'):'')+tfSwitcher()+'<div class="card">'+_msg+'</div>'+(explain?waveGlossary():''); wireControls(); return;
     }
     const ch=Math.max(320, Math.round((window.innerHeight||700)*((window.innerWidth||400)<700?0.56:0.72)));
@@ -2009,7 +1975,7 @@ const WaveChart=(function(){
     document.querySelectorAll("[data-wctf]").forEach(t=>t.onclick=()=>{tf=t.getAttribute("data-wctf");load();});
     document.querySelectorAll("[data-wclayer]").forEach(c=>c.onchange=()=>{layers[c.getAttribute("data-wclayer")]=c.checked;render();});
     const _cl=document.querySelector("[data-wcclear]"); if(_cl)_cl.onclick=()=>{Object.keys(layers).forEach(k=>layers[k]=false); if(typeof maOn==="object")Object.keys(maOn).forEach(k=>maOn[k]=false); render();};
-    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true,keltner:false,vol:false,vwap:false,conf:false,session:false,tammy:false,tictoc:false}); render();};
+    const _df=document.querySelector("[data-wcdefault]"); if(_df)_df.onclick=()=>{Object.assign(layers,{waves:true,alt:true,trend:true,regress:false,channel:false,patterns:false,patterns2:false,subwaves:false,projection:true,liquidity:true,fvg:true,vp:true,svp:false,fib:true}); render();};
     document.querySelectorAll("[data-ma]").forEach(c=>c.onchange=()=>{maOn[c.getAttribute("data-ma")]=c.checked;render();});
     document.querySelectorAll("[data-wcinst]").forEach(b=>b.onclick=()=>{ inst=b.getAttribute("data-wcinst"); if(inst==="stk"){tf="daily";stockTicker=null;} if(inst!=="es"&&inst!=="gc"&&inst!=="cl"&&inst!=="stk")inst="es"; load(); });
     const _ss=document.querySelector("[data-wcstock]"); if(_ss) _ss.onchange=()=>{ stockTicker=_ss.value||null; load(); };
@@ -2044,22 +2010,10 @@ const WaveChart=(function(){
     // include visible wave point prices in scale
     [wave&&wave.primary,wave&&layers.alt&&wave.alternative].forEach(s=>{ if(s&&s.points)s.points.forEach(p=>{if(inView(p.t)!=null)ext.push(p.price);}); });
     [wave&&wave.primary,wave&&wave.alternative].forEach(s=>{ if(layers.projection&&s&&s.projection&&s.projection.status==="ok"){ext.push(s.projection.zone[0]);ext.push(s.projection.zone[1]);} });
-    if(inst==="es"&&Array.isArray(nl))nl.forEach(function(l){ if(l.level!=null&&((l.src==="Tammy"&&layers.tammy)||(l.src==="TicToc"&&layers.tictoc)))ext.push(l.level); });
     ext.forEach(v=>{ if(v>hi&&v<hi+(hi-lo))hi=v; if(v<lo&&v>lo-(hi-lo))lo=v; });
-    // D82: an ACTIVE projection reserves right-side future space (TradingView-style margin) so it isn't cut off,
-    // and its zone+invalidation are force-included in the y-range so it isn't vertically clipped.
-    const _projOK=s=>(s&&s.projection&&s.projection.status==="ok");
-    const projActive=layers.projection&&wave&&(_projOK(wave.primary)||(layers.alt&&_projOK(wave.alternative)));
-    const _tlOK=wave&&wave.trendlines&&wave.trendlines.status==="ok";
-    const lineExtend=_tlOK&&((layers.regress&&wave.trendlines.regression)||(layers.trend&&(wave.trendlines.auto||[]).length)||(layers.channel&&(wave.trendlines.auto||[]).length));
-    if(projActive){ [wave.primary, layers.alt&&wave.alternative].forEach(function(sd){ if(_projOK(sd)){ hi=Math.max(hi,sd.projection.zone[0],sd.projection.zone[1]); lo=Math.min(lo,sd.projection.zone[0],sd.projection.zone[1]); if(sd.invalidation&&sd.invalidation.level!=null){hi=Math.max(hi,sd.invalidation.level);lo=Math.min(lo,sd.invalidation.level);} } }); }
     const PR=(hi-lo)||1; lo-=PR*0.05; hi+=PR*0.05;
-    const futurePad=(projActive||lineExtend)?Math.min(plotW*0.26,140):Math.min(plotW*0.07,46);   // always a small right margin; bigger when projection/trend/regress/channel are active
-    const X=i=>PADL+(n<=1?(plotW-futurePad)/2:(i/(n-1))*(plotW-futurePad));
-    const iEdge=futurePad>0?((n-1)*plotW/(plotW-futurePad)):(n-1);   // bar index at the right edge (extend straight lines into the pad)
+    const X=i=>PADL+(n<=1?plotW/2:(i/(n-1))*plotW);
     const Y=p=>PADT+(hi-p)/(hi-lo)*plotH;
-    const _yreg=[]; function placeY(yd){ var y=yd,G=14,g=0; while(_yreg.some(function(r){return Math.abs(r-y)<G;})&&g<60){ var st=Math.ceil((g+1)/2)*G; y=yd+((g%2)?-st:st); g++; } _yreg.push(y); return y; }
-    function _conn(yd,y,col){ if(Math.abs(y-yd)<=2)return; ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle=col;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(W-PADR-3,yd);ctx.lineTo(W-PADR-3,y);ctx.stroke();ctx.restore(); }
     // grid + right price axis
     ctx.font="12px ui-monospace,SFMono-Regular,Menlo,monospace"; ctx.textBaseline="middle"; ctx.textAlign="left";
     for(let g=0;g<=5;g++){const pr=lo+(hi-lo)*g/5,y=Y(pr);ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke();ctx.fillStyle=C.mut||C.ink;ctx.fillText(pr.toFixed(1),W-PADR+5,y);}
@@ -2068,35 +2022,19 @@ const WaveChart=(function(){
     const ticks=Math.min(6,n); for(let k=0;k<ticks;k++){const i=Math.round(k*(n-1)/(ticks-1||1));const x=X(i);ctx.strokeStyle=C.grid;ctx.beginPath();ctx.moveTo(x,PADT);ctx.lineTo(x,H-PADB);ctx.stroke();ctx.fillStyle=C.mut||C.axis;ctx.font="11px ui-monospace,monospace";ctx.fillText(fmtT(B[i].t),Math.max(18,Math.min(W-PADR-18,x)),H-6);}
     ctx.textAlign="left";
     function hline(price,color,label,dash){const y=Y(price);ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.setLineDash(dash||[]);ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke();ctx.setLineDash([]);
-      ctx.fillStyle=color;ctx.font="bold 11px ui-monospace,monospace";const t=label;const tw=ctx.measureText(t).width;var ly=placeY(y);_conn(y,ly,color);ctx.fillStyle="rgba(0,0,0,.74)";ctx.fillRect(W-PADR-tw-9,ly-9,tw+8,18);ctx.fillStyle=color;ctx.fillText(t,W-PADR-tw-4,ly+4);ctx.restore();}
-    // D99 SESSION shading (intraday only) — subtle RTH (09:30–16:00 ET) vs overnight bands, behind candles.
-    if(layers.session&&tf!=="daily"&&n>1){ const cw2=(plotW-futurePad)/n; ctx.save();
-      for(let i=0;i<n;i++){ const d=new Date(B[i].t); const et=(d.getUTCHours()*60+d.getUTCMinutes()+ (24*60-4*60))%(24*60); const rth=(et>=570&&et<960); ctx.fillStyle=rth?"rgba(110,168,255,.05)":"rgba(139,151,171,.04)"; ctx.fillRect(X(i)-cw2/2,PADT,cw2,plotH); }
-      ctx.restore(); ctx.fillStyle="rgba(110,168,255,.5)"; ctx.font="8px -apple-system"; ctx.fillText("▓ RTH / overnight (ET)",PADL+3,PADT+9); }
+      ctx.fillStyle=color;ctx.font="bold 11px ui-monospace,monospace";const t=label;const tw=ctx.measureText(t).width;ctx.fillStyle="rgba(0,0,0,.74)";ctx.fillRect(W-PADR-tw-9,y-9,tw+8,18);ctx.fillStyle=color;ctx.fillText(t,W-PADR-tw-4,y+4);ctx.restore();}
     // FVG bands behind candles
     let shown=[]; if(layers.fvg&&fvg&&Array.isArray(fvg.fvgs)&&fvg.fvgs.length){fvg.fvgs.forEach(g=>{if(g.top==null||g.bottom==null)return;ctx.fillStyle=g.mitigated?C.fvgM:C.fvgU;ctx.fillRect(PADL,Y(g.top),plotW,Math.max(1,Y(g.bottom)-Y(g.top)));shown.push("FVG");});}
     // candles
-    const cw=Math.max(1.2,Math.min(14,(plotW-futurePad)/n*0.66));   // D82: width matches the pad-aware spacing
+    const cw=Math.max(1.2,Math.min(14,plotW/n*0.66));
     for(let i=0;i<n;i++){const b=B[i],x=X(i),up=b.c>=b.o;ctx.strokeStyle=ctx.fillStyle=up?C.up:C.dn;ctx.lineWidth=Math.max(.8,cw*0.12);ctx.beginPath();ctx.moveTo(x,Y(b.h));ctx.lineTo(x,Y(b.l));ctx.stroke();const yo=Y(b.o),yc=Y(b.c);ctx.fillRect(x-cw/2,Math.min(yo,yc),cw,Math.max(1,Math.abs(yc-yo)));}
     // levels
     if(layers.liquidity&&ict&&Array.isArray(ict.untapped_pools_near)&&ict.untapped_pools_near.length){ict.untapped_pools_near.forEach(pl=>{const pr=pl.price!=null?pl.price:pl.level;if(pr==null)return;hline(pr,C.liq,(pl.side||"pool")+" "+tnum(pr));shown.push("Liquidity");});}
     if(layers.vp&&verdict){["vah","val","poc"].forEach(k=>{let v=verdict[k];if(v==null&&verdict.vp)v=verdict.vp[k];if(v!=null){hline(v,C.vp,k.toUpperCase()+" "+tnum(v));shown.push("VP");}});}
     if(layers.fib&&verdict&&Array.isArray(verdict.fib_levels)){verdict.fib_levels.forEach(f=>{if(f.price!=null){hline(f.price,C.fib,(f.label||"fib")+" "+tnum(f.price),[2,2]);shown.push("Fib");}});}
-    if(inst==="es"&&Array.isArray(nl)&&nl.length){nl.forEach(function(l){if(l.level==null)return; var on=(l.src==="Tammy"&&layers.tammy)||(l.src==="TicToc"&&layers.tictoc); if(!on)return; ctx.save(); ctx.globalAlpha=.5; ctx.strokeStyle=(l.src==="Tammy"?C.nl:"#7aa2ff"); ctx.lineWidth=0.7; ctx.setLineDash([1,5]); var yy=Y(l.level); ctx.beginPath();ctx.moveTo(PADL,yy);ctx.lineTo(W-PADR,yy);ctx.stroke(); ctx.setLineDash([]); ctx.font="8px ui-monospace,monospace"; ctx.fillStyle=(l.src==="Tammy"?C.nl:"#7aa2ff"); ctx.globalAlpha=.85; ctx.textAlign="left"; ctx.fillText((l.src==="Tammy"?"T":"TT")+":"+esc((l.role||"").slice(0,3))+" "+tnum(l.level), PADL+3, yy-2); ctx.textAlign="left"; ctx.restore(); shown.push(l.src);});}
     // waves with badge labels
     function badge(x,y,lbl,prim){ctx.beginPath();ctx.arc(x,y,10,0,7);if(prim){ctx.fillStyle=C.pri;ctx.fill();ctx.fillStyle=C.priText;}else{ctx.fillStyle="rgba(11,15,23,.85)";ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=C.alt;ctx.stroke();ctx.fillStyle=C.alt;}ctx.font="bold 12px -apple-system,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lbl,x,y+.5);ctx.textAlign="left";ctx.textBaseline="alphabetic";}
     function drawWave(side,prim){ if(!side)return; const pts=(side.points||[]).map(p=>({...p,pos:inView(p.t)})).filter(p=>p.pos!=null).sort((a,b)=>a.pos-b.pos);
-      // D99: a CONTINUATION scenario carries no 6-pivot count (by design, analyzer.py) — so it would draw
-      // empty. Show its BASIS leg (last higher-low → higher-high, from the published pivots) as a light
-      // dashed guide so the primary isn't visually blank. Reuses wave.pivots; no new data, no engine change.
-      if(!pts.length&&wave&&Array.isArray(wave.pivots)&&/CONTINUATION/i.test(side.name||"")){
-        const lows=wave.pivots.filter(p=>p.type==="L"),highs=wave.pivots.filter(p=>p.type==="H"),ll=lows.length?lows[lows.length-1]:null;
-        if(ll){ let hh=highs.filter(p=>p.t>ll.t); hh=hh.length?hh[hh.length-1]:(highs.length?highs[highs.length-1]:null);
-          if(hh){ const p0=inView(ll.t),p1=inView(hh.t),col=prim?C.pri:C.alt; ctx.save(); ctx.globalAlpha=.85; ctx.strokeStyle=col; ctx.lineWidth=prim?1.6:1.2; ctx.setLineDash([2,3]);
-            if(p0!=null&&p1!=null){ ctx.beginPath(); ctx.moveTo(X(p0),Y(ll.price)); ctx.lineTo(X(p1),Y(hh.price)); ctx.stroke(); } ctx.setLineDash([]);
-            [[p0,ll.price,"HL"],[p1,hh.price,"HH"]].forEach(function(m){ if(m[0]==null)return; const x=X(m[0]),y=Y(m[1]); ctx.beginPath(); ctx.arc(x,y,3.5,0,7); ctx.fillStyle=col; ctx.fill(); ctx.font="9px -apple-system"; ctx.fillText(m[2],x+5,y-4); });
-            if(p1!=null){ ctx.globalAlpha=.9; ctx.font="9px -apple-system"; ctx.fillStyle=col; ctx.fillText("continuation basis (no wave count)",Math.max(PADL+3,X(p1)-120),Y(hh.price)+(prim?-14:14)); }
-            ctx.restore(); } } }
       if(pts.length>1){ctx.strokeStyle=prim?C.pri:C.alt;ctx.lineWidth=prim?2:1.4;ctx.setLineDash(prim?[]:[6,4]);ctx.beginPath();pts.forEach((p,k)=>{const x=X(p.pos),y=Y(p.price);k?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
       pts.forEach(p=>badge(X(p.pos),Y(p.price),p.label,prim));
       const iv=side.invalidation; if(iv&&iv.level!=null){const cfHit=side.confluence&&side.confluence.trace.some(t=>t.pillar==='invalidation'&&t.fired);hline(iv.level,prim?C.inval:"rgba(240,97,109,.55)",(prim?"inval A ":"inval B ")+tnum(iv.level)+(cfHit?" \u25c6confl":""),[5,4]);}
@@ -2127,21 +2065,6 @@ const WaveChart=(function(){
       const seg=ser.slice(view.start,view.start+n); ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1; ctx.globalAlpha=.8; if(isSma)ctx.setLineDash([3,3]); ctx.beginPath(); let st=false;
       for(let i=0;i<n;i++){ const v=seg[i]; if(v==null){st=false;continue;} const x=X(i),y=Y(v); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; ctx.restore(); }
     Object.keys(maOn).forEach(k=>{ if(maOn[k]) drawMA(k); });
-    // KELTNER CHANNEL — D99: EMA(55) basis ± 4×ATR(14). Wider/longer-term envelope (visual context, not a signal).
-    // EMA55 computed client-side over the FULL bar array (bars.mas ships no ema55), then sliced to the view.
-    if(layers.keltner){ const _kc55=bars.bars.map(function(b){return b.c;});
-      const _ema55=(function(cl,p){ const k=2/(p+1),out=new Array(cl.length).fill(null); let e=null,seed=0,cnt=0;
-        for(let i=0;i<cl.length;i++){ if(cnt<p){ seed+=cl[i]; cnt++; if(cnt===p){ e=seed/p; out[i]=e; } } else { e=cl[i]*k+e*(1-k); out[i]=e; } } return out; })(_kc55,55);
-      { const bas=_ema55.slice(view.start,view.start+n);
-      const tr=[]; for(let i=0;i<B.length;i++){ tr.push(i===0?(B[i].h-B[i].l):Math.max(B[i].h-B[i].l,Math.abs(B[i].h-B[i-1].c),Math.abs(B[i].l-B[i-1].c))); }
-      const atr=[]; for(let i=0;i<tr.length;i++){ const p=Math.min(55,i+1); let sum=0; for(let j=i-p+1;j<=i;j++)sum+=tr[j]; atr.push(sum/p); }   // D99(b): ATR55 aligned to the EMA55 basis
-      const KMULT=4, KC="120,210,190";
-      [[1,"rgba("+KC+",.55)"],[-1,"rgba("+KC+",.55)"],[0,"rgba("+KC+",.85)"]].forEach(function(bd){
-        ctx.save();ctx.strokeStyle=bd[1];ctx.lineWidth=bd[0]===0?1:1.1;if(bd[0]!==0)ctx.setLineDash([4,3]);ctx.beginPath();let st=false;
-        for(let i=0;i<n;i++){ const v=bas[i]; if(v==null){st=false;continue;} const y=Y(v+bd[0]*KMULT*atr[i]); st?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y); st=true; }
-        ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
-      const _bl=bas[n-1]; if(_bl!=null){ ctx.save();ctx.fillStyle="rgba("+KC+",.9)";ctx.font="9px -apple-system";const yl=Y(_bl+KMULT*atr[n-1]);ctx.fillText("Keltner EMA55\u00b14ATR",PADL+3,(isNaN(yl)?PADT+10:yl)-3);ctx.restore(); }
-      shown.push("Keltner"); } }
     // subwaves (one degree, subordinate) — only when toggled
     if(layers.subwaves&&wave){ [wave.primary, layers.alt?wave.alternative:null].forEach(function(side){ if(!side||!side.subwaves)return;
       side.subwaves.forEach(function(leg){ const sp=(leg.points||[]).map(p=>({label:p.label,price:p.price,pos:inView(p.t)})).filter(p=>p.pos!=null); if(!sp.length)return;
@@ -2154,20 +2077,17 @@ const WaveChart=(function(){
       if(layers.regress&&TL.regression){ const R=TL.regression; function ry(i){ return R.at_first + R.slope*((view.start+i) - R.n_first); }
         [[2,"rgba(156,195,255,.16)",1,true],[-2,"rgba(156,195,255,.16)",1,true],[1,"rgba(156,195,255,.30)",1,true],[-1,"rgba(156,195,255,.30)",1,true],[0,"rgba(156,195,255,.85)",1.5,false]].forEach(function(bd){
           ctx.save();ctx.strokeStyle=bd[1];ctx.lineWidth=bd[2];if(bd[3])ctx.setLineDash([3,3]);ctx.beginPath();
-          for(let i=0;i<n;i++){const y=Y(ry(i)+bd[0]*R.sigma); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} if(iEdge>n-1)ctx.lineTo(X(iEdge),Y(ry(iEdge)+bd[0]*R.sigma)); ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
+          for(let i=0;i<n;i++){const y=Y(ry(i)+bd[0]*R.sigma); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke();ctx.setLineDash([]);ctx.restore(); });
         if(R.extended){ ctx.save();ctx.fillStyle="rgba(156,195,255,.95)";ctx.font="bold 10px -apple-system";ctx.fillText("regression "+R.extended+" \u2014 stretched",PADL+3,Y(ry(0))-5);ctx.restore(); }
         shown.push("Regress"); }
       if(layers.trend&&Array.isArray(TL.auto)){ TL.auto.forEach(function(L){
         const sup=L.kind==="support", base=sup?"63,208,122":"240,97,109", val=L.validated;
         ctx.save(); ctx.strokeStyle="rgba("+base+","+(val?0.95:0.45)+")"; ctx.lineWidth=val?1.8:1; ctx.setLineDash(val?[]:[5,4]);
-        ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} if(iEdge>n-1)ctx.lineTo(X(iEdge),Y(lineY(L,iEdge))); ctx.stroke(); ctx.setLineDash([]);
-        if(layers.channel&&L.channel){ const off=L.channel.opp_at_last-L.at_last; ctx.globalAlpha=.5; ctx.setLineDash([2,3]); ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)+off); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} if(iEdge>n-1)ctx.lineTo(X(iEdge),Y(lineY(L,iEdge)+off)); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; }
+        ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke(); ctx.setLineDash([]);
+        if(layers.channel&&L.channel){ const off=L.channel.opp_at_last-L.at_last; ctx.globalAlpha=.5; ctx.setLineDash([2,3]); ctx.beginPath(); for(let i=0;i<n;i++){const y=Y(lineY(L,i)+off); i?ctx.lineTo(X(i),y):ctx.moveTo(X(i),y);} ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; }
         const lab=(val?("\u2713 "+L.touches+" touches"):(L.touches+" touches \u00b7 prov"))+(L.with_filter===true?" \u00b7 w/trend":(L.with_filter===false?" \u00b7 counter":""));
         const ly=Y(lineY(L,0)); ctx.font=(val?"bold ":"")+"10px -apple-system"; const tw=ctx.measureText(lab).width;
         ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(PADL+1,ly-12,tw+6,14); ctx.fillStyle="rgba("+base+",1)"; ctx.fillText(lab,PADL+4,ly-2);
-        // right-edge price label — where the line is at the end of the chart
-        const _rp=lineY(L,n-1),_rpy0=Y(_rp),_rpl=_rp.toFixed(2); ctx.font="bold 9px ui-monospace,monospace"; const _rpw=ctx.measureText(_rpl).width; var _rpy=placeY(_rpy0); _conn(_rpy0,_rpy,"rgba("+base+",1)");
-        ctx.fillStyle="rgba(0,0,0,.66)"; ctx.fillRect(W-PADR-_rpw-7,_rpy-7,_rpw+6,14); ctx.fillStyle="rgba("+base+",1)"; ctx.textAlign="right"; ctx.fillText(_rpl,W-PADR-3,_rpy+3.5); ctx.textAlign="left";
         if(L.break&&!L.break.poke_only){ const by=Y(L.break.line_at),up=L.break.direction==="up"; const t2="\u26a1 broke "+L.break.direction+" \u00b7 close-confirmed"; ctx.font="bold 9px -apple-system"; const w2=ctx.measureText(t2).width; const bx=W-PADR-w2-7; ctx.fillStyle="rgba(0,0,0,.6)";ctx.fillRect(bx-2,by+(up?-15:3),w2+6,14); ctx.fillStyle="rgba("+base+",1)";ctx.fillText(t2,bx+1,by+(up?-4:13)); }
         ctx.restore();
       }); }
@@ -2188,51 +2108,16 @@ const WaveChart=(function(){
       else {ctx.lineWidth=1.2; ctx.stroke();}
       ctx.restore();
     }); }
-    // D99 VOLUME sub-pane — bottom-strip histogram from real bar volume, up/down colored (visual context).
-    if(layers.vol&&n){ const volH=plotH*0.16, vy0=PADT+plotH; let mv=0; for(let i=0;i<n;i++)mv=Math.max(mv,B[i].v||0);
-      if(mv>0){ const cw3=Math.max(1,(plotW-futurePad)/n*0.6); ctx.save();
-        for(let i=0;i<n;i++){ const v=B[i].v||0,h2=v/mv*volH,up=B[i].c>=B[i].o; ctx.fillStyle=up?"rgba(63,208,122,.32)":"rgba(240,97,109,.32)"; ctx.fillRect(X(i)-cw3/2,vy0-h2,cw3,Math.max(0.5,h2)); }
-        ctx.fillStyle="rgba(139,151,171,.7)";ctx.font="8px -apple-system";ctx.fillText("Vol",PADL+3,vy0-volH-2); ctx.restore(); shown.push("Vol"); } }
-    // D99 SESSION VWAP — cumulative typical×volume, reset per session on intraday TFs (visual context).
-    if(layers.vwap&&n){ const vw=[]; let cpv=0,cv=0,lastKey=null;
-      for(let i=0;i<n;i++){ const b=B[i]; let key="all"; if(tf!=="daily"){ const d=new Date(b.t); key=d.getUTCFullYear()+"-"+d.getUTCMonth()+"-"+d.getUTCDate(); } if(key!==lastKey){ cpv=0;cv=0;lastKey=key; } const tp=(b.h+b.l+b.c)/3,v=b.v||0; cpv+=tp*v; cv+=v; vw.push(cv>0?cpv/cv:null); }
-      ctx.save();ctx.strokeStyle="#c8a0ff";ctx.lineWidth=1.3;ctx.setLineDash([2,2]);ctx.beginPath();let st=false;
-      for(let i=0;i<n;i++){ const v=vw[i]; if(v==null){st=false;continue;} const x=X(i),y=Y(v); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; } ctx.stroke();ctx.setLineDash([]);
-      const lv=vw[n-1]; if(lv!=null){ ctx.fillStyle="#c8a0ff";ctx.font="bold 9px ui-monospace,monospace";ctx.fillText("VWAP "+lv.toFixed(2),PADL+3,Y(lv)-3); } ctx.restore(); shown.push("VWAP"); }
-    // D99 CONFLUENCE decision levels — reuse es_swing_verdict.json (D94/D90 output); ×N count only when the feed supplies it (no re-clustering).
-    if(layers.conf&&inst==="es"&&esv){ const levs=[];
-      (esv.nearest_levels||[]).forEach(function(L){ if(L&&L.level!=null)levs.push({p:L.level,k:L.kind||"level",c:null}); });
-      (esv.setups_graded||[]).forEach(function(s){ if(s&&s.level!=null)levs.push({p:s.level,k:s.kind||"setup",c:s.confluence_count}); });
-      levs.forEach(function(L){ hline(L.p,"#7ee0a6",L.p.toFixed(2)+" "+esc(L.k)+(L.c?(" ×"+L.c):""),[1,4]); }); if(levs.length)shown.push("Levels"); }
     // current-price line (LIVE/DELAYED/STALE honored)
     (function(){ let px=null,tag="DELAYED",pcol=C.alt;
-      if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-parseTs(snap.pushed_at))/60000:999;
+      if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const row=snap.rows[snap.rows.length-1],es=parseFloat(row.es_last); const age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999;
         if(!isNaN(es)){ px=es; if(age<10){tag="LIVE";pcol=C.up;} else {tag="STALE";pcol=C.axis;} } }
       if(px==null&&n){ px=B[n-1].c; tag="DELAYED"; pcol=C.alt; }
-      if(layers.priceline&&px!=null){ const y=Y(px); ctx.save(); ctx.globalAlpha=.75; ctx.strokeStyle=pcol; ctx.lineWidth=1.4; ctx.setLineDash([4,3]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
-        ctx.font="bold 9px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; var ply=placeY(y); _conn(y,ply,pcol); ctx.fillStyle="rgba(0,0,0,.5)";ctx.fillRect(W-PADR-tw-7,ply-7,tw+6,14); ctx.fillStyle=pcol; ctx.globalAlpha=.92; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-3,ply+3); ctx.textAlign="left"; ctx.restore(); } })();
+      if(px!=null){ const y=Y(px); ctx.save(); ctx.strokeStyle=pcol; ctx.lineWidth=1.1; ctx.setLineDash([2,2]); ctx.beginPath();ctx.moveTo(PADL,y);ctx.lineTo(W-PADR,y);ctx.stroke(); ctx.setLineDash([]);
+        ctx.font="bold 12px ui-monospace,monospace"; const lbl="\u25cf "+px.toFixed(2)+" "+tag,tw=ctx.measureText(lbl).width; ctx.fillStyle="rgba(0,0,0,.78)";ctx.fillRect(W-PADR-tw-9,y-10,tw+8,20); ctx.fillStyle=pcol; ctx.textAlign="right"; ctx.fillText(lbl,W-PADR-4,y+4); ctx.textAlign="left"; ctx.restore(); } })();
     if(wave){ drawProjection(wave.primary,true); if(layers.alt)drawProjection(wave.alternative,false); }
-    // When the engine DECLINES to project (honest coherence guard, not a bug) or has no alt count, SAY SO on-chart
-    if(wave&&layers.projection){ var _pp=wave.primary&&wave.primary.projection;
-      if(_pp&&_pp.status!=="ok"){ ctx.save(); ctx.font="9.5px -apple-system,sans-serif";
-        var msg="\u2933 next-wave projection: engine declines on "+tf+" \u2014 count complete/transitioning (not fabricated). Switch to 60m or 15m to see a projection.";
-        var words=msg.split(" "),line="",lines=[],maxw=plotW-10;
-        for(var wi=0;wi<words.length;wi++){var tt=line?line+" "+words[wi]:words[wi]; if(ctx.measureText(tt).width>maxw){lines.push(line);line=words[wi];}else line=tt;} if(line)lines.push(line);
-        ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(PADL+3,PADT+3,maxw,lines.length*12+6);
-        ctx.fillStyle="rgba(255,207,107,.95)"; ctx.textAlign="left"; for(var li=0;li<lines.length;li++)ctx.fillText(lines[li],PADL+6,PADT+14+li*12);
-        ctx.restore(); } }
-    if(wave&&layers.alt&&!wave.alternative){ ctx.save(); ctx.font="9.5px -apple-system,sans-serif"; ctx.fillStyle="rgba(0,0,0,.55)";
-      var am="Alt count: none on "+tf+" \u2014 one dominant read, no clean alternative (not fabricated)."; var aw=ctx.measureText(am).width;
-      ctx.fillRect(PADL+3,H-PADB-16,Math.min(aw+8,plotW-6),14); ctx.fillStyle="rgba(156,195,255,.9)"; ctx.textAlign="left"; ctx.fillText(am,PADL+6,H-PADB-6); ctx.restore(); }
     // freshness + layer status
-    // D99 honest freshness stamp: bars as-of + live-price tag + the bar↔price gap (never a silent mismatch).
-    const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed,_tag=dly?"DELAYED":(inst==="es"?"LIVE":"EOD");
-      let _px=null,_ptag="",_pcol=C.alt; if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){const _es=parseFloat(snap.rows[snap.rows.length-1].es_last),_age=snap.pushed_at?(Date.now()-Date.parse(snap.pushed_at))/60000:999; if(!isNaN(_es)){_px=_es;_ptag=_age<10?"LIVE":"STALE";_pcol=_age<10?C.up:C.dn;}}
-      const _lastc=(n?B[n-1].c:null); const _gap=(_px!=null&&_lastc!=null)?(_px-_lastc):null;
-      const _gaptxt=(_gap!=null)?(' · <span style="color:'+(Math.abs(_gap)>15?C.dn:C.axis)+'">px vs last bar '+(_gap>=0?'+':'')+_gap.toFixed(2)+'pt</span>'):'';
-      fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+_tag+'</span> '+esc(bars.contract||bars.symbol||"ES")+' '+esc(bars.timeframe)+' · <b>bars as-of '+esc(bars.as_of||"?")+'</b> · '+n+'/'+total+' bars'
-        +(_px!=null?(' · price <span style="color:'+_pcol+';font-weight:700">'+_ptag+' '+_px.toFixed(2)+'</span>'+_gaptxt):'')
-        +' <span style="color:'+C.axis+'">(Polygon delayed/EOD — ToS for live ticks; gap is the delayed-bar lag, labeled not hidden)</span>';}
+    const fr=document.getElementById("wc-fresh"); if(fr){const dly=bars.delayed,_tag=dly?"DELAYED":(inst==="es"?"LIVE":"EOD");fr.innerHTML='<span style="color:'+(dly?C.alt:C.up)+';font-weight:700;border:1px solid '+(dly?C.alt:C.up)+';border-radius:4px;padding:0 5px;font-size:9px">'+_tag+'</span> '+esc(bars.contract||bars.symbol||"ES")+' '+esc(bars.timeframe)+' · showing '+n+'/'+total+' bars · as of '+esc(bars.as_of||"?")+' (Polygon · delayed/EOD — ToS for live ticks)';}
     const ls=document.getElementById("wc-layers"); if(ls){const want=[];if(layers.liquidity)want.push("Liquidity");if(layers.fvg)want.push("FVG");if(layers.vp)want.push("VP");if(layers.fib)want.push("Fib");const miss=want.filter(w=>shown.indexOf(w)<0);ls.innerHTML=miss.length?'<span style="color:'+C.axis+'">Level layers with no published data right now (shown empty, not invented): <b>'+miss.join(", ")+'</b> — ICT/FVG go dark off-hours; VP/fib publish when the engine has them.</span>':'';}
   }
   function __t(side){ const p=(side&&side.points)||[]; return p.length?p[p.length-1].t:null; }
@@ -2306,19 +2191,6 @@ const Perf=(function(){
     return '<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 2px">Distribution / trade — lopsided = one fluke</div>'
       +'<div style="display:flex;align-items:flex-end;gap:1px;height:32px">'+hh.counts.map((c,i)=>'<div style="flex:1;background:'+(i<zb?C.neg:C.pos)+';opacity:.7;height:'+Math.max(2,c/mx*32)+'px;border-radius:1px 1px 0 0"></div>').join("")+'</div>'
       +'<div class="gmut" style="display:flex;justify-content:space-between;font-size:8px;margin-top:1px"><span>'+hh.lo+' pts</span><span>0</span><span>+'+hh.hi+' pts</span></div>'; }
-  function gaugeBlock(t){ var g=t.gauge; if(!g||!g.trades||!g.trades.length) return "";
-    var money=function(v){return (v>=0?'+$':'−$')+Math.abs(Math.round(v)).toLocaleString();};
-    var mx=Math.max.apply(null,g.trades.map(function(x){return Math.abs(x);}))||1;
-    var strip='<div style="display:flex;align-items:stretch;gap:1px;height:46px;margin:6px 0">'+g.trades.map(function(x){var hp=Math.max(2,Math.abs(x)/mx*21);return '<div title="'+money(x)+'" style="flex:1;display:flex;flex-direction:column">'+'<div style="height:23px;display:flex;align-items:flex-end"><div style="width:100%;height:'+(x>0?hp:0)+'px;background:'+C.pos+';opacity:.85;border-radius:1px 1px 0 0"></div></div>'+'<div style="height:23px;display:flex;align-items:flex-start"><div style="width:100%;height:'+(x<0?hp:0)+'px;background:'+C.neg+';opacity:.85;border-radius:0 0 1px 1px"></div></div></div>';}).join("")+'</div>';
-    return '<details style="margin-top:8px;border:1px solid var(--gbrd);border-radius:8px;padding:7px 10px;background:rgba(255,255,255,.015)">'
-      +'<summary style="cursor:pointer;font-size:11.5px;font-weight:750;color:var(--ink);list-style:none">▸ Trades sized — '+esc(g.size_label)+' <span class="gmut" style="font-weight:400">· tap to see every winner & loser</span></summary>'
-      +'<div style="margin-top:7px">'
-      +_statGrid([{l:'net ('+g.n+' trades)',v:money(g.net_total)},{l:'avg win',v:'+$'+Math.round(g.avg_win).toLocaleString()},{l:'avg loss',v:'−$'+Math.abs(Math.round(g.avg_loss)).toLocaleString()},{l:'biggest win',v:'+$'+Math.round(g.largest_win).toLocaleString()},{l:'biggest loss',v:'−$'+Math.abs(Math.round(g.largest_loss)).toLocaleString()},{l:'payoff',v:(g.payoff==null?'—':g.payoff)}],3)
-      +'<div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px;margin:8px 0 0">Each trade ($, last '+g.trades.length+') — green↑ winner, red↓ loser, height = size</div>'
-      +strip
-      +'<div class="gmut" style="font-size:9px;margin-top:2px">'+g.n_win+' winners / '+g.n_loss+' losers · SIMULATED at a FIXED '+esc(g.size_label)+' — a yardstick to gauge magnitude, not a position size.</div>'
-      +'</div></details>';
-  }
   function usdBlock(S){ const t=S.tracks[0]||{},u=t.usd;
     let h='<div style="font-size:9px;color:#ffcf6b;border:1px dashed #ffcf6b;border-radius:6px;padding:5px 8px;margin:2px 0 7px">'+esc(u?u.convention:"SIMULATED fixed-size $")+'</div>';
     if(!u){ return h+'<div class="gmut" style="font-size:10.5px">No $ — instrument not tagged (points only).</div>'; }
@@ -2327,7 +2199,6 @@ const Perf=(function(){
     h+=winLossBar(u)+dollarExpBar(u)+statChips(u)+histBars(t);
     h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:7px 0 2px">$ equity curve (cum, SIMULATED)</div>'+equitySVG(u.equity);
     h+='<div class="src" style="margin-top:5px;color:'+dcol+';font-weight:600">'+esc(t.usd_shape_line)+'</div>';
-    h+=gaugeBlock(t);
     return h; }
   function periodSel(){ const o=[["all","All"],["90d","3M"],["30d","1M"],["7d","1W"],["1d","1D"]]; return '<div class="tabs" style="margin-bottom:8px">'+o.map(x=>'<div class="tab'+(x[0]===period?" active":"")+'" data-perfperiod="'+x[0]+'">'+x[1]+'</div>').join("")+'</div><div class="src" style="margin:-3px 0 9px;font-size:10px;color:var(--mut)">timeline = each track\u2019s own last window (short windows \u2192 small n \u2192 DESCRIPTIVE; honest)</div>'; }
   async function load(){
@@ -2396,7 +2267,7 @@ const Perf=(function(){
     h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:9px 0 2px">Equity curve — '+esc(best.track)+' (cum net pts, '+esc(best.status)+')</div>'+equitySVG(best.equity); }
     h+='<details style="margin:8px 0 2px"><summary style="cursor:pointer;font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;list-style:none">\u25b8 n toward 30 ('+S.tracks.length+' tracks)</summary>'+top.map(nProgress).join("")+'</details>';
     if(S.pairs&&S.pairs.length){ h+='<div style="font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:9px 0 3px">Filtered vs RAW</div>';
-      h+=_dataTable([{t:'Track'},{t:'Filtered vs RAW'}],S.pairs.slice(0,6).map(p=>['<b>'+esc(p.base)+'</b>',(p.separated?'<span style="color:'+C.pos+'">✓ '+esc(p.note)+'</span>':'<span style="color:'+C.amber+'">⚠ '+esc(p.note)+'</span>')])); }
+      h+=S.pairs.slice(0,6).map(p=>'<div class="src" style="margin:2px 0"><b>'+esc(p.base)+'</b> '+(p.separated?'<span style="color:'+C.pos+'">✓ '+esc(p.note)+'</span>':'<span style="color:'+C.amber+'">⚠ '+esc(p.note)+'</span>')+'</div>').join(""); }
     h+='<details class="src" style="margin-top:8px"><summary style="cursor:pointer;color:'+C.blue+';font-size:11px">details — CI table</summary><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums;margin-top:5px;min-width:380px">'
       +'<tr><th style="text-align:left;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">track</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">n</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">exp</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">95% CI</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">win%</th><th style="text-align:right;color:var(--mut);font-size:9px;padding:2px 6px 2px 0;border-bottom:1px solid var(--gbrd)">net</th><th style="text-align:left;color:var(--mut);font-size:9px;padding:2px 0;border-bottom:1px solid var(--gbrd)">status</th></tr>'
       +S.tracks.map(t=>'<tr><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line)">'+esc(t.track)+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right">'+t.n_matured+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right;color:'+(SC[t.status_class])+'">'+t.expectancy+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right">'+(t.exp_ci?("["+t.exp_ci[0]+", "+t.exp_ci[1]+"]"):"—")+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right" class="gmut">'+t.win_rate+'</td><td style="padding:2px 6px 2px 0;border-bottom:1px solid var(--line);text-align:right">'+t.net_total+'</td><td style="padding:2px 0;border-bottom:1px solid var(--line);font-size:9px;color:'+SC[t.status_class]+'">'+esc(t.status_class)+'</td></tr>').join("")
@@ -2480,8 +2351,8 @@ const ProScreen=(function(){
     const edu=(p.education||[]).map(e=>'• '+esc(e)).join('<br>');
     const rr=p.rr!=null?('<span class="ps-rr">'+esc(p.rr)+'</span>'):'–';
     return '<div class="setup"><div class="stk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.setup||"VCP base")+'</span> '+neChip(p.not_extended)+etfFlag(p)+'</div>'
-      +_statGrid([{l:'entry (pivot)',v:esc(p.entry)},{l:'stop (base)',v:esc(p.stop)},{l:'target (meas)',v:esc(p.target)},{l:'R:R',v:rr},{l:'RS rank',v:esc(p.rs_rank)},{l:'regime',v:esc(p.regime_at_signal||"–")},{l:'size',v:esc(p.size_band||"1–2% (sim)")}])
-      +'<div class="params" style="font-size:11px;margin-top:-2px">'+(p.adv!=null?'<span class="lbl">ADV</span> $'+(p.adv/1e6).toFixed(0)+'M <span style="color:var(--pos-ink)">(\u2265$'+((p.adv_floor||20000000)/1e6).toFixed(0)+'M\u2713'+(p.adv_headroom_x!=null?" \u00b7 "+p.adv_headroom_x+"\u00d7":"")+')</span>':'')+(p.detector?'  \u00b7  <span class="lbl">detector</span> '+esc(p.detector):'')+'</div>'
+      +'<div class="params"><span class="lbl">entry</span> '+esc(p.entry)+' (pivot) · <span class="lbl">stop</span> '+esc(p.stop)+' (below base) · <span class="lbl">target</span> '+esc(p.target)+' (measured) · <span class="lbl">R:R</span> '+rr
+      +'<br><span class="lbl">RS rank</span> '+esc(p.rs_rank)+' · <span class="lbl">regime</span> '+esc(p.regime_at_signal||"–")+' · <span class="lbl">size</span> '+esc(p.size_band||"1–2% risk (sim)")+advChip(p)+detTag(p)+'</div>'
       +(edu?'<div class="edu"><b>Why it\'s a pro setup:</b><br>'+edu+'</div>':'')+'</div>';
   }
   function methodNote(){
@@ -2510,27 +2381,14 @@ const ProScreen=(function(){
       html+='<div class="card"><div class="secttl">Qualified setups — pro structure (educational)</div>'
         +q.map(setupCard).join("")+'</div>';
     }
-    if(_mp&&Array.isArray(_mp.candidates))html+=pullbackPanel(_mp);
     html+=honestRead(d);
     html+='<div class="card">'+dwrap("Head-to-head vs current engine (FORWARD · accruing)",
         '<div class="gmut" style="line-height:1.6">'+esc(rl||"screener_v2 vs current engine — ACCRUING (need n≥30 both sides).")
         +'<br>Verdict: '+esc(hh.verdict||"ACCRUING — keep logging.")+'</div>')+'</div>';
     el.innerHTML=html;
   }
-  let _mp=null;
-  function pullbackPanel(mp){
-    const c=Array.isArray(mp.candidates)?mp.candidates:[];
-    const trig=c.filter(x=>x.triggered), armed=c.filter(x=>!x.triggered);
-    const row=x=>'<tr><td><b>'+esc(x.ticker)+'</b></td><td>'+(x.triggered?'<span class="gok">TRIGGERED</span>':'<span class="gmut">armed</span>')+'</td><td>'+esc(x.rs_pct!=null?x.rs_pct:'–')+'</td><td>'+esc(x.entry)+'</td><td>'+esc(x.stop)+'</td><td>'+esc(x.target)+'</td><td>'+esc(x.rr)+'</td></tr>';
-    return '<div class="card"><div class="secttl">Leader-Pullback — class B <span class="gmut">· SHADOW · minervini_pullback</span></div>'
-      +'<div class="gmut" style="margin:2px 0 6px;line-height:1.5">Reverse-engineered from Minervini leader-reset buys (e.g. LLY 6/25). <b>'+esc(mp.n_armed||0)+' armed · '+esc(mp.n_triggered||0)+' triggered.</b> ARMED = the setup is present (leader + MA-zone pullback + RSI reset + dry-up + R:R≥1.5); the ENTRY executes only on the reversal trigger, as a pullback-LIMIT at the MA zone. Class-C power chases (e.g. ARM +35% vs 50MA) are excluded by construction.</div>'
-      +'<div style="overflow-x:auto"><table style="width:100%;font-size:11.5px;border-collapse:collapse;min-width:340px"><tr><th style="text-align:left">ticker</th><th style="text-align:left">state</th><th>RS%</th><th>entry(limit)</th><th>stop</th><th>target</th><th>R:R</th></tr>'
-      +trig.map(row).join("")+armed.slice(0,12).map(row).join("")+'</table></div>'
-      +'<div class="gmut" style="margin-top:5px">Own forward track — ACCRUING (no claim until n≥30 AND CI-excludes-0). SHADOW — educational, not live recommendations.</div></div>';
-  }
   async function load(){
     if(!tokenReady()){ document.getElementById("ps-content").innerHTML=emptyState("— paste your read-only GitHub token to load the feed."); return; }
-    _mp=null; try{ _mp=await ghFetch("minervini_pullback.json"); }catch(e){}
     try{ const d=await ghFetch(FEED); render(d); }
     catch(e){ render(null); }   // absent feed => honest empty state (graceful)
   }
@@ -2561,19 +2419,9 @@ const Audit=(function(){
     const hh=a.section_1_ran_broke||{},feeds=hh.feeds||[];
     h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">\u2460 Ran / Broke <span class="src" style="font-weight:400">('+hh.n_stale+' stale \u00b7 '+hh.n_dark+' dark)</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">'+feeds.map(r=>'<span class="schip '+sc(r.state)+'">'+esc(r.feed)+' '+esc(r.state)+(r.age_min!=null?' '+r.age_min+'m':'')+'</span>').join("")+'</div></div>';
     const as=a.section_2_system_assessment||{},dr=a.section_3_drift||{},wins=a.section_4_what_went_right||[];
-    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2461 System assessment <span class="src" style="font-weight:400">('+(as.n_tracks||0)+' tracks \u00b7 '+((as.deltas||[]).length)+' moved)</span></div>'+((as.deltas||[]).length?_dataTable([{t:'Track'},{t:'n',a:'right'},{t:'\u0394n',a:'right'},{t:'Event'}],(as.deltas||[]).slice(0,12).map(d=>['<b style="color:var(--ink)">'+esc(d.key)+'</b>',d.n,'+'+d.dn,(d.ci_event?'<span style="color:'+C.amber+'">'+esc(d.ci_event)+'</span>':'')+(d.flip?(d.ci_event?' \u00b7 ':'')+esc(d.flip):'')])):'<div class="src">no day-over-day movement (no fabricated deltas).</div>')+'<div class="src" style="margin-top:5px;color:'+C.mut+'">'+esc(as.note||"")+'</div></div>';
+    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2461 System assessment <span class="src" style="font-weight:400">('+(as.n_tracks||0)+' tracks \u00b7 '+((as.deltas||[]).length)+' moved)</span></div>'+((as.deltas||[]).slice(0,12).map(d=>'<div class="src" style="margin:2px 0"><b style="color:var(--ink)">'+esc(d.key)+'</b> \u2014 n '+d.n+' (+'+d.dn+')'+(d.ci_event?' \u00b7 <span style="color:'+C.amber+'">'+esc(d.ci_event)+'</span>':'')+(d.flip?' \u00b7 '+esc(d.flip):'')+'</div>').join("")||'<div class="src">no day-over-day movement (no fabricated deltas).</div>')+'<div class="src" style="margin-top:5px;color:'+C.mut+'">'+esc(as.note||"")+'</div></div>';
     h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2462 Drift <span class="src" style="font-weight:400">(multi-day only \u2014 one-day moves NOT significant)</span></div>'+((dr.flags||[]).map(f=>'<div class="src" style="margin:2px 0">\u26a0 <b>'+esc(f.key)+'</b> '+esc(f.detail)+' <span style="color:'+C.pos+'">(credible \u2014 multi-day)</span></div>').join("")||'<div class="src">no credible multi-day drift.</div>')+'</div>';
-    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2463 What went right <span class="src" style="font-weight:400">('+wins.length+')</span></div>'+(wins.length?_dataTable([{t:'Track'},{t:'Exp',a:'right'},{t:'n',a:'right'}],wins.slice(0,10).map(w=>['<b style="color:var(--ink)">'+esc(w.track)+'</b>','<span style="color:'+C.pos+'">'+w.exp+'</span>',w.n])):'<div class="src">no new clean maturations today.</div>')+'</div>';
-    const ig=a.section_B_integrity, ca=a.section_6_compute_audit;   /* D77-final: indicator-integrity (guarded — old feeds skip) */
-    if(ig){ const bchip=st=>'<span class="schip '+(st==="OK"?"fresh":"stale")+'">'+esc(st||"?")+'</span>';
-      const b1=ig.b1_price_source||{},b2=ig.b2_dedup_coverage||{},b3=ig.b3_label_honesty||{},b4=ig.b4_freshness||{};
-      h+='<div class="card"><div style="font-weight:750;font-size:13px;margin-bottom:6px">Ⓑ Indicator integrity <span class="src" style="font-weight:400">('+(ig.n_flags||0)+' flag'+(ig.n_flags===1?"":"s")+' · nightly)</span></div>';
-      h+='<div class="src" style="margin:2px 0">b1 price-source '+bchip(b1.state)+' '+((b1.flags||[]).filter(f=>!f.expected).map(f=>'⚠ '+esc(f.source)+' '+esc(f.price)+' vs '+esc(f.ref)).join(", "))+' <span style="color:'+C.mut+'">(delayed feeds expected to differ)</span></div>';
-      h+='<div class="src" style="margin:2px 0">b2 dedup-coverage '+bchip(b2.state)+' '+((b2.un_deduped||[]).length?'— un-deduped: '+esc((b2.un_deduped||[]).join(", ")):"all carry D21 dedup")+'</div>';
-      h+='<div class="src" style="margin:2px 0">b3 label-honesty '+bchip(b3.state)+' '+((b3.mislabeled_validated||[]).length?'— '+(b3.mislabeled_validated||[]).length+' false VALIDATED':"no false VALIDATED; hedges present")+'</div>';
-      h+='<div class="src" style="margin:2px 0">b4 freshness '+bchip(b4.state)+' '+((b4.stale||[]).length?'— stale: '+esc((b4.stale||[]).join(", ")):"all fresh")+'</div>';
-      if(ca) h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">⑥ compute-audit (md5-gated): last full '+esc(ca.last_full_compute_audit||"never")+' · '+((ca.queued_md5_changed||[]).length)+' queued · '+((ca.skipped_unchanged||[]).length)+' skipped (arithmetic stable, not re-verified daily)</div>';
-      h+='</div>'; }
+    h+='<div class="card"><div style="font-weight:750;font-size:13px">\u2463 What went right <span class="src" style="font-weight:400">('+wins.length+')</span></div>'+(wins.slice(0,10).map(w=>'<div class="src" style="margin:2px 0;color:'+C.pos+'">\u2713 <b>'+esc(w.track)+'</b> \u2014 exp '+w.exp+', n '+w.n+'</div>').join("")||'<div class="src">no new clean maturations today.</div>')+'</div>';
     h+='<div class="card src" style="color:'+C.mut+'">'+esc(a.discipline||"")+'</div>';
     el.innerHTML=h;
     function _decide(card,kind){ if(!card)return; const d=card.querySelector(".auddec"); const pid=card.getAttribute("data-pid")||""; const obs=((card.querySelector(".src")||{}).textContent||"").slice(0,160);
@@ -2618,139 +2466,20 @@ function _enhanceCollapse(){
   }
 function _initCollapse(){ document.querySelectorAll(_CV).forEach(function(c){
     try{ new MutationObserver(function(){ _enhanceCollapse(); }).observe(c,{childList:true,subtree:true}); }catch(e){} }); _enhanceCollapse(); }
-function _dataTable(headers,rows,minW){
-  var th=headers.map(function(h){return '<th style="text-align:'+(h.a||'left')+';color:var(--mut);font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;padding:4px 7px;border-bottom:1px solid var(--gbrd);white-space:nowrap">'+h.t+'</th>';}).join('');
-  var body=rows.map(function(r){return '<tr>'+r.map(function(c,i){var a=(headers[i]&&headers[i].a)||'left';return '<td style="padding:4px 7px;border-bottom:1px solid rgba(255,255,255,.06);text-align:'+a+';white-space:nowrap">'+((c==null||c==='')?'\u2014':c)+'</td>';}).join('')+'</tr>';}).join('');
-  return '<div style="overflow-x:auto;border:1px solid var(--gbrd);border-radius:10px;margin:6px 0"><table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums;min-width:'+(minW||260)+'px"><tr>'+th+'</tr>'+body+'</table></div>';
-}
-function _statGrid(pairs,cols){ var c=cols||3; var ps=pairs.filter(function(p){return p&&p.v!=null&&p.v!=='';});
-  return '<div style="display:grid;grid-template-columns:repeat('+c+',minmax(0,1fr));gap:5px;margin:6px 0">'+ps.map(function(p){
-    return '<div style="border:1px solid var(--gbrd);border-radius:8px;padding:4px 8px;background:rgba(255,255,255,.02);min-width:0"><div style="font-size:8px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.l+'</div><div style="font-size:12px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(p.t||'')+'">'+p.v+'</div></div>';
-  }).join('')+'</div>';
-}
-const Auction=(function(){
-  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff",dim:"#5a6678",poc:"#ffcf6b"};
-  let inst="es",stockTicker=null,picks=null;
-  function pre(){ return inst==="stk"?("stk_"+stockTicker):inst; }
-  function instSwitcher(){
-    const I=[["es","ES"],["gc","GC"],["cl","CL"],["stk","Stock"]];
-    let h='<div class="tabs" style="margin-bottom:6px">'+I.map(x=>'<div class="tab'+(x[0]===inst?" active":"")+'" data-auinst="'+x[0]+'">'+x[1]+'</div>').join("")+'</div>';
-    if(inst==="stk"){ const ps=(picks&&picks.picks)||[];
-      if(!ps.length) h+='<div class="src" style="margin:2px 0 8px;color:var(--mut)">No screener picks currently — nothing to read.</div>';
-      else h+='<select data-austock style="width:100%;padding:8px;margin:2px 0 6px;background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--gbrd);border-radius:8px;font-size:13px"><option value="">— select a pick —</option>'+ps.map(p=>'<option value="'+esc(p.ticker)+'"'+(stockTicker===p.ticker?" selected":"")+'>'+esc(p.ticker)+' · '+esc(p.bucket)+'</option>').join("")+'</select>';
-    }
-    return h;
-  }
-  function lvnZones(vp){ const b=vp.bins||[]; if(!b.length)return []; const avg=b.reduce((a,c)=>a+(c.v||0),0)/b.length; const vaw=(vp.vah-vp.val)||1; const out=[]; let run=null;
-    for(let i=0;i<b.length;i++){ if((b[i].v||0)<avg*0.35){ if(!run)run={lo:b[i].p,hi:b[i].p}; else run.hi=b[i].p; } else { if(run){out.push(run);run=null;} } } if(run)out.push(run);
-    return out.filter(function(z){ var mid=(z.lo+z.hi)/2,w=z.hi-z.lo; return w<=vaw*0.6 && mid>=vp.val-vaw*0.7 && mid<=vp.vah+vaw*0.7; }); }
-  function nearest(arr,px,dir){ const c=(arr||[]).filter(v=>dir>0?v>px:v<px).sort((a,b)=>dir>0?a-b:b-a); return c.length?c[0]:null; }
-  function vpSpark(vp,px){ const b=vp.bins||[]; if(!b.length)return ""; const mx=Math.max.apply(null,b.map(x=>x.v||0))||1; const lo=b[0].p,hi=b[b.length-1].p; const W=300,H=120; const y=p=>H-(p-lo)/((hi-lo)||1)*H;
-    const rects=b.map(x=>{const wd=(x.v||0)/mx*W*0.55; const yy=y(x.p); const inVA=(x.p>=vp.val&&x.p<=vp.vah); return '<rect x="0" y="'+(yy-1).toFixed(1)+'" width="'+wd.toFixed(1)+'" height="2.4" fill="'+(inVA?'rgba(110,168,255,.5)':'rgba(139,151,171,.3)')+'"/>';}).join("");
-    const ln=(v,col,w,d)=>v==null?"":'<line x1="0" y1="'+y(v).toFixed(1)+'" x2="'+W+'" y2="'+y(v).toFixed(1)+'" stroke="'+col+'" stroke-width="'+w+'" stroke-dasharray="'+(d||'')+'"/>';
-    return '<div style="margin:7px 0 2px;border:1px solid var(--gbrd);border-radius:8px;padding:6px;background:rgba(255,255,255,.02)"><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:88px" preserveAspectRatio="none">'+rects+ln(vp.poc,C.poc,1.4,'')+ln(vp.vah,'rgba(110,168,255,.55)',0.8,'3,3')+ln(vp.val,'rgba(110,168,255,.55)',0.8,'3,3')+(px!=null?ln(px,C.pos,1,'2,2'):'')+'</svg><div class="src" style="font-size:9px;text-align:center;color:'+C.mut+'">VRVP · value-area tinted · POC gold · price green</div></div>';
-  }
-  function vpCard(vp,px,pxtag,delayed,liveOk){
-    const loc=(px==null)?"":(px>vp.vah?"above":(px<vp.val?"below":"inside")); const lvns=lvnZones(vp),hvns=vp.hvn||[];
-    let h='<div class="card"><div style="font-weight:750;font-size:13px">Volume profile — the auction'+(delayed?' <span class="schip delayed">DELAYED</span>':'')+'</div>';
-    h+='<div class="src" style="margin:2px 0 4px;color:'+C.mut+'">◇ Structural / location context — SHADOW, not a signal. The VP fade-edge backtest was UNSUPPORTED (no measured edge); the TRIGGER is price breaking a level, not the level itself.</div>';
-    h+=_statGrid([{l:'POC',v:vp.poc},{l:'VAH',v:vp.vah},{l:'VAL',v:vp.val},{l:'price',v:(px!=null?px.toFixed(2)+' <span class="gmut">'+pxtag+'</span>':'—')},{l:'where',v:(loc==="inside"?'inside value':(loc==="above"?'above VAH':(loc==="below"?'below VAL':'—')))}]);
-    if(px!=null){ let read;
-      if(loc==="inside") read='Price is <b>inside value</b> — trading within the accepted range. POC '+vp.poc+' is the volume reference; VAH '+vp.vah+' / VAL '+vp.val+' are the value-area edges (context, not levels that must hold).';
-      else if(loc==="above") read='Price is <b>above value</b> (VAH '+vp.vah+') — accepted higher / upper edge. '+(liveOk?'Building value above = acceptance; snap back inside = rejection.':'<span style="color:'+C.amber+'">(live acceptance read needs fresh ticks — use ToS)</span>');
-      else read='Price is <b>below value</b> (VAL '+vp.val+') — accepted lower / lower edge. '+(liveOk?'Holding below = acceptance; reclaim into value = rejection.':'<span style="color:'+C.amber+'">(live acceptance read needs fresh ticks — use ToS)</span>');
-      const ha=nearest(hvns,px,1),hb=nearest(hvns,px,-1);
-      h+='<div class="src" style="margin:5px 0;line-height:1.5">'+read+'</div>';
-      h+='<div class="src" style="line-height:1.5"><b>HVN</b> (magnets/stall): '+(ha?'above '+ha.toFixed(2):'—')+' · '+(hb?'below '+hb.toFixed(2):'—')+'. '+(lvns.length?'<b>LVN</b> (thin/fast-through): '+lvns.slice(0,2).map(z=>z.lo.toFixed(2)+(z.hi!==z.lo?'–'+z.hi.toFixed(2):'')).join(', '):'')+'</div>';
-    }
-    h+=vpSpark(vp,px);
-    h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">Naked/untested POCs not tracked by the engine — not shown (no fabrication). VP from real bar volume.</div>';
-    return h+'</div>';
-  }
-  function liqCard(ict,perf,px,liveOk,vp){
-    let h='<div class="card"><div style="font-weight:750;font-size:13px">Liquidity pools — ICT (ES)</div>';
-    if(!ict){ return h+'<div class="src" style="margin-top:3px">ict_state not published right now — not available.</div></div>'; }
-    let ictt=null; if(perf&&perf.systems&&perf.systems.ict){ const tr=perf.systems.ict.tracks||[]; ictt=tr.find(t=>/RAW/.test(t.track))||tr[0]; }
-    if(ictt){ const ci=ictt.exp_ci||[]; const cross=!((ci[0]||0)>0||(ci[1]||0)<0);
-      h+='<div style="border:1px dashed '+C.amber+';border-radius:7px;padding:6px 9px;margin:5px 0;color:'+C.amber+';font-size:11px;line-height:1.5">⚠ ICT trading track <b>'+esc(ictt.track)+'</b>: exp '+ictt.expectancy+'/trade · PF '+ictt.profit_factor+' · n '+ictt.n+' · CI ['+(ci[0]!=null?ci[0]:'—')+', '+(ci[1]!=null?ci[1]:'—')+']'+(cross?' crosses 0 = <b>UNPROVEN</b>':'')+'. Pools are WHERE stops rest — location, NOT "price will run there."</div>'; }
-    const pools=ict.untapped_pools_near||[];
-    if(!pools.length) h+='<div class="src">No untapped pools near price right now.</div>';
-    else h+=_dataTable([{t:'Side'},{t:'Price',a:'right'},{t:'Dist',a:'right'},{t:'@ VP node'}],pools.slice(0,8).map(p=>{ const tol=vp?(vp.vah-vp.val)*0.04:0; const atN=vp?[vp.poc,vp.vah,vp.val].concat(vp.hvn||[]).find(n=>Math.abs(n-p.price)<=tol):null;
-      return ['<span style="color:'+(p.kind==="buy-side"?C.neg:C.pos)+'">'+esc(p.kind)+'</span>',esc(p.price),(p.dist_pts!=null?((p.dist_pts>0?'+':'')+p.dist_pts):'—'),(atN?'<b style="color:'+C.amber+'">⚑ '+atN.toFixed(0)+'</b>':'—')]; }));
-    if(pools.some(p=>vp&&[vp.poc,vp.vah,vp.val].concat(vp.hvn||[]).some(n=>Math.abs(n-p.price)<=(vp.vah-vp.val)*0.04)))
-      h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">⚑ = a pool sitting AT a VP node — liquidity meets value = the higher-quality confluence (still location, not a signal).</div>';
-    if(ict.swept_recent&&ict.swept_recent.length){ h+='<div class="src" style="margin-top:7px;font-weight:700">Recently swept \u2014 liquidity already taken (buy-side above / sell-side below):</div>'+_dataTable([{t:'Side'},{t:'Price',a:'right'},{t:'When (ET)'}],ict.swept_recent.slice(0,8).map(p=>['<span style="color:'+(p.kind==="buy-side"?C.neg:C.pos)+'">'+esc(p.kind)+'</span>',esc(p.price),esc(String(p.ts||'').replace('T',' ').slice(5,16))])); }
-    else if(ict.swept_recent) h+='<div class="src" style="margin-top:7px;color:'+C.mut+'">No swept pools recorded in the current window.</div>';
-    if(ict.last_sweep) h+='<div class="src" style="margin-top:5px">Last sweep: pool '+esc(ict.last_sweep.pool)+' ('+esc(ict.last_sweep.dir)+') @ '+esc(ict.last_sweep.ts)+(ict.mss_state?(ict.mss_state.confirmed?' → MSS confirmed '+esc(ict.mss_state.opp_level):' → MSS pending'):'')+'. '+(liveOk?'':'<span style="color:'+C.amber+'">(historical — live sweep needs fresh ticks)</span>')+'</div>';
-    if(ict.bias) h+='<div class="src">Engine bias <b>'+esc(ict.bias)+'</b> · '+(ict.killzone_active?'killzone ACTIVE':'off-killzone')+'.</div>';
-    return h+'</div>';
-  }
-  function ticTocLevelsCard(tl,px){
-    if(!tl||!tl.levels||!tl.levels.length) return '';
-    const RC={resistance:C.neg,support:C.pos,"short-trigger":C.neg,"buy-shelf":C.pos,target:C.blue,pivot:C.amber,level:C.mut};
-    let levs=tl.levels.slice();
-    if(px!=null) levs.sort((a,b)=>Math.abs(a.level-px)-Math.abs(b.level-px));
-    const show=levs.slice(0,6).sort((a,b)=>b.level-a.level);
-    const rows=show.map(l=>[String(l.level),'<span style="color:'+(RC[l.role]||C.mut)+';font-weight:700">'+esc(l.role)+'</span>',(px!=null?(px>l.level?'price above':px<l.level?'price below':'at'):'—')]);
-    let h='<div class="card"><div style="font-weight:750;font-size:13px">Tic Toc decision levels <span class="gmut" style="font-size:10px">source:TicToc</span></div>';
-    h+='<div class="src" style="margin:3px 0 6px;color:'+C.mut+'">His named ES levels from the latest plan ('+esc(tl.as_of_subject||"")+') — the break/hold of a level is the trigger. (Full set + scoring on the Tic Toc tab.)</div>';
-    h+=_dataTable([{t:'Level',a:'right'},{t:'His role'},{t:'vs price'}],rows);
-    return h+'</div>';
-  }
-  function wire(){ document.querySelectorAll("[data-auinst]").forEach(b=>b.onclick=()=>{inst=b.getAttribute("data-auinst"); if(inst==="stk")stockTicker=null; load();});
-    const sel=document.querySelector("[data-austock]"); if(sel)sel.onchange=()=>{stockTicker=sel.value||null; load();}; }
-  async function load(){
-    const el=document.getElementById("auction-content"); el.innerHTML='<div class="loading">Loading…</div>';
-    let snap=null; try{ snap=await ghFetch("internals_snapshot.json"); }catch(e){}
-    const age=(snap&&snap.pushed_at)?(Date.now()-parseTs(snap.pushed_at))/60000:null; const fresh=(age!=null&&age<12);
-    try{ picks=await ghFetch("stk_picks.json"); }catch(e){}
-    let h=instSwitcher();
-    if(inst==="stk"&&!stockTicker){ el.innerHTML=h+'<div class="card">Select a screener pick above to read its auction (volume profile) — daily-degree, built on demand.</div>'; wire(); return; }
-    let bars=null; try{ bars=await ghFetch(pre()+"_bars_daily.json"); }catch(e){}
-    if(!bars||!bars.vp){ el.innerHTML=h+'<div class="card">Volume profile not available for <b>'+(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase())+'</b> right now (no published VP — nothing invented).</div>'; wire(); return; }
-    const vp=bars.vp, B=bars.bars||[]; let px=null,pxtag="DELAYED";
-    if(inst==="es"&&snap&&Array.isArray(snap.rows)&&snap.rows.length){ const es=parseFloat(snap.rows[snap.rows.length-1].es_last); if(!isNaN(es)){px=es;pxtag=fresh?"LIVE":"STALE";} }
-    if(px==null&&B.length){ px=B[B.length-1].c; pxtag=(inst==="stk"?"EOD":"DELAYED"); }
-    const liveOk=(inst==="es"&&fresh);
-    h+='<div class="card" style="border-left:3px solid '+(liveOk?C.pos:C.amber)+'"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:'+(liveOk?C.pos:C.amber)+'">⛲ Auction / Liquidity — '+(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase())+'</div><div class="src" style="margin-top:3px">VP = where price was ACCEPTED (value) · liquidity = where stops rest. Both are LOCATION context, not prophecy. SHADOW — the break of a level is the trigger, not this panel.</div><div class="src" style="margin-top:4px">Levels as of '+esc(bars.as_of||"?")+(liveOk?' · <b style="color:'+C.pos+'">LIVE</b> internals':' · <b style="color:'+C.amber+'">internals stale/delayed</b> — levels still useful (slow-moving); use ToS for live acceptance/sweeps')+'.</div></div>';
-    h+=vpCard(vp,px,pxtag,bars.delayed,liveOk);
-    if(inst==="es"){ let ict=null,perf=null,tl=null; try{ict=await ghFetch("ict_state.json");}catch(e){} try{perf=await ghFetch("perf_summary.json");}catch(e){} try{tl=await ghFetch("tictoc_levels.json");}catch(e){} h+=liqCard(ict,perf,px,liveOk,vp); h+=ticTocLevelsCard(tl,px); }
-    else h+='<div class="card"><div style="font-weight:750;font-size:13px">Liquidity pools</div><div class="src" style="margin-top:3px">Not available for '+(inst==="stk"?(stockTicker||"Stock"):inst.toUpperCase())+' — the ICT pool engine runs on ES only (no fabricated pools).</div></div>';
-    el.innerHTML=h; wire();
-  }
-  return {load};
-})();
 function _safeLoad(fn,viewId){ try{ const r=fn(); if(r&&typeof r.catch==="function") r.catch(e=>_panelErr(viewId,e)); }catch(e){ _panelErr(viewId,e); } }
 function _panelErr(viewId,e){ const el=document.getElementById(viewId); if(el){ const c=el.querySelector('[id$="-content"]')||el; c.innerHTML='<div class="panelerr">\u26a0 This panel is temporarily unavailable \u2014 the rest of the dashboard is unaffected. (Auto-retries on next refresh.)</div>'; } try{console.error("[panel "+viewId+"]",e);}catch(_){} }
 function _updateStatus(){ var p=document.getElementById("statuspill"),t=document.getElementById("statustxt"); if(!p)return;
   fetch(API_BASE+"internals_snapshot.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.json():null).then(function(d){
     if(!d||!d.pushed_at){ p.className="statuspill"; t.textContent="feeds"; return; }
-    var age=(Date.now()-parseTs(d.pushed_at))/60000;
+    var age=(Date.now()-Date.parse(d.pushed_at))/60000;
     if(age<12){ p.className="statuspill live"; t.textContent="LIVE \u00b7 "+Math.max(0,Math.round(age))+"m"; }
     else { p.className="statuspill stale"; t.textContent="STALE \u00b7 "+(age<120?Math.round(age)+"m":Math.round(age/60)+"h"); }
   }).catch(function(){ p.className="statuspill"; t.textContent="feeds"; }); }
-var _VF={active:"internals_snapshot.json",overview:"verdict.json",alerts:"alert_prefs.json",audit:"daily_audit_latest.json",wavechart:"es_wave_daily.json",performance:"perf_summary.json",proscreen:"screener_v2_funnel.json",stocks:"stock_dashboard.json",account:"swing_account_sim.json",auction:"ict_state.json",prices:"internals_snapshot.json",futures:"internals_snapshot.json",orb:"internals_snapshot.json",journal:"internals_snapshot.json",tammy:"tammy_setups.json",tictoc:"tictoc_picks.json",esswing:"es_swing_thesis.json"};
-var _VFHB={prices:1,futures:1,orb:1,journal:1,active:1};   // these use the data heartbeat (no single own feed)
-function _fmtT(ts){ try{ var d=new Date(parseTs(ts)); return d.toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }catch(e){ return String(ts); } }
-function _updateFresh(v){ var el=document.getElementById("freshbar"); if(!el)return; var fn=_VF[v];
-  if(!fn){ el.innerHTML=""; return; }
-  el.innerHTML='<span style="color:var(--mut)">\u27f3 checking last update\u2026</span>';
-  fetch(API_BASE+fn+"?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(d){
-    if(!d){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 feed not available</span>'; return; }
-    var ts=d.generated_at||d.pushed_at||d.as_of||d._updated||d.updated||d.timestamp||d.date||null;
-    if(!ts){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 n/a</span>'; return; }
-    var age=(Date.now()-parseTs(ts))/60000, fresh=age<15;
-    var ago=age<1?"just now":(age<60?Math.round(age)+"m ago":(age<1440?Math.round(age/60)+"h ago":Math.round(age/1440)+"d ago"));
-    var col=fresh?"var(--pos-ink)":"var(--warn-ink)", dot=fresh?"var(--green)":"var(--amber)";
-    el.innerHTML='<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dot+';margin-right:6px;vertical-align:middle"></span><span style="color:'+col+'">'+(_VFHB[v]?"data heartbeat":"this tab\u2019s data")+' \u00b7 updated '+ago+'</span><span style="color:var(--mut)"> \u00b7 '+_fmtT(ts)+(fresh?"":" \u00b7 STALE")+'</span>';
-  }).catch(function(){ el.innerHTML='<span style="color:var(--mut)">\u27f3 last update \u2014 n/a</span>'; });
-}
 function showView(v){
   view=v;
   document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
   document.getElementById("active").hidden=(v!=="active");
   document.getElementById("audit").hidden=(v!=="audit");
-  document.getElementById("auction").hidden=(v!=="auction");
   document.getElementById("prices").hidden=(v!=="prices");
   document.getElementById("orb").hidden=(v!=="orb");
   document.getElementById("wavechart").hidden=(v!=="wavechart");
@@ -2762,207 +2491,15 @@ function showView(v){
   document.getElementById("alerts").hidden=(v!=="alerts");
   document.getElementById("account").hidden=(v!=="account");
   document.getElementById("journal").hidden=(v!=="journal");
-  document.getElementById("tammy").hidden=(v!=="tammy");
-  document.getElementById("tictoc").hidden=(v!=="tictoc");
-  document.getElementById("esswing").hidden=(v!=="esswing");
-  document.getElementById("sim").hidden=(v!=="sim");
-  if(v==="sim"){var _sf=document.getElementById("simframe"); if(_sf&&!_sf.src)_sf.src=_sf.dataset.src;}   // lazy-load the isolated sim iframe on first open
-  const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],auction:[Auction,"auction"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
+  const _M={active:[ActiveTrades,"active"],audit:[Audit,"audit"],orb:[ORB,"orb"],wavechart:[WaveChart,"wavechart"],performance:[Perf,"performance"],
     overview:[Overview,"overview"],alerts:[Alerts,"alerts"],account:[Account,"account"],journal:[Journal,"journal"],
-    proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"],tammy:[Tammy,"tammy"],tictoc:[TicToc,"tictoc"],esswing:[ESSwing,"esswing"]};
+    proscreen:[ProScreen,"proscreen"],futures:[Futures,"fut"],stocks:[Stocks,"stk"]};
   const _e=_M[v]; if(_e) _safeLoad(()=>_e[0].load(), _e[1]);   // fetch only the active view, error-boundaried
-  if(typeof _enhanceCollapse==="function"){ setTimeout(_enhanceCollapse,60); setTimeout(_enhanceCollapse,420); }
-  if(typeof _updateFresh==="function") _updateFresh(v);   // re-scan now-visible sections at real heights
+  if(typeof _enhanceCollapse==="function"){ setTimeout(_enhanceCollapse,60); setTimeout(_enhanceCollapse,420); }   // re-scan now-visible sections at real heights
 }
 document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
 
 /* ════════════ JOURNAL tab (Dispatch 42) — discipline scorecard + entry round-trip ════════════ */
-const ESSwing=(function(){
-  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff"};
-  function thesisCard(t){
-    var isSetup=(t.state==="SETUP"&&t.thesis); var s=t.thesis||{};
-    var dcol=s.dir==="long"?C.pos:(s.dir==="short"?C.neg:C.mut);
-    var h='<div class="card" style="border-color:'+(isSetup?'rgba(63,208,122,.5)':'var(--gbrd)')+'">';
-    h+='<div style="font-weight:800;font-size:14px">ES SWING — hours-hold <span style="color:'+C.blue+';font-size:11px">SHADOW · advisory</span></div>';
-    h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">Trigger = a <b>60m close beyond a decision level</b> + ATR buffer (NOT an EMA cross). Target = next structural level, hold in HOURS, R:R≥2. Separate from the EMA <b>scalp (minutes)</b> book.</div>';
-    if(isSetup){
-      h+='<div style="font-size:15px;font-weight:800;color:'+dcol+'">'+s.dir.toUpperCase()+' SETUP — 60m close broke '+esc(s.kind)+' '+s.level+'</div>';
-      h+=_statGrid([{l:'entry (trigger)',v:s.entry},{l:'stop',v:s.stop},{l:'target',v:s.target},{l:'R:R',v:s.rr}],4);
-      h+='<div class="src" style="margin-top:5px">Stop = the invalidating level · scale partial at target, trail behind 60m higher-lows to let it run · posture '+esc(s.posture)+'.</div>';
-    } else {
-      h+='<div style="font-size:14px;font-weight:750;color:'+C.amber+'">'+esc(t.state)+'</div>';
-      h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">No level-break setup right now — honest, not a forced signal. Nearest decision levels below.</div>';
-    }
-    h+='<div style="margin-top:7px">'+_dataTable([{t:'Nearest level',a:'right'},{t:'Kind'}],(t.nearest_levels||[]).map(function(x){return [String(x.level),esc(x.kind)];}))+'</div>';
-    h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">price '+t.price+' · ATR14 '+t.atr14+' · breadth gate: <b style="color:'+(t.breadth_gate==='divergence'?C.neg:C.pos)+'">'+esc(t.breadth_gate)+'</b> · posture '+esc(t.posture)+(t.delayed?' · DELAYED':'')+'</div>';
-    return h+'</div>';
-  }
-  function scoreCard(sc){
-    if(!sc) return "";
-    var v=sc.VALIDATED;
-    var h='<div class="card"><div style="font-weight:750;font-size:13px">ES-SWING forward score — its OWN track (scalp untouched)</div>';
-    h+=_statGrid([{l:'net pts/trade',v:(sc.expectancy_pts==null?'—':sc.expectancy_pts)},{l:'95% CI',v:(sc.exp_ci&&sc.exp_ci[0]!=null?sc.exp_ci[0]+'–'+sc.exp_ci[1]:'—')},{l:'n',v:sc.n_scoreable},{l:'win%',v:(sc.win_rate==null?'—':sc.win_rate+'%')},{l:'avg hold (60m)',v:(sc.avg_hold_bars_60m==null?'—':sc.avg_hold_bars_60m)},{l:'open',v:sc.open_count}],3);
-    h+='<div class="src" style="margin-top:5px;color:'+(v?C.pos:C.amber)+'">'+esc(sc.gate||"")+'</div>';
-    h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.honesty||"")+'</div>';
-    return h+'</div>';
-  }
-  async function load(){
-    const el=document.getElementById("esswing-content"); el.innerHTML='<div class="loading">Loading…</div>';
-    let t,sc=null;
-    try{ t=await ghFetch("es_swing_thesis.json"); }catch(e){ el.innerHTML='<div class="card">ES-SWING feed not available yet.</div>'; return; }
-    try{ sc=await ghFetch("es_swing_scorecard.json"); }catch(e){}
-    el.innerHTML=thesisCard(t)+scoreCard(sc)+'<div class="src" style="margin:8px 2px;color:'+C.mut+'">'+esc(t.privacy||"")+'</div>';
-  }
-  return {load:load};
-})();
-const TicToc=(function(){
-  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff",dim:"#5a6678"};
-  const ROLEC={resistance:C.neg,support:C.pos,"short-trigger":C.neg,"buy-shelf":C.pos,target:C.blue,pivot:C.amber,level:C.mut};
-  function statusBadge(st){
-    var m={"WAITING":[C.mut,"WAITING"],"IN ZONE":[C.pos,"IN ZONE — actionable"],"TARGET-HIT":[C.blue,"TARGET-HIT"],"unknown":[C.dim,"—"]};
-    var x=m[st]||m.unknown; return '<span style="font-weight:750;color:'+x[0]+';border:1px solid '+x[0]+';padding:1px 7px;border-radius:10px;font-size:11px">'+x[1]+'</span>';
-  }
-  function ageOf(d){ try{var t=parseTs(d);if(isNaN(t))return"";var h=(Date.now()-t)/3.6e6;return h<48?Math.round(h)+"h ago":Math.round(h/24)+"d ago";}catch(e){return"";} }
-  function engineLine(s){
-    var av=(s.arsenal||{}).verdict; if(!av) return '<span style="color:'+C.mut+'">Engine cross-check: no verdict for this ticker</span>';
-    var bull=s.direction==="long";
-    var agree=bull?["BUY","STRONG_LONG","PULLBACK_LONG","WATCH"].indexOf(av)>=0:["SELL","AVOID","SHORT"].indexOf(av)>=0;
-    return 'His '+(s.direction||"?")+' call vs <b>engine '+esc(av)+'</b> — <span style="color:'+(agree?C.pos:C.amber)+'">'+(agree?"AGREES":"DISAGREES (engine vs author)")+'</span>';
-  }
-  function levelsCard(lv){
-    if(!lv||!lv.levels||!lv.levels.length) return '<div class="card"><div style="font-weight:750;font-size:13px">Tic Toc index levels</div><div class="src" style="color:'+C.mut+'">No index levels parsed in recent plans.</div></div>';
-    var px=lv.es_price;
-    var rows=lv.levels.map(function(l){return [String(l.level),'<span style="color:'+(ROLEC[l.role]||C.mut)+';font-weight:700">'+esc(l.role)+'</span>',(l.vs_price?(l.vs_price==="above"?'<span style="color:'+C.mut+'">price above</span>':l.vs_price==="below"?'<span style="color:'+C.mut+'">price below</span>':'at'):'—')];});
-    var h='<div class="card"><div style="font-weight:750;font-size:13px">Tic Toc index levels — ES decision levels'+(px?' <span class="gmut">(ES '+px+')</span>':'')+'</div>';
-    h+='<div class="src" style="margin:3px 0 6px;color:'+C.mut+'">From his latest plan ('+esc(lv.as_of_subject||"")+'). These feed the Auction/Tape panel as named decision levels (source:TicToc) — the break/hold of a level is the trigger.</div>';
-    h+=_dataTable([{t:'Level',a:'right'},{t:'His role'},{t:'vs price'}],rows);
-    return h+'</div>';
-  }
-  function pickCard(s){
-    var dirc=s.direction==="long"?C.pos:(s.direction==="short"?C.neg:C.mut);
-    var lvls=(s.levels&&s.levels.length)?s.levels.join(", "):null;
-    var zrows=(s.entry_zones||[]).map(function(z){return [z.lo+'–'+z.hi, z.basis?esc(z.basis):'<span class="gmut">—</span>'];});
-    var h='<div class="card">';
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">';
-    h+='<div style="font-weight:800;font-size:15px">'+esc(s.ticker||"?")+' <span style="color:'+dirc+';font-size:12px">'+(s.direction||"").toUpperCase()+'</span> <span class="gmut" style="font-size:10px">'+esc(s.plan_type||"")+'</span></div>';
-    h+='<div>'+statusBadge(s.status)+'</div></div>';
-    h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">call '+ageOf(s.date)+(s.price!=null?' · px '+s.price:'')+(s.valid_reason?' · '+esc(s.valid_reason):'')+'</div>';
-    if(zrows.length) h+=_dataTable([{t:'Entry zone'},{t:'Basis'}],zrows);
-    if(lvls) h+='<div style="font-size:12.5px;margin-top:'+(zrows.length?'6px':'0')+'"><b>Levels he cited:</b> '+esc(lvls)+'</div>';
-    h+='<div style="margin-top:6px;font-size:12.5px"><b>Targets:</b> '+((s.targets&&s.targets.length)?s.targets.join(", "):'<span class="gmut">none given</span>')+'</div>';
-    if(s.context) h+='<div class="src" style="margin-top:5px;color:'+C.mut+'">"'+esc(s.context)+'"</div>';
-    if(s.params){ var p=s.params; h+='<div style="margin-top:6px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">Trade plan '+(p.computed?'<span style="color:'+C.amber+'">· stop/target computed by Arsenal (he gave none)</span>':'<span style="color:'+C.pos+'">· all his\u2019s</span>')+'</div>'; h+=_statGrid([{l:'entry (trigger)',v:p.entry},{l:'stop',v:p.stop},{l:'R:R',v:(p.rr==null?'\u2014':p.rr)}],3); h+='<div style="font-size:12px;margin-top:5px"><b>Targets:</b> '+((p.targets&&p.targets.length)?p.targets.join(', '):'<span style="color:'+C.amber+'">'+esc(p.tgt_src||'not given')+'</span>')+'</div>'; h+='<div class="gmut" style="font-size:8.5px;margin-top:3px">stop: '+esc(p.stop_src)+' \u00b7 targets: '+esc(p.tgt_src)+(p.atr14?' \u00b7 ATR14 '+p.atr14:'')+'</div></div>'; } else h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">No clean trade plan from the note \u2014 review the raw text.</div>';
-    h+='<div class="src" style="margin-top:5px">'+engineLine(s)+'</div>';
-    return h+'</div>';
-  }
-  function reviewCard(s){
-    return '<div class="card"><div style="font-weight:750">'+esc(s.ticker||"?")+' <span style="color:'+C.amber+';font-size:11px">NEEDS REVIEW</span></div><div class="src" style="margin-top:4px;color:'+C.mut+'">"'+esc(s.context||"")+'"</div></div>';
-  }
-  function scoreCard(sc){
-    if(!sc) return "";
-    var n=sc.n_scoreable||0;
-    var h='<div class="card"><div style="font-weight:750;font-size:13px">Forward score — his emailed picks, measured separately</div>';
-    h+=_statGrid([{l:'target-hit',v:n?sc.hit_rate+'%':'—'},{l:'95% CI',v:n?sc.ci_lo+'–'+sc.ci_hi+'%':'—'},{l:'n scoreable',v:n},{l:'open',v:sc.open_count},{l:'unscoreable',v:sc.unscoreable_count},{l:'levels tracked',v:sc.index_levels_tracked}]);
-    h+='<div class="src" style="margin-top:5px;color:'+(n<30?C.amber:C.pos)+'">'+esc(sc.gate||"")+(n<30?' · not a verdict yet (need n≥30)':'')+'</div>';
-    h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.invalidation_rule||"")+'</div>';
-    h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.multiple_comparison_note||"")+'</div>';
-    if(sc.gauge){ var G=sc.gauge; var money=function(v){return (v>=0?'+$':'\u2212$')+Math.abs(Math.round(v)).toLocaleString();};
-      h+='<div style="margin-top:7px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">$ outcomes \u00b7 '+esc(G.size_basis)+'</div>';
-      if(G.n>0){ h+=_statGrid([{l:'net',v:money(G.net_total)},{l:'avg win',v:'+$'+Math.round(G.avg_win).toLocaleString()},{l:'avg loss',v:'\u2212$'+Math.abs(Math.round(G.avg_loss)).toLocaleString()},{l:'biggest win',v:'+$'+Math.round(G.largest_win).toLocaleString()},{l:'biggest loss',v:'\u2212$'+Math.abs(Math.round(G.largest_loss)).toLocaleString()},{l:'W / L',v:G.n_win+' / '+G.n_loss}],3); }
-      else h+='<div class="src" style="color:'+C.mut+'">Accruing \u2014 forward-only; the $ fills in (at 100 shares / 2 contracts) as the picks resolve.</div>';
-      h+='</div>'; }
-    return h+'</div>';
-  }
-  async function load(){
-    const el=document.getElementById("tictoc-content"); el.innerHTML='<div class="loading">Loading…</div>';
-    let picks,lv=null,sc=null;
-    try{ picks=await ghFetch("tictoc_picks.json"); }catch(e){ el.innerHTML='<div class="card">Tic Toc feed not available yet.</div>'; return; }
-    try{ lv=await ghFetch("tictoc_levels.json"); }catch(e){}
-    try{ sc=await ghFetch("tictoc_scorecard.json"); }catch(e){}
-    var ps=picks.picks||[];
-    let h='<div class="card" style="border-color:rgba(110,168,255,.4)"><div style="font-weight:800;font-size:14px">Tic Toc Trading <span style="color:'+C.blue+';font-size:11px">METHODOLOGY = PRIMARY · EMAILED PICKS = SCORED-INFORMATIONAL</span></div>';
-    h+='<div class="src" style="margin-top:4px;line-height:1.5">'+esc(picks.honesty||"")+'</div></div>';
-    h+='<div class="card"><div style="font-weight:750;font-size:13px">Why two tiers?</div><div class="src" style="margin-top:4px;line-height:1.55">His <b>framework</b> (volume profile / internals / 52-week filter) <b>IS</b> part of the Arsenal engine — that’s primary. But his <b>individual emailed picks</b> are <b>discretionary calls</b>, not validated engine outputs, so they’re tracked + scored like any source until the score earns trust. The methodology being primary does <b>not</b> mean every emailed pick is right — the forward score tells the truth, and his picks do <b>not</b> vote.</div></div>';
-    h+=scoreCard(sc);
-    h+=levelsCard(lv);
-    var valid=ps.filter(function(s){return s.valid!==false;});
-    var expired=ps.length-valid.length;
-    h+='<div class="src" style="margin:8px 2px 2px;font-weight:700">Watchlist — still-valid picks ('+valid.length+(expired?(' · '+expired+' expired/played-out hidden'):'')+')</div>';
-    if(!valid.length) h+='<div class="card">No still-valid stock picks right now — his plans are often index-level only.</div>';
-    else h+=valid.map(function(s){return s.kind==="needs_review"?reviewCard(s):pickCard(s);}).join("");
-    h+='<div class="src" style="margin:8px 2px;color:'+C.mut+'">Source: '+esc(picks.source||"")+' · '+esc(picks.privacy||"")+'</div>';
-    el.innerHTML=h;
-  }
-  return {load:load};
-})();
-const Tammy=(function(){
-  const C={pos:"#3fd07a",neg:"#f0616d",amber:"#ffcf6b",mut:"#8b97ab",ink:"#eef3fb",blue:"#6ea8ff",dim:"#5a6678"};
-  function statusBadge(st){
-    var m={"WAITING":[C.mut,"WAITING"],"IN ZONE":[C.pos,"IN ZONE — actionable"],"TARGET-HIT":[C.blue,"TARGET-HIT"],"unknown":[C.dim,"—"]};
-    var x=m[st]||m.unknown; return '<span style="font-weight:750;color:'+x[0]+';border:1px solid '+x[0]+';padding:1px 7px;border-radius:10px;font-size:11px">'+x[1]+'</span>';
-  }
-  function crosscheckLine(s){
-    var av=(s.arsenal||{}).verdict; if(!av) return '<span style="color:'+C.mut+'">Arsenal cross-check: no verdict for this ticker</span>';
-    var bull=s.direction==="long";
-    var agree=bull?["BUY","STRONG_BUY","PULLBACK_LONG","WATCH"].indexOf(av)>=0:["SELL","AVOID","SHORT"].indexOf(av)>=0;
-    return 'Tammy '+(s.direction||"?")+' vs Arsenal <b>'+esc(av)+'</b> — <span style="color:'+(agree?C.pos:C.amber)+'">'+(agree?"ALIGNS (higher interest)":"CONFLICTS (caution)")+'</span>';
-  }
-  function ageOf(d){ try{var t=parseTs(d);if(isNaN(t))return"";var h=(Date.now()-t)/3.6e6;return h<48?Math.round(h)+"h ago":Math.round(h/24)+"d ago";}catch(e){return"";} }
-  function card(s){
-    if(s.kind==="needs_review"){
-      return '<div class="card"><div style="font-weight:750">'+esc(s.ticker||"?")+' <span style="color:'+C.amber+';font-size:11px">NEEDS REVIEW</span></div>'+
-        '<div class="src" style="margin:4px 0;color:'+C.amber+'">'+esc(s.review_reason||"ambiguous — shown raw, not parsed into a setup.")+'</div>'+
-        '<div class="src" style="color:'+C.mut+'">'+esc(s.subject||"")+'</div>'+
-        '<div style="font-size:12px;margin-top:5px;line-height:1.5">'+esc(s.raw_excerpt||"")+'…</div></div>';
-    }
-    var dirc=s.direction==="long"?C.pos:(s.direction==="short"?C.neg:C.mut);
-    var zrows=(s.entry_zones||[]).map(function(z){return [z.lo+'–'+z.hi, z.basis?esc(z.basis):'<span class="gmut">—</span>'];});
-    var h='<div class="card">';
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">';
-    h+='<div style="font-weight:800;font-size:15px">'+esc(s.ticker||"?")+' <span style="color:'+dirc+';font-size:12px">'+(s.direction||"").toUpperCase()+'</span></div>';
-    h+='<div>'+statusBadge(s.status)+'</div></div>';
-    h+='<div class="src" style="margin:3px 0 7px;color:'+C.mut+'">'+(s.catalyst?esc(s.catalyst)+' · ':'')+'call '+ageOf(s.date)+(s.price!=null?' · px '+s.price:'')+'</div>';
-    h+=_dataTable([{t:'Entry zone'},{t:'MA basis'}],zrows);
-    h+='<div style="margin-top:6px;font-size:12.5px"><b>Targets:</b> '+((s.targets&&s.targets.length)?s.targets.join(", "):'<span class="gmut">none given</span>')+'</div>';
-    if(s.params){ var p=s.params; h+='<div style="margin-top:6px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">Trade plan '+(p.computed?'<span style="color:'+C.amber+'">· stop/target computed by Arsenal (she gave none)</span>':'<span style="color:'+C.pos+'">· all her\u2019s</span>')+'</div>'; h+=_statGrid([{l:'entry (trigger)',v:p.entry},{l:'stop',v:p.stop},{l:'R:R',v:(p.rr==null?'\u2014':p.rr)}],3); h+='<div style="font-size:12px;margin-top:5px"><b>Targets:</b> '+((p.targets&&p.targets.length)?p.targets.join(', '):'<span style="color:'+C.amber+'">'+esc(p.tgt_src||'not given')+'</span>')+'</div>'; h+='<div class="gmut" style="font-size:8.5px;margin-top:3px">stop: '+esc(p.stop_src)+' \u00b7 targets: '+esc(p.tgt_src)+(p.atr14?' \u00b7 ATR14 '+p.atr14:'')+'</div></div>'; } else h+='<div class="src" style="margin-top:5px;color:'+C.amber+'">No clean trade plan from the note \u2014 review the raw text.</div>';
-    if(s.chart_url){ h+='<div style="margin-top:8px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">Her chart \u2014 the exact trigger &amp; targets she drew</div><a href="'+esc(s.chart_url)+'" target="_blank" rel="noopener"><img src="'+esc(s.chart_url)+'" loading="lazy" style="width:100%;border-radius:8px;border:1px solid var(--gbrd);display:block" alt="Tammy annotated chart"></a></div>'; }
-    h+='<div class="src" style="margin-top:5px">'+crosscheckLine(s)+'</div>';
-    h+='</div>';
-    return h;
-  }
-  function scoreCard(sc){
-    if(!sc) return "";
-    var n=sc.n_scoreable||0;
-    var h='<div class="card"><div style="font-weight:750;font-size:13px">Forward score — measured, not assumed</div>';
-    h+=_statGrid([{l:'target-hit',v:n?sc.hit_rate+'%':'—'},{l:'95% CI',v:n?sc.ci_lo+'–'+sc.ci_hi+'%':'—'},{l:'n scoreable',v:n},{l:'open',v:sc.open_count},{l:'avg net',v:sc.avg_net_pct!=null?sc.avg_net_pct+'%':'—'}]);
-    h+='<div class="src" style="margin-top:5px;color:'+(n<30?C.amber:C.pos)+'">'+esc(sc.gate||"")+(n<30?' · not a verdict yet (need n≥30)':'')+'</div>';
-    h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">Invalidation rule (ours, since she gives no stop): '+esc(sc.invalidation_rule||"")+'</div>';
-    h+='<div class="src" style="margin-top:4px;color:'+C.mut+'">'+esc(sc.multiple_comparison_note||"")+'</div>';
-    if(sc.gauge){ var G=sc.gauge; var money=function(v){return (v>=0?'+$':'\u2212$')+Math.abs(Math.round(v)).toLocaleString();};
-      h+='<div style="margin-top:7px;border-top:1px solid var(--gbrd);padding-top:6px"><div style="font-size:9.5px;color:'+C.mut+';text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">$ outcomes \u00b7 '+esc(G.size_basis)+'</div>';
-      if(G.n>0){ h+=_statGrid([{l:'net',v:money(G.net_total)},{l:'avg win',v:'+$'+Math.round(G.avg_win).toLocaleString()},{l:'avg loss',v:'\u2212$'+Math.abs(Math.round(G.avg_loss)).toLocaleString()},{l:'biggest win',v:'+$'+Math.round(G.largest_win).toLocaleString()},{l:'biggest loss',v:'\u2212$'+Math.abs(Math.round(G.largest_loss)).toLocaleString()},{l:'W / L',v:G.n_win+' / '+G.n_loss}],3); }
-      else h+='<div class="src" style="color:'+C.mut+'">Accruing \u2014 forward-only; the $ fills in (at 100 shares / 2 contracts) as the picks resolve.</div>';
-      h+='</div>'; }
-    h+='</div>';
-    return h;
-  }
-  async function load(){
-    const el=document.getElementById("tammy-content"); el.innerHTML='<div class="loading">Loading…</div>';
-    let d,sc=null;
-    try{ d=await ghFetch("tammy_setups.json"); }catch(e){ el.innerHTML='<div class="card">Tammy feed not available yet.</div>'; return; }
-    try{ sc=await ghFetch("tammy_scorecard.json"); }catch(e){}
-    var setups=d.setups||[];
-    let h='<div class="card" style="border-color:rgba(255,207,107,.4)"><div style="font-weight:800;font-size:14px">Tammy / Fibonacci Princess <span style="color:'+C.amber+';font-size:11px">INFORMATIONAL · SHADOW</span></div>';
-    h+='<div class="src" style="margin-top:4px;line-height:1.5">'+esc(d.honesty||"")+'</div></div>';
-    h+='<div class="card"><div style="font-weight:750;font-size:13px">How to read her levels</div><div class="src" style="margin-top:4px;line-height:1.55">Her zones are <b>Fibonacci + moving-average levels</b> drawn on her charts. An <b>entry zone</b> is where she expects price to <b>react / reverse</b> — a long zone is where she\u2019d buy a bounce, a short zone where she\u2019d sell a rejection. <b>Targets</b> are the next Fib-extension levels she expects price to run to. Price <i>reaching</i> a level is a potential <b>trigger</b>; the actual reverse/hold (or break) is the confirmation. The level is <b>location, not a guarantee</b> \u2014 she gives no stop, so set your own at structure.</div></div>';
-    h+=scoreCard(sc);
-    if(!setups.length) h+='<div class="card">No active Tammy setups parsed right now.</div>';
-    else h+=setups.map(card).join("");
-    h+='<div class="src" style="margin:8px 2px;color:'+C.mut+'">Source: '+esc(d.source||"")+' · '+esc(d.privacy||"")+'</div>';
-    el.innerHTML=h;
-  }
-  return {load:load};
-})();
 const Journal=(function(){
   const OWN="hbout56@gmail.com";
   function fld(l,v){return '<div class="emaline"><b>'+esc(l)+'</b> '+(v==null?'<span class="gmut">—</span>':esc(v))+'</div>';}
@@ -3015,7 +2552,7 @@ const Journal=(function(){
 window.Journal=Journal;
 
 Futures.init(); Stocks.init();
-showView("active"); _updateStatus(); setInterval(_updateStatus,25000); _initCollapse();
+showView("active"); _updateStatus(); setInterval(_updateStatus,60000); _initCollapse();
 loadCalCtx();
 loadRegime();
 /* refresh the ACTIVE data view; never auto-reload Alerts (would discard pending toggles) */
@@ -3057,7 +2594,7 @@ function gcDxyPanel(){
     const R=(entry&&stop)?Math.abs(entry-stop).toFixed(2):"–";
     live+='<div class="setup" style="margin-top:7px"><div class="stk">GC '+esc(p.tf)+' '+esc(p.direction)
       +' <span style="font-weight:800;color:'+tagCol(p.tag)+'">'+esc(p.tag)+'</span></div>'
-      +_statGrid([{l:'entry',v:esc(entry)},{l:'stop',v:esc(stop?stop.toFixed(2):"–")+' <span class="gmut">(1.5\u00b7ATR)</span>'},{l:'target',v:esc(t1?t1.toFixed(2):"–")},{l:'R',v:R+'pts'},{l:'R:R',v:'2.0'},{l:'size',v:'1\u20132% /R (sim)'}])
+      +'<div class="params" style="font-size:12px"><span class="lbl">entry</span> '+esc(entry)+' · <span class="lbl">stop</span> '+esc(stop?stop.toFixed(2):"–")+' (1.5·ATR) · <span class="lbl">target</span> '+esc(t1?t1.toFixed(2):"–")+' · <span class="lbl">R</span> '+R+'pts · <span class="lbl">R:R</span> 2.0 · <span class="lbl">size</span> 1–2% risk/R (sim)</div>'
       +'<div class="edu" style="font-size:11px;color:var(--mut)">'+esc(p.reason||"")+' · '+esc(p.real_yield_context||"")+'</div></div>';
   });
   if(!live) live='<div class="statrow grey">No GC directional setup right now.</div>';
@@ -3098,7 +2635,8 @@ function orbPanel(){
     const f=t.filters||{};
     body+='<div class="setup" style="margin-top:7px"><div class="stk">'+esc(t.ticker)+' '+esc((t.side||"").toUpperCase())
       +' <span style="font-weight:800;color:'+tagCol+'">'+esc(tag)+'</span> <span class="gmut" style="font-weight:400">@ '+esc(t.trigger_time)+' · '+esc(t.vol_mult)+'x vol</span></div>'
-      +_statGrid([{l:'OR',v:esc(t.or_low)+'\u2013'+esc(t.or_high)},{l:'entry',v:esc(t.entry)},{l:'stop',v:esc(t.stop)+' <span class="gmut">('+esc(t.stop_basis)+')</span>',t:esc(t.stop_basis)},{l:'T1',v:esc(t.t1)},{l:'T2',v:esc(t.t2)},{l:'R:R',v:esc(t.rr_t2)},{l:'size',v:esc(t.size_band)}])
+      +'<div class="params" style="font-size:12px"><span class="lbl">OR</span> '+esc(t.or_low)+'–'+esc(t.or_high)
+      +' · <span class="lbl">entry</span> '+esc(t.entry)+' · <span class="lbl">stop</span> '+esc(t.stop)+' ('+esc(t.stop_basis)+') · <span class="lbl">T1</span> '+esc(t.t1)+' · <span class="lbl">T2</span> '+esc(t.t2)+' · <span class="lbl">R:R</span> '+esc(t.rr_t2)+' · <span class="lbl">size</span> '+esc(t.size_band)+'</div>'
       +'<div class="edu" style="font-size:11px;color:var(--mut)">filters: trend '+chip(f.trend&&f.trend.pass)+' · not-extended '+chip(f.not_extended&&f.not_extended.pass)+' · range '+chip(f.range_quality&&f.range_quality.pass)+' · RS '+chip(f.rs&&f.rs.pass)+' · regime '+chip(f.regime&&f.regime.pass)
       +' · <span class="lbl">regime</span> '+esc(t.regime_at_signal)+' · <span class="lbl">RS126</span> '+esc(t.rs_daily)+'</div></div>';
   });
@@ -3139,7 +2677,7 @@ function orbFuturesPanel(){
     body+='<div class="setup" style="margin-top:7px"><div class="stk">'+esc(t.micro)+' ('+esc(t.data)+') '+esc(t.side)
       +' <span style="font-weight:800;color:'+tagCol+'">'+esc(tag)+'</span> <span class="gmut" style="font-weight:400">@ '+esc(t.trigger_time)+' · '+esc(t.vol_mult)+'x vol · DELAYED</span></div>'
       +'<div class="params" style="font-size:12px"><span class="lbl">OR</span> '+esc(t.or_window_et)+' '+esc(t.or_low)+'–'+esc(t.or_high)+wf
-      +'</div>'+_statGrid([{l:'entry',v:esc(t.entry)},{l:'stop',v:esc(t.stop)+' <span class="gmut">('+esc(t.stop_basis)+')</span>',t:esc(t.stop_basis)},{l:'T1',v:esc(t.t1)},{l:'T2',v:esc(t.t2)},{l:'R:R',v:esc(t.rr_t2)},{l:'size',v:esc(t.size_band)}])
+      +' · <span class="lbl">entry</span> '+esc(t.entry)+' · <span class="lbl">stop</span> '+esc(t.stop)+' ('+esc(t.stop_basis)+') · <span class="lbl">T1</span> '+esc(t.t1)+' · <span class="lbl">T2</span> '+esc(t.t2)+' · <span class="lbl">R:R</span> '+esc(t.rr_t2)+' · <span class="lbl">size</span> '+esc(t.size_band)+'</div>'
       +'<div class="edu" style="font-size:11px;color:var(--mut)">filters: bias '+chip(f.trend&&f.trend.pass)+' · regime '+chip(f.regime&&f.regime.pass)+' · range '+chip(f.range_quality&&f.range_quality.pass)+' · not-ext '+chip(f.not_extended&&f.not_extended.pass)
       +' · <span class="lbl">regime</span> '+esc(t.regime_at_signal)+' · <span class="lbl">daily bias</span> '+esc(t.daily_bias)+'</div></div>';
   });
@@ -3175,7 +2713,7 @@ var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
   const POLY_ONLY = ["GC","CL","BZ"];
   let SNAP=null, PF=null, PS=null;
   const num=v=>{const n=parseFloat(v);return isNaN(n)?null:n;};
-  function snapAgeMs(){ if(!SNAP||!SNAP.pushed_at) return null; const t=parseTs(SNAP.pushed_at); return isNaN(t)?null:Date.now()-t; }
+  function snapAgeMs(){ if(!SNAP||!SNAP.pushed_at) return null; const t=Date.parse(SNAP.pushed_at); return isNaN(t)?null:Date.now()-t; }
   function iqfFresh(){ const a=snapAgeMs(); return a!=null && a < IQF_STALE_MS; }
   function row(){ return (SNAP&&SNAP.rows&&SNAP.rows.length)?SNAP.rows[SNAP.rows.length-1]:null; }
   function agoStr(ms){ if(ms==null) return "n/a"; const s=Math.max(0,Math.round(ms/1000));
@@ -3218,14 +2756,14 @@ var orbFutData=(typeof orbFutData!=='undefined')?orbFutData:null;</script>
       +'<div class="pa-note">ES/NQ/YM = LIVE IQFeed when fresh, else delayed-Polygon fallback. SOX/VIX/GC/CL/BZ = '
       +'exchange-delayed (Polygon). For live execution prices use ToS.</div>';
   }
-  // D87: separate cadence per feed-class — LIVE IQFeed internals fast (25s), Polygon-DELAYED slow (60s, source-capped)
-  async function loadLive(){ try{ SNAP=await ghFetch("internals_snapshot.json"); }catch(e){ SNAP=null; } render(); }
-  async function loadDelayed(){ try{ PF=await ghFetch("prices_futures.json"); }catch(e){} try{ PS=await ghFetch("prices_stocks.json"); }catch(e){} render(); }
-  async function load(){ await loadLive(); await loadDelayed(); }
+  async function load(){
+    try{ SNAP=await ghFetch("internals_snapshot.json"); }catch(e){ SNAP=null; }
+    try{ PF=await ghFetch("prices_futures.json"); }catch(e){}
+    try{ PS=await ghFetch("prices_stocks.json"); }catch(e){}
+    render();
+  }
   function rth(){ try{const n=etNow(); return n&&n.dow<=5&&n.hm>=930&&n.hm<=1600;}catch(e){return false;} }
-  function loopLive(){ loadLive(); setTimeout(loopLive, rth()?25000:60000); }         // IQFeed internals/ES-NQ-YM — 25s RTH
-  function loopDelayed(){ loadDelayed(); setTimeout(loopDelayed, rth()?60000:300000); } // Polygon GC/CL/SOX/stocks — 60s RTH (delayed at source)
-  function schedule(){ loopLive(); loopDelayed(); }
+  function schedule(){ load(); setTimeout(schedule, rth()?70000:300000); }
   setInterval(render, 5000);   // keep "(M:SS ago)" honest between fetches
   if(document.readyState!=="loading") schedule(); else document.addEventListener("DOMContentLoaded", schedule);
 })();

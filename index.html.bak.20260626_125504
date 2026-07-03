@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Arsenal Dashboard</title>
+<style>
+  :root{
+    --bg:#070a10; --bg2:#0b111b; --card:#101826; --card2:#0c1320;
+    --glass:rgba(18,27,42,.55); --glass2:rgba(255,255,255,.025); --gbrd:rgba(255,255,255,.07);
+    --ink:#eef3fb; --mut:#8b97ab; --dim:#5a6678; --line:rgba(255,255,255,.06);
+    --green:#2ee66e; --amber:#ffb52e; --red:#ff4d5e; --blue:#4d8dff; --grey:#6b7280;
+    --green-g:rgba(46,230,110,.5); --amber-g:rgba(255,181,46,.5); --red-g:rgba(255,77,94,.5);
+    --red-d:#3a151a; --amber-d:#3a2c0c;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"JetBrains Mono","Roboto Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    -webkit-text-size-adjust:100%;font-variant-numeric:tabular-nums}
+  body{position:relative;min-height:100vh;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(58% 38% at 12% -2%, rgba(77,141,255,.12), transparent 60%),
+      radial-gradient(48% 32% at 102% 8%, rgba(46,230,110,.07), transparent 60%),
+      radial-gradient(60% 40% at 50% 102%, rgba(255,77,94,.06), transparent 60%);}
+  .wrap{max-width:640px;margin:0 auto;padding:18px 16px 48px}
+  .head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  h1{font-size:18px;font-weight:700;margin:0;letter-spacing:.2px;
+     background:linear-gradient(90deg,#eaf1ff,#9fb6d9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .head .meta{font-size:11px;color:var(--dim)}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  /* top-level Futures | Stocks toggle */
+  .topbar{display:flex;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--gbrd);border-radius:16px;padding:6px;gap:6px;margin-bottom:18px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .toptab{flex:1;text-align:center;padding:16px 6px;border-radius:12px;color:var(--mut);font-weight:700;font-size:16px;
+          cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);letter-spacing:.3px}
+  .toptab.active{background:linear-gradient(180deg,rgba(77,141,255,.20),rgba(77,141,255,.05));color:#fff;
+    box-shadow:0 0 0 1px rgba(77,141,255,.4),0 6px 22px rgba(77,141,255,.28)}
+  /* shared sub-nav tabs */
+  .tabs{display:flex;flex-wrap:wrap;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid var(--gbrd);border-radius:14px;padding:5px;gap:5px;margin-bottom:14px}
+  .tab{flex:1 1 auto;text-align:center;padding:12px 8px;border-radius:10px;color:var(--mut);font-weight:650;font-size:14px;
+       cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);white-space:nowrap}
+  .tab.active{background:rgba(255,255,255,.07);color:#fff;box-shadow:inset 0 0 0 1px var(--gbrd),0 2px 12px rgba(0,0,0,.3)}
+  /* legend */
+  .legend{margin:0 0 14px;border:1px solid var(--gbrd);border-radius:13px;background:var(--glass);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden}
+  .legend>summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:11.5px;color:var(--mut);font-weight:650;letter-spacing:.3px}
+  .legend>summary::-webkit-details-marker{display:none}
+  .legend .lgbody{padding:2px 14px 13px;display:flex;flex-wrap:wrap;gap:9px 16px}
+  .legend .li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
+  .legend .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+  /* shared banners / cards / footer */
+  .banner{padding:13px 15px;border-radius:14px;font-weight:650;margin-bottom:14px;font-size:13.5px;display:none;border:1px solid transparent;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .banner.stale{background:rgba(255,77,94,.15);color:#ffd9de;border-color:rgba(255,77,94,.55);box-shadow:0 0 26px rgba(255,77,94,.2)}
+  .banner.recon{background:rgba(255,181,46,.13);color:#ffe6b3;border-color:rgba(255,181,46,.45);box-shadow:0 0 22px rgba(255,181,46,.15)}
+  .banner.err{background:rgba(255,77,94,.15);color:#ffd9de;border-color:rgba(255,77,94,.55)}
+  .banner.frozen{background:rgba(255,40,55,.22);color:#ffe2e5;border-color:rgba(255,77,94,.9);font-size:15px;font-weight:800;padding:16px 16px;animation:fz 1.5s ease-in-out infinite}
+  @keyframes fz{0%,100%{box-shadow:0 0 26px rgba(255,40,55,.30)}50%{box-shadow:0 0 48px rgba(255,40,55,.62)}}
+  .banner.dark{background:rgba(255,181,46,.14);color:#ffe6b3;border-color:rgba(255,181,46,.6);box-shadow:0 0 22px rgba(255,181,46,.15);font-weight:750}
+  .banner.closed{background:rgba(140,150,165,.13);color:#d2d9e3;border-color:rgba(140,150,165,.42)}
+  .card{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--gbrd);border-radius:var(--r);padding:16px;margin-bottom:14px;
+    box-shadow:0 8px 28px rgba(0,0,0,.35);animation:rise .38s cubic-bezier(.22,1,.36,1) both}
+  .card h2{font-size:11.5px;margin:0 0 11px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+  .disc{color:var(--dim);font-size:11px;font-style:italic;margin-top:14px;line-height:1.55}
+  .foot{color:var(--dim);font-size:10.5px;margin-top:9px}
+  .loading{color:var(--mut);font-size:13px;padding:34px 0;text-align:center}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  /* trade status window (shared) */
+  .statwin{margin:0 0 12px}
+  .statrow{font-size:12.5px;line-height:1.5;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--gbrd);margin-bottom:7px;font-family:var(--mono)}
+  .statrow.grey{color:var(--mut);font-style:italic;font-family:var(--sans)}
+  .statrow.paper{border-left-width:3px}
+  .statrow.mine{border-color:rgba(77,141,255,.4);background:rgba(77,141,255,.07)}
+  .ptag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:var(--mut);border:1px solid var(--gbrd);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
+  .mtag{font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#9cc3ff;background:rgba(77,141,255,.18);border:1px solid rgba(77,141,255,.45);border-radius:5px;padding:1px 5px;margin-right:5px;font-family:var(--sans)}
+  .mtagnote{font-size:10px;color:var(--dim);font-style:italic;margin-top:3px;font-family:var(--sans)}
+  .addmine{display:inline-block;font-size:11.5px;font-weight:700;color:#9cc3ff;border:1px solid rgba(77,141,255,.4);border-radius:9px;padding:7px 12px;cursor:pointer;margin-bottom:7px}
+  .closebtn{font-size:10.5px;color:var(--red);cursor:pointer;border:1px solid rgba(255,77,94,.4);border-radius:6px;padding:1px 7px;margin-left:6px;font-family:var(--sans)}
+  /* EMA simplified lines + research expander */
+  .emaline{font-size:13px;line-height:1.55;padding:7px 0;border-bottom:1px solid var(--line);font-family:var(--sans)}
+  .emaline:last-child{border-bottom:none}
+  .emanote{font-size:11px;color:var(--dim);margin-top:8px;font-style:italic}
+  .research{margin-top:12px}
+  .research>summary{cursor:pointer;font-size:12px;color:var(--mut);font-weight:700;padding:8px 0;list-style:none}
+  .research>summary::-webkit-details-marker{display:none}
+  /* ───────── FUTURES view ───────── */
+  #fut .hero{background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--gbrd);
+    border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 14px 44px rgba(0,0,0,.45);animation:rise .4s cubic-bezier(.22,1,.36,1) both}
+  #fut .nm{font-size:12.5px;color:var(--mut);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  #fut .px{font-family:var(--mono);font-size:46px;font-weight:600;letter-spacing:-1.5px;line-height:1;margin:7px 0 3px}
+  #fut .chg{font-family:var(--mono);font-size:16px;font-weight:600;margin-left:4px}
+  #fut .chg.up{color:var(--green)} #fut .chg.dn{color:var(--red)}
+  #fut .pill{display:inline-flex;align-items:center;gap:7px;margin-top:11px;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(255,255,255,.04);border:1px solid var(--gbrd)}
+  #fut .pdot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 10px currentColor}
+  #fut .src{font-size:11px;color:var(--dim);margin-top:9px}
+  #fut .meters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-top:18px}
+  #fut .meter{background:var(--glass2);border:1px solid var(--gbrd);border-radius:15px;padding:14px 8px;text-align:center;
+    transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s,border-color .3s}
+  #fut .meter .lab{font-size:11px;letter-spacing:.7px;color:var(--mut);font-weight:600}
+  #fut .meter .val{font-family:var(--mono);font-size:29px;font-weight:600;margin-top:4px;letter-spacing:-1.5px;transition:text-shadow .3s}
+  #fut .meter .track{height:8px;border-radius:6px;background:rgba(0,0,0,.5);margin-top:11px;overflow:hidden}
+  #fut .meter .fill{height:100%;width:0;border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  #fut .m-long .val{color:var(--green)} #fut .m-long .fill{background:linear-gradient(90deg,#1aa850,var(--green));box-shadow:0 0 12px var(--green-g)}
+  #fut .m-hold .val{color:var(--amber)} #fut .m-hold .fill{background:linear-gradient(90deg,#c78410,var(--amber));box-shadow:0 0 12px var(--amber-g)}
+  #fut .m-short .val{color:var(--red)} #fut .m-short .fill{background:linear-gradient(90deg,#c22b3a,var(--red));box-shadow:0 0 12px var(--red-g)}
+  #fut .meter.dominant{transform:translateY(-3px)}
+  #fut .chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:999px;border:1px solid transparent;vertical-align:middle}
+  #fut .chip.live{background:rgba(46,230,110,.16);color:#7ff0b0;border-color:rgba(46,230,110,.55);box-shadow:0 0 14px rgba(46,230,110,.3)}
+  #fut .chip.dark{background:rgba(255,181,46,.16);color:#ffd98a;border-color:rgba(255,181,46,.55)}
+  #fut .chip.frozen{background:rgba(255,40,55,.2);color:#ffd9de;border-color:rgba(255,77,94,.75)}
+  #fut .chip.closed{background:rgba(140,150,165,.14);color:#d2d9e3;border-color:rgba(140,150,165,.42)}
+  #fut .pill2{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--mut);margin-left:10px}
+  #fut .meternote{text-align:center;font-size:11.5px;font-weight:800;letter-spacing:.5px;margin:16px 0 -2px}
+  #fut .meters.flat{opacity:.4;filter:grayscale(.62)}
+  #fut .meters.flat .meter{box-shadow:none;transform:none;border-color:var(--gbrd)}
+  #fut .meters.flat .val{text-shadow:none}
+  #fut .card.guid{border-color:rgba(77,141,255,.28);box-shadow:0 0 22px rgba(77,141,255,.1),0 8px 28px rgba(0,0,0,.35)}
+  #fut .gline{font-size:14px;font-weight:650;margin:3px 0;font-family:var(--mono);letter-spacing:-.2px}
+  #fut .gline.gmut{color:var(--mut);font-weight:400;font-size:12px;font-family:var(--sans)}
+  #fut .gline.gwarn{color:var(--amber);font-weight:650;font-family:var(--sans)}
+  #fut .gok{color:var(--green);font-weight:750} #fut .gwarn{color:var(--amber);font-weight:750}
+  #fut .gtag{font-size:11px;color:var(--dim);font-style:italic;margin-top:10px;line-height:1.5}
+  #fut .tfsub{display:flex;gap:5px;background:var(--bg2);border:1px solid var(--gbrd);border-radius:11px;padding:4px;margin:2px 0 4px}
+  #fut .tftab{flex:1;text-align:center;padding:9px 4px;border-radius:8px;color:var(--mut);font-weight:700;font-size:12.5px;cursor:pointer;transition:all .18s}
+  #fut .tftab.active{background:rgba(255,255,255,.07);color:#fff;box-shadow:inset 0 0 0 1px var(--gbrd)}
+  #fut .tftab.primary{color:#9cc3ff} #fut .tftab.primary.active{color:#cfe0ff;box-shadow:inset 0 0 0 1px rgba(77,141,255,.45)}
+  #fut .secttl{font-size:11px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:2px 0 6px}
+  #fut .m-long.dominant{border-color:rgba(46,230,110,.45);box-shadow:0 0 0 1px var(--green-g),0 10px 32px var(--green-g)} #fut .m-long.dominant .val{text-shadow:0 0 20px var(--green-g)}
+  #fut .m-hold.dominant{border-color:rgba(255,181,46,.45);box-shadow:0 0 0 1px var(--amber-g),0 10px 32px var(--amber-g)} #fut .m-hold.dominant .val{text-shadow:0 0 20px var(--amber-g)}
+  #fut .m-short.dominant{border-color:rgba(255,77,94,.45);box-shadow:0 0 0 1px var(--red-g),0 10px 32px var(--red-g)} #fut .m-short.dominant .val{text-shadow:0 0 20px var(--red-g)}
+  #fut td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  #fut tr:last-child td{border-bottom:none}
+  #fut .sname{font-weight:650} #fut .smeta{color:var(--dim);font-size:11.5px;margin-top:2px;font-family:var(--mono)}
+  #fut .reason{color:var(--mut);font-size:11.5px;margin-top:2px;line-height:1.4}
+  #fut .v{font-weight:750;font-size:13.5px} #fut .v-LONG{color:var(--green)} #fut .v-HOLD{color:var(--amber)} #fut .v-SHORT{color:var(--red)} #fut .v-NA{color:var(--dim)}
+  #fut tr.na{opacity:.4} #fut tr.na .v-NA{font-style:italic}
+  #fut .zone{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:9px 2px;border-bottom:1px solid var(--line)}
+  #fut .zone:last-child{border-bottom:none} #fut .zone b{font-family:var(--mono)}
+  #fut .tag{font-size:10px;color:var(--dim);border:1px solid var(--gbrd);border-radius:6px;padding:2px 6px;margin-left:8px}
+  #fut .zmut{color:var(--dim);font-size:12.5px;font-family:var(--mono)}
+  #fut .sc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  #fut .scol{background:var(--glass2);border:1px solid var(--gbrd);border-radius:13px;padding:12px 10px}
+  #fut .scol.muted{opacity:.5} #fut .scol h3{margin:0 0 8px;font-size:15px;font-weight:700;text-align:center;font-family:var(--mono)}
+  #fut .scol .nlab{text-align:center;font-size:11px;color:var(--mut);margin-bottom:9px}
+  #fut .srow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--mut)} #fut .srow b{color:var(--ink);font-weight:650;font-family:var(--mono)}
+  #fut .ntag{display:block;text-align:center;font-size:9.5px;color:var(--amber);margin-top:9px}
+  #fut .scbasis{font-size:10.5px;color:var(--dim);margin-top:10px;line-height:1.45}
+  #fut .news{font-size:12.5px;color:var(--ink);line-height:1.5} #fut .news .date{color:var(--dim);font-weight:600}
+  /* ───────── STOCKS view ───────── */
+  #stk .posture{display:inline-block;margin:0 0 14px;padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
+    background:rgba(255,181,46,.1);border:1px solid rgba(255,181,46,.4);color:var(--amber);box-shadow:0 0 22px rgba(255,181,46,.14)}
+  #stk th{text-align:left;font-size:10px;color:var(--mut);font-weight:600;padding:5px 6px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.4px}
+  #stk td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  #stk tr:last-child td{border-bottom:none} #stk td:nth-child(2),#stk td:nth-child(4){font-family:var(--mono)}
+  #stk .secttl{font-size:13px;color:var(--mut);font-weight:700;margin:2px 0 10px;text-transform:uppercase;letter-spacing:.5px}
+  #stk .noact{font-size:12px;color:var(--dim);font-style:italic;margin:2px 0}
+  #stk .pick{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 2px;border-bottom:1px solid var(--line)}
+  #stk .pick:last-child{border-bottom:none}
+  #stk .pk-tk{font-weight:750;font-size:15.5px} #stk .pk-meta{font-size:11.5px;color:var(--mut);margin-top:3px;line-height:1.45;font-family:var(--mono)}
+  #stk .pk-note{font-size:11px;color:var(--dim);margin-top:3px;font-style:italic}
+  #stk .badge{font-size:10px;font-weight:750;padding:4px 9px;border-radius:7px;white-space:nowrap;letter-spacing:.3px;border:1px solid transparent}
+  #stk .b-NEW{background:rgba(46,230,110,.14);color:#7ff0b0;border-color:rgba(46,230,110,.35)}
+  #stk .b-CARRIED{background:rgba(77,141,255,.14);color:#9cc3ff;border-color:rgba(77,141,255,.35)}
+  #stk .b-OPEN{background:rgba(255,181,46,.14);color:#ffd98a;border-color:rgba(255,181,46,.38)}
+  #stk .b-EXPIRED{background:rgba(140,150,165,.12);color:#9aa3b0;border-color:rgba(140,150,165,.25)}
+  #stk .b-RE-PRICED{background:rgba(170,110,255,.14);color:#d6a8ff;border-color:rgba(170,110,255,.35)}
+  #stk .needs{font-size:10px;color:var(--amber);font-weight:650}
+  #stk .sc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+  #stk .scol{background:var(--glass2);border:1px solid var(--gbrd);border-radius:13px;padding:12px 11px}
+  #stk .scol.muted{opacity:.55} #stk .scol h3{margin:0 0 8px;font-size:13px;font-weight:750;text-align:center;letter-spacing:.3px}
+  #stk .srow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--mut)} #stk .srow b{color:var(--ink);font-weight:650;font-family:var(--mono)}
+  #stk .ntag{display:block;text-align:center;font-size:9.5px;color:var(--amber);margin-top:8px}
+  #stk .ctx{font-size:12.5px;color:var(--ink);line-height:1.5} #stk .ctx .date{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>Arsenal Dashboard</h1><span class="meta">refresh 60s</span></div>
+  <div class="topbar" id="topbar">
+    <div class="toptab active" data-v="futures">Futures</div>
+    <div class="toptab" data-v="stocks">Stocks</div>
+  </div>
+
+  <div id="fut">
+    <div class="tabs" id="fut-tabs"></div>
+    <details class="legend" open><summary>＋ legend</summary><div class="lgbody">
+      <span class="li"><span class="dot" style="background:var(--green)"></span>internals live</span>
+      <span class="li"><span class="dot" style="background:var(--amber)"></span>STALE — structure only</span>
+      <span class="li"><span class="dot" style="background:var(--dim)"></span>N/A — equity breadth only</span>
+      <span class="li"><b style="color:var(--amber)">n&lt;30</b>&nbsp;= descriptive, not yet validated</span>
+      <span class="li">glowing meter = dominant read</span>
+    </div></details>
+    <div id="fut-banner" class="banner"></div>
+    <div id="fut-content"><div class="loading">Loading…</div></div>
+    <p class="disc" id="fut-disc"></p>
+    <p class="foot" id="fut-foot"></p>
+  </div>
+
+  <div id="stk" hidden>
+    <div id="stk-posture"></div>
+    <div class="tabs" id="stk-tabs"></div>
+    <details class="legend" open><summary>＋ legend — pick states</summary><div class="lgbody">
+      <span class="li"><span class="badge b-NEW">NEW</span>first seen today</span>
+      <span class="li"><span class="badge b-CARRIED">CARRIED</span>persisting · day N</span>
+      <span class="li"><span class="badge b-OPEN">OPEN</span>triggered · tracking</span>
+      <span class="li"><span class="badge b-EXPIRED">EXPIRED</span>dropped, never triggered</span>
+      <span class="li"><span class="badge b-RE-PRICED">RE-PRICED</span>entry moved &gt;0.5%</span>
+      <span class="li"><b style="color:var(--amber)">n&lt;MIN</b>&nbsp;= descriptive, not validated</span>
+    </div></details>
+    <div id="stk-banner" class="banner"></div>
+    <div id="stk-content"><div class="loading">Loading…</div></div>
+    <p class="disc" id="stk-disc"></p>
+    <p class="foot" id="stk-foot"></p>
+  </div>
+</div>
+<script>
+/* PUBLIC display build — NO credential. Reads PUBLIC repo raw URLs. */
+const API_BASE = "https://raw.githubusercontent.com/hbout56-arsenal/arsenal-dashboard-public/main/";
+
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const ageMin=iso=>{const t=Date.parse((iso||"").replace(" ET",""));return isNaN(t)?null:(Date.now()-t)/60000;};
+function banner(id,cls,txt){const b=document.getElementById(id);if(!txt){b.style.display="none";return;}
+  b.className="banner "+cls;b.textContent=txt;b.style.display="block";}
+async function ghFetch(file){
+  const r=await fetch(API_BASE+file+"?t="+Date.now(),{cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+const tokenReady=()=>true;
+const FREEZE_MIN=15;          // futures: feed older than this (in-session) => FROZEN
+const STOCK_FREEZE_MIN=1500;  // stocks are daily-cadence; flag only if a daily run was missed (~25h)
+/* current ET weekday(1=Mon..7=Sun)+HHMM, tz-correct regardless of phone tz */
+function etNow(){
+  try{
+    const wd={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7};
+    const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+    let dow=null,h="0",m="0";
+    p.forEach(x=>{if(x.type==="weekday")dow=wd[x.value];if(x.type==="hour")h=x.value;if(x.type==="minute")m=x.value;});
+    if(h==="24")h="0";
+    return {dow,hm:parseInt(h,10)*100+parseInt(m,10)};
+  }catch(e){return null;}
+}
+/* full futures session: Sun 18:00 -> Fri 17:00 ET, daily 17:00-18:00 break off (mirrors run_verdicts.sh) */
+function futuresSessionOpen(){
+  const e=etNow(); if(!e||e.dow==null) return true;   // unknown -> assume open => default FROZEN, not calm
+  const {dow,hm}=e;
+  if(dow>=1&&dow<=4) return hm<1700||hm>=1800;
+  if(dow===5) return hm<1700;
+  if(dow===7) return hm>=1800;
+  return false;
+}
+
+/* ── MY-TRADE (in-page state; no backend/localStorage) + trade status window (surfacing only) ── */
+const MT=(function(){
+  const T={};
+  function set(k){
+    const side=(prompt("Your side for "+k+" — LONG or SHORT:","LONG")||"").toUpperCase().trim();
+    if(side!=="LONG"&&side!=="SHORT") return;
+    const entry=parseFloat(prompt("Entry price:",""));if(isNaN(entry))return;
+    const stop=parseFloat(prompt("Stop price (optional):",""));
+    const t1v=prompt("T1 (optional):","");const t1=t1v?parseFloat(t1v):null;
+    const t2v=prompt("T2 (optional):","");const t2=t2v?parseFloat(t2v):null;
+    T[k]={side,entry,stop:isNaN(stop)?null:stop,t1:(t1&&!isNaN(t1))?t1:null,t2:(t2&&!isNaN(t2))?t2:null,since:new Date().toLocaleTimeString()};
+    if(window.redraw)window.redraw();
+  }
+  function close(k){delete T[k];if(window.redraw)window.redraw();}
+  function has(k){return !!T[k];}
+  function row(k,px){
+    const t=T[k];if(!t)return"";
+    const dc=t.side==="LONG"?"var(--green)":"var(--red)";let pl="";
+    if(px!=null&&!isNaN(px)){const pts=(t.side==="LONG"?(px-t.entry):(t.entry-px));const pct=t.entry?pts/t.entry*100:null;const up=pts>=0;
+      pl=' · now '+px+' · <span style="color:'+(up?"var(--green)":"var(--red)")+'">'+(up?"+":"")+pts.toFixed(2)+(pct!=null?" ("+(up?"+":"")+pct.toFixed(2)+"%)":"")+'</span>';}
+    return '<div class="statrow mine"><span class="mtag">MINE</span><b style="color:'+dc+'">'+t.side+'</b> since '+esc(t.since)+' · entry '+esc(t.entry)+(t.stop!=null?' · stop '+esc(t.stop):'')+(t.t1?' · T1 '+esc(t.t1):'')+pl
+      +' <span class="closebtn" onclick="MT.close(\''+k+'\')">close</span>'
+      +'<div class="mtagnote">self-marked, tracking only — not linked to any broker · in-page (survives auto-refresh; resets on full reload)</div></div>';
+  }
+  function btn(k){return MT.has(k)?"":'<span class="addmine" onclick="MT.set(\''+k+'\')">+ I\'m in this</span>';}
+  return {set,close,has,row,btn};
+})();
+window.MT=MT;
+function paperRowFut(d,dark){
+  if(dark) return '<div class="statrow grey">feed dark — paper status unknown</div>';
+  const g=d.guidance, px=(d.price!=null?d.price:d.es_price);
+  if(!g||!g.active){const z=(d.confluence_zones&&d.confluence_zones[0]);
+    return '<div class="statrow grey">No active paper setup · watching '+(z?esc(z.method)+' '+esc(z.price):'structure')+'</div>';}
+  const dc=g.direction==="LONG"?"var(--green)":"var(--red)";let net="",status="pre-T1 · working";
+  if(px!=null){const pts=(g.direction==="LONG"?(px-g.entry):(g.entry-px));const up=pts>=0;
+    net=' · now '+px+' · <span style="color:'+(up?"var(--green)":"var(--red)")+'">'+(up?"+":"")+pts.toFixed(2)+' pts</span>';
+    const pastT1=(g.direction==="LONG"?px>=g.t1:px<=g.t1),breached=(g.direction==="LONG"?px<=g.stop:px>=g.stop);
+    status=breached?'<span style="color:var(--red)">stop breached</span>':(pastT1?'<span style="color:var(--green)">at/past T1</span>':'pre-T1 · working');}
+  return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+esc(g.stop_basis)+')'+(g.coarse?' · daily-coarse':'')+' · T1 '+esc(g.t1)+' · T2 '+esc(g.t2)+net+' · '+status
+    +'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the meter % · n&lt;30</div></div>';
+}
+function statusWindowFut(k,d,dark){const px=(d.price!=null?d.price:d.es_price);return '<div class="statwin">'+paperRowFut(d,dark)+(MT.has(k)?MT.row(k,px):MT.btn(k))+'</div>';}
+
+/* ════════════ FUTURES module (verdict.json / _GC / _CL + scorecard_summary.json) ════════════ */
+const Futures = (function(){
+  const INSTR=[{key:"ES",file:"verdict.json",label:"ES"},{key:"GC",file:"verdict_GC.json",label:"Gold"},{key:"CL",file:"verdict_CL.json",label:"Crude"},{key:"EMA",file:"ema_state.json",label:"EMA"},{key:"FVG",file:"fvg_state.json",label:"FVG"},{key:"ICT",file:"ict_state.json",label:"ICT"}];
+  function renderEMA(d){
+    const dark=String(d.feed_status||"").toUpperCase().startsWith("DARK");
+    if(dark) banner("fut-banner","dark","○ EMA DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No EMA signal — context only.");
+    else banner("fut-banner","",null);
+    const T=d.timeframes||{}, s15=T["15m"];
+    const trendUp=(s15&&s15.available)?s15.trend_up:null;   // FILTERED gate = 15m trend agreement
+    function aline(tf,pair){
+      const s=T[tf], lbl="EMA "+pair[0]+"/"+pair[1]+" "+tf;
+      if(!s||!s.available) return '<div class="emaline gmut">'+lbl+': ○ DARK — no intraday data</div>';
+      const bull=(pair[0]===9?s["9>21"]:s["20>50"])===true, dir=bull?"LONG":"SHORT";
+      const reg=pair[0]===9?(bull?'9&gt;21 ▲':'9&lt;21 ▼'):(bull?'20&gt;50 ▲':'20&lt;50 ▼');
+      let filt;
+      if(trendUp==null) filt='<span class="gmut">15m trend unknown — filter N/A</span>';
+      else if((bull&&trendUp)||(!bull&&!trendUp)) filt='<b class="gok">FILTERED '+dir+' ✓</b> <span class="gmut">(passed 15m trend gate)</span>';
+      else filt='<span class="gwarn">filtered out</span> <span class="gmut">— 15m trend '+(trendUp?'up':'down')+' disagrees</span>';
+      return '<div class="emaline">'+lbl+': '+reg+' · '+filt+'</div>';
+    }
+    const lines=[aline("5m",[9,21]),aline("15m",[9,21]),aline("5m",[20,50]),aline("15m",[20,50])].join("");
+    // FILTERED live signal -> trade-status PAPER row (same status window as everything else)
+    const g=d.live_signal;
+    const paper = dark ? '<div class="statrow grey">feed dark — paper status unknown</div>'
+      : g ? (function(){const dc=g.direction==="LONG"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?"structure":"⚠ ATR-fallback";
+          return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span><b style="color:'+dc+'">'+esc(g.direction)+'</b> '+esc(g.track)+' · entry '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.coarse?' · daily-coarse':'')+'<div class="mtagnote">SIMULATED · price breaking the stop is the trigger, not the EMA cross · n&lt;30</div></div>';})()
+      : '<div class="statrow grey">No active EMA paper setup · no FILTERED signal live</div>';
+    const statwin='<div class="statwin">'+paper+(MT.has("EMA")?MT.row("EMA",null):MT.btn("EMA"))+'</div>';
+    const tk=d.tracks_summary||{};
+    const sc='<details class="research"><summary>▸ research detail — 8-track NET-POINTS scorecard (RAW control + FILTERED)</summary>'
+      +'<table style="margin-top:8px"><tr><th>track</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+      +Object.entries(tk).map(([t,c])=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("")
+      +'</table><div class="scbasis">'+esc(d.note||"")+' · multiple-comparison caveat: 8 parallel tracks — best-of-8 is in-sample, not out-of-sample. n&lt;30 = descriptive only.</div></details>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">ES EMA system · context lean '+esc(d.context_lean)+'</div>'
+        +'<div class="src">SIMULATED · NET-POINTS · FILTERED = tested-for-edge · RAW = control · trigger = price breaking the stop</div>'
+        +statwin+'</div>'
+      +'<div class="card"><h2>EMA signals — FILTERED (tested-for-edge) vs RAW (control)</h2>'+lines
+        +'<div class="emanote">FILTERED = cross + 15m-trend gate (the version tested for edge). RAW = cross-only control — tracked under research detail.</div></div>'
+      +sc;
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    document.getElementById("fut-foot").textContent="EMA updated "+local;
+  }
+  /* ── FVG entry-refinement panel (Dispatch FVG) — entry/stop layer, NOT a vote ── */
+  function renderFVG(d){
+    const fs=String(d.feed_status||"").toUpperCase();
+    const dark=fs.startsWith("DARK");
+    if(dark) banner("fut-banner","dark","○ FVG DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No FVG detection — no fabrication.");
+    else if(fs==="FROZEN") banner("fut-banner","frozen","⚠ FVG FROZEN — last ES 5m bar stale. DO NOT TRADE off a frozen tape.");
+    else banner("fut-banner","",null);
+    if(dark){
+      document.getElementById("fut-content").innerHTML='<div class="hero"><div class="nm">ES FVG — entry refinement</div>'
+        +'<div class="src">○ DARK — IQFeed @ES# unavailable. FVG needs live 5m/15m tape; nothing shown (no fabricated gaps).</div></div>'
+        +'<div class="card"><h2>2-mode scorecard (last good)</h2>'+fvgScore(d)+'</div>';
+      document.getElementById("fut-disc").textContent=d.disclaimer||""; document.getElementById("fut-foot").textContent=""; return;
+    }
+    const near=d.unmitigated_near_price||[];
+    const rows=near.length?near.map(g=>{
+      const dc=g.dir==="bull"?"var(--green)":"var(--red)";
+      const conf=g.at_confluence?'<b class="gok">@'+esc(g.confluence||"level")+' ✓</b>':'<span class="gwarn">floating (no confluence)</span>';
+      const fr=g.fresh?'<span class="gok">fresh</span>':'<span class="gmut">aged</span>';
+      return '<div class="emaline"><b style="color:'+dc+'">'+esc(g.dir)+'</b> gap '+esc(g.gap_lo)+'–'+esc(g.gap_hi)
+        +' <span class="gmut">(size '+esc(g.size)+'pt · '+esc(g.dist_pts)+'pt away · '+(g.unmitigated?'unmitigated':'mitigated')+' · '+fr+')</span> · '+conf+'</div>';
+    }).join(""):'<div class="emaline gmut">no unmitigated FVG near price right now</div>';
+    const g=d.live_setup;
+    const guid=g?(function(){const dc=g.dir==="bull"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?'<span class="gok">structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
+      return '<div class="card guid"><h2>FVG +setup — guidance (FILTERED)</h2><div class="gline" style="color:'+dc+'"><b>'+esc(g.dir).toUpperCase()+'</b> @ '+esc(g.entry)
+        +' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.t2?' · T2 '+esc(g.t2):' · T2 fast-EMA runner')+'</div>'
+        +'<div class="gline gmut">gap '+esc(g.gap)+' @ '+esc(g.confluence||"level")+'</div>'
+        +'<div class="gtag">price breaking the gap’s FAR SIDE is the trigger, not the gap itself. SIMULATED · n&lt;30 · entry-refinement only.</div></div>';})()
+      :'<div class="card"><h2>FVG +setup</h2><div class="emaline gmut">no live FILTERED +setup (needs in-trend gap @confluence + internals confirm). RAW retests fire on noise — not shown as setups.</div></div>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">ES FVG — entry refinement <span class="chip live">● LIVE</span></div>'
+        +'<div class="px" style="font-size:26px">'+esc(d.price)+'</div>'
+        +'<div class="src">15m trend '+(d.trend_15m_up===true?'<span class="gok">up</span>':(d.trend_15m_up===false?'<span class="gwarn">down</span>':'n/a'))
+        +' · ATR(5m) '+esc(d.atr_5m)+' · '+esc(d.n_fvgs_detected)+' gaps detected · median size '+esc(d.median_size)+'pt</div>'
+        +'<div class="src">SIMULATED · NET-POINTS · FILTERED = in-trend gap @confluence + internals (tested-for-edge) · RAW = every retest (control)</div></div>'
+      +'<div class="card"><h2>Unmitigated FVGs near price</h2>'+rows
+        +'<div class="emanote">@confluence = gap sits on an existing VP/fib/VWAP/session level (read, not recomputed). Floating gaps are RAW-only noise.</div></div>'
+      +guid
+      +'<div class="card"><h2>2-mode scorecard</h2>'+fvgScore(d)+'</div>';
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const ms=Date.parse(d.generated_at||""),local=isNaN(ms)?d.generated_at:new Date(ms).toLocaleString();
+    document.getElementById("fut-foot").textContent="FVG updated "+local+" · last bar "+esc(d.last_bar_ts||"");
+  }
+  function fvgScore(d){
+    const t=d.tracks_summary||{};
+    const row=(name,c,ctl)=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.6':'1')+'"><td style="font-family:var(--mono)">'+name+(ctl?' <span class="gmut">(control)</span>':' <span class="gok">(tested-for-edge)</span>')+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';};
+    return '<details class="research"><summary>▸ research detail — RAW vs FILTERED NET-POINTS scorecard</summary>'
+      +'<table style="margin-top:6px"><tr><th>mode</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+      +row("RAW",t.RAW||{},true)+row("FILTERED",t.FILTERED||{},false)
+      +'</table><div class="scbasis">'+esc(d.note||"")+' · n&lt;30 = descriptive only.</div></details>';
+  }
+  /* ── ICT sequenced-chain panel (ICT dispatch) — a step out of order = no setup ── */
+  function renderICT(d){
+    const fs=String(d.feed_status||"").toUpperCase();
+    const dark=fs.startsWith("DARK");
+    if(dark) banner("fut-banner","dark","○ ICT DARK — IQFeed @ES# intraday unavailable (VM down/off-hrs). No chain detection — no fabrication.");
+    else if(d.standing_down) banner("fut-banner","closed","◐ ICT STANDING DOWN — outside killzone (feed is LIVE). No setups sought until an ICT window opens.");
+    else if(fs==="FROZEN") banner("fut-banner","frozen","⚠ ICT FROZEN — last ES 5m bar stale.");
+    else banner("fut-banner","",null);
+    if(dark){
+      document.getElementById("fut-content").innerHTML='<div class="hero"><div class="nm">ES ICT — sequenced chain</div>'
+        +'<div class="src">○ DARK — IQFeed @ES# unavailable. Chain needs live tape; nothing shown (no fabricated sweeps/setups).</div></div>'
+        +'<div class="card"><h2>2-mode scorecard (last good)</h2>'+fvgScore(d)+'</div>';
+      document.getElementById("fut-disc").textContent=d.disclaimer||""; document.getElementById("fut-foot").textContent=""; return;
+    }
+    const pools=(d.untapped_pools_near||[]).map(p=>{const c=p.kind==="buy-side"?"var(--red)":"var(--green)";
+      return '<div class="emaline"><b style="color:'+c+'">'+esc(p.kind)+'</b> pool '+esc(p.price)+' <span class="gmut">('+esc(p.dist_pts)+'pt away — '+(p.kind==="buy-side"?"stops above old high":"stops below old low")+')</span></div>';}).join("")||'<div class="emaline gmut">no untapped pool near price</div>';
+    const sw=d.last_sweep, ms=d.mss_state;
+    const swept=sw?'<div class="gline">last sweep: <b>'+esc(sw.pool)+'</b> ('+esc(sw.dir)+') @ '+esc((sw.ts||"").slice(11,16))+'</div>':'<div class="gline gmut">no sweep yet</div>';
+    const mss=ms?'<div class="gline">MSS: <span class="gok">confirmed</span> beyond '+esc(ms.opp_level)+' @ '+esc((ms.ts||"").slice(11,16))+'</div>':'<div class="gline gmut">no MSS</div>';
+    const g=d.live_setup;
+    let setup;
+    if(g){const dc=g.dir==="bull"?"var(--green)":"var(--red)";const sb=g.stop_basis==="structure"?'<span class="gok">wick/structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
+      const trace=(g.trace||[]).map(t=>'<div class="gline" style="font-family:var(--mono);font-size:12px">'+esc(t)+'</div>').join("");
+      setup='<div class="card guid"><h2>ICT '+(g.filtered?'<span class="gok">+setup (FILTERED)</span>':'<span class="gmut">chain (RAW-only)</span>')+'</h2>'
+        +'<div class="gline" style="color:'+dc+'"><b>'+esc(g.dir).toUpperCase()+'</b> @ '+esc(g.entry)+' · stop '+esc(g.stop)+' ('+sb+') · T1 '+esc(g.t1)+' (1R '+esc(g.R)+')'+(g.t2?' · T2 '+esc(g.t2)+' (next pool)':' · T2 next pool/EMA')+'</div>'
+        +'<div class="seqtrace" style="margin:8px 0;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'+trace+'</div>'
+        +'<div class="gtag">price breaking the swept wick is the trigger/invalidation, not the pattern. SIMULATED · n&lt;30 · '+(g.filtered?'all gates passed in sequence':'control — failed a FILTERED gate')+'</div></div>';
+    } else setup='<div class="card"><h2>ICT setup</h2><div class="emaline gmut">no live chain (needs sweep → MSS → FVG-in-OTE in sequence). A step out of order = no setup.</div></div>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div class="nm">ES ICT — sequenced chain <span class="chip live">● LIVE</span></div>'
+        +'<div class="px" style="font-size:26px">'+esc(d.price)+'</div>'
+        +'<div class="src">HTF bias <b style="color:'+(d.bias==="LONG"?"var(--green)":(d.bias==="SHORT"?"var(--red)":"var(--mut)"))+'">'+esc(d.bias)+'</b> · killzone '+(d.killzone_active?'<span class="gok">@'+esc(d.killzone_active)+'</span>':'<span class="gwarn">none — stand down</span>')+'</div>'
+        +'<div class="src">SIMULATED · NET-POINTS · chain: bias→sweep→MSS→FVG-in-OTE→killzone→wick-stop · FILTERED=full-ICT, RAW=control</div></div>'
+      +'<div class="card"><h2>Untapped liquidity pools near price</h2>'+pools+'</div>'
+      +'<div class="card"><h2>Structure</h2>'+swept+mss+'</div>'
+      +setup
+      +'<div class="card"><h2>2-mode scorecard</h2>'+fvgScore(d)+'</div>';
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const ms2=Date.parse(d.generated_at||""),local=isNaN(ms2)?d.generated_at:new Date(ms2).toLocaleString();
+    document.getElementById("fut-foot").textContent="ICT updated "+local+" · last bar "+esc(d.last_bar_ts||"");
+  }
+  const STALE_MIN=10;
+  let current="ES"; const lastData={}; let summary=null; let futTF=null; let gcclEma=null;
+  /* ── GC/CL EMA on Polygon DELAYED (Dispatch 14) — NON-VOTING, DELAYED tag everywhere ── */
+  function gcclEmaPanel(instKey){
+    if(!gcclEma||!gcclEma.instruments) return "";
+    const x=gcclEma.instruments[instKey]; if(!x) return "";
+    const tag=esc(gcclEma.delay_tag||"DELAYED ~10-15min (Polygon futures)");
+    if(!x.available) return '<div class="card"><h2>EMA — '+esc(instKey)+' <span class="gmut" style="font-weight:400">· '+tag+'</span></h2>'
+      +'<div class="emaline gmut">○ DARK — Polygon returned no '+esc(instKey)+' bars</div></div>';
+    // feed badge: DELAYED = normal (greenish), frozen = amber alarm
+    const fs=String(x.feed_status||"delayed");
+    const badge=fs==="frozen"
+      ? '<span class="chip frozen">⚠ STALE — delayed feed not advancing</span>'
+      : '<span class="chip live" style="background:#1f3a2a;color:#7fd99a;border-color:#2f5a40">◷ '+tag+' (normal)</span>';
+    const order=["15m","30m","60m","daily"];
+    const lines=order.map(tf=>{
+      const s=(x.timeframes||{})[tf]; if(!s) return "";
+      if(!s.available) return '<div class="emaline gmut">'+tf+': ○ '+esc(s.state||"dark")+' — '+esc(s.note||"")+'</div>';
+      const arrow=s["9>21"]?'9&gt;21 ▲':'9&lt;21 ▼';
+      const filt=s.filtered_dir
+        ? '<b class="gok">FILTERED '+esc(s.filtered_dir)+' ✓</b> <span class="gmut">tested-for-edge</span>'
+        : '<span class="gwarn">filtered-out</span> <span class="gmut">— '+esc(s.htf_trend)+' disagrees</span>';
+      const fz=s.state==="frozen"?' <span class="gwarn">[STALE]</span>':'';
+      return '<div class="emaline">'+tf+': '+arrow+' · '+filt+' <span class="gmut">· raw '+esc(s.raw_dir)+' (control) · bar '+esc(s.bar_ts)+fz+'</span></div>';
+    }).join("");
+    const tk=x.tracks_summary||{};
+    const sc='<details class="research"><summary>▸ research detail — '+esc(instKey)+' 16-track NET-POINTS scorecard (RAW control + FILTERED)</summary>'
+      +'<div class="gmut" style="margin:6px 0">'+tag+' · NET POINTS (GC and CL not comparable — different $/point) · NON-VOTING (weight 0)</div>'
+      +'<table style="margin-top:6px"><tr><th>track</th><th>n</th><th>net/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'
+      +Object.entries(tk).map(([t,c])=>{const im=(c.n_matured||0)<30;return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td><b>'+(c.net_points_expectancy==null?'–':esc(c.net_points_expectancy))+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("")
+      +'</table><div class="scbasis">'+esc(x.note||"")+'</div></details>';
+    return '<div class="card"><h2>EMA — '+esc(instKey)+' ('+esc(x.ticker||"")+') &nbsp;'+badge+'</h2>'
+      +'<div class="emanote">'+tag+' — context, NOT a live trigger. Price breaking the stop is the trigger, not the EMA cross. SIMULATED · n&lt;30 · lean '+esc(x.context_lean)+'</div>'
+      +lines+'<div class="emanote">FILTERED = cross + higher-TF trend gate (tested-for-edge). RAW = cross-only control.</div>'+sc+'</div>';
+  }
+  const tsOf=d=>d.pushed_at||d.timestamp||"";
+  const fmtN=v=>v==null?"–":Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
+  const SIMNOTE="SIMULATED guidance — not a signal. Price breaking the stop level is the trigger, not the meter %. n<30, unvalidated.";
+  function guidanceBlock(d, isLive){
+    const g=d.guidance;
+    if(!g||!g.active||!isLive) return "";          // no block on inactive / DARK / stale (D7 discipline)
+    if(g.levels_incomplete) return '<div class="card guid"><h2>Guidance — '+esc(g.threshold)+'% threshold</h2>'
+      +'<div class="gline gwarn">⚠ '+esc(g.note||"no clean levels — structure incomplete")+'</div>'
+      +'<div class="gtag">'+esc(SIMNOTE)+'</div></div>';
+    const dc=g.direction==="LONG"?"var(--green)":"var(--red)";
+    const sb=g.stop_basis==="structure"?'<span class="gok">structure</span>':'<span class="gwarn">⚠ ATR-fallback</span>';
+    const coarse=g.coarse?'<div class="gline gwarn">⚠ daily-fallback levels — coarse, context only</div>':'';
+    return '<div class="card guid"><h2>Guidance — '+esc(g.threshold)+'% threshold</h2>'
+      +'<div class="gline" style="color:'+dc+'"><b>'+esc(g.direction)+'</b> @ '+fmtN(g.entry)+' · stop '+fmtN(g.stop)+' ('+sb+') · T1 '+fmtN(g.t1)+' · T2 '+fmtN(g.t2)+' · R:R '+esc(g.rr)+'</div>'
+      +'<div class="gline gmut">targets: '+esc(g.target_basis==="confluence"?"confluence":"r-multiple")+'</div>'+coarse
+      +'<div class="gtag">'+esc(SIMNOTE)+'</div></div>';
+  }
+  function tfPanel(d){
+    const tfs=d.timeframes||{}, prim=d.primary_timeframe||"15m", order=["5m","15m","60m","daily"];
+    const sel=(futTF&&tfs[futTF])?futTF:prim;
+    const tabs=order.map(k=>'<div class="tftab'+(k===sel?" active":"")+(k===prim?" primary":"")+'" data-tf="'+k+'">'+k+(k===prim?" ★":"")+'</div>').join("");
+    const t=tfs[sel]||{}, st=t.state||"dark", live=(st==="live");
+    const stChip=live?'<span class="chip live">● LIVE</span>':st==="dark"?'<span class="chip dark">○ DARK</span>':st==="closed"?'<span class="chip closed">○ CLOSED</span>':'<span class="chip frozen">⚠ FROZEN</span>';
+    const L=Number(t.long_pct)||0,H=Number(t.hold_pct)||0,S=Number(t.short_pct)||0,mx=Math.max(L,H,S);
+    const meters='<div class="meters'+(live?"":" flat")+'">'+[["long",L],["hold",H],["short",S]].map(([m,v])=>
+      '<div class="meter m-'+m+(live&&v===mx&&v>0?" dominant":"")+'"><div class="lab">'+m.toUpperCase()+'</div><div class="val">'+v+'%</div><div class="track"><div class="fill" style="width:'+v+'%"></div></div></div>').join("")+'</div>';
+    let sig="";(t.signals||[]).forEach(s=>{const na=s.verdict==="N/A";sig+='<tr class="'+(na?"na":"")+'"><td><b>'+esc(s.name)+'</b> <span class="smeta">conf '+esc(s.confidence)+'</span></td><td style="text-align:right"><span class="v v-'+esc(s.verdict)+'">'+esc(s.verdict)+'</span></td></tr>';});
+    let zones="";(t.confluence_zones||[]).forEach(z=>{zones+='<div class="zone"><span>'+esc(z.method)+' '+esc(z.label)+' @ '+esc(z.price)+'</span><span class="tag">'+esc(z.vp_timeframe||sel)+'</span></div>';});
+    if(!zones)zones='<div class="zone zmut">no level within tolerance</div>';
+    let sc="";const ets=(summary&&summary.es_timeframes&&summary.es_timeframes.tracks)?summary.es_timeframes.tracks[sel]:null;
+    if(ets)sc='<div class="sc">'+["70","85","100"].map(th=>{const c=ets[th]||{},im=(c.matured_n||0)<30;
+      return '<div class="scol'+(im?" muted":"")+'"><h3>'+th+'%</h3><div class="srow"><span>matured</span><b>'+(c.matured_n!=null?c.matured_n:0)+'</b></div><div class="srow"><span>open</span><b>'+(c.n_open!=null?c.n_open:0)+'</b></div><div class="srow"><span>win</span><b>'+(c.win_rate==null?"–":c.win_rate+"%")+'</b></div>'+(im?'<span class="ntag">n&lt;30</span>':'')+'</div>';}).join("")+'</div>';
+    const note=(summary&&summary.es_timeframes)?('<div class="scbasis">'+esc(summary.es_timeframes.note||"")+'</div>'):'';
+    const plabel=(sel===prim)?" — primary / decision":"";
+    return '<div class="card"><h2>ES timeframes</h2><div class="tfsub">'+tabs+'</div>'
+      +'<div style="margin:8px 0 2px">'+stChip+' <span class="src">'+esc(sel)+esc(plabel)+' · struct '+(t.structure_fresh?"live":"stale/NA")+'</span></div>'
+      +meters
+      +'<div class="secttl" style="margin-top:13px">Signals</div><table>'+sig+'</table>'
+      +'<div class="secttl" style="margin-top:11px">Confluence ('+esc(sel)+')</div>'+zones
+      +'<div class="secttl" style="margin-top:13px">Scorecard track ('+esc(sel)+')</div>'+sc+note+'</div>';
+  }
+  const pct=v=>v==null?"–":(Math.round(v*1000)/10)+"%";
+  const num=v=>v==null?"–":v;
+
+  function buildTabs(){
+    document.getElementById("fut-tabs").innerHTML=INSTR.map(i=>'<div class="tab'+(i.key===current?" active":"")+'" data-k="'+i.key+'">'+i.label+'</div>').join("");
+    document.querySelectorAll("#fut-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();
+      if(lastData[current]){current==="EMA"?renderEMA(lastData[current]):render(lastData[current],false);} else document.getElementById("fut-content").innerHTML='<div class="loading">Loading…</div>'; load();});
+  }
+  function scorecardPanel(sym){
+    if(!summary||!summary.instruments||!summary.instruments[sym]) return "";
+    const th=summary.instruments[sym].thresholds||{}, order=(summary.thresholds||[70,85,100]);
+    let cols="";
+    order.forEach(t=>{const c=th[String(t)]||{}, immature=(c.matured_n||0)<30;
+      cols+='<div class="scol'+(immature?" muted":"")+'"><h3>'+t+'%</h3>'
+        +'<div class="nlab">matured '+num(c.matured_n!=null?c.matured_n:0)+' · open '+num(c.n_open!=null?c.n_open:0)+'</div>'
+        +'<div class="srow"><span>win</span><b>'+pct(c.win_rate)+'</b></div>'
+        +'<div class="srow"><span>expect</span><b>'+(c.expectancy_per_trade==null?"–":c.expectancy_per_trade)+'</b></div>'
+        +'<div class="srow"><span>T1 hit</span><b>'+pct(c.t1_hit_rate)+'</b></div>'
+        +'<div class="srow"><span>T2 hit</span><b>'+pct(c.t2_hit_rate)+'</b></div>'
+        +'<div class="srow"><span>stopout</span><b>'+pct(c.stopout_rate)+'</b></div>'
+        +'<div class="srow"><span>PF</span><b>'+(c.profit_factor==null?"–":c.profit_factor)+'</b></div>'
+        +(immature?'<span class="ntag">n&lt;30 · descriptive</span>':'<span class="ntag" style="color:var(--green)">n≥30</span>')+'</div>';});
+    return '<div class="card"><h2>Paper scorecard (simulated)</h2><div class="sc">'+cols+'</div><div class="scbasis">'+esc(summary.basis||"")+'</div></div>';
+  }
+  function render(d,reconnecting){
+    const age=ageMin(tsOf(d));
+    const ts0=tsOf(d), tms0=Date.parse((ts0||"").replace(" ET","")), tstr=isNaN(tms0)?esc(ts0):new Date(tms0).toLocaleTimeString();
+    // ── FROZEN / DARK / LIVE honesty layer ──
+    const hasLive=(d.signals||[]).some(s=>Number(s.confidence)>0);   // >=1 signal actually voted (conf>0)
+    let state;
+    if(reconnecting) state="recon";
+    else if(age==null||age>FREEZE_MIN) state=(age!=null&&!futuresSessionOpen())?"closed":"frozen";
+    else if(!hasLive) state="dark";                                  // fresh, but every signal abstained
+    else state="live";
+    if(state==="frozen") banner("fut-banner","frozen","⚠ FEED FROZEN — last update "+tstr+" ("+(age==null?"?":Math.round(age))+" min ago). Data may be stale. DO NOT TRADE THIS.");
+    else if(state==="closed") banner("fut-banner","closed","○ SESSION CLOSED — last update "+tstr+". Futures reopen Sun 18:00 ET (daily 17:00–18:00 ET break).");
+    else if(state==="dark") banner("fut-banner","dark","○ DARK — no live signals this session (internals + structure unavailable). Meter is NOT actionable — last structural context only.");
+    else if(state==="recon") banner("fut-banner","recon","⟳ Reconnecting — last good verdict ("+(age==null?"?":Math.round(age))+" min old).");
+    else banner("fut-banner","",null);
+    const isLive=(state==="live");
+    let pc,pt;
+    if(d.internals_applicable===false){pc="var(--dim)";pt="internals N/A — equity breadth only";}
+    else if(d.internals_fresh){pc="var(--green)";pt="internals live"+(d.internals_age_s!=null?" · "+d.internals_age_s+"s":"");}
+    else{pc="var(--amber)";pt="internals STALE — structure only";}
+    const sfresh=(d.structure_fresh===true);
+    const chip = isLive?'<span class="chip live">● LIVE</span>'
+      : state==="dark"?'<span class="chip dark">○ DARK</span>'
+      : state==="closed"?'<span class="chip closed">○ CLOSED</span>'
+      : state==="recon"?'<span class="chip dark">⟳ RECONNECT</span>'
+      : '<span class="chip frozen">⚠ FROZEN</span>';
+    const price=(d.price!=null?d.price:d.es_price), change=(d.change!=null?d.change:d.es_change);
+    let chg=""; if(change!=null){const up=change>=0;chg=' <span class="chg '+(up?"up":"dn")+'">'+(up?"+":"")+esc(change)+'</span>';}
+    const L=Number(d.long_pct)||0,H=Number(d.hold_pct)||0,S=Number(d.short_pct)||0;
+    let sig="";(d.signals||[]).forEach(s=>{const na=s.verdict==="N/A";
+      sig+='<tr class="'+(na?"na":"")+'"><td><div class="sname">'+esc(s.name)+'</div><div class="smeta">'+esc(s.pillar)+' · conf '+esc(s.confidence)+'</div><div class="reason">'+esc(s.reason)+'</div></td>'
+        +'<td style="text-align:right;white-space:nowrap"><span class="v v-'+esc(s.verdict)+'">'+esc(s.verdict)+'</span></td></tr>';});
+    let zones="";(d.confluence_zones||[]).forEach(z=>{zones+='<div class="zone"><span>'+esc(z.method)+' '+esc(z.label)+' @ <b>'+esc(z.price)+'</b> <span class="zmut">(Δ'+esc(z.dist)+')</span></span><span class="tag">'+esc(z.vp_timeframe||"?")+'</span></div>';});
+    if(!zones) zones='<div class="zone zmut">no level within tolerance of price</div>';
+    let news=""; const si=(summary&&summary.instruments&&summary.instruments[current])?summary.instruments[current]:null;
+    const ntext=(si&&si.newsletter_context)||d.newsletter_context||"", ndate=(si&&si.context_date)||"";
+    if(ntext) news='<div class="card"><h2>Newsletter cross-check</h2><div class="news">'+esc(ntext)+(ndate?' <span class="date">(as of '+esc(ndate)+')</span>':'')+'</div></div>';
+    document.getElementById("fut-content").innerHTML=
+      '<div class="hero"><div style="margin-bottom:9px">'+chip+'</div>'
+        +'<div class="nm">'+esc(d.display_name||d.symbol||"")+'</div><div class="px">'+esc(price)+chg+'</div>'
+        +'<div class="pill"><span class="pdot" style="background:'+pc+'"></span>'+esc(pt)+'</div>'
+        +'<span class="pill2"><span class="pdot" style="width:8px;height:8px;border-radius:50%;background:'+(sfresh?"var(--green)":"var(--dim)")+'"></span>structure '+(sfresh?"live":"stale / N-A")+'</span>'
+        +'<span class="pill2">tf: '+(d.internals_applicable===false?"daily swing (fallback)":(esc(d.primary_timeframe||"15m")+" (decision)"))+'</span>'
+        +(d.structure_source?'<div class="src">structure: '+esc(d.structure_source)+'</div>':'')
+        +statusWindowFut(current,d,!isLive)
+        +(isLive?'':'<div class="meternote" style="color:'+(state==="frozen"?"#ff6b76":(state==="dark"?"var(--amber)":"var(--mut)"))+'">'+(state==="dark"?"NO LIVE READ — last structural context only":(state==="frozen"?"FROZEN — DO NOT TRADE":(state==="closed"?"MARKET CLOSED — last context":"RECONNECTING — last good")))+'</div>')
+        +'<div class="meters'+(isLive?"":" flat")+'">'
+        +'<div class="meter m-long'+(isLive&&L>=H&&L>=S&&L>0?" dominant":"")+'"><div class="lab">LONG</div><div class="val">'+L+'%</div><div class="track"><div class="fill" style="width:'+L+'%"></div></div></div>'
+        +'<div class="meter m-hold'+(isLive&&H>=L&&H>=S&&H>0?" dominant":"")+'"><div class="lab">HOLD</div><div class="val">'+H+'%</div><div class="track"><div class="fill" style="width:'+H+'%"></div></div></div>'
+        +'<div class="meter m-short'+(isLive&&S>=L&&S>=H&&S>0?" dominant":"")+'"><div class="lab">SHORT</div><div class="val">'+S+'%</div><div class="track"><div class="fill" style="width:'+S+'%"></div></div></div>'
+        +'</div></div>'
+      +guidanceBlock(d,isLive)
+      +scorecardPanel(current)
+      +'<div class="card"><h2>Signals</h2><table>'+sig+'</table></div>'
+      +'<div class="card"><h2>Confluence zones</h2>'+zones+'</div>'+news
+      +(current==="ES"&&d.timeframes?tfPanel(d):"")
+      +((current==="GC"||current==="CL")?gcclEmaPanel(current):"");
+    document.querySelectorAll("#fut-content .tftab").forEach(el=>el.onclick=()=>{futTF=el.getAttribute("data-tf");render(d,false);});
+    document.getElementById("fut-disc").textContent=d.disclaimer||"";
+    const t=tsOf(d), ms=Date.parse((t||"").replace(" ET","")), local=isNaN(ms)?t:new Date(ms).toLocaleString();
+    document.getElementById("fut-foot").textContent="updated "+local+" · config "+esc(d.config_hash)+" · refresh "+esc(d.update_freq_seconds)+"s";
+  }
+  async function load(){
+    if(!tokenReady()){banner("fut-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
+    const want=current, file=(INSTR.find(i=>i.key===want)||INSTR[0]).file;
+    ghFetch("scorecard_summary.json").then(s=>{summary=s; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});
+    if(want==="GC"||want==="CL") ghFetch("ema_gccl_state.json").then(g=>{gcclEma=g; if(current===want&&lastData[want]) render(lastData[want],false);}).catch(()=>{});  // DELAYED GC/CL EMA (non-voting)
+    try{const d=await ghFetch(file); lastData[want]=d; if(current===want){want==="EMA"?renderEMA(d):(want==="FVG"?renderFVG(d):(want==="ICT"?renderICT(d):render(d,false)));}}
+    catch(e){ if(e.auth){banner("fut-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
+      if(lastData[want]){ if(current===want) render(lastData[want],true);} else if(current===want){ banner("fut-banner","err","Fetch failed: "+esc(e.message)); } }
+  }
+  function redraw(){ if(lastData[current]){ current==="EMA"?renderEMA(lastData[current]):(current==="FVG"?renderFVG(lastData[current]):(current==="ICT"?renderICT(lastData[current]):render(lastData[current],false)));} }
+  return {init:buildTabs, load, redraw};
+})();
+
+/* ════════════ STOCKS module (stock_dashboard.json) ════════════ */
+const Stocks = (function(){
+  const STALE_MIN=60;
+  const SECTIONS=[{key:"convergence",label:"Convergence"},{key:"minervini",label:"Minervini"},{key:"top_setups",label:"Top Setups"},{key:"context",label:"Context"}];
+  let current="convergence", data=null, emaStk=null;
+  const pctt=v=>v==null?"–":Math.round(v)+"%";
+  /* ── stocks-daily EMA context (Dispatch 13) — NON-VOTING, display join by ticker ── */
+  function emaStkStale(){ if(!emaStk) return true; const h=(emaStk.stale_after_hours||25); const a=ageMin(emaStk.generated_at); return a!=null&&a>h*60; }
+  function emaLinePick(tk){
+    if(!emaStk) return "";
+    const dark=String(emaStk.feed_status||"").toUpperCase().startsWith("DARK");
+    if(dark||emaStkStale()) return '<div class="emaline gmut">EMA daily context — feed '+(dark?'dark':'stale')+', not shown</div>';
+    const s=(emaStk.by_ticker||{})[tk];
+    if(!s) return "";                                   // ticker not in EMA universe
+    if(!s.available) return '<div class="emaline gmut">EMA daily: ○ '+esc(s.reason||"no data")+'</div>';
+    const arrow=s["9>21"]?'9&gt;21 ▲':'9&lt;21 ▼';
+    const filt=s.filtered_dir
+      ? '<b class="gok">FILTERED '+esc(s.filtered_dir)+' ✓</b> <span class="gmut">tested-for-edge</span>'
+      : '<span class="gwarn">filtered-out</span> <span class="gmut">— '+esc(s.regime)+'</span>';
+    return '<div class="emaline">EMA daily: '+arrow+' · '+filt+' <span class="gmut">· raw '+esc(s.raw_dir)+' (control)</span></div>';
+  }
+  function emaStkResearch(){
+    if(!emaStk||!emaStk.tracks_summary) return "";
+    const dark=String(emaStk.feed_status||"").toUpperCase().startsWith("DARK");
+    const rows=Object.entries(emaStk.tracks_summary).map(([t,c])=>{const im=(c.n_matured||0)<30;
+      return '<tr style="opacity:'+(im?'.5':'1')+'"><td style="font-family:var(--mono)">'+esc(t)+'</td><td>'+esc(c.n_matured!=null?c.n_matured:0)+'</td><td>'+esc(c.n_symbols!=null?c.n_symbols:'–')+'</td><td><b>'+(c.net_pct_expectancy==null?'–':esc(c.net_pct_expectancy)+'%')+'</b></td><td>'+(c.win_rate==null?'–':esc(c.win_rate)+'%')+'</td><td>'+(c.t1_hit_rate==null?'–':esc(c.t1_hit_rate)+'%')+'</td><td>'+(c.stopout_rate==null?'–':esc(c.stopout_rate)+'%')+'</td><td>'+(c.profit_factor==null?'–':esc(c.profit_factor))+'</td></tr>';}).join("");
+    return '<details class="research"><summary>▸ research detail — stocks-daily EMA 4-track scorecard (NET-%, RAW control + FILTERED)</summary>'
+      +'<div class="gmut" style="margin:6px 0">'+(dark?'⚠ feed dark — last good table · ':'')+'metric = NET % (price-normalized so symbols are comparable) · NON-VOTING context (weight 0)</div>'
+      +'<table style="margin-top:6px"><tr><th>track</th><th>n</th><th>sym</th><th>net%/trade</th><th>WR</th><th>T1%</th><th>stop%</th><th>PF</th></tr>'+rows
+      +'</table><div class="scbasis">'+esc(emaStk.note||"")+' · n&lt;30 = descriptive only.</div></details>';
+  }
+  function buildTabs(){
+    document.getElementById("stk-tabs").innerHTML=SECTIONS.map(s=>'<div class="tab'+(s.key===current?" active":"")+'" data-k="'+s.key+'">'+s.label+'</div>').join("");
+    document.querySelectorAll("#stk-tabs .tab").forEach(el=>el.onclick=()=>{current=el.getAttribute("data-k");buildTabs();if(data)renderSection();});
+  }
+  function scCol(title,c,min){
+    if(!c) return '<div class="scol muted"><h3>'+title+'</h3><div class="srow"><span>no picks</span><b>–</b></div></div>';
+    const immature=(c.status&&/insufficient|forward/.test(c.status))||c.sample_n==null||c.sample_n<min;
+    return '<div class="scol'+(immature?" muted":"")+'"><h3>'+title+'</h3>'
+      +'<div class="srow"><span>n</span><b>'+(c.n!=null?c.n:"–")+'</b></div>'
+      +'<div class="srow"><span>triggered</span><b>'+(c.triggered_n!=null?c.triggered_n:"–")+'</b></div>'
+      +'<div class="srow"><span>sample</span><b>'+(c.sample_n!=null?c.sample_n:"–")+'</b></div>'
+      +'<div class="srow"><span>win</span><b>'+pctt(c.win_rate)+'</b></div>'
+      +'<div class="srow"><span>avg</span><b>'+(c.avg==null?"–":(c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")+'</b></div>'
+      +(immature?'<span class="ntag">'+esc(c.status||("n<"+min+" · descriptive"))+'</span>':'')+'</div>';
+  }
+  function paperRowPick(p,frozen){
+    if(frozen) return '<div class="statrow grey">feed frozen — status unknown</div>';
+    const dc=/SHORT/i.test(p.direction||"")?"var(--red)":"var(--green)";
+    const oc=String(p.outcome||"").toUpperCase(), tg=String(p.trigger_status||"").toUpperCase();
+    let st;
+    if(oc.indexOf("T1")>=0) st='<span style="color:var(--green)">T1 hit</span>';
+    else if(oc.indexOf("STOP")>=0) st='<span style="color:var(--red)">stopped</span>';
+    else if(oc.indexOf("T2")>=0||oc.indexOf("TARGET")>=0) st='<span style="color:var(--green)">target hit</span>';
+    else if(tg.indexOf("TRIG")>=0) st='triggered · open';
+    else if(p.needs_levels) st='watching · needs levels';
+    else st='watching · pre-trigger';
+    const lv=p.needs_levels?'':' · entry '+esc(p.entry)+(p.stop?' · stop '+esc(p.stop):'')+(p.t1?' · T1 '+esc(p.t1):'');
+    const dayc=(p.state==="CARRIED"&&p.day_n!=null)?' · day '+esc(p.day_n):'';
+    return '<div class="statrow paper" style="border-left-color:'+dc+'"><span class="ptag">PAPER</span>'+st+dayc+lv
+      +'<div class="mtagnote">SIMULATED/tracked · price is the trigger, not the pick · n&lt;MIN</div></div>';
+  }
+  function pickRow(p,frozen){
+    const lv=p.needs_levels?'<span class="needs">needs levels</span>':'entry '+esc(p.entry)+' · stop '+esc(p.stop)+' · T1 '+esc(p.t1);
+    const rp=p.repriced_from?(' · re-priced from '+esc(p.repriced_from)):'';
+    const day=(p.state==="CARRIED")?(' day '+p.day_n):'';
+    return '<div class="pick"><div><div class="pk-tk">'+esc(p.ticker)+' <span style="font-size:11px;color:var(--mut)">'+esc(p.direction)+'</span></div>'
+      +'<div class="pk-meta">'+lv+' · '+esc(p.conviction||"")+' · '+esc(p.pillars||"")+' · '+esc(p.status||"")+' · trig '+esc(p.trigger_status)+'/'+esc(p.outcome)+rp+'</div>'
+      +(p.note?'<div class="pk-note">'+esc(p.note)+'</div>':'')+'</div><span class="badge b-'+esc(p.state)+'">'+esc(p.state)+esc(day)+'</span></div>'
+      +'<div class="statwin" style="margin:-2px 0 10px">'+paperRowPick(p,frozen)+(MT.has(p.ticker)?MT.row(p.ticker,null):MT.btn(p.ticker))+'</div>'
+      +emaLinePick(p.ticker);
+  }
+  function engineRows(top5){
+    if(!top5||!top5.length) return '<tr><td colspan="5" style="color:var(--dim)">no engine ledger for this section</td></tr>';
+    return top5.map(p=>'<tr><td style="font-weight:700">'+esc(p.ticker)+'</td><td>'+esc(p.entry)+'</td><td>'+esc(p.conviction)+'</td><td>'+esc(p.score)+'</td><td>'+esc(p.trigger_status)+'/'+esc(p.outcome)+'</td></tr>').join("");
+  }
+  function renderSection(){
+    const min=data.min_triggered||20;
+    if(current==="context"){
+      const na=data.sections_no_actionable||{};
+      let nah=Object.keys(na).map(k=>'<div class="noact">• '+esc(k)+': '+esc(na[k])+'</div>').join("")||'<div class="noact">—</div>';
+      document.getElementById("stk-content").innerHTML=
+        '<div class="card"><h2>Posture</h2><div class="ctx">'+esc(data.posture||"–")+' <span class="date">(as of '+esc(data.date)+')</span></div></div>'
+        +'<div class="card"><h2>No actionable today</h2>'+nah+'</div>'
+        +'<div class="card"><h2>Ingest summary</h2><div class="ctx">'+Object.entries(data.ingest_summary||{}).map(([k,v])=>esc(k)+': '+esc(v)).join(' · ')+'</div></div>';
+      return;
+    }
+    const sec=(data.sections||{})[current]||{};
+    if(sec.error){document.getElementById("stk-content").innerHTML='<div class="card"><h2>'+esc(current)+'</h2><div class="noact">section error: '+esc(sec.error)+'</div></div>';return;}
+    const fage=ageMin(data.generated_at), frozen=(fage!=null&&fage>STOCK_FREEZE_MIN);
+    const curated=(sec.curated||[]);
+    const curatedHtml=curated.length?curated.map(p=>pickRow(p,frozen)).join(""):'<div class="noact">no curated picks in this section today</div>';
+    document.getElementById("stk-content").innerHTML=
+      '<div class="card"><div class="secttl">Claude curated</div>'+curatedHtml+'</div>'
+      +'<div class="card"><div class="secttl">Engine top 5</div><table><tr><th>Ticker</th><th>Entry</th><th>Conv</th><th>Score</th><th>Trig/Out</th></tr>'+engineRows(sec.engine_top5)+'</table></div>'
+      +'<div class="card"><h2>Scorecard — curated vs engine</h2><div class="sc">'+scCol("Claude curated",(sec.scorecard||{}).curated,min)+scCol("Engine",(sec.scorecard||{}).engine,min)+'</div></div>'
+      +(emaStk?'<div class="card"><h2>EMA daily context <span class="gmut" style="font-weight:400">— non-voting</span></h2>'+emaStkResearch()+'</div>':'');
+  }
+  function render(){
+    const age=ageMin(data.generated_at);
+    if(age!=null&&age>STOCK_FREEZE_MIN){const ms=Date.parse((data.generated_at||"").replace(" ET",""));const ds=isNaN(ms)?esc(data.generated_at):new Date(ms).toLocaleString();
+      banner("stk-banner","frozen","⚠ FEED FROZEN — last daily update "+ds+" ("+Math.round(age/60)+"h ago). The daily producer may have missed a run.");}
+    else banner("stk-banner","",null);
+    document.getElementById("stk-posture").innerHTML=data.posture?'<span class="posture">'+esc(data.posture)+' · '+esc(data.date)+'</span>':'';
+    buildTabs(); renderSection();
+    document.getElementById("stk-disc").textContent=data.disclaimer||"";
+    const ms=Date.parse(data.generated_at||""),local=isNaN(ms)?data.generated_at:new Date(ms).toLocaleString();
+    document.getElementById("stk-foot").textContent="updated "+local+" · MIN_TRIGGERED "+esc(data.min_triggered)+" · MIN_MATURED "+esc(data.min_matured);
+  }
+  async function load(){
+    if(!tokenReady()){banner("stk-banner","err","Paste your fine-grained read-only GitHub token into GITHUB_TOKEN (top of file).");return;}
+    ghFetch("ema_stocks_state.json").then(s=>{emaStk=s; if(data) renderSection();}).catch(()=>{});  // non-voting context (best-effort)
+    try{const d=await ghFetch("stock_dashboard.json"); data=d; render();}
+    catch(e){ if(e.auth){banner("stk-banner","err","Token invalid or expired (HTTP "+e.auth+").");return;}
+      if(data) render(); else banner("stk-banner","err","Fetch failed: "+esc(e.message)); }
+  }
+  function redraw(){ if(data) renderSection(); }
+  return {init:buildTabs, load, redraw};
+})();
+
+/* ════════════ top-level view switch ════════════ */
+let view="futures";
+function redraw(){ view==="futures"?Futures.redraw():Stocks.redraw(); }
+window.redraw=redraw;
+function showView(v){
+  view=v;
+  document.querySelectorAll(".toptab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));
+  document.getElementById("fut").hidden=(v!=="futures");
+  document.getElementById("stk").hidden=(v!=="stocks");
+  (v==="futures"?Futures:Stocks).load();   // fetch only the active view
+}
+document.querySelectorAll(".toptab").forEach(t=>t.onclick=()=>showView(t.dataset.v));
+Futures.init(); Stocks.init();
+showView("futures");
+setInterval(()=>{ (view==="futures"?Futures:Stocks).load(); }, 60000);  // refresh ACTIVE only
+</script>
+</body>
+</html>
