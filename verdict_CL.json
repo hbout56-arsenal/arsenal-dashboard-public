@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-05T20:54:29",
+  "timestamp": "2026-07-05T21:58:03",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 68.4,
-  "es_change": -0.06,
-  "price": 68.4,
-  "change": -0.06,
+  "es_price": 68.3,
+  "es_change": 0.3,
+  "price": 68.3,
+  "change": 0.3,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 68.40 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 68.30 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
+      "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 68.40 < prior_close 68.46 (daily fallback)"
+      "reason": "price 68.30 > prior_close 68.00 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -77,15 +77,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 68.4,
-    "levels_incomplete": true,
-    "note": "nearest structural target 67.12 too close for 1.5 R:R (risk 1.51 pts) \u2014 not actionable",
-    "stop": 69.91,
-    "R": 1.51,
-    "stop_trace": "single-source: vp 69.59 only",
-    "context_level": "confluence x2: swing-pivot 67.12, vp 67.12"
+    "entry": 68.3,
+    "stop": 67.19,
+    "t1": 74.07,
+    "t2": 75.72,
+    "R": 1.11,
+    "rr": 5.2,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x2: vp 67.04, fib-cluster 67.98",
+    "t1_trace": "single-source: vp 74.07 only",
+    "t2_trace": "single-source: vp 75.72 only"
   }
 }
