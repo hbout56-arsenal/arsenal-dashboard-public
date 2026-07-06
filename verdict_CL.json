@@ -1,18 +1,18 @@
 {
-  "timestamp": "2026-07-06T14:28:45",
+  "timestamp": "2026-07-06T16:37:32",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 68.56,
-  "es_change": null,
-  "price": 68.56,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 68.66,
+  "es_change": 0.2,
+  "price": 68.66,
+  "change": 0.2,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
   "long_pct": 100.0,
   "hold_pct": 0.0,
   "short_pct": 0.0,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "LONG",
-      "confidence": 30.0,
-      "reason": "price 68.56 at 1-method confluence (VP) near 68.55 (support)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 68.66 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 68.66 > prior_close 68.46 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,17 +67,9 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "VP",
-      "label": "LVN",
-      "price": 68.55,
-      "dist": -0.01,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
-  "vp_available": true,
-  "fib_available": true,
+  "confluence_zones": [],
+  "vp_available": false,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
@@ -88,12 +80,19 @@
     "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 68.56,
-    "levels_incomplete": true,
-    "note": "no invalidation level within risk range (<= 7.2 pts) \u2014 cannot ground a stop",
-    "stop": null,
-    "R": null,
-    "stop_trace": null,
-    "context_level": null
+    "entry": 68.66,
+    "stop": 66.8,
+    "t1": 77.1,
+    "t2": 79.51,
+    "R": 1.86,
+    "rr": 4.54,
+    "stop_basis": "single-source",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: swing-pivot 67.12 only",
+    "t1_trace": "single-source: swing-pivot 77.1 only",
+    "t2_trace": "single-source: fib-cluster 79.51 only"
   }
 }
