@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-07-07T16:58:43.645908Z",
+  "generated_at": "2026-07-07T17:51:53.919034Z",
   "status": "SHADOW / INFORMATIONAL / DELAYED \u2014 NOT loaded, A+ not validated",
   "sessions": {
+    "MES": "2026-07-06",
     "MGC": "2026-07-06"
   },
   "instruments": [
@@ -10,13 +11,71 @@
     "MGC",
     "MCL"
   ],
-  "raw_triggers": 1,
-  "aplus_triggers": 0,
+  "raw_triggers": 2,
+  "aplus_triggers": 1,
   "correlation_flag": null,
   "half_day_flag": false,
   "delayed_note": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
   "preregistration": "ORB_FUTURES_PREREGISTRATION.md (FROZEN)",
   "triggers": [
+    {
+      "micro": "MES",
+      "data": "ES",
+      "side": "LONG",
+      "trigger_time": "10:20",
+      "trigger_price": 7575.75,
+      "vol_mult": 7.43,
+      "or_high": 7574,
+      "or_low": 7552.5,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": true,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "BULLISH_IMPULSE_CONTINUATION"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime CHOP (trendiness 35)",
+          "tag": "CHOP"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.23 (band 0.2-0.8)",
+          "value": 0.23
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.12xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "CHOP",
+      "daily_bias": "LONG",
+      "entry": 7574,
+      "stop": 7550.24,
+      "t1": 7597.76,
+      "t2": 7601.25,
+      "R_pts": 23.76,
+      "rr_t2": 1.1,
+      "stop_basis": "atr_floor",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 23.76,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-07-06"
+    },
     {
       "micro": "MGC",
       "data": "GC",
@@ -29,16 +88,14 @@
       "or_window_et": "08:20-08:50",
       "or_window_flag": "COMEX pit open (assumption-under-test)",
       "raw": true,
-      "aplus": false,
-      "fails": [
-        "trend"
-      ],
+      "aplus": true,
+      "fails": [],
       "filters": {
         "trend": {
-          "pass": false,
+          "pass": true,
           "detail": {
-            "bias": "LONG",
-            "verdict": "LEADING_DIAGONAL"
+            "bias": "SHORT",
+            "verdict": "CORRECTIVE_ABC"
           }
         },
         "regime": {
@@ -57,7 +114,7 @@
         }
       },
       "regime_at_signal": "TRENDING_DOWN",
-      "daily_bias": "LONG",
+      "daily_bias": "SHORT",
       "entry": 4143.3,
       "stop": 4170.79,
       "t1": 4115.81,
