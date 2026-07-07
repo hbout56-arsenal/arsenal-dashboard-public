@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-07-07T10:37:16",
+  "timestamp": "2026-07-07T12:31:02",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 70.05,
-  "es_change": null,
-  "price": 70.05,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 70.43,
+  "es_change": 1.83,
+  "price": 70.43,
+  "change": 1.83,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
-  "hold_pct": 100.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
   "short_pct": 0.0,
   "signals": [
     {
@@ -22,7 +22,7 @@
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 70.05 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 70.43 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 70.43 > prior_close 68.60 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -76,6 +76,23 @@
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 70.43,
+    "stop": 69.92,
+    "t1": 74.07,
+    "t2": 74.45,
+    "R": 0.51,
+    "rr": 7.14,
+    "stop_basis": "single-source",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: vp 69.93 only",
+    "t1_trace": "single-source: vp 74.07 only",
+    "t2_trace": "single-source: swing-pivot 74.45 only"
   }
 }
