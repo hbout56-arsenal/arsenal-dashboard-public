@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-07T13:41:13.453895+00:00",
+ "generated_at": "2026-07-07T14:35:01.280182+00:00",
  "symbol": "ES",
  "timeframe": "60m",
  "status": "ok",
@@ -251,6 +251,12 @@
    "count": 3,
    "trace": [
     {
+     "pillar": "target",
+     "fired": true,
+     "level": 7602.5,
+     "reason": "target 7602.5 (diag high retest) = pool 7583.25 + pool 7575.75 + pool 7587.0 + pool 7589.0 + pool 7572.5 + pool 7589.5"
+    },
+    {
      "pillar": "invalidation",
      "fired": true,
      "level": 7434.89,
@@ -258,8 +264,8 @@
     },
     {
      "pillar": "direction",
-     "fired": true,
-     "reason": "internals breadth up agrees with scenario direction up"
+     "fired": false,
+     "reason": "internals breadth down vs scenario up \u2014 disagree"
     },
     {
      "pillar": "structure",
@@ -269,10 +275,9 @@
    ],
    "unavailable": [
     "VP (VAH/VAL/POC/HVN) \u2014 not published right now",
-    "liquidity pools \u2014 ICT dark / none near",
     "fib clusters \u2014 no published cluster feed"
    ],
-   "internals_bias": "up",
+   "internals_bias": "down",
    "scenario_direction": "up",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
@@ -298,7 +303,7 @@
     "rule": "Break below the diagonal origin invalidates this count"
    },
    "basis": "fib targets the analyzer already computes (diag_high_retest, 1.272_extension)",
-   "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
+   "zone_confluence_note": "target zone overlaps liquidity pool 7583.25 + liquidity pool 7575.75 + liquidity pool 7587.0 + liquidity pool 7589.0 + liquidity pool 7572.5 + liquidity pool 7589.5 \u2014 landing at independent confluence = more credible (still projected)",
    "one_wave_ahead": true,
    "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
   },
@@ -335,7 +340,7 @@
    "1.618_ext": 7678.51
   },
   "confluence": {
-   "count": 2,
+   "count": 1,
    "trace": [
     {
      "pillar": "invalidation",
@@ -345,16 +350,15 @@
     },
     {
      "pillar": "direction",
-     "fired": true,
-     "reason": "internals breadth up agrees with scenario direction up"
+     "fired": false,
+     "reason": "internals breadth down vs scenario up \u2014 disagree"
     }
    ],
    "unavailable": [
     "VP (VAH/VAL/POC/HVN) \u2014 not published right now",
-    "liquidity pools \u2014 ICT dark / none near",
     "fib clusters \u2014 no published cluster feed"
    ],
-   "internals_bias": "up",
+   "internals_bias": "down",
    "scenario_direction": "up",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
@@ -466,8 +470,8 @@
    "at_level": true,
    "location": "round 7525",
    "quality": false,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -480,7 +484,7 @@
    "rr": 1.04,
    "trace": [
     "\u2460 location round 7525",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -496,8 +500,8 @@
    "at_level": false,
    "location": "",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "trend n/a",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -510,7 +514,7 @@
    "rr": 0.78,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -527,7 +531,7 @@
    "location": "",
    "quality": false,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -540,7 +544,7 @@
    "rr": null,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -557,7 +561,7 @@
    "location": "",
    "quality": false,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -570,7 +574,7 @@
    "rr": 1.9,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -587,7 +591,7 @@
    "location": "",
    "quality": true,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -600,7 +604,7 @@
    "rr": 1.87,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -617,7 +621,7 @@
    "location": "",
    "quality": true,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -630,7 +634,7 @@
    "rr": 1.72,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -647,7 +651,7 @@
    "location": "",
    "quality": true,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -660,7 +664,7 @@
    "rr": 6.79,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -676,12 +680,12 @@
    "at_level": true,
    "location": "POC 7553.96",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "trend n/a",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
-   "filtered": false,
+   "filtered": true,
    "forming": false,
    "entry": 7555.25,
    "stop": 7548,
@@ -690,7 +694,7 @@
    "rr": 0.53,
    "trace": [
     "\u2460 location POC 7553.96",
-    "\u2461 trend trend n/a",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -707,7 +711,7 @@
    "location": "POC 7553.96",
    "quality": false,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -720,7 +724,7 @@
    "rr": null,
    "trace": [
     "\u2460 location POC 7553.96",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -796,8 +800,8 @@
    "at_level": true,
    "location": "round 7550",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -810,7 +814,7 @@
    "rr": 0.19,
    "trace": [
     "\u2460 location round 7550",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -827,7 +831,7 @@
    "location": "POC 7553.96",
    "quality": false,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -840,7 +844,7 @@
    "rr": null,
    "trace": [
     "\u2460 location POC 7553.96",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -856,8 +860,8 @@
    "at_level": true,
    "location": "POC 7553.96",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -870,7 +874,7 @@
    "rr": 5.08,
    "trace": [
     "\u2460 location POC 7553.96",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -886,8 +890,8 @@
    "at_level": true,
    "location": "HVN 7559.07",
    "quality": false,
-   "in_trend": false,
-   "trend_tag": "trend n/a",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -900,7 +904,7 @@
    "rr": 1.36,
    "trace": [
     "\u2460 location HVN 7559.07",
-    "\u2461 trend trend n/a",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -917,7 +921,7 @@
    "location": "",
    "quality": false,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -930,7 +934,7 @@
    "rr": 0.19,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -946,8 +950,8 @@
    "at_level": true,
    "location": "round 7550",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -960,7 +964,7 @@
    "rr": 0.09,
    "trace": [
     "\u2460 location round 7550",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -976,8 +980,8 @@
    "at_level": true,
    "location": "round 7550",
    "quality": false,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -990,7 +994,7 @@
    "rr": 0.48,
    "trace": [
     "\u2460 location round 7550",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -1006,8 +1010,8 @@
    "at_level": true,
    "location": "POC 7553.96",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -1020,7 +1024,7 @@
    "rr": 0.35,
    "trace": [
     "\u2460 location POC 7553.96",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -1066,8 +1070,8 @@
    "at_level": true,
    "location": "HVN 7559.07",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -1080,7 +1084,7 @@
    "rr": 3.25,
    "trace": [
     "\u2460 location HVN 7559.07",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -1096,8 +1100,8 @@
    "at_level": true,
    "location": "HVN 7559.07",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -1110,7 +1114,7 @@
    "rr": 3.09,
    "trace": [
     "\u2460 location HVN 7559.07",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
@@ -1126,8 +1130,8 @@
    "at_level": true,
    "location": "HVN 7559.07",
    "quality": false,
-   "in_trend": false,
-   "trend_tag": "trend n/a",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -1140,7 +1144,7 @@
    "rr": 0.82,
    "trace": [
     "\u2460 location HVN 7559.07",
-    "\u2461 trend trend n/a",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -1157,7 +1161,7 @@
    "location": "",
    "quality": true,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -1170,7 +1174,7 @@
    "rr": 0.83,
    "trace": [
     "\u2460 location \u2717 mid-range",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -1186,8 +1190,8 @@
    "at_level": true,
    "location": "VAH 7592.28",
    "quality": true,
-   "in_trend": false,
-   "trend_tag": "reversal-at-level",
+   "in_trend": true,
+   "trend_tag": "with-trend",
    "reversal": true,
    "confluence": "na",
    "raw": true,
@@ -1200,7 +1204,7 @@
    "rr": 1.0,
    "trace": [
     "\u2460 location VAH 7592.28",
-    "\u2461 trend reversal-at-level",
+    "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 1 (alert-eligible)"
@@ -1247,7 +1251,7 @@
    "location": "VAH 7592.28",
    "quality": false,
    "in_trend": false,
-   "trend_tag": "trend n/a",
+   "trend_tag": "counter-trend",
    "reversal": false,
    "confluence": "na",
    "raw": true,
@@ -1260,7 +1264,7 @@
    "rr": null,
    "trace": [
     "\u2460 location VAH 7592.28",
-    "\u2461 trend trend n/a",
+    "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
