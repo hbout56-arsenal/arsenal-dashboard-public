@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-08T05:36:06",
+  "timestamp": "2026-07-08T06:46:51",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 48686,
+  "internals_age_s": 52931,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 100.0,
@@ -320,10 +320,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 0.0,
-      "hold_pct": 0.0,
-      "short_pct": 100.0,
-      "price": 7479,
+      "long_pct": 10.0,
+      "hold_pct": 90.0,
+      "short_pct": 0.0,
+      "price": 7488.5,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -333,9 +333,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "price 7479.00 not at any VP/fib level (\u00b10.1%)"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7488.50 at 1-method confluence (VP) near 7487.98 (support)"
         },
         {
           "name": "Breadth",
@@ -356,7 +356,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7479.00 < prior_close 7551.75 (daily fallback)"
+          "reason": "price 7488.50 < prior_close 7551.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -380,7 +380,15 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [],
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7487.98,
+          "dist": -0.52,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
       "vp_available": true,
       "fib_available": true
     }
@@ -392,9 +400,9 @@
     "engine": "confluence",
     "entry": 7554.75,
     "levels_incomplete": true,
-    "note": "nearest structural target 7587.7 too close for 1.5 R:R (risk 68.29 pts) \u2014 not actionable",
-    "stop": 7486.46,
-    "R": 68.29,
+    "note": "nearest structural target 7587.7 too close for 1.5 R:R (risk 68.35 pts) \u2014 not actionable",
+    "stop": 7486.4,
+    "R": 68.35,
     "stop_trace": "confluence x2: vp 7487.98, fib-cluster 7504.35",
     "context_level": "confluence x4: session-level 7554.76, swing-pivot 7593.75, fib-cluster 7598.9, vp 7603.41"
   }
