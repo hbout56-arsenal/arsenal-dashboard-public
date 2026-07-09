@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-08T15:43:26",
+  "timestamp": "2026-07-09T08:48:02",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 73.97,
-  "es_change": 1.77,
-  "price": 73.97,
-  "change": 1.77,
+  "es_price": 71.39,
+  "es_change": -0.76,
+  "price": 71.39,
+  "change": -0.76,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 100.0,
+  "long_pct": 0.0,
   "hold_pct": 0.0,
-  "short_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 73.97 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 71.39 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "LONG",
+      "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "price 73.97 > prior_close 72.20 (daily fallback)"
+      "reason": "price 71.39 < prior_close 72.15 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -69,7 +69,7 @@
   ],
   "confluence_zones": [],
   "vp_available": false,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
@@ -77,22 +77,15 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "LONG",
+    "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 73.97,
-    "stop": 72.19,
-    "t1": 77.37,
-    "t2": 83.57,
-    "R": 1.78,
-    "rr": 1.91,
-    "stop_basis": "single-source",
-    "target_basis": "single-source",
-    "levels_source": "confluence engine",
-    "coarse": false,
-    "grade": "A",
-    "stop_trace": "single-source: session-level 72.2 only",
-    "t1_trace": "single-source: vp 77.37 only",
-    "t2_trace": "single-source: vp 83.57 only"
+    "entry": 71.39,
+    "levels_incomplete": true,
+    "note": "nearest structural target 69.73 too close for 1.5 R:R (risk 2.1 pts) \u2014 not actionable",
+    "stop": 73.49,
+    "R": 2.1,
+    "stop_trace": "single-source: fib-cluster 73.2 only",
+    "context_level": "single-source: fib-cluster 69.73 only"
   }
 }
