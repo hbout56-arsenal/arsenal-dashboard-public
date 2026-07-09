@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-09T17:02:26",
+  "timestamp": "2026-07-09T18:23:10",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 176266,
+  "internals_age_s": 181109,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -96,8 +96,8 @@
     }
   ],
   "confluence_zones": [],
-  "vp_available": false,
-  "fib_available": true,
+  "vp_available": true,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
@@ -114,7 +114,7 @@
       "internals_fresh": false,
       "structure_fresh": false,
       "structure_source": "IQFeed @ES# 5m unavailable (VM down/off-hrs)",
-      "state": "closed",
+      "state": "dark",
       "bar_age_min": null,
       "signals": [
         {
@@ -180,7 +180,7 @@
       "internals_fresh": false,
       "structure_fresh": false,
       "structure_source": "IQFeed @ES# 15m unavailable (VM down/off-hrs)",
-      "state": "closed",
+      "state": "dark",
       "bar_age_min": null,
       "signals": [
         {
@@ -246,7 +246,7 @@
       "internals_fresh": false,
       "structure_fresh": false,
       "structure_source": "IQFeed @ES# 60m unavailable (VM down/off-hrs)",
-      "state": "closed",
+      "state": "dark",
       "bar_age_min": null,
       "signals": [
         {
@@ -306,13 +306,13 @@
     "daily": {
       "timeframe": "daily",
       "long_pct": 0.0,
-      "hold_pct": 100.0,
-      "short_pct": 0.0,
-      "price": null,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7650.75,
       "internals_fresh": false,
-      "structure_fresh": false,
+      "structure_fresh": true,
       "structure_source": "polygon ES daily",
-      "state": "dark",
+      "state": "live",
       "bar_age_min": 0.0,
       "signals": [
         {
@@ -320,7 +320,7 @@
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "no price"
+          "reason": "price 7650.75 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -339,9 +339,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "structure unavailable"
+          "verdict": "SHORT",
+          "confidence": 45.0,
+          "reason": "price 7650.75 < prior_close 7655.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -366,7 +366,7 @@
         }
       ],
       "confluence_zones": [],
-      "vp_available": false,
+      "vp_available": true,
       "fib_available": false
     }
   },
