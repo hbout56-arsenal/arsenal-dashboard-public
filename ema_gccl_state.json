@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-07-10T06:54:01 UTC",
+  "generated_at": "2026-07-10T07:39:45 UTC",
   "source": "Polygon futures (DELAYED)",
   "delay_tag": "DELAYED ~10-15min (Polygon futures)",
   "delay_note": "DELAYED ~10-15min (Polygon futures) \u2014 context, NOT a live trigger. Price breaking the stop is the trigger.",
-  "feed_status": "DARK",
+  "feed_status": "DELAYED",
   "metric": "net_points",
   "n_tracks_per_instrument": 16,
   "min_matured_per_track": 30,
   "note": "16 tracks PER INSTRUMENT (2 pairs x 4 TFs x RAW/FILTERED). With 16 comparisons ~1-2 look good by chance; best-of-16 is NOT an edge \u2014 it needs a MUCH higher bar + mechanistic sense, not best-of-16.",
   "instruments": {
     "GC": {
-      "available": false,
+      "available": true,
       "ticker": "GCZ6",
       "product": "GC",
-      "feed_status": "dark",
+      "feed_status": "frozen",
       "market_open": true,
       "delay_tag": "DELAYED ~10-15min (Polygon futures)",
       "metric": "net_points",
@@ -22,10 +22,35 @@
       "context_lean": "NEUTRAL",
       "timeframes": {
         "15m": {
-          "available": false,
-          "state": "dark",
-          "note": "DARK \u2014 Polygon returned no bars (DELAYED ~10-15min (Polygon futures) feed)",
-          "delay_tag": "DELAYED ~10-15min (Polygon futures)"
+          "available": true,
+          "state": "frozen",
+          "note": "STALE \u2014 DELAYED ~10-15min (Polygon futures) feed not advancing (latest bar 508m old > 150m ceiling)",
+          "delay_tag": "DELAYED ~10-15min (Polygon futures)",
+          "bar_ts": "2026-07-09 23:15 UTC",
+          "bar_age_min": 508.0,
+          "close": 4192.2,
+          "atr": 2.09,
+          "ema9": 4192.66,
+          "ema21": 4193.45,
+          "ema20": 4193.48,
+          "ema50": 4187.9,
+          "ema200": null,
+          "9>21": false,
+          "20>50": true,
+          "htf_trend": "60m trend n/a",
+          "raw_dir": "SHORT",
+          "filtered_dir": null,
+          "filtered_pass": false,
+          "guidance": {
+            "track": "9_21_15m_filtered",
+            "direction": "LONG",
+            "tf": "15m",
+            "entry": 4145.5,
+            "stop": 4084.84,
+            "t1": 4206.16,
+            "R": 60.66,
+            "stop_basis": "structure"
+          }
         },
         "30m": {
           "available": false,
@@ -48,15 +73,15 @@
       },
       "tracks_summary": {
         "9_21_15m_raw": {
-          "n_trades": 970,
-          "n_matured": 941,
-          "win_rate": 44.7,
-          "net_points_total": -122.05,
-          "net_points_expectancy": -0.13,
-          "t1_hit_rate": 46.0,
-          "stopout_rate": 54.0,
+          "n_trades": 973,
+          "n_matured": 944,
+          "win_rate": 44.6,
+          "net_points_total": -133.51,
+          "net_points_expectancy": -0.14,
+          "t1_hit_rate": 45.9,
+          "stopout_rate": 54.1,
           "profit_factor": 0.99,
-          "avg_R": 18.49,
+          "avg_R": 18.44,
           "status": "n>=30, edge unconfirmed"
         },
         "9_21_15m_filtered": {
@@ -144,15 +169,15 @@
           "status": "DESCRIPTIVE \u2014 n<30, not validated"
         },
         "20_50_15m_raw": {
-          "n_trades": 762,
-          "n_matured": 745,
-          "win_rate": 47.7,
-          "net_points_total": 327.85,
-          "net_points_expectancy": 0.44,
-          "t1_hit_rate": 48.9,
-          "stopout_rate": 51.1,
-          "profit_factor": 1.05,
-          "avg_R": 18.35,
+          "n_trades": 765,
+          "n_matured": 748,
+          "win_rate": 47.5,
+          "net_points_total": 314.69,
+          "net_points_expectancy": 0.42,
+          "t1_hit_rate": 48.7,
+          "stopout_rate": 51.3,
+          "profit_factor": 1.04,
+          "avg_R": 18.3,
           "status": "n>=30, edge unconfirmed"
         },
         "20_50_15m_filtered": {
@@ -245,7 +270,7 @@
     },
     "CL": {
       "available": false,
-      "ticker": "CLQ6",
+      "ticker": "CLZ6",
       "product": "CL",
       "feed_status": "dark",
       "market_open": true,
