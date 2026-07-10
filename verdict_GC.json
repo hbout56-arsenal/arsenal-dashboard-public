@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-07-09T19:22:09",
+  "timestamp": "2026-07-09T20:21:03",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4132.1,
-  "es_change": null,
-  "price": 4132.1,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 4131.3,
+  "es_change": -1.3,
+  "price": 4131.3,
+  "change": -1.3,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 100.0,
-  "hold_pct": 0.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 70.0,
+  "hold_pct": 30.0,
   "short_pct": 0.0,
   "signals": [
     {
@@ -22,7 +22,7 @@
       "pillar": "Confluence",
       "verdict": "LONG",
       "confidence": 90.0,
-      "reason": "price 4132.10 at 3-method confluence (FIB+TIME+PRICE+VP) near 4130.17 (support)"
+      "reason": "price 4131.30 at 3-method confluence (FIB+TIME+PRICE+VP) near 4130.17 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "SHORT",
+      "confidence": 45.0,
+      "reason": "price 4131.30 < prior_close 4132.60 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -70,30 +70,23 @@
   "confluence_zones": [
     {
       "method": "VP",
-      "label": "POC",
-      "price": 4128.28,
-      "dist": -3.82,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "VP",
-      "label": "HVN",
-      "price": 4128.28,
-      "dist": -3.82,
+      "label": "LVN",
+      "price": 4128.38,
+      "dist": -2.93,
       "vp_timeframe": "daily_swing"
     },
     {
       "method": "FIB",
       "label": "C6",
       "price": 4130.17,
-      "dist": -1.93,
+      "dist": -1.13,
       "vp_timeframe": "daily_swing"
     },
     {
       "method": "TIME+PRICE",
       "label": "coincidence",
       "price": 4130.17,
-      "dist": -1.93,
+      "dist": -1.13,
       "vp_timeframe": "daily_swing"
     }
   ],
@@ -107,21 +100,21 @@
   "guidance": {
     "active": true,
     "direction": "LONG",
-    "threshold": 100,
+    "threshold": 70,
     "engine": "confluence",
-    "entry": 4132.1,
-    "stop": 4025.5,
-    "t1": 4408.29,
-    "t2": 4445.0,
-    "R": 106.6,
-    "rr": 2.59,
+    "entry": 4131.3,
+    "stop": 4041.07,
+    "t1": 4274.08,
+    "t2": 4352.23,
+    "R": 90.23,
+    "rr": 1.58,
     "stop_basis": "confluence",
-    "target_basis": "confluence",
+    "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A+",
-    "stop_trace": "confluence x2: fib-cluster 4035.24, vp 4036.09",
-    "t1_trace": "confluence x2: fib-cluster 4401.47, vp 4415.11",
-    "t2_trace": "single-source: fib-cluster 4445.0 only"
+    "grade": "A",
+    "stop_trace": "confluence x2: fib-cluster 4035.24, vp 4067.32",
+    "t1_trace": "single-source: fib-cluster 4274.08 only",
+    "t2_trace": "single-source: vp 4352.23 only"
   }
 }
