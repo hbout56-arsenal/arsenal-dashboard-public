@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-07-09T23:45:10",
+  "timestamp": "2026-07-10T00:50:46",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4189.6,
-  "es_change": -3.2,
-  "price": 4189.6,
-  "change": -3.2,
+  "es_price": 4129.9,
+  "es_change": -2.7,
+  "price": 4129.9,
+  "change": -2.7,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 4189.60 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 90.0,
+      "reason": "price 4129.90 at 3-method confluence (FIB+TIME+PRICE+VP) near 4130.17 (resistance)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "price 4189.60 < prior_close 4192.80 (daily fallback)"
+      "reason": "price 4129.90 < prior_close 4132.60 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,8 +67,37 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "POC",
+      "price": 4128.38,
+      "dist": -1.52,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 4128.38,
+      "dist": -1.52,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "FIB",
+      "label": "C6",
+      "price": 4130.17,
+      "dist": 0.27,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 4130.17,
+      "dist": 0.27,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
@@ -80,19 +109,19 @@
     "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4189.6,
-    "stop": 4225.8,
-    "t1": 4130.49,
-    "t2": 4067.32,
-    "R": 36.2,
-    "rr": 1.63,
-    "stop_basis": "single-source",
+    "entry": 4129.9,
+    "stop": 4206.24,
+    "t1": 3976.11,
+    "t2": null,
+    "R": 76.34,
+    "rr": 2.01,
+    "stop_basis": "confluence",
     "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A",
-    "stop_trace": "single-source: swing-pivot 4215.5 only",
-    "t1_trace": "confluence x2: vp 4128.38, session-level 4132.6",
-    "t2_trace": "single-source: vp 4067.32 only"
+    "grade": "A+",
+    "stop_trace": "confluence x3: fib-cluster 4182.9, vp 4189.43, swing-pivot 4215.5",
+    "t1_trace": "confluence x3: swing-pivot 3955.4, fib-cluster 3976.84, vp 3996.1",
+    "t2_trace": null
   }
 }
