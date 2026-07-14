@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-13T21:25:01",
+  "timestamp": "2026-07-13T22:19:01",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4007.4,
-  "es_change": -1.3,
-  "price": 4007.4,
-  "change": -1.3,
+  "es_price": 4024.2,
+  "es_change": 15.5,
+  "price": 4024.2,
+  "change": 15.5,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 4007.40 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 4024.20 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
+      "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 4007.40 < prior_close 4008.70 (daily fallback)"
+      "reason": "price 4024.20 > prior_close 4008.70 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -68,7 +68,7 @@
     }
   ],
   "confluence_zones": [],
-  "vp_available": true,
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
@@ -77,15 +77,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4007.4,
-    "levels_incomplete": true,
-    "note": "nearest structural target 3974.1 too close for 1.5 R:R (risk 64.86 pts) \u2014 not actionable",
-    "stop": 4072.26,
-    "R": 64.86,
-    "stop_trace": "confluence x2: vp 4058.26, session-level 4065.8",
-    "context_level": "single-source: vp 3974.1 only"
+    "entry": 4024.2,
+    "stop": 3998.47,
+    "t1": 4095.67,
+    "t2": 4131.09,
+    "R": 25.73,
+    "rr": 2.78,
+    "stop_basis": "single-source",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: session-level 4008.7 only",
+    "t1_trace": "single-source: vp 4095.67 only",
+    "t2_trace": "single-source: fib-cluster 4131.09 only"
   }
 }
