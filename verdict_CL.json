@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-07-14T11:37:02",
+  "timestamp": "2026-07-14T13:04:53",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 79.45,
-  "es_change": null,
-  "price": 79.45,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 79.07,
+  "es_change": 1.07,
+  "price": 79.07,
+  "change": 1.07,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
-  "hold_pct": 100.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
   "short_pct": 0.0,
   "signals": [
     {
@@ -22,7 +22,7 @@
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 79.45 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 79.07 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 79.07 > prior_close 78.00 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -69,13 +69,30 @@
   ],
   "confluence_zones": [],
   "vp_available": false,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 79.07,
+    "stop": 77.72,
+    "t1": 81.62,
+    "t2": 86.89,
+    "R": 1.35,
+    "rr": 1.89,
+    "stop_basis": "single-source",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: session-level 78.0 only",
+    "t1_trace": "confluence x2: swing-pivot 81.27, fib-cluster 81.98",
+    "t2_trace": "single-source: fib-cluster 86.89 only"
   }
 }
