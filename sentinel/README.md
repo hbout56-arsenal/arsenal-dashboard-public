@@ -15,8 +15,26 @@ plus a raw-beats-filtered inversion. This tests whether it survives outside that
 | `mgc_inside_bar_sentinel.py` | Part 2 detection-only detector + guard + debounce + ledger writer | **DISABLED** (`ENABLED=False`) |
 | `com.arsenal.mgc_inside_bar_sentinel.plist` | launchd job | **DISABLED** (`Disabled=true`) template |
 | `mgc_inside_bar_scorer.py` | Part 3 forward scorer (gates + bootstrap CI) | reference, not loaded |
+| `mgc_inside_bar_scorecard_publisher.py` | public summary projector → `../mgc_inside_bar_scorecard.json` | reads PRIVATE ledger; summary-only |
 | `mgc_inside_bar_forward.csv` | Part 3 forward ledger | header only (0 armed) |
 | `fixtures/gc_daily_inside_bar_fixture.json` | real daily GC rows for the selftest | verbatim from `gc_bars_daily.json` |
+
+## Public/private split (operator-confirmed)
+
+- **PRIVATE** (backup repo + `~/arsenal/ledgers/`): detector, frozen §1 prereg, and
+  `mgc_inside_bar_forward.csv` (full per-trade rows: entry/stop/target/regime tag).
+  Lives beside `mes_event_labels.csv` — they share the scorer.
+- **PUBLIC** (this dashboard repo): `mgc_inside_bar_scorecard.json` **only** — n,
+  expectancy, CI, gate, kill-criteria state, `generated_at`. No rule, no per-trade rows.
+  Mirrors `es_swing_scorecard.json`.
+- The publisher **never reads a ledger from the public repo**: ledger path comes from
+  `$MGC_IB_LEDGER` / `--ledger`, defaulting to the private
+  `~/arsenal/ledgers/mgc_inside_bar_forward.csv`. Absent ledger → `n=0 / ACCRUING /
+  not-yet-armed` (never errors).
+- **Sequence (do not reorder):** the Mac creates the private home (code + ledger) and
+  freezes §1 → *then* public PR #18 trims down to the scorecard. **Never delete from
+  public before private exists.** Freeze / arm / plist paths / D110 column reconciliation
+  are the Mac's job; this public session's work ends at the publisher.
 
 ## Why it lives here, and what's deferred
 
