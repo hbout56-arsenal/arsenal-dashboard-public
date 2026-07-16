@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-07-16T03:46:05",
+  "timestamp": "2026-07-16T04:52:50",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 79.51,
-  "es_change": -0.73,
-  "price": 79.51,
-  "change": -0.73,
+  "es_price": 79.22,
+  "es_change": -1.02,
+  "price": 79.22,
+  "change": -1.02,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 79.51 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 79.22 at 1-method confluence (FIB) near 79.26 (resistance)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "price 79.51 < prior_close 80.24 (daily fallback)"
+      "reason": "price 79.22 < prior_close 80.24 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,8 +67,16 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": true,
+  "confluence_zones": [
+    {
+      "method": "FIB",
+      "label": "C3",
+      "price": 79.26,
+      "dist": 0.04,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
@@ -80,18 +88,18 @@
     "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 79.51,
-    "stop": 80.26,
+    "entry": 79.22,
+    "stop": 81.05,
     "t1": 75.7,
     "t2": 74.47,
-    "R": 0.75,
-    "rr": 5.08,
-    "stop_basis": "single-source",
+    "R": 1.83,
+    "rr": 1.92,
+    "stop_basis": "confluence",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A",
-    "stop_trace": "single-source: session-level 80.24 only",
+    "stop_trace": "confluence x4: session-level 80.24, vp 80.51, fib-cluster 80.92, swing-pivot 81.27",
     "t1_trace": "single-source: fib-cluster 75.7 only",
     "t2_trace": "confluence x2: fib-cluster 74.42, vp 74.52"
   }
