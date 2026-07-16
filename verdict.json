@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-16T04:12:02",
+  "timestamp": "2026-07-16T05:25:07",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,19 +10,19 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 43639,
+  "internals_age_s": 48024,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
-  "hold_pct": 100.0,
-  "short_pct": 0.0,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 7611.50 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 7611.50 at 1-method confluence (VP) near 7613.45 (resistance)"
     },
     {
       "name": "Breadth",
@@ -95,9 +95,17 @@
       "reason": "Inside Bar DARK (VM down/off-hrs) \u2014 context only, non-voting"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
-  "fib_available": true,
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "VAH",
+      "price": 7613.45,
+      "dist": 1.95,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
@@ -308,7 +316,7 @@
       "long_pct": 0.0,
       "hold_pct": 0.0,
       "short_pct": 100.0,
-      "price": 7607.5,
+      "price": 7612,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -320,7 +328,7 @@
           "pillar": "Confluence",
           "verdict": "SHORT",
           "confidence": 30.0,
-          "reason": "price 7607.50 at 1-method confluence (VP) near 7613.45 (resistance)"
+          "reason": "price 7612.00 at 1-method confluence (VP) near 7613.45 (resistance)"
         },
         {
           "name": "Breadth",
@@ -341,7 +349,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7607.50 < prior_close 7616.00 (daily fallback)"
+          "reason": "price 7612.00 < prior_close 7616.00 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -370,7 +378,7 @@
           "method": "VP",
           "label": "VAH",
           "price": 7613.45,
-          "dist": 5.95,
+          "dist": 1.45,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -379,6 +387,23 @@
     }
   },
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 7611.5,
+    "stop": 7634.09,
+    "t1": 7574.12,
+    "t2": 7524.08,
+    "R": 22.59,
+    "rr": 1.65,
+    "stop_basis": "confluence",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "confluence x3: vp 7613.45, session-level 7626.25, fib-cluster 7637.33",
+    "t1_trace": "confluence x2: vp 7558.24, session-level 7590.0",
+    "t2_trace": "single-source: fib-cluster 7524.08 only"
   }
 }
