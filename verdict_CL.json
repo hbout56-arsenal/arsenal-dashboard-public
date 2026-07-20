@@ -1,18 +1,18 @@
 {
-  "timestamp": "2026-07-19T23:48:06",
+  "timestamp": "2026-07-20T00:42:42",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 84.12,
-  "es_change": 4.55,
-  "price": 84.12,
-  "change": 4.55,
-  "price_source": "polygon daily fallback (intraday unavailable)",
+  "es_price": 78.46,
+  "es_change": null,
+  "price": 78.46,
+  "change": null,
+  "price_source": "unavailable",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": true,
-  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "structure_fresh": false,
+  "structure_source": "unavailable",
   "long_pct": 100.0,
   "hold_pct": 0.0,
   "short_pct": 0.0,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 84.12 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 65.0,
+      "reason": "price 78.46 at 2-method confluence (FIB+TIME+PRICE) near 78.41 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "LONG",
-      "confidence": 45.0,
-      "reason": "price 84.12 > prior_close 79.57 (daily fallback)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "structure unavailable"
     },
     {
       "name": "SectorDivergence",
@@ -67,7 +67,29 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "FIB",
+      "label": "C3",
+      "price": 78.41,
+      "dist": -0.05,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 78.41,
+      "dist": -0.05,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 78.41,
+      "dist": -0.05,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
@@ -80,12 +102,19 @@
     "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 84.12,
-    "levels_incomplete": true,
-    "note": "nearest structural target 85.39 too close for 1.5 R:R (risk 4.87 pts) \u2014 not actionable",
-    "stop": 79.25,
-    "R": 4.87,
-    "stop_trace": "single-source: session-level 79.57 only",
-    "context_level": "single-source: swing-pivot 85.39 only"
+    "entry": 78.46,
+    "stop": 75.97,
+    "t1": 85.61,
+    "t2": 88.72,
+    "R": 2.49,
+    "rr": 2.87,
+    "stop_basis": "single-source",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "single-source: fib-cluster 76.29 only",
+    "t1_trace": "confluence x3: vp 85.28, swing-pivot 85.39, fib-cluster 86.15",
+    "t2_trace": "confluence x2: fib-cluster 88.12, vp 89.33"
   }
 }
