@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-21T16:09:00",
+  "timestamp": "2026-07-21T18:25:44",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4088.4,
-  "es_change": null,
-  "price": 4088.4,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 4087.3,
+  "es_change": 5.1,
+  "price": 4087.3,
+  "change": 5.1,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "SHORT",
-      "confidence": 65.0,
-      "reason": "price 4088.40 at 2-method confluence (FIB+TIME+PRICE) near 4092.45 (resistance)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 4087.30 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 4087.30 > prior_close 4082.20 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,24 +67,9 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "FIB",
-      "label": "C3",
-      "price": 4092.45,
-      "dist": 4.05,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "TIME+PRICE",
-      "label": "coincidence",
-      "price": 4092.45,
-      "dist": 4.05,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
-  "vp_available": false,
-  "fib_available": true,
+  "confluence_zones": [],
+  "vp_available": true,
+  "fib_available": false,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
@@ -92,15 +77,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4088.4,
-    "levels_incomplete": true,
-    "note": "no structural level ahead \u2014 NOT synthesizing an R-multiple",
-    "stop": 4136.42,
-    "R": 48.02,
-    "stop_trace": "single-source: session-level 4135.6 only",
-    "context_level": null
+    "entry": 4087.3,
+    "stop": 4039.36,
+    "t1": 4198.89,
+    "t2": 4266.06,
+    "R": 47.94,
+    "rr": 2.33,
+    "stop_basis": "single-source",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: vp 4047.76 only",
+    "t1_trace": "single-source: vp 4198.89 only",
+    "t2_trace": "single-source: vp 4266.06 only"
   }
 }
