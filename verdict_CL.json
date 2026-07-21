@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-21T04:22:45",
+  "timestamp": "2026-07-21T05:26:06",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 82.99,
-  "es_change": 0.57,
-  "price": 82.99,
-  "change": 0.57,
+  "es_price": 82.71,
+  "es_change": 0.29,
+  "price": 82.71,
+  "change": 0.29,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
-  "hold_pct": 90.0,
-  "short_pct": 10.0,
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "SHORT",
-      "confidence": 30.0,
-      "reason": "price 82.99 at 1-method confluence (VP) near 83.03 (resistance)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 82.71 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 82.99 > prior_close 82.42 (daily fallback)"
+      "reason": "price 82.71 > prior_close 82.42 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,15 +67,7 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "VP",
-      "label": "HVN",
-      "price": 83.03,
-      "dist": 0.04,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
+  "confluence_zones": [],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
@@ -84,6 +76,23 @@
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 82.71,
+    "stop": 82.46,
+    "t1": 84.6,
+    "t2": 84.76,
+    "R": 0.25,
+    "rr": 7.56,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x2: session-level 82.42, vp 82.54",
+    "t1_trace": "single-source: swing-pivot 84.6 only",
+    "t2_trace": "single-source: fib-cluster 84.76 only"
   }
 }
