@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-21T07:36:37",
+  "timestamp": "2026-07-21T09:46:02",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4063.6,
-  "es_change": 51.8,
-  "price": 4063.6,
-  "change": 51.8,
-  "price_source": "polygon daily fallback (intraday unavailable)",
+  "es_price": 4113.2,
+  "es_change": null,
+  "price": 4113.2,
+  "change": null,
+  "price_source": "unavailable",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": true,
-  "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 100.0,
+  "structure_fresh": false,
+  "structure_source": "unavailable",
+  "long_pct": 0.0,
   "hold_pct": 0.0,
-  "short_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 4063.60 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 4113.20 at 1-method confluence (VP) near 4115.88 (resistance)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "LONG",
-      "confidence": 45.0,
-      "reason": "price 4063.60 > prior_close 4011.80 (daily fallback)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "structure unavailable"
     },
     {
       "name": "SectorDivergence",
@@ -67,7 +67,15 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "LVN",
+      "price": 4115.88,
+      "dist": 2.68,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "c79a7b27ae49",
@@ -77,22 +85,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "LONG",
+    "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4063.6,
-    "stop": 4046.95,
-    "t1": 4148.4,
-    "t2": 4185.39,
-    "R": 16.65,
-    "rr": 5.09,
+    "entry": 4113.2,
+    "stop": 4157.86,
+    "t1": 4020.57,
+    "t2": 3958.01,
+    "R": 44.66,
+    "rr": 2.07,
     "stop_basis": "single-source",
-    "target_basis": "single-source",
+    "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A",
-    "stop_trace": "single-source: vp 4047.76 only",
-    "t1_trace": "single-source: swing-pivot 4148.4 only",
-    "t2_trace": "single-source: fib-cluster 4185.39 only"
+    "grade": "A+",
+    "stop_trace": "single-source: swing-pivot 4148.4 only",
+    "t1_trace": "confluence x2: session-level 4011.8, fib-cluster 4029.33",
+    "t2_trace": "confluence x2: fib-cluster 3953.01, swing-pivot 3963.0"
   }
 }
