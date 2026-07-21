@@ -1,20 +1,14 @@
 {
- "generated_at": "2026-07-21T13:37:52.541646+00:00",
+ "generated_at": "2026-07-21T20:38:01.741767+00:00",
  "symbol": "OKE",
  "timeframe": "daily",
  "status": "ok",
- "verdict": "BULLISH_IMPULSE_CONTINUATION",
- "conviction": "MODERATE",
+ "verdict": "CORRECTIVE_ABC",
+ "conviction": "CONFLICTED",
  "as_of": "2026-07-21",
- "last_price": 93.14,
- "n_pivots": 85,
+ "last_price": 91.83,
+ "n_pivots": 86,
  "pivots": [
-  {
-   "t": 1773115200000,
-   "price": 84.24,
-   "type": "L",
-   "date": "2026-03-10"
-  },
   {
    "t": 1773288000000,
    "price": 87.33,
@@ -188,30 +182,65 @@
    "price": 94.94,
    "type": "H",
    "date": "2026-07-20"
+  },
+  {
+   "t": 1784606400000,
+   "price": 91.61,
+   "type": "L",
+   "date": "2026-07-21"
   }
  ],
  "primary": {
-  "name": "BULLISH_IMPULSE_CONTINUATION",
-  "narrative": "Trend is up (higher highs and higher lows). Treating the advance as impulsive \u2014 continuation higher after shallow pullbacks favored.",
-  "type": null,
-  "direction": "up",
-  "points": [],
+  "name": "CORRECTIVE_ABC",
+  "narrative": "Recent structure fits an expanded_flat ABC correction; the rally from A is a B-wave, with C to follow down.",
+  "type": "correction",
+  "direction": "down",
+  "points": [
+   {
+    "label": "0",
+    "price": 93.13,
+    "t": 1784001600000,
+    "date": "2026-07-14",
+    "type": "H"
+   },
+   {
+    "label": "A",
+    "price": 90.2,
+    "t": 1784088000000,
+    "date": "2026-07-15",
+    "type": "L"
+   },
+   {
+    "label": "B",
+    "price": 94.94,
+    "t": 1784520000000,
+    "date": "2026-07-20",
+    "type": "H"
+   },
+   {
+    "label": "C",
+    "price": 91.61,
+    "t": 1784606400000,
+    "date": "2026-07-21",
+    "type": "L"
+   }
+  ],
   "invalidation": {
-   "level": 90.02,
-   "rule": "Break of last higher-low (90.20) negates continuation"
+   "level": 93.13,
+   "rule": "Break beyond wave 0 (93.13) invalidates ABC correction"
   },
   "targets": {
-   "1.272_ext": 96.23,
-   "1.618_ext": 97.87
+   "c_equals_a": 97.87,
+   "c_1.618_a": 99.68
   },
   "confluence": {
-   "count": 2,
+   "count": 1,
    "trace": [
     {
      "pillar": "invalidation",
      "fired": true,
-     "level": 90.02,
-     "reason": "invalidation 90.02 = prior swing H 89.65 + prior swing L 90.2"
+     "level": 93.13,
+     "reason": "invalidation 93.13 = prior swing H 93.13"
     },
     {
      "pillar": "direction",
@@ -220,8 +249,8 @@
     },
     {
      "pillar": "structure",
-     "fired": true,
-     "reason": "analyzer rates the primary count clean (MODERATE conviction)"
+     "fired": false,
+     "reason": "analyzer conviction CONFLICTED \u2014 count not rated clean"
     }
    ],
    "unavailable": [
@@ -230,89 +259,28 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "unavailable",
-   "scenario_direction": "up",
+   "scenario_direction": "down",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
-   "status": "ok",
-   "zone": [
-    96.23,
-    97.87
-   ],
-   "targets_named": {
-    "1.272_ext": 96.23,
-    "1.618_ext": 97.87
-   },
-   "direction": "up",
-   "origin": null,
-   "from_price": 93.14,
-   "invalidation": {
-    "level": 90.02,
-    "rule": "Break of last higher-low (90.20) negates continuation"
-   },
-   "basis": "fib targets the analyzer already computes (1.272_ext, 1.618_ext)",
-   "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
-   "one_wave_ahead": true,
-   "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
+   "status": "none",
+   "reason": "target is up (97.87\u201399.68) but invalidation 93.13 sits at/above current 91.83 \u2014 count likely complete/transitioning; no clean one-wave projection (not fabricated)"
   },
   "subwaves": []
  },
  "alternative": {
-  "name": "ENDING_DIAGONAL",
-  "narrative": "Contracting ending diagonal into the high (overlapping wedge). A terminal pattern \u2014 sharp reversal toward its origin expected.",
-  "type": "diagonal",
-  "direction": "up",
-  "points": [
-   {
-    "label": "0",
-    "price": 85.45,
-    "t": 1782878400000,
-    "date": "2026-07-01",
-    "type": "L"
-   },
-   {
-    "label": "1",
-    "price": 92.1,
-    "t": 1783483200000,
-    "date": "2026-07-08",
-    "type": "H"
-   },
-   {
-    "label": "2",
-    "price": 88.33,
-    "t": 1783656000000,
-    "date": "2026-07-10",
-    "type": "L"
-   },
-   {
-    "label": "3",
-    "price": 93.13,
-    "t": 1784001600000,
-    "date": "2026-07-14",
-    "type": "H"
-   },
-   {
-    "label": "4",
-    "price": 90.2,
-    "t": 1784088000000,
-    "date": "2026-07-15",
-    "type": "L"
-   },
-   {
-    "label": "5",
-    "price": 94.94,
-    "t": 1784520000000,
-    "date": "2026-07-20",
-    "type": "H"
-   }
-  ],
+  "name": "IRREGULAR_B_C_DOWN",
+  "narrative": "Irregular B-wave (B exceeded A) \u2014 C-wave down in progress.",
+  "type": null,
+  "direction": null,
+  "points": [],
   "invalidation": {
    "level": 95.41,
-   "rule": "A new high above the diagonal invalidates the reversal"
+   "rule": "Break above B-wave high invalidates this count"
   },
   "targets": {
-   "back_to_origin": 85.45,
-   "0.618_of_wedge": 89.08
+   "c_equals_a": 90.14,
+   "c_1.618_a": 87.17
   },
   "confluence": {
    "count": 1,
@@ -335,31 +303,27 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "unavailable",
-   "scenario_direction": "up",
+   "scenario_direction": null,
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
    "status": "ok",
    "zone": [
-    85.45,
-    89.08
+    87.17,
+    90.14
    ],
    "targets_named": {
-    "back_to_origin": 85.45,
-    "0.618_of_wedge": 89.08
+    "c_equals_a": 90.14,
+    "c_1.618_a": 87.17
    },
    "direction": "down",
-   "origin": {
-    "price": 94.94,
-    "t": 1784520000000,
-    "label": "5"
-   },
-   "from_price": 94.94,
+   "origin": null,
+   "from_price": 91.83,
    "invalidation": {
     "level": 95.41,
-    "rule": "A new high above the diagonal invalidates the reversal"
+    "rule": "Break above B-wave high invalidates this count"
    },
-   "basis": "fib targets the analyzer already computes (back_to_origin, 0.618_of_wedge)",
+   "basis": "fib targets the analyzer already computes (c_equals_a, c_1.618_a)",
    "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
    "one_wave_ahead": true,
    "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
@@ -372,22 +336,8 @@
  "privacy": "prices/levels only.",
  "subwave_note": "Subwaves = one finer-degree ZigZag pass (lower-reliability).",
  "recommendation": {
-  "status": "setup",
-  "direction": "up",
-  "entry": 93.14,
-  "stop": 90.02,
-  "target": 96.23,
-  "rr": 0.99,
-  "conviction": "LOW",
-  "confluence": 2,
-  "actionable": false,
-  "poor_rr": true,
-  "far_inval": true,
-  "risk_pts": 3.12,
-  "usd_risk": 100.0,
-  "flag": "POOR R:R 0.99 \u2014 invalidation far from entry (risking 3.1 pts to make 3.1); NOT an actionable setup.",
-  "basis": "primary BULLISH_IMPULSE_CONTINUATION + projection + invalidation + 2 confluence(s)",
-  "note": "SHADOW / informational synthesis of the whole chart \u2014 NOT a validated signal, does not vote. The TRIGGER is price breaking the level, not this card. Stop = the count's invalidation; target = the projected zone edge; conviction factors R:R; R:R<1 is not actionable. Counts re-label (esp. sub-1h)."
+  "status": "stand_aside",
+  "reason": "no clean projected setup on the primary count \u2014 stand aside (the chart isn't offering a trade right now)."
  },
  "trendlines": {
   "status": "ok",
@@ -406,12 +356,12 @@
     },
     "slope": 0.2139,
     "at_last": 91.06,
-    "touches": 7,
+    "touches": 8,
     "validated": true,
-    "angle_atr": 0.098,
+    "angle_atr": 0.095,
     "violations": 2,
     "span": 35,
-    "score": 68.4,
+    "score": 78.4,
     "with_filter": false,
     "channel": {
      "opp_at_last": 93.91,
@@ -419,33 +369,33 @@
      "implied_target": 93.91
     },
     "break": null,
-    "last_touch": false
+    "last_touch": true
    },
    {
     "kind": "support",
     "p1": {
-     "idx": 135,
-     "price": 81.25,
-     "t": 1776398400000
-    },
-    "p2": {
      "idx": 149,
      "price": 83.66,
      "t": 1778126400000
     },
-    "slope": 0.1721,
-    "at_last": 92.27,
+    "p2": {
+     "idx": 199,
+     "price": 91.61,
+     "t": 1784606400000
+    },
+    "slope": 0.159,
+    "at_last": 91.61,
     "touches": 8,
     "validated": true,
-    "angle_atr": 0.079,
-    "violations": 5,
-    "span": 64,
-    "score": 67.56,
+    "angle_atr": 0.071,
+    "violations": 4,
+    "span": 50,
+    "score": 71.0,
     "with_filter": false,
     "channel": {
-     "opp_at_last": 93.65,
+     "opp_at_last": 93.53,
      "opp_touches": 3,
-     "implied_target": 93.65
+     "implied_target": 93.53
     },
     "break": null,
     "last_touch": true
@@ -466,14 +416,14 @@
     "at_last": 94.17,
     "touches": 5,
     "validated": true,
-    "angle_atr": 0.105,
+    "angle_atr": 0.102,
     "violations": 0,
     "span": 16,
     "score": 55.64,
     "with_filter": true,
     "channel": {
      "opp_at_last": 91.62,
-     "opp_touches": 2,
+     "opp_touches": 3,
      "implied_target": 91.62
     },
     "break": null,
@@ -495,7 +445,7 @@
     "at_last": 86.19,
     "touches": 7,
     "validated": true,
-    "angle_atr": 0.053,
+    "angle_atr": 0.051,
     "violations": 6,
     "span": 55,
     "score": 48.2,
@@ -508,7 +458,7 @@
     "break": {
      "direction": "up",
      "bar_t": 1784606400000,
-     "close": 93.14,
+     "close": 91.83,
      "line_at": 86.19,
      "confirmed": "close-confirmed"
     },
@@ -516,17 +466,17 @@
    }
   ],
   "regression": {
-   "slope": 0.06295360788943678,
-   "at_first": 83.65,
-   "at_last": 91.14,
+   "slope": 0.0624122855753872,
+   "at_first": 83.67,
+   "at_last": 91.1,
    "sigma": 2.95,
    "n_first": 80,
    "lookback": 120,
-   "dev_sigma": 0.68,
+   "dev_sigma": 0.25,
    "extended": null
   },
   "filter_trend_up": true,
-  "atr": 2.182,
+  "atr": 2.255,
   "params": {
    "TOUCH_ATR": 0.3,
    "MIN_VALID": 3,
