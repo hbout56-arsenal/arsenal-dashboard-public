@@ -1,20 +1,14 @@
 {
- "generated_at": "2026-07-22T13:01:00.973728+00:00",
+ "generated_at": "2026-07-22T15:48:00.241856+00:00",
  "symbol": "EIX",
  "timeframe": "daily",
  "status": "ok",
- "verdict": "CORRECTIVE_ABC",
- "conviction": "CONFLICTED",
- "as_of": "2026-07-21",
- "last_price": 78.17,
- "n_pivots": 85,
+ "verdict": "BULLISH_W5_COMPLETION",
+ "conviction": "HIGH",
+ "as_of": "2026-07-22",
+ "last_price": 80.08,
+ "n_pivots": 86,
  "pivots": [
-  {
-   "t": 1771304400000,
-   "price": 72.68,
-   "type": "H",
-   "date": "2026-02-17"
-  },
   {
    "t": 1771390800000,
    "price": 69.56,
@@ -188,59 +182,80 @@
    "price": 76.36,
    "type": "L",
    "date": "2026-07-21"
+  },
+  {
+   "t": 1784692800000,
+   "price": 80.13,
+   "type": "H",
+   "date": "2026-07-22"
   }
  ],
  "primary": {
-  "name": "CORRECTIVE_ABC",
-  "narrative": "Recent structure fits an expanded_flat ABC correction; the rally from A is a B-wave, with C to follow down.",
-  "type": "correction",
-  "direction": "down",
+  "name": "BULLISH_W5_COMPLETION",
+  "narrative": "Five-wave impulse up underway, currently in wave 5. Wave 3 is the longest of 1/3/5. ",
+  "type": "impulse",
+  "direction": "up",
   "points": [
    {
     "label": "0",
+    "price": 70.54,
+    "t": 1781668800000,
+    "date": "2026-06-17",
+    "type": "L"
+   },
+   {
+    "label": "1",
     "price": 75.9,
     "t": 1782705600000,
     "date": "2026-06-29",
     "type": "H"
    },
    {
-    "label": "A",
+    "label": "2",
     "price": 73.19,
     "t": 1782878400000,
     "date": "2026-07-01",
     "type": "L"
    },
    {
-    "label": "B",
+    "label": "3",
     "price": 79.88,
     "t": 1784260800000,
     "date": "2026-07-17",
     "type": "H"
    },
    {
-    "label": "C",
+    "label": "4",
     "price": 76.36,
     "t": 1784606400000,
     "date": "2026-07-21",
     "type": "L"
+   },
+   {
+    "label": "5",
+    "price": 80.13,
+    "t": 1784692800000,
+    "date": "2026-07-22",
+    "type": "H"
    }
   ],
   "invalidation": {
-   "level": 75.9,
-   "rule": "Break beyond wave 0 (75.90) invalidates ABC correction"
+   "level": 76.21,
+   "rule": "Break of wave 4 low invalidates wave 5 count"
   },
   "targets": {
-   "c_equals_a": 82.59,
-   "c_1.618_a": 84.26
+   "w5_eq_w1": 81.72,
+   "w5_0.618_w3": 80.49,
+   "161.8_w1_from_w2": 81.86
   },
   "confluence": {
-   "count": 1,
+   "count": 2,
    "trace": [
     {
      "pillar": "invalidation",
      "fired": true,
-     "level": 75.9,
-     "reason": "invalidation 75.9 = prior swing H 76.22 + prior swing H 75.9"
+     "level": 76.21,
+     "reason": "invalidation 76.21 = prior swing H 76.22 + prior swing H 75.9"
     },
     {
      "pillar": "direction",
@@ -249,8 +264,8 @@
     },
     {
      "pillar": "structure",
-     "fired": false,
-     "reason": "analyzer conviction CONFLICTED \u2014 count not rated clean"
+     "fired": true,
+     "reason": "analyzer rates the primary count clean (HIGH conviction)"
     }
    ],
    "unavailable": [
@@ -259,38 +274,39 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "unavailable",
-   "scenario_direction": "down",
+   "scenario_direction": "up",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
    "status": "ok",
    "zone": [
-    82.59,
-    84.26
+    80.49,
+    81.86
    ],
    "targets_named": {
-    "c_equals_a": 82.59,
-    "c_1.618_a": 84.26
+    "w5_eq_w1": 81.72,
+    "w5_0.618_w3": 80.49,
+    "161.8_w1_from_w2": 81.86
    },
    "direction": "up",
    "origin": {
-    "price": 76.36,
-    "t": 1784606400000,
-    "label": "C"
+    "price": 80.13,
+    "t": 1784692800000,
+    "label": "5"
    },
-   "from_price": 76.36,
+   "from_price": 80.13,
    "invalidation": {
-    "level": 75.9,
-    "rule": "Break beyond wave 0 (75.90) invalidates ABC correction"
+    "level": 76.21,
+    "rule": "Break of wave 4 low invalidates wave 5 count"
    },
-   "basis": "fib targets the analyzer already computes (c_equals_a, c_1.618_a)",
+   "basis": "fib targets the analyzer already computes (w5_eq_w1, w5_0.618_w3, 161.8_w1_from_w2)",
    "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
    "one_wave_ahead": true,
    "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
   },
   "subwaves": [
    {
-    "leg": "A-B",
+    "leg": "2-3",
     "points": [
      {
       "label": "(1)",
@@ -317,27 +333,27 @@
   ]
  },
  "alternative": {
-  "name": "IRREGULAR_B_C_DOWN",
-  "narrative": "Irregular B-wave (B exceeded A) \u2014 C-wave down in progress.",
+  "name": "BULLISH_IMPULSE_CONTINUATION",
+  "narrative": "Trend is up (higher highs and higher lows). Treating the advance as impulsive \u2014 continuation higher after shallow pullbacks favored.",
   "type": null,
-  "direction": null,
+  "direction": "up",
   "points": [],
   "invalidation": {
-   "level": 80.28,
-   "rule": "Break above B-wave high invalidates this count"
+   "level": 76.21,
+   "rule": "Break of last higher-low (76.36) negates continuation"
   },
   "targets": {
-   "c_equals_a": 74.52,
-   "c_1.618_a": 71.21
+   "1.272_ext": 81.16,
+   "1.618_ext": 82.46
   },
   "confluence": {
-   "count": 0,
+   "count": 1,
    "trace": [
     {
      "pillar": "invalidation",
-     "fired": false,
-     "level": 80.28,
-     "reason": "invalidation 80.28 not at a published structural level"
+     "fired": true,
+     "level": 76.21,
+     "reason": "invalidation 76.21 = prior swing H 76.22 + prior swing H 75.9"
     },
     {
      "pillar": "direction",
@@ -351,27 +367,27 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "unavailable",
-   "scenario_direction": null,
+   "scenario_direction": "up",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
    "status": "ok",
    "zone": [
-    71.21,
-    74.52
+    81.16,
+    82.46
    ],
    "targets_named": {
-    "c_equals_a": 74.52,
-    "c_1.618_a": 71.21
+    "1.272_ext": 81.16,
+    "1.618_ext": 82.46
    },
-   "direction": "down",
+   "direction": "up",
    "origin": null,
-   "from_price": 78.17,
+   "from_price": 80.08,
    "invalidation": {
-    "level": 80.28,
-    "rule": "Break above B-wave high invalidates this count"
+    "level": 76.21,
+    "rule": "Break of last higher-low (76.36) negates continuation"
    },
-   "basis": "fib targets the analyzer already computes (c_equals_a, c_1.618_a)",
+   "basis": "fib targets the analyzer already computes (1.272_ext, 1.618_ext)",
    "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
    "one_wave_ahead": true,
    "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
@@ -386,19 +402,19 @@
  "recommendation": {
   "status": "setup",
   "direction": "up",
-  "entry": 78.17,
-  "stop": 75.9,
-  "target": 82.59,
-  "rr": 1.95,
+  "entry": 80.08,
+  "stop": 76.21,
+  "target": 80.49,
+  "rr": 0.11,
   "conviction": "LOW",
-  "confluence": 1,
-  "actionable": true,
-  "poor_rr": false,
+  "confluence": 2,
+  "actionable": false,
+  "poor_rr": true,
   "far_inval": true,
-  "risk_pts": 2.27,
+  "risk_pts": 3.87,
   "usd_risk": 100.0,
-  "flag": "Wide stop \u2014 invalidation 2.3 pts ($100.0/trade (stock $100 risk)) from entry; size down.",
-  "basis": "primary CORRECTIVE_ABC + projection + invalidation + 1 confluence(s)",
+  "flag": "POOR R:R 0.11 \u2014 invalidation far from entry (risking 3.9 pts to make 0.4); NOT an actionable setup.",
+  "basis": "primary BULLISH_W5_COMPLETION + projection + invalidation + 2 confluence(s)",
   "note": "SHADOW / informational synthesis of the whole chart \u2014 NOT a validated signal, does not vote. The TRIGGER is price breaking the level, not this card. Stop = the count's invalidation; target = the projected zone edge; conviction factors R:R; R:R<1 is not actionable. Counts re-label (esp. sub-1h)."
  },
  "trendlines": {
@@ -407,57 +423,57 @@
    {
     "kind": "support",
     "p1": {
-     "idx": 143,
+     "idx": 142,
      "price": 66.3,
      "t": 1777435200000
     },
     "p2": {
-     "idx": 199,
+     "idx": 198,
      "price": 76.36,
      "t": 1784606400000
     },
     "slope": 0.1796,
-    "at_last": 76.36,
+    "at_last": 76.54,
     "touches": 15,
     "validated": true,
-    "angle_atr": 0.102,
+    "angle_atr": 0.099,
     "violations": 6,
-    "span": 56,
-    "score": 133.24,
+    "span": 57,
+    "score": 133.28,
     "with_filter": false,
     "channel": {
-     "opp_at_last": 79.86,
-     "opp_touches": 3,
-     "implied_target": 79.86
+     "opp_at_last": 80.04,
+     "opp_touches": 4,
+     "implied_target": 80.04
     },
     "break": null,
-    "last_touch": true
+    "last_touch": false
    },
    {
     "kind": "support",
     "p1": {
-     "idx": 149,
+     "idx": 148,
      "price": 67.59,
      "t": 1778126400000
     },
     "p2": {
-     "idx": 186,
+     "idx": 185,
      "price": 73.19,
      "t": 1782878400000
     },
     "slope": 0.1514,
-    "at_last": 75.16,
+    "at_last": 75.31,
     "touches": 11,
     "validated": true,
-    "angle_atr": 0.086,
+    "angle_atr": 0.084,
     "violations": 3,
-    "span": 50,
-    "score": 105.0,
+    "span": 51,
+    "score": 105.04,
     "with_filter": false,
     "channel": {
-     "opp_at_last": 78.17,
+     "opp_at_last": 78.32,
      "opp_touches": 4,
-     "implied_target": 78.17
+     "implied_target": 78.32
     },
     "break": null,
     "last_touch": false
@@ -465,80 +481,86 @@
    {
     "kind": "resistance",
     "p1": {
-     "idx": 146,
+     "idx": 145,
      "price": 70.34,
      "t": 1777867200000
     },
     "p2": {
-     "idx": 169,
-     "price": 73.83,
-     "t": 1780632000000
-    },
-    "slope": 0.1517,
-    "at_last": 78.38,
-    "touches": 9,
-    "validated": true,
-    "angle_atr": 0.086,
-    "violations": 0,
-    "span": 53,
-    "score": 97.12,
-    "with_filter": true,
-    "channel": {
-     "opp_at_last": 74.8,
-     "opp_touches": 4,
-     "implied_target": 74.8
-    },
-    "break": null,
-    "last_touch": true
-   },
-   {
-    "kind": "resistance",
-    "p1": {
-     "idx": 146,
-     "price": 70.34,
-     "t": 1777867200000
-    },
-    "p2": {
-     "idx": 161,
+     "idx": 160,
      "price": 71.99,
      "t": 1779768000000
     },
     "slope": 0.11,
-    "at_last": 76.17,
+    "at_last": 76.28,
     "touches": 11,
     "validated": true,
-    "angle_atr": 0.063,
+    "angle_atr": 0.061,
     "violations": 6,
-    "span": 53,
-    "score": 93.12,
+    "span": 54,
+    "score": 93.16,
     "with_filter": true,
     "channel": {
-     "opp_at_last": 72.59,
+     "opp_at_last": 72.7,
      "opp_touches": 4,
-     "implied_target": 72.59
+     "implied_target": 72.7
     },
     "break": {
      "direction": "up",
-     "bar_t": 1784606400000,
-     "close": 78.17,
-     "line_at": 76.17,
+     "bar_t": 1784692800000,
+     "close": 80.08,
+     "line_at": 76.28,
+     "confirmed": "close-confirmed"
+    },
+    "last_touch": false
+   },
+   {
+    "kind": "resistance",
+    "p1": {
+     "idx": 145,
+     "price": 70.34,
+     "t": 1777867200000
+    },
+    "p2": {
+     "idx": 168,
+     "price": 73.83,
+     "t": 1780632000000
+    },
+    "slope": 0.1517,
+    "at_last": 78.53,
+    "touches": 9,
+    "validated": true,
+    "angle_atr": 0.084,
+    "violations": 1,
+    "span": 54,
+    "score": 93.16,
+    "with_filter": true,
+    "channel": {
+     "opp_at_last": 74.95,
+     "opp_touches": 4,
+     "implied_target": 74.95
+    },
+    "break": {
+     "direction": "up",
+     "bar_t": 1784692800000,
+     "close": 80.08,
+     "line_at": 78.53,
      "confirmed": "close-confirmed"
     },
     "last_touch": false
    }
   ],
   "regression": {
-   "slope": 0.05376727550524343,
-   "at_first": 68.18,
-   "at_last": 74.58,
-   "sigma": 2.93,
+   "slope": 0.05352423779429126,
+   "at_first": 68.35,
+   "at_last": 74.72,
+   "sigma": 2.92,
    "n_first": 80,
    "lookback": 120,
-   "dev_sigma": 1.22,
+   "dev_sigma": 1.84,
    "extended": "above1\u03c3"
   },
   "filter_trend_up": true,
-  "atr": 1.757,
+  "atr": 1.807,
   "params": {
    "TOUCH_ATR": 0.3,
    "MIN_VALID": 3,
@@ -555,7 +577,7 @@
    "type": "bear_outside",
    "tier": 1,
    "direction": "down",
-   "idx": 146,
+   "idx": 145,
    "t": 1777867200000,
    "at_level": false,
    "location": "",
@@ -569,9 +591,9 @@
    "forming": false,
    "entry": 68.27,
    "stop": 70.34,
-   "target": 60.42,
+   "target": 60.5,
    "risk_pts": 2.07,
-   "rr": 3.79,
+   "rr": 3.75,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend counter-trend",
@@ -585,10 +607,10 @@
    "type": "hammer",
    "tier": 1,
    "direction": "up",
-   "idx": 154,
+   "idx": 153,
    "t": 1778731200000,
    "at_level": true,
-   "location": "HVN 70.3",
+   "location": "HVN 70.46",
    "quality": true,
    "in_trend": true,
    "trend_tag": "with-trend",
@@ -599,11 +621,11 @@
    "forming": false,
    "entry": 70.98,
    "stop": 70.01,
-   "target": 71.46,
+   "target": 71.63,
    "risk_pts": 0.97,
-   "rr": 0.49,
+   "rr": 0.67,
    "trace": [
-    "\u2460 location HVN 70.3",
+    "\u2460 location HVN 70.46",
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -615,7 +637,7 @@
    "type": "hammer",
    "tier": 1,
    "direction": "up",
-   "idx": 156,
+   "idx": 155,
    "t": 1779076800000,
    "at_level": false,
    "location": "",
@@ -629,9 +651,9 @@
    "forming": false,
    "entry": 70.08,
    "stop": 65.02,
-   "target": 70.3,
+   "target": 70.46,
    "risk_pts": 5.06,
-   "rr": 0.04,
+   "rr": 0.08,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend with-trend",
@@ -645,7 +667,7 @@
    "type": "bull_engulfing",
    "tier": 1,
    "direction": "up",
-   "idx": 157,
+   "idx": 156,
    "t": 1779163200000,
    "at_level": false,
    "location": "",
@@ -659,9 +681,9 @@
    "forming": false,
    "entry": 70.73,
    "stop": 67.74,
-   "target": 70.88,
+   "target": 71.63,
    "risk_pts": 2.99,
-   "rr": 0.05,
+   "rr": 0.3,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend with-trend",
@@ -675,10 +697,10 @@
    "type": "bull_engulfing",
    "tier": 1,
    "direction": "up",
-   "idx": 162,
+   "idx": 161,
    "t": 1779854400000,
    "at_level": true,
-   "location": "POC 71.46",
+   "location": "POC 71.63",
    "quality": true,
    "in_trend": true,
    "trend_tag": "with-trend",
@@ -689,11 +711,11 @@
    "forming": false,
    "entry": 71.95,
    "stop": 70.68,
-   "target": 78.72,
+   "target": 78.37,
    "risk_pts": 1.27,
-   "rr": 5.33,
+   "rr": 5.06,
    "trace": [
-    "\u2460 location POC 71.46",
+    "\u2460 location POC 71.63",
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -705,10 +727,10 @@
    "type": "bear_engulfing",
    "tier": 1,
    "direction": "down",
-   "idx": 163,
+   "idx": 162,
    "t": 1779940800000,
    "at_level": true,
-   "location": "POC 71.46",
+   "location": "HVN 70.46",
    "quality": true,
    "in_trend": false,
    "trend_tag": "reversal-at-level",
@@ -719,11 +741,11 @@
    "forming": false,
    "entry": 70.21,
    "stop": 71.74,
-   "target": 60.42,
+   "target": 69.87,
    "risk_pts": 1.53,
-   "rr": 6.4,
+   "rr": 0.22,
    "trace": [
-    "\u2460 location POC 71.46",
+    "\u2460 location HVN 70.46",
     "\u2461 trend reversal-at-level",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -735,10 +757,10 @@
    "type": "doji",
    "tier": 2,
    "direction": "neutral",
-   "idx": 165,
+   "idx": 164,
    "t": 1780286400000,
-   "at_level": false,
-   "location": "",
+   "at_level": true,
+   "location": "HVN 69.87",
    "quality": false,
    "in_trend": false,
    "trend_tag": "counter-trend",
@@ -753,7 +775,7 @@
    "risk_pts": null,
    "rr": null,
    "trace": [
-    "\u2460 location \u2717 mid-range",
+    "\u2460 location HVN 69.87",
     "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -765,10 +787,10 @@
    "type": "shooting_star",
    "tier": 1,
    "direction": "down",
-   "idx": 167,
+   "idx": 166,
    "t": 1780459200000,
    "at_level": true,
-   "location": "POC 71.46",
+   "location": "POC 71.63",
    "quality": true,
    "in_trend": false,
    "trend_tag": "reversal-at-level",
@@ -779,11 +801,11 @@
    "forming": false,
    "entry": 70.75,
    "stop": 72.61,
-   "target": 70.3,
+   "target": 70.46,
    "risk_pts": 1.86,
-   "rr": 0.24,
+   "rr": 0.16,
    "trace": [
-    "\u2460 location POC 71.46",
+    "\u2460 location POC 71.63",
     "\u2461 trend reversal-at-level",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -795,7 +817,7 @@
    "type": "bear_engulfing",
    "tier": 1,
    "direction": "down",
-   "idx": 170,
+   "idx": 169,
    "t": 1780891200000,
    "at_level": false,
    "location": "",
@@ -809,9 +831,9 @@
    "forming": false,
    "entry": 70.81,
    "stop": 73.58,
-   "target": 70.3,
+   "target": 70.46,
    "risk_pts": 2.77,
-   "rr": 0.19,
+   "rr": 0.13,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend counter-trend",
@@ -825,10 +847,10 @@
    "type": "doji",
    "tier": 2,
    "direction": "neutral",
-   "idx": 171,
+   "idx": 170,
    "t": 1780977600000,
    "at_level": true,
-   "location": "POC 71.46",
+   "location": "POC 71.63",
    "quality": false,
    "in_trend": false,
    "trend_tag": "counter-trend",
@@ -843,7 +865,7 @@
    "risk_pts": null,
    "rr": null,
    "trace": [
-    "\u2460 location POC 71.46",
+    "\u2460 location POC 71.63",
     "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -855,7 +877,7 @@
    "type": "doji",
    "tier": 2,
    "direction": "neutral",
-   "idx": 175,
+   "idx": 174,
    "t": 1781496000000,
    "at_level": false,
    "location": "",
@@ -885,7 +907,7 @@
    "type": "shooting_star",
    "tier": 1,
    "direction": "down",
-   "idx": 176,
+   "idx": 175,
    "t": 1781582400000,
    "at_level": false,
    "location": "",
@@ -899,9 +921,9 @@
    "forming": false,
    "entry": 72,
    "stop": 73.27,
-   "target": 71.46,
+   "target": 71.63,
    "risk_pts": 1.27,
-   "rr": 0.43,
+   "rr": 0.29,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend counter-trend",
@@ -915,7 +937,7 @@
    "type": "bull_outside",
    "tier": 1,
    "direction": "up",
-   "idx": 180,
+   "idx": 179,
    "t": 1782187200000,
    "at_level": false,
    "location": "",
@@ -929,9 +951,9 @@
    "forming": false,
    "entry": 73.17,
    "stop": 71.62,
-   "target": 78.72,
+   "target": 78.37,
    "risk_pts": 1.55,
-   "rr": 3.57,
+   "rr": 3.34,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend with-trend",
@@ -945,7 +967,7 @@
    "type": "bull_engulfing",
    "tier": 1,
    "direction": "up",
-   "idx": 189,
+   "idx": 188,
    "t": 1783396800000,
    "at_level": false,
    "location": "",
@@ -959,9 +981,9 @@
    "forming": false,
    "entry": 76.39,
    "stop": 73.96,
-   "target": 78.72,
+   "target": 78.37,
    "risk_pts": 2.43,
-   "rr": 0.96,
+   "rr": 0.81,
    "trace": [
     "\u2460 location \u2717 mid-range",
     "\u2461 trend with-trend",
@@ -975,7 +997,7 @@
    "type": "doji",
    "tier": 2,
    "direction": "neutral",
-   "idx": 192,
+   "idx": 191,
    "t": 1783656000000,
    "at_level": false,
    "location": "",
