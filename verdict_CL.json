@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-07-22T01:07:03",
+  "timestamp": "2026-07-22T02:26:48",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 85.53,
-  "es_change": 0.99,
-  "price": 85.53,
-  "change": 0.99,
+  "es_price": 86,
+  "es_change": 1.46,
+  "price": 86,
+  "change": 1.46,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 85.53 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 65.0,
+      "reason": "price 86.00 at 2-method confluence (FIB+TIME+PRICE) near 85.96 (support)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 85.53 > prior_close 84.54 (daily fallback)"
+      "reason": "price 86.00 > prior_close 84.54 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,9 +67,31 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "FIB",
+      "label": "C3",
+      "price": 85.96,
+      "dist": -0.04,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 85.96,
+      "dist": -0.04,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 85.96,
+      "dist": -0.04,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
-  "fib_available": false,
+  "fib_available": true,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
@@ -80,19 +102,19 @@
     "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 85.53,
-    "stop": 84.2,
-    "t1": 87.62,
-    "t2": null,
-    "R": 1.33,
-    "rr": 1.57,
-    "stop_basis": "confluence",
+    "entry": 86.0,
+    "stop": 85.38,
+    "t1": 87.13,
+    "t2": 87.62,
+    "R": 0.62,
+    "rr": 1.82,
+    "stop_basis": "single-source",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A",
-    "stop_trace": "confluence x2: vp 84.49, session-level 84.54",
-    "t1_trace": "single-source: vp 87.62 only",
-    "t2_trace": null
+    "stop_trace": "single-source: fib-cluster 85.4 only",
+    "t1_trace": "single-source: fib-cluster 87.13 only",
+    "t2_trace": "single-source: vp 87.62 only"
   }
 }
