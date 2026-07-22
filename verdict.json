@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-21T22:32:30",
+  "timestamp": "2026-07-21T23:40:04",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 23270,
+  "internals_age_s": 27323,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 100.0,
@@ -334,8 +334,8 @@
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "SHORT",
-          "confidence": 65.0,
-          "reason": "price 7539.00 at 2-method confluence (FIB+TIME+PRICE) near 7544.26 (resistance)"
+          "confidence": 90.0,
+          "reason": "price 7539.00 at 3-method confluence (FIB+TIME+PRICE+VP) near 7539.10 (resistance)"
         },
         {
           "name": "Breadth",
@@ -382,6 +382,20 @@
       ],
       "confluence_zones": [
         {
+          "method": "VP",
+          "label": "VAL",
+          "price": 7539.1,
+          "dist": 0.1,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7534.12,
+          "dist": -4.88,
+          "vp_timeframe": "daily_swing"
+        },
+        {
           "method": "FIB",
           "label": "C5",
           "price": 7544.26,
@@ -396,7 +410,7 @@
           "vp_timeframe": "daily_swing"
         }
       ],
-      "vp_available": false,
+      "vp_available": true,
       "fib_available": true
     }
   },
@@ -406,18 +420,18 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7546.5,
-    "stop": 7525.65,
-    "t1": 7578.32,
-    "t2": 7598.58,
-    "R": 20.85,
-    "rr": 1.53,
+    "stop": 7506.51,
+    "t1": 7618.25,
+    "t2": 7648.75,
+    "R": 39.99,
+    "rr": 1.79,
     "stop_basis": "confluence",
-    "target_basis": "single-source",
+    "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A",
-    "stop_trace": "confluence x2: fib-cluster 7524.08, session-level 7530.25",
-    "t1_trace": "single-source: vp 7578.32 only",
-    "t2_trace": "confluence x2: swing-pivot 7593.75, vp 7603.41"
+    "stop_trace": "confluence x3: session-level 7504.5, vp 7514.23, fib-cluster 7524.08",
+    "t1_trace": "confluence x3: swing-pivot 7593.75, vp 7623.68, fib-cluster 7637.33",
+    "t2_trace": "single-source: swing-pivot 7648.75 only"
   }
 }
