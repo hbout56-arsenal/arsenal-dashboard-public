@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-07-22T04:55:06",
+  "timestamp": "2026-07-22T05:46:01",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": null,
+  "es_price": 88.31,
   "es_change": null,
-  "price": null,
+  "price": 88.31,
   "change": null,
   "price_source": "unavailable",
   "price_age_s": null,
@@ -14,15 +14,15 @@
   "structure_fresh": false,
   "structure_source": "unavailable",
   "long_pct": 0.0,
-  "hold_pct": 100.0,
-  "short_pct": 0.0,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "no price"
+      "verdict": "SHORT",
+      "confidence": 65.0,
+      "reason": "price 88.31 at 2-method confluence (FIB+TIME+PRICE) near 88.34 (resistance)"
     },
     {
       "name": "Breadth",
@@ -67,15 +67,54 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
-  "fib_available": false,
+  "confluence_zones": [
+    {
+      "method": "FIB",
+      "label": "C3",
+      "price": 88.34,
+      "dist": 0.03,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 88.34,
+      "dist": 0.03,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 88.34,
+      "dist": 0.03,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
+  "fib_available": true,
   "config_hash": "c79a7b27ae49",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 88.31,
+    "stop": 89.47,
+    "t1": 86.22,
+    "t2": 85.4,
+    "R": 1.16,
+    "rr": 1.8,
+    "stop_basis": "single-source",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: fib-cluster 89.45 only",
+    "t1_trace": "confluence x2: vp 86.2, fib-cluster 86.23",
+    "t2_trace": "single-source: fib-cluster 85.4 only"
   }
 }
