@@ -1,20 +1,141 @@
 {
-  "generated_at": "2026-07-23T14:25:43.744167Z",
+  "generated_at": "2026-07-23T15:21:27.693603Z",
   "status": "SHADOW / INFORMATIONAL / DELAYED \u2014 NOT loaded, A+ not validated",
-  "sessions": {},
+  "sessions": {
+    "MES": "2026-07-22",
+    "MNQ": "2026-07-22"
+  },
   "instruments": [
     "MES",
     "MNQ",
     "MGC",
     "MCL"
   ],
-  "raw_triggers": 0,
+  "raw_triggers": 2,
   "aplus_triggers": 0,
-  "correlation_flag": null,
+  "correlation_flag": "MES & MNQ both LONG \u2014 ~85-90% correlated, count as ONE risk.",
   "half_day_flag": false,
   "delayed_note": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
   "preregistration": "ORB_FUTURES_PREREGISTRATION.md (FROZEN)",
-  "triggers": [],
+  "triggers": [
+    {
+      "micro": "MES",
+      "data": "ES",
+      "side": "LONG",
+      "trigger_time": "10:00",
+      "trigger_price": 7552,
+      "vol_mult": 7.98,
+      "or_high": 7550,
+      "or_low": 7525.25,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": true,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "BULLISH_IMPULSE_CONTINUATION"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime CHOP (trendiness 32)",
+          "tag": "CHOP"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.31 (band 0.2-0.8)",
+          "value": 0.31
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.30xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "CHOP",
+      "daily_bias": "LONG",
+      "entry": 7550,
+      "stop": 7525.25,
+      "t1": 7574.75,
+      "t2": 7599.5,
+      "R_pts": 24.75,
+      "rr_t2": 2.0,
+      "stop_basis": "or_edge",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 24.75,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-07-22"
+    },
+    {
+      "micro": "MNQ",
+      "data": "NQ",
+      "side": "LONG",
+      "trigger_time": "11:05",
+      "trigger_price": 29293,
+      "vol_mult": 2.92,
+      "or_high": 29277.25,
+      "or_low": 29090,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "trend",
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": false,
+          "detail": {
+            "bias": "SHORT",
+            "verdict": "CORRECTIVE_ABC"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime CHOP (trendiness 21)",
+          "tag": "CHOP"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.30 (band 0.2-0.8)",
+          "value": 0.3
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.33xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "CHOP",
+      "daily_bias": "SHORT",
+      "entry": 29277.25,
+      "stop": 29090.0,
+      "t1": 29464.5,
+      "t2": 29651.75,
+      "R_pts": 187.25,
+      "rr_t2": 2.0,
+      "stop_basis": "or_edge",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 187.25,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-07-22"
+    }
+  ],
   "gauntlet": {
     "per_instrument": {
       "MES": {
