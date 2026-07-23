@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-22T21:21:10",
+  "timestamp": "2026-07-22T22:24:49",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 18971,
+  "internals_age_s": 22790,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -21,8 +21,8 @@
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "SHORT",
-      "confidence": 65.0,
-      "reason": "price 7541.25 at 2-method confluence (FIB+TIME+PRICE) near 7544.26 (resistance)"
+      "confidence": 30.0,
+      "reason": "price 7541.25 at 1-method confluence (VP) near 7548.21 (resistance)"
     },
     {
       "name": "Breadth",
@@ -97,21 +97,21 @@
   ],
   "confluence_zones": [
     {
-      "method": "FIB",
-      "label": "C5",
-      "price": 7544.26,
-      "dist": 3.01,
+      "method": "VP",
+      "label": "POC",
+      "price": 7548.21,
+      "dist": 6.96,
       "vp_timeframe": "daily_swing"
     },
     {
-      "method": "TIME+PRICE",
-      "label": "coincidence",
-      "price": 7544.26,
-      "dist": 3.01,
+      "method": "VP",
+      "label": "HVN",
+      "price": 7548.21,
+      "dist": 6.96,
       "vp_timeframe": "daily_swing"
     }
   ],
-  "vp_available": false,
+  "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -333,9 +333,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "price 7541.50 not at any VP/fib level (\u00b10.1%)"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7541.50 at 1-method confluence (VP) near 7534.12 (support)"
         },
         {
           "name": "Breadth",
@@ -380,8 +380,16 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [],
-      "vp_available": false,
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7534.12,
+          "dist": -7.38,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
+      "vp_available": true,
       "fib_available": true
     }
   },
@@ -391,11 +399,11 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7541.25,
-    "stop": 7593.54,
+    "stop": 7593.35,
     "t1": 7433.09,
     "t2": 7364.62,
-    "R": 52.29,
-    "rr": 2.07,
+    "R": 52.1,
+    "rr": 2.08,
     "stop_basis": "confluence",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
