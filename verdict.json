@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-22T22:24:49",
+  "timestamp": "2026-07-22T23:40:42",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 22790,
+  "internals_age_s": 27343,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -320,10 +320,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 100.0,
-      "hold_pct": 0.0,
+      "long_pct": 58.5,
+      "hold_pct": 41.5,
       "short_pct": 0.0,
-      "price": 7541.5,
+      "price": 7525.75,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -334,8 +334,8 @@
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7541.50 at 1-method confluence (VP) near 7534.12 (support)"
+          "confidence": 65.0,
+          "reason": "price 7525.75 at 2-method confluence (FIB+TIME+PRICE) near 7524.08 (support)"
         },
         {
           "name": "Breadth",
@@ -354,9 +354,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
+          "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7541.50 > prior_close 7541.00 (daily fallback)"
+          "reason": "price 7525.75 < prior_close 7541.00 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -382,10 +382,17 @@
       ],
       "confluence_zones": [
         {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7534.12,
-          "dist": -7.38,
+          "method": "FIB",
+          "label": "C5",
+          "price": 7524.08,
+          "dist": -1.67,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "TIME+PRICE",
+          "label": "coincidence",
+          "price": 7524.08,
+          "dist": -1.67,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -399,11 +406,11 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7541.25,
-    "stop": 7593.35,
+    "stop": 7593.54,
     "t1": 7433.09,
     "t2": 7364.62,
-    "R": 52.1,
-    "rr": 2.08,
+    "R": 52.29,
+    "rr": 2.07,
     "stop_basis": "confluence",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
