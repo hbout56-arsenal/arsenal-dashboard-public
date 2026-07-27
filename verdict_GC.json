@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-27T18:24:39",
+  "timestamp": "2026-07-27T19:12:09",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
@@ -13,16 +13,16 @@
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
-  "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "long_pct": 58.5,
+  "hold_pct": 41.5,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 4133.00 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 65.0,
+      "reason": "price 4133.00 at 2-method confluence (FIB+VP) near 4132.99 (support)"
     },
     {
       "name": "Breadth",
@@ -67,32 +67,37 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "POC",
+      "price": 4132.99,
+      "dist": -0.01,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 4132.99,
+      "dist": -0.01,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "FIB",
+      "label": "C6",
+      "price": 4129.34,
+      "dist": -3.66,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
-  "fib_available": false,
+  "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure GOLD NEUTRAL (6/25 flip from short-term BEARISH): low may be in at 3959 with positive divergence; prior W-v final-flush target (~4000\u00b1100) reached. Break >4453/4595 without a new low confirms the low is in. GDX W-ii 78-80, then W-iii 110-115.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": true,
-    "direction": "SHORT",
-    "threshold": 100,
-    "engine": "confluence",
-    "entry": 4133.0,
-    "stop": 4204.36,
-    "t1": 4019.0,
-    "t2": 3970.61,
-    "R": 71.36,
-    "rr": 1.6,
-    "stop_basis": "single-source",
-    "target_basis": "single-source",
-    "levels_source": "confluence engine",
-    "coarse": false,
-    "grade": "A",
-    "stop_trace": "single-source: vp 4196.39 only",
-    "t1_trace": "single-source: swing-pivot 4019.0 only",
-    "t2_trace": "confluence x2: fib-cluster 3970.27, vp 3970.95"
+    "active": false
   }
 }
