@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-07-27T05:07:00",
+  "timestamp": "2026-07-27T06:15:45",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 83.03,
-  "es_change": -7.44,
-  "price": 83.03,
-  "change": -7.44,
+  "es_price": 83.02,
+  "es_change": -7.45,
+  "price": 83.02,
+  "change": -7.45,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 83.03 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 83.02 at 1-method confluence (VP) near 83.10 (resistance)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "price 83.03 < prior_close 90.47 (daily fallback)"
+      "reason": "price 83.02 < prior_close 90.47 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,8 +67,16 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "LVN",
+      "price": 83.1,
+      "dist": 0.08,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -80,19 +88,19 @@
     "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 83.03,
-    "stop": 85.39,
-    "t1": 78.39,
-    "t2": 76.42,
-    "R": 2.36,
-    "rr": 1.97,
-    "stop_basis": "confluence",
+    "entry": 83.02,
+    "stop": 83.3,
+    "t1": 79.98,
+    "t2": 79.12,
+    "R": 0.28,
+    "rr": 10.86,
+    "stop_basis": "single-source",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A",
-    "stop_trace": "confluence x3: vp 84.14, fib-cluster 84.82, session-level 85.88",
-    "t1_trace": "single-source: vp 78.39 only",
-    "t2_trace": "confluence x3: fib-cluster 75.68, swing-pivot 76.24, vp 77.34"
+    "stop_trace": "single-source: vp 83.28 only",
+    "t1_trace": "single-source: vp 79.98 only",
+    "t2_trace": "single-source: fib-cluster 79.12 only"
   }
 }
