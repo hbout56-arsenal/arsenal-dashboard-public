@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-28T03:05:03",
+  "timestamp": "2026-07-28T04:17:03",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 75.54,
-  "es_change": -0.38,
-  "price": 75.54,
-  "change": -0.38,
-  "price_source": "polygon daily fallback (intraday unavailable)",
+  "es_price": 80.69,
+  "es_change": null,
+  "price": 80.69,
+  "change": null,
+  "price_source": "unavailable",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": true,
-  "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
+  "structure_fresh": false,
+  "structure_source": "unavailable",
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 75.54 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 30.0,
+      "reason": "price 80.69 at 1-method confluence (VP) near 80.64 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
-      "confidence": 45.0,
-      "reason": "price 75.54 < prior_close 75.92 (daily fallback)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "structure unavailable"
     },
     {
       "name": "SectorDivergence",
@@ -67,8 +67,16 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "LVN",
+      "price": 80.64,
+      "dist": -0.05,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -77,22 +85,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 75.54,
-    "stop": 77.95,
-    "t1": 71.47,
-    "t2": null,
-    "R": 2.41,
-    "rr": 1.69,
-    "stop_basis": "confluence",
-    "target_basis": "single-source",
+    "entry": 80.69,
+    "stop": 79.55,
+    "t1": 84.05,
+    "t2": 87.06,
+    "R": 1.14,
+    "rr": 2.95,
+    "stop_basis": "single-source",
+    "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A",
-    "stop_trace": "confluence x2: fib-cluster 77.27, swing-pivot 77.77",
-    "t1_trace": "single-source: fib-cluster 71.47 only",
-    "t2_trace": null
+    "grade": "A+",
+    "stop_trace": "single-source: vp 79.98 only",
+    "t1_trace": "confluence x2: vp 83.28, fib-cluster 84.82",
+    "t2_trace": "confluence x2: fib-cluster 86.23, vp 87.89"
   }
 }
