@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-28T18:04:06",
+  "timestamp": "2026-07-28T19:11:04",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 7158,
+  "internals_age_s": 11176,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 100.0,
@@ -105,7 +105,7 @@
     }
   ],
   "vp_available": true,
-  "fib_available": false,
+  "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
@@ -313,10 +313,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 100.0,
-      "hold_pct": 0.0,
+      "long_pct": 58.5,
+      "hold_pct": 41.5,
       "short_pct": 0.0,
-      "price": 7470.75,
+      "price": 7529,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -327,8 +327,8 @@
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 90.0,
-          "reason": "price 7470.75 at 3-method confluence (FIB+TIME+PRICE+VP) near 7467.91 (support)"
+          "confidence": 65.0,
+          "reason": "price 7529.00 at 2-method confluence (FIB+TIME+PRICE) near 7524.08 (support)"
         },
         {
           "name": "Breadth",
@@ -347,9 +347,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
+          "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7470.75 > prior_close 7467.50 (daily fallback)"
+          "reason": "price 7529.00 < prior_close 7533.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -375,24 +375,17 @@
       ],
       "confluence_zones": [
         {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7467.91,
-          "dist": -2.84,
-          "vp_timeframe": "daily_swing"
-        },
-        {
           "method": "FIB",
           "label": "C5",
-          "price": 7477.79,
-          "dist": 7.04,
+          "price": 7524.08,
+          "dist": -4.92,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "TIME+PRICE",
           "label": "coincidence",
-          "price": 7477.79,
-          "dist": 7.04,
+          "price": 7524.08,
+          "dist": -4.92,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -406,18 +399,18 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7474.25,
-    "stop": 7454.58,
-    "t1": 7524.41,
-    "t2": 7548.21,
-    "R": 19.67,
-    "rr": 2.55,
+    "stop": 7447.56,
+    "t1": 7532.35,
+    "t2": 7586.03,
+    "R": 26.69,
+    "rr": 2.18,
     "stop_basis": "confluence",
     "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A+",
-    "stop_trace": "confluence x2: session-level 7449.25, vp 7462.89",
-    "t1_trace": "confluence x2: fib-cluster 7524.08, swing-pivot 7524.75",
-    "t2_trace": "single-source: vp 7548.21 only"
+    "stop_trace": "confluence x3: vp 7447.83, session-level 7449.25, swing-pivot 7468.5",
+    "t1_trace": "confluence x3: fib-cluster 7524.08, swing-pivot 7524.75, vp 7548.21",
+    "t2_trace": "confluence x2: vp 7578.32, swing-pivot 7593.75"
   }
 }
