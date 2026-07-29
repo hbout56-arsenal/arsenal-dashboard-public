@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-28T20:41:07",
+  "timestamp": "2026-07-28T21:53:01",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,19 +10,19 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 16579,
+  "internals_age_s": 20893,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
-  "long_pct": 0.0,
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "SHORT",
-      "confidence": 65.0,
-      "reason": "price 7474.25 at 2-method confluence (FIB+TIME+PRICE) near 7477.79 (resistance)"
+      "verdict": "LONG",
+      "confidence": 30.0,
+      "reason": "price 7474.25 at 1-method confluence (VP) near 7467.91 (support)"
     },
     {
       "name": "Breadth",
@@ -97,17 +97,10 @@
   ],
   "confluence_zones": [
     {
-      "method": "FIB",
-      "label": "C5",
-      "price": 7477.79,
-      "dist": 3.54,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "TIME+PRICE",
-      "label": "coincidence",
-      "price": 7477.79,
-      "dist": 3.54,
+      "method": "VP",
+      "label": "LVN",
+      "price": 7467.91,
+      "dist": -6.34,
       "vp_timeframe": "daily_swing"
     }
   ],
@@ -320,10 +313,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 0.0,
+      "long_pct": 10.0,
       "hold_pct": 90.0,
-      "short_pct": 10.0,
-      "price": 7493.25,
+      "short_pct": 0.0,
+      "price": 7453.75,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -333,9 +326,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "SHORT",
+          "verdict": "LONG",
           "confidence": 30.0,
-          "reason": "price 7493.25 at 1-method confluence (VP) near 7498.02 (resistance)"
+          "reason": "price 7453.75 at 1-method confluence (VP) near 7447.83 (support)"
         },
         {
           "name": "Breadth",
@@ -354,9 +347,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
+          "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7493.25 > prior_close 7467.50 (daily fallback)"
+          "reason": "price 7453.75 < prior_close 7467.50 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -384,15 +377,8 @@
         {
           "method": "VP",
           "label": "HVN",
-          "price": 7487.98,
-          "dist": -5.27,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7498.02,
-          "dist": 4.77,
+          "price": 7447.83,
+          "dist": -5.92,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -402,22 +388,22 @@
   },
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
     "entry": 7474.25,
-    "stop": 7529.05,
-    "t1": 7363.16,
-    "t2": 7286.34,
-    "R": 54.8,
-    "rr": 2.03,
+    "stop": 7447.34,
+    "t1": 7539.07,
+    "t2": 7587.25,
+    "R": 26.91,
+    "rr": 2.41,
     "stop_basis": "confluence",
     "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A+",
-    "stop_trace": "confluence x3: vp 7514.23, fib-cluster 7524.08, swing-pivot 7524.75",
-    "t1_trace": "confluence x2: swing-pivot 7357.25, fib-cluster 7369.07",
-    "t2_trace": "confluence x2: fib-cluster 7280.43, swing-pivot 7292.25"
+    "stop_trace": "confluence x3: vp 7447.83, session-level 7449.25, swing-pivot 7468.5",
+    "t1_trace": "confluence x3: swing-pivot 7524.75, fib-cluster 7544.26, vp 7548.21",
+    "t2_trace": "confluence x3: vp 7578.32, fib-cluster 7589.67, swing-pivot 7593.75"
   }
 }
