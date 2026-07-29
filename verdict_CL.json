@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-29T05:35:01",
+  "timestamp": "2026-07-29T06:18:28",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 81.95,
-  "es_change": 2.82,
-  "price": 81.95,
-  "change": 2.82,
+  "es_price": 82.71,
+  "es_change": 3.58,
+  "price": 82.71,
+  "change": 3.58,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
-  "hold_pct": 90.0,
-  "short_pct": 10.0,
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "SHORT",
-      "confidence": 30.0,
-      "reason": "price 81.95 at 1-method confluence (VP) near 81.96 (resistance)"
+      "verdict": "LONG",
+      "confidence": 65.0,
+      "reason": "price 82.71 at 2-method confluence (FIB+TIME+PRICE) near 82.66 (support)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 81.95 > prior_close 79.13 (daily fallback)"
+      "reason": "price 82.71 > prior_close 79.13 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -69,14 +69,21 @@
   ],
   "confluence_zones": [
     {
-      "method": "VP",
-      "label": "HVN",
-      "price": 81.96,
-      "dist": 0.01,
+      "method": "FIB",
+      "label": "C4",
+      "price": 82.66,
+      "dist": -0.05,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 82.66,
+      "dist": -0.05,
       "vp_timeframe": "daily_swing"
     }
   ],
-  "vp_available": true,
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -84,6 +91,23 @@
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 82.71,
+    "stop": 81.5,
+    "t1": 87.06,
+    "t2": 88.68,
+    "R": 1.21,
+    "rr": 3.6,
+    "stop_basis": "single-source",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "single-source: vp 81.96 only",
+    "t1_trace": "confluence x2: fib-cluster 86.24, vp 87.89",
+    "t2_trace": "single-source: fib-cluster 88.68 only"
   }
 }
