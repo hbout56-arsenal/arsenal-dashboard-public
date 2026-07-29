@@ -1,24 +1,24 @@
 {
-  "generated_at": "2026-07-28T21:50:28.171787+00:00",
+  "generated_at": "2026-07-29T21:50:17.118481+00:00",
   "source": "REAL",
-  "date": "2026-07-28",
+  "date": "2026-07-29",
   "snapshot_disclaimer": "Current-universe SNAPSHOT for education + forward logging, NOT a historical backtest. Each name judged once at the last completed session bar.",
-  "universe_note": "12315 alpha-ticker names from the grouped-daily snapshot (ETFs included and FLAGGED; universe_scan's stock set excludes ETFs).",
+  "universe_note": "12317 alpha-ticker names from the grouped-daily snapshot (ETFs included and FLAGGED; universe_scan's stock set excludes ETFs).",
   "funnel": {
-    "universe": 12315,
-    "stage1_trend_template": 2346,
-    "stage1": 2346,
-    "stage2_liquidity": 748,
-    "stage2": 748,
-    "stage2_liquidity_passed": 748,
-    "stage2_liquidity_failed": 1598,
+    "universe": 12317,
+    "stage1_trend_template": 1901,
+    "stage1": 1901,
+    "stage2_liquidity": 661,
+    "stage2": 661,
+    "stage2_liquidity_passed": 661,
+    "stage2_liquidity_failed": 1240,
     "stage2_liquidity_threshold_usd": 20000000,
-    "stage3_vcp": 59,
-    "stage3_vcp_strict_control": 7,
-    "stage4_rs_top_decile": 51,
-    "stage4_top": 51,
-    "insufficient_history": 2111,
-    "rs_ranked_pool": 59
+    "stage3_vcp": 38,
+    "stage3_vcp_strict_control": 6,
+    "stage4_rs_top_decile": 33,
+    "stage4_top": 33,
+    "insufficient_history": 2105,
+    "rs_ranked_pool": 38
   },
   "vcp_method": {
     "detector": "zigzag_vcp_prereg_d102_2026-07-02",
@@ -40,23 +40,82 @@
   },
   "liquidity_gate": {
     "threshold_usd": 20000000,
-    "passed": 748,
-    "failed": 1598,
-    "of_trend_survivors": 2346,
+    "passed": 661,
+    "failed": 1240,
+    "of_trend_survivors": 1901,
     "note": "avg daily dollar volume must clear $20M so slippage doesn't eat the edge; thin names rejected here."
   },
-  "regime_at_signal": "CHOP",
+  "regime_at_signal": "TRANSITIONAL",
   "regime_detail": {
-    "trendiness": 31,
+    "trendiness": 47,
     "spy_vs_sma50": "DOWN",
-    "spy_close": 740.86,
-    "spy_sma50": 744.78
+    "spy_close": 729.46,
+    "spy_sma50": 744.4
   },
   "qualified": [
     {
+      "ticker": "MPC",
+      "signal_date": "2026-07-29",
+      "close": 308.72,
+      "pivot": 326.92,
+      "entry": 326.92,
+      "stop": 305.39,
+      "target": 483.76,
+      "rr": 7.3,
+      "base_depth_pct": 6.6,
+      "vcp_depths_pct": [
+        10.5,
+        8.6,
+        5.8,
+        11.7
+      ],
+      "vcp_detail": "depths=[10.5, 8.6, 5.8, 11.7] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.7362,
+      "rs_rank": 0.979,
+      "rs_decile": "top",
+      "rs_top_decile_bonus": true,
+      "not_extended": false,
+      "not_extended_status": "EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -1.98,
+        "pct_above_ma50": 13.78,
+        "rsi": 70.0
+      },
+      "volume_breakout_x": 0.7,
+      "adv": 614856348,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 30.7,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "MARATHON PETROLEUM CORPORATION",
+      "setup": "VCP base (4 contractions 10.5->8.6->5.8->11.7%, depth 6.6%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 21.53,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 4 successive, TIGHTENING pullbacks (10.5% \u2192 8.6% \u2192 5.8% \u2192 11.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.6%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +73.6%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (extended, RSI 70): you'd buy the breakout ABOVE the 326.92 pivot, stop 305.39 (below base), measured-move target 483.76 (R:R 7.3).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
       "ticker": "RLJ",
-      "signal_date": "2026-07-28",
-      "close": 12.43,
+      "signal_date": "2026-07-29",
+      "close": 12.39,
       "pivot": 12.56,
       "entry": 12.56,
       "stop": 11.55,
@@ -68,31 +127,31 @@
         8.2
       ],
       "vcp_detail": "depths=[5.8, 8.2] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.5606,
+      "rs_vs_spy": 0.5794,
       "rs_rank": 0.97,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": false,
       "not_extended_status": "EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.37,
-        "pct_above_ma50": 13.21,
-        "rsi": 71.3
+        "atr_above_pivot": -0.49,
+        "pct_above_ma50": 12.18,
+        "rsi": 80.6
       },
-      "volume_breakout_x": 0.71,
-      "adv": 21143976,
+      "volume_breakout_x": 0.91,
+      "adv": 21014421,
       "adv_floor": 20000000,
       "adv_headroom_x": 1.1,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "RLJ Lodging Trust",
       "setup": "VCP base (2 contractions 5.8->8.2%, depth 8.1%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -105,21 +164,21 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (5.8% \u2192 8.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +56.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (extended, RSI 71): you'd buy the breakout ABOVE the 12.56 pivot, stop 11.55 (below base), measured-move target 17.98 (R:R 5.4).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +57.9%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (extended, RSI 81): you'd buy the breakout ABOVE the 12.56 pivot, stop 11.55 (below base), measured-move target 17.98 (R:R 5.4).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "JAZZ",
-      "signal_date": "2026-07-28",
-      "close": 256.92,
+      "signal_date": "2026-07-29",
+      "close": 255.97,
       "pivot": 261.3,
       "entry": 261.3,
-      "stop": 233.46,
+      "stop": 238,
       "target": 361.21,
-      "rr": 3.6,
-      "base_depth_pct": 10.7,
+      "rr": 4.3,
+      "base_depth_pct": 8.9,
       "vcp_depths_pct": [
         7.8,
         8.8,
@@ -127,109 +186,109 @@
         5.1
       ],
       "vcp_detail": "depths=[7.8, 8.8, 6.5, 5.1] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.4479,
-      "rs_rank": 0.959,
+      "rs_vs_spy": 0.4857,
+      "rs_rank": 0.962,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.6,
-        "pct_above_ma50": 8.1,
-        "rsi": 59.3
+        "atr_above_pivot": -0.74,
+        "pct_above_ma50": 7.48,
+        "rsi": 57.7
       },
-      "volume_breakout_x": 1.13,
-      "adv": 198162389,
+      "volume_breakout_x": 0.74,
+      "adv": 198134695,
       "adv_floor": 20000000,
       "adv_headroom_x": 9.9,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Jazz Pharmaceuticals, Inc.",
-      "setup": "VCP base (4 contractions 7.8->8.8->6.5->5.1%, depth 10.7%)",
-      "regime_at_signal": "CHOP",
+      "setup": "VCP base (4 contractions 7.8->8.8->6.5->5.1%, depth 8.9%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 27.84,
+        "R_per_share": 23.3,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 4 successive, TIGHTENING pullbacks (7.8% \u2192 8.8% \u2192 6.5% \u2192 5.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 10.7%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +44.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 59): you'd buy the breakout ABOVE the 261.3 pivot, stop 233.46 (below base), measured-move target 361.21 (R:R 3.6).",
+        "Its base shows 4 successive, TIGHTENING pullbacks (7.8% \u2192 8.8% \u2192 6.5% \u2192 5.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.9%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +48.6%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 261.3 pivot, stop 238 (below base), measured-move target 361.21 (R:R 4.3).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "RPRX",
-      "signal_date": "2026-07-28",
-      "close": 59.97,
-      "pivot": 60.08,
-      "entry": 60.08,
-      "stop": 54.95,
-      "target": 78.7,
-      "rr": 3.6,
-      "base_depth_pct": 8.5,
+      "signal_date": "2026-07-29",
+      "close": 59.18,
+      "pivot": 60.44,
+      "entry": 60.44,
+      "stop": 56.45,
+      "target": 78.6,
+      "rr": 4.6,
+      "base_depth_pct": 6.6,
       "vcp_depths_pct": [
         9.5,
         6.1
       ],
       "vcp_detail": "depths=[9.5, 6.1] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.4095,
-      "rs_rank": 0.954,
+      "rs_vs_spy": 0.4093,
+      "rs_rank": 0.953,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.08,
-        "pct_above_ma50": 7.82,
-        "rsi": 60.2
+        "atr_above_pivot": -0.91,
+        "pct_above_ma50": 6.18,
+        "rsi": 53.7
       },
-      "volume_breakout_x": 0.86,
-      "adv": 200424337,
+      "volume_breakout_x": 0.72,
+      "adv": 199748509,
       "adv_floor": 20000000,
       "adv_headroom_x": 10.0,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Royalty Pharma plc Class A Ordinary Shares",
-      "setup": "VCP base (2 contractions 9.5->6.1%, depth 8.5%)",
-      "regime_at_signal": "CHOP",
+      "setup": "VCP base (2 contractions 9.5->6.1%, depth 6.6%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 5.13,
+        "R_per_share": 3.99,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (9.5% \u2192 6.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.5%).",
+        "Its base shows 2 successive, TIGHTENING pullbacks (9.5% \u2192 6.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.6%).",
         "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +40.9%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 60): you'd buy the breakout ABOVE the 60.08 pivot, stop 54.95 (below base), measured-move target 78.7 (R:R 3.6).",
+        "It is NOT chased (not-extended, RSI 54): you'd buy the breakout ABOVE the 60.44 pivot, stop 56.45 (below base), measured-move target 78.6 (R:R 4.6).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "RAMP",
-      "signal_date": "2026-07-28",
-      "close": 37.75,
+      "signal_date": "2026-07-29",
+      "close": 37.74,
       "pivot": 38.23,
       "entry": 38.23,
       "stop": 37.65,
@@ -241,31 +300,31 @@
         9.7
       ],
       "vcp_detail": "depths=[7.0, 9.7] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.3905,
-      "rs_rank": 0.952,
+      "rs_vs_spy": 0.3885,
+      "rs_rank": 0.95,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.89,
-        "pct_above_ma50": 1.13,
-        "rsi": 55.0
+        "atr_above_pivot": -1.95,
+        "pct_above_ma50": 0.64,
+        "rsi": 53.7
       },
-      "volume_breakout_x": 0.38,
-      "adv": 71418704,
+      "volume_breakout_x": 0.52,
+      "adv": 71800760,
       "adv_floor": 20000000,
       "adv_headroom_x": 3.6,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "LiveRamp Holdings, Inc. Common Stock",
       "setup": "VCP base (2 contractions 7.0->9.7%, depth 1.5%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -278,73 +337,73 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (7.0% \u2192 9.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 1.5%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +39.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 55): you'd buy the breakout ABOVE the 38.23 pivot, stop 37.65 (below base), measured-move target 54.75 (R:R 28.5).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +38.9%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 54): you'd buy the breakout ABOVE the 38.23 pivot, stop 37.65 (below base), measured-move target 54.75 (R:R 28.5).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "ALL",
-      "signal_date": "2026-07-28",
-      "close": 272.42,
-      "pivot": 272.61,
-      "entry": 272.61,
-      "stop": 236.22,
-      "target": 347.06,
-      "rr": 2.0,
-      "base_depth_pct": 13.3,
+      "ticker": "SOBO",
+      "signal_date": "2026-07-29",
+      "close": 37.34,
+      "pivot": 38.94,
+      "entry": 38.94,
+      "stop": 36.93,
+      "target": 49.95,
+      "rr": 5.5,
+      "base_depth_pct": 5.2,
       "vcp_depths_pct": [
-        5.7,
-        11.2,
-        8.3
+        7.1,
+        5.0,
+        10.9
       ],
-      "vcp_detail": "depths=[5.7, 11.2, 8.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.3319,
-      "rs_rank": 0.941,
+      "vcp_detail": "depths=[7.1, 5.0, 10.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.3018,
+      "rs_rank": 0.934,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
-      "not_extended": false,
-      "not_extended_status": "EXTENDED",
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.03,
-        "pct_above_ma50": 17.57,
-        "rsi": 67.6
+        "atr_above_pivot": -2.01,
+        "pct_above_ma50": 1.2,
+        "rsi": 54.8
       },
-      "volume_breakout_x": 1.41,
-      "adv": 407360657,
+      "volume_breakout_x": 0.44,
+      "adv": 30757336,
       "adv_floor": 20000000,
-      "adv_headroom_x": 20.4,
+      "adv_headroom_x": 1.5,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "The Allstate Corporation",
-      "setup": "VCP base (3 contractions 5.7->11.2->8.3%, depth 13.3%)",
-      "regime_at_signal": "CHOP",
+      "name": "South Bow Corporation",
+      "setup": "VCP base (3 contractions 7.1->5.0->10.9%, depth 5.2%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 36.39,
+        "R_per_share": 2.01,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (5.7% \u2192 11.2% \u2192 8.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 13.3%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +33.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (extended, RSI 68): you'd buy the breakout ABOVE the 272.61 pivot, stop 236.22 (below base), measured-move target 347.06 (R:R 2.0).",
+        "Its base shows 3 successive, TIGHTENING pullbacks (7.1% \u2192 5.0% \u2192 10.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.2%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +30.2%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 55): you'd buy the breakout ABOVE the 38.94 pivot, stop 36.93 (below base), measured-move target 49.95 (R:R 5.5).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "MGM",
-      "signal_date": "2026-07-28",
-      "close": 46.2,
+      "signal_date": "2026-07-29",
+      "close": 45.83,
       "pivot": 51.59,
       "entry": 51.59,
       "stop": 44.82,
@@ -358,31 +417,31 @@
         7.4
       ],
       "vcp_detail": "depths=[13.0, 5.6, 10.5, 7.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2827,
+      "rs_vs_spy": 0.291,
       "rs_rank": 0.931,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -5.66,
-        "pct_above_ma50": 1.87,
-        "rsi": 45.8
+        "atr_above_pivot": -6.03,
+        "pct_above_ma50": 0.66,
+        "rsi": 43.1
       },
-      "volume_breakout_x": 0.6,
-      "adv": 192138701,
+      "volume_breakout_x": 0.57,
+      "adv": 189896895,
       "adv_floor": 20000000,
-      "adv_headroom_x": 9.6,
+      "adv_headroom_x": 9.5,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "MGM RESORTS INTERNATIONAL",
       "setup": "VCP base (4 contractions 13.0->5.6->10.5->7.4%, depth 13.1%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -395,245 +454,73 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 4 successive, TIGHTENING pullbacks (13.0% \u2192 5.6% \u2192 10.5% \u2192 7.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 13.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +28.3%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 46): you'd buy the breakout ABOVE the 51.59 pivot, stop 44.82 (below base), measured-move target 71.04 (R:R 2.9).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "SOBO",
-      "signal_date": "2026-07-28",
-      "close": 37.16,
-      "pivot": 38.94,
-      "entry": 38.94,
-      "stop": 36.93,
-      "target": 49.95,
-      "rr": 5.5,
-      "base_depth_pct": 5.2,
-      "vcp_depths_pct": [
-        7.1,
-        5.0,
-        10.9
-      ],
-      "vcp_detail": "depths=[7.1, 5.0, 10.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2681,
-      "rs_rank": 0.927,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -2.17,
-        "pct_above_ma50": 0.75,
-        "rsi": 58.8
-      },
-      "volume_breakout_x": 0.47,
-      "adv": 30953264,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 1.5,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "South Bow Corporation",
-      "setup": "VCP base (3 contractions 7.1->5.0->10.9%, depth 5.2%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 2.01,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (7.1% \u2192 5.0% \u2192 10.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.2%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +26.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 59): you'd buy the breakout ABOVE the 38.94 pivot, stop 36.93 (below base), measured-move target 49.95 (R:R 5.5).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +29.1%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 43): you'd buy the breakout ABOVE the 51.59 pivot, stop 44.82 (below base), measured-move target 71.04 (R:R 2.9).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "SUN",
-      "signal_date": "2026-07-28",
-      "close": 76.5,
-      "pivot": 77.03,
-      "entry": 77.03,
-      "stop": 74,
-      "target": 98.99,
-      "rr": 7.2,
-      "base_depth_pct": 3.9,
+      "signal_date": "2026-07-29",
+      "close": 76.47,
+      "pivot": 78.11,
+      "entry": 78.11,
+      "stop": 70.98,
+      "target": 101.15,
+      "rr": 3.2,
+      "base_depth_pct": 9.1,
       "vcp_depths_pct": [
         6.0,
         16.0,
         6.3
       ],
       "vcp_detail": "depths=[6.0, 16.0, 6.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2672,
+      "rs_vs_spy": 0.2739,
       "rs_rank": 0.927,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.29,
-        "pct_above_ma50": 11.54,
-        "rsi": 73.6
+        "atr_above_pivot": -0.86,
+        "pct_above_ma50": 11.29,
+        "rsi": 72.2
       },
-      "volume_breakout_x": 1.05,
-      "adv": 30732190,
+      "volume_breakout_x": 1.16,
+      "adv": 30474487,
       "adv_floor": 20000000,
       "adv_headroom_x": 1.5,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "SUNOCO L.P.",
-      "setup": "VCP base (3 contractions 6.0->16.0->6.3%, depth 3.9%)",
-      "regime_at_signal": "CHOP",
+      "setup": "VCP base (3 contractions 6.0->16.0->6.3%, depth 9.1%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 3.03,
+        "R_per_share": 7.13,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (6.0% \u2192 16.0% \u2192 6.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 3.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +26.7%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 74): you'd buy the breakout ABOVE the 77.03 pivot, stop 74 (below base), measured-move target 98.99 (R:R 7.2).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "VOYA",
-      "signal_date": "2026-07-28",
-      "close": 100.01,
-      "pivot": 103.85,
-      "entry": 103.85,
-      "stop": 96.01,
-      "target": 143.2,
-      "rr": 5.0,
-      "base_depth_pct": 7.5,
-      "vcp_depths_pct": [
-        6.7,
-        7.5
-      ],
-      "vcp_detail": "depths=[6.7, 7.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2391,
-      "rs_rank": 0.919,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -1.62,
-        "pct_above_ma50": 10.62,
-        "rsi": 63.4
-      },
-      "volume_breakout_x": 1.04,
-      "adv": 102141270,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 5.1,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "VOYA FINANCIAL, INC.",
-      "setup": "VCP base (2 contractions 6.7->7.5%, depth 7.5%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 7.84,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.7% \u2192 7.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.5%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +23.9%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 63): you'd buy the breakout ABOVE the 103.85 pivot, stop 96.01 (below base), measured-move target 143.2 (R:R 5.0).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "PAGP",
-      "signal_date": "2026-07-28",
-      "close": 26.27,
-      "pivot": 26.65,
-      "entry": 26.65,
-      "stop": 25.94,
-      "target": 33.22,
-      "rr": 9.3,
-      "base_depth_pct": 2.7,
-      "vcp_depths_pct": [
-        6.3,
-        12.8
-      ],
-      "vcp_detail": "depths=[6.3, 12.8] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2173,
-      "rs_rank": 0.912,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.93,
-        "pct_above_ma50": 6.05,
-        "rsi": 74.7
-      },
-      "volume_breakout_x": 0.68,
-      "adv": 35806792,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 1.8,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Plains GP Holdings, L.P. Class A Units representing Limited Partner Interests",
-      "setup": "VCP base (2 contractions 6.3->12.8%, depth 2.7%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 0.71,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.3% \u2192 12.8%) on drying volume \u2014 the classic VCP volatility contraction (depth 2.7%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +21.7%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 75): you'd buy the breakout ABOVE the 26.65 pivot, stop 25.94 (below base), measured-move target 33.22 (R:R 9.3).",
+        "Its base shows 3 successive, TIGHTENING pullbacks (6.0% \u2192 16.0% \u2192 6.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 9.1%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +27.4%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 72): you'd buy the breakout ABOVE the 78.11 pivot, stop 70.98 (below base), measured-move target 101.15 (R:R 3.2).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "CZR",
-      "signal_date": "2026-07-28",
-      "close": 29.95,
+      "signal_date": "2026-07-29",
+      "close": 29.77,
       "pivot": 30.83,
       "entry": 30.83,
       "stop": 29.45,
@@ -645,31 +532,31 @@
         5.7
       ],
       "vcp_detail": "depths=[11.9, 5.7] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2077,
-      "rs_rank": 0.908,
+      "rs_vs_spy": 0.2778,
+      "rs_rank": 0.927,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -2.89,
-        "pct_above_ma50": 1.98,
-        "rsi": 39.9
+        "atr_above_pivot": -3.8,
+        "pct_above_ma50": 1.19,
+        "rsi": 48.5
       },
-      "volume_breakout_x": 0.29,
-      "adv": 209318521,
+      "volume_breakout_x": 0.69,
+      "adv": 208094938,
       "adv_floor": 20000000,
-      "adv_headroom_x": 10.5,
+      "adv_headroom_x": 10.4,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Caesars Entertainment, Inc. Common Stock",
       "setup": "VCP base (2 contractions 11.9->5.7%, depth 4.5%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -682,359 +569,186 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (11.9% \u2192 5.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.5%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +20.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 40): you'd buy the breakout ABOVE the 30.83 pivot, stop 29.45 (below base), measured-move target 43.8 (R:R 9.4).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +27.8%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 48): you'd buy the breakout ABOVE the 30.83 pivot, stop 29.45 (below base), measured-move target 43.8 (R:R 9.4).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "PAGP",
+      "signal_date": "2026-07-29",
+      "close": 26.66,
+      "pivot": 26.77,
+      "entry": 26.77,
+      "stop": 25.08,
+      "target": 33.21,
+      "rr": 3.8,
+      "base_depth_pct": 6.3,
+      "vcp_depths_pct": [
+        6.3,
+        12.8
+      ],
+      "vcp_detail": "depths=[6.3, 12.8] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2526,
+      "rs_rank": 0.921,
+      "rs_decile": "top",
+      "rs_top_decile_bonus": true,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -0.27,
+        "pct_above_ma50": 7.4,
+        "rsi": 75.4
+      },
+      "volume_breakout_x": 1.38,
+      "adv": 35909400,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 1.8,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Plains GP Holdings, L.P. Class A Units representing Limited Partner Interests",
+      "setup": "VCP base (2 contractions 6.3->12.8%, depth 6.3%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 1.69,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (6.3% \u2192 12.8%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.3%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +25.3%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 75): you'd buy the breakout ABOVE the 26.77 pivot, stop 25.08 (below base), measured-move target 33.21 (R:R 3.8).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "VOYA",
+      "signal_date": "2026-07-29",
+      "close": 98.82,
+      "pivot": 103.85,
+      "entry": 103.85,
+      "stop": 96.01,
+      "target": 143.2,
+      "rr": 5.0,
+      "base_depth_pct": 7.5,
+      "vcp_depths_pct": [
+        6.7,
+        7.5
+      ],
+      "vcp_detail": "depths=[6.7, 7.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2443,
+      "rs_rank": 0.919,
+      "rs_decile": "top",
+      "rs_top_decile_bonus": true,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -2.15,
+        "pct_above_ma50": 8.89,
+        "rsi": 59.1
+      },
+      "volume_breakout_x": 0.74,
+      "adv": 101572234,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 5.1,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "VOYA FINANCIAL, INC.",
+      "setup": "VCP base (2 contractions 6.7->7.5%, depth 7.5%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 7.84,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (6.7% \u2192 7.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.5%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +24.4%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 59): you'd buy the breakout ABOVE the 103.85 pivot, stop 96.01 (below base), measured-move target 143.2 (R:R 5.0).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "HR",
-      "signal_date": "2026-07-28",
-      "close": 21.87,
+      "signal_date": "2026-07-29",
+      "close": 21.81,
       "pivot": 22.04,
       "entry": 22.04,
-      "stop": 20.59,
+      "stop": 20.69,
       "target": 27.76,
-      "rr": 3.9,
-      "base_depth_pct": 6.6,
+      "rr": 4.2,
+      "base_depth_pct": 6.1,
       "vcp_depths_pct": [
         6.1,
         5.5
       ],
       "vcp_detail": "depths=[6.1, 5.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2048,
-      "rs_rank": 0.907,
+      "rs_vs_spy": 0.2406,
+      "rs_rank": 0.917,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.45,
-        "pct_above_ma50": 6.8,
-        "rsi": 74.0
+        "atr_above_pivot": -0.59,
+        "pct_above_ma50": 6.36,
+        "rsi": 72.9
       },
-      "volume_breakout_x": 2.12,
-      "adv": 78840459,
+      "volume_breakout_x": 0.92,
+      "adv": 79333251,
       "adv_floor": 20000000,
-      "adv_headroom_x": 3.9,
+      "adv_headroom_x": 4.0,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Healthcare Realty Trust Incorporated",
-      "setup": "VCP base (2 contractions 6.1->5.5%, depth 6.6%)",
-      "regime_at_signal": "CHOP",
+      "setup": "VCP base (2 contractions 6.1->5.5%, depth 6.1%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 1.45,
+        "R_per_share": 1.35,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.1% \u2192 5.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.6%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +20.5%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 74): you'd buy the breakout ABOVE the 22.04 pivot, stop 20.59 (below base), measured-move target 27.76 (R:R 3.9).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "SPG",
-      "signal_date": "2026-07-28",
-      "close": 236.7,
-      "pivot": 237.89,
-      "entry": 237.89,
-      "stop": 220.8,
-      "target": 297.9,
-      "rr": 3.5,
-      "base_depth_pct": 7.2,
-      "vcp_depths_pct": [
-        5.3,
-        7.3
-      ],
-      "vcp_detail": "depths=[5.3, 7.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.2064,
-      "rs_rank": 0.907,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.26,
-        "pct_above_ma50": 9.52,
-        "rsi": 64.3
-      },
-      "volume_breakout_x": 0.86,
-      "adv": 435401576,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 21.8,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Simon Property Group, Inc.",
-      "setup": "VCP base (2 contractions 5.3->7.3%, depth 7.2%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 17.09,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.3% \u2192 7.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.2%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +20.6%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 64): you'd buy the breakout ABOVE the 237.89 pivot, stop 220.8 (below base), measured-move target 297.9 (R:R 3.5).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "PAA",
-      "signal_date": "2026-07-28",
-      "close": 24.43,
-      "pivot": 24.87,
-      "entry": 24.87,
-      "stop": 24.18,
-      "target": 30.89,
-      "rr": 8.7,
-      "base_depth_pct": 2.8,
-      "vcp_depths_pct": [
-        6.8,
-        13.6
-      ],
-      "vcp_detail": "depths=[6.8, 13.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1981,
-      "rs_rank": 0.905,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.97,
-        "pct_above_ma50": 6.56,
-        "rsi": 74.2
-      },
-      "volume_breakout_x": 0.84,
-      "adv": 52456158,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 2.6,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Plains All American Pipeline, L.P. Common Units representing Limited Partner Interests",
-      "setup": "VCP base (2 contractions 6.8->13.6%, depth 2.8%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 0.69,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.8% \u2192 13.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 2.8%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +19.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 74): you'd buy the breakout ABOVE the 24.87 pivot, stop 24.18 (below base), measured-move target 30.89 (R:R 8.7).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "VTR",
-      "signal_date": "2026-07-28",
-      "close": 98.14,
-      "pivot": 101.6,
-      "entry": 101.6,
-      "stop": 91.75,
-      "target": 127.39,
-      "rr": 2.6,
-      "base_depth_pct": 9.7,
-      "vcp_depths_pct": [
-        14.3,
-        5.2,
-        5.3
-      ],
-      "vcp_detail": "depths=[14.3, 5.2, 5.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1998,
-      "rs_rank": 0.905,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -1.65,
-        "pct_above_ma50": 10.78,
-        "rsi": 62.1
-      },
-      "volume_breakout_x": 1.26,
-      "adv": 331681092,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 16.6,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Ventas, Inc.",
-      "setup": "VCP base (3 contractions 14.3->5.2->5.3%, depth 9.7%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 9.85,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (14.3% \u2192 5.2% \u2192 5.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 9.7%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +20.0%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 62): you'd buy the breakout ABOVE the 101.6 pivot, stop 91.75 (below base), measured-move target 127.39 (R:R 2.6).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "DOC",
-      "signal_date": "2026-07-28",
-      "close": 22.82,
-      "pivot": 22.95,
-      "entry": 22.95,
-      "stop": 21.61,
-      "target": 30.2,
-      "rr": 5.4,
-      "base_depth_pct": 5.8,
-      "vcp_depths_pct": [
-        14.3,
-        6.8,
-        7.3
-      ],
-      "vcp_detail": "depths=[14.3, 6.8, 7.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1873,
-      "rs_rank": 0.902,
-      "rs_decile": "top",
-      "rs_top_decile_bonus": true,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.3,
-        "pct_above_ma50": 9.9,
-        "rsi": 64.5
-      },
-      "volume_breakout_x": 0.95,
-      "adv": 158260951,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 7.9,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Healthpeak Properties, Inc.",
-      "setup": "VCP base (3 contractions 14.3->6.8->7.3%, depth 5.8%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 1.34,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (14.3% \u2192 6.8% \u2192 7.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.8%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +18.7%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 64): you'd buy the breakout ABOVE the 22.95 pivot, stop 21.61 (below base), measured-move target 30.2 (R:R 5.4).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "CP",
-      "signal_date": "2026-07-28",
-      "close": 91.7,
-      "pivot": 93.95,
-      "entry": 93.95,
-      "stop": 90.6,
-      "target": 116.19,
-      "rr": 6.6,
-      "base_depth_pct": 3.6,
-      "vcp_depths_pct": [
-        5.6,
-        7.7
-      ],
-      "vcp_detail": "depths=[5.6, 7.7] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1842,
-      "rs_rank": 0.9,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -1.39,
-        "pct_above_ma50": 3.12,
-        "rsi": 62.7
-      },
-      "volume_breakout_x": 0.93,
-      "adv": 240563856,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 12.0,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Canadian Pacific Kansas City Limited",
-      "setup": "VCP base (2 contractions 5.6->7.7%, depth 3.6%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 3.35,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.6% \u2192 7.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 3.6%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +18.4%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 63): you'd buy the breakout ABOVE the 93.95 pivot, stop 90.6 (below base), measured-move target 116.19 (R:R 6.6).",
+        "Its base shows 2 successive, TIGHTENING pullbacks (6.1% \u2192 5.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.1%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +24.1%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 73): you'd buy the breakout ABOVE the 22.04 pivot, stop 20.69 (below base), measured-move target 27.76 (R:R 4.2).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "USFD",
-      "signal_date": "2026-07-28",
-      "close": 101.47,
+      "signal_date": "2026-07-29",
+      "close": 102.35,
       "pivot": 105.17,
       "entry": 105.17,
       "stop": 93.14,
@@ -1046,31 +760,31 @@
         11.4
       ],
       "vcp_detail": "depths=[16.4, 11.4] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1736,
-      "rs_rank": 0.894,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
+      "rs_vs_spy": 0.2222,
+      "rs_rank": 0.91,
+      "rs_decile": "top",
+      "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.21,
-        "pct_above_ma50": 10.24,
-        "rsi": 44.7
+        "atr_above_pivot": -0.96,
+        "pct_above_ma50": 10.75,
+        "rsi": 56.0
       },
-      "volume_breakout_x": 0.85,
-      "adv": 253128841,
+      "volume_breakout_x": 1.02,
+      "adv": 254490517,
       "adv_floor": 20000000,
       "adv_headroom_x": 12.7,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "US Foods Holding Corp.",
       "setup": "VCP base (2 contractions 16.4->11.4%, depth 11.4%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -1083,15 +797,246 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (16.4% \u2192 11.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 11.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +17.4%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 45): you'd buy the breakout ABOVE the 105.17 pivot, stop 93.14 (below base), measured-move target 135.34 (R:R 2.5).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +22.2%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 56): you'd buy the breakout ABOVE the 105.17 pivot, stop 93.14 (below base), measured-move target 135.34 (R:R 2.5).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "SPG",
+      "signal_date": "2026-07-29",
+      "close": 235.61,
+      "pivot": 238.5,
+      "entry": 238.5,
+      "stop": 222.79,
+      "target": 299.12,
+      "rr": 3.9,
+      "base_depth_pct": 6.6,
+      "vcp_depths_pct": [
+        5.3,
+        7.3
+      ],
+      "vcp_detail": "depths=[5.3, 7.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2183,
+      "rs_rank": 0.909,
+      "rs_decile": "top",
+      "rs_top_decile_bonus": true,
+      "not_extended": false,
+      "not_extended_status": "EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -0.67,
+        "pct_above_ma50": 8.69,
+        "rsi": 81.4
+      },
+      "volume_breakout_x": 0.68,
+      "adv": 436072335,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 21.8,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Simon Property Group, Inc.",
+      "setup": "VCP base (2 contractions 5.3->7.3%, depth 6.6%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 15.71,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (5.3% \u2192 7.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.6%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +21.8%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (extended, RSI 81): you'd buy the breakout ABOVE the 238.5 pivot, stop 222.79 (below base), measured-move target 299.12 (R:R 3.9).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "DOC",
+      "signal_date": "2026-07-29",
+      "close": 22.48,
+      "pivot": 22.95,
+      "entry": 22.95,
+      "stop": 21.77,
+      "target": 30.2,
+      "rr": 6.1,
+      "base_depth_pct": 5.1,
+      "vcp_depths_pct": [
+        14.3,
+        6.8,
+        7.3
+      ],
+      "vcp_detail": "depths=[14.3, 6.8, 7.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.2127,
+      "rs_rank": 0.906,
+      "rs_decile": "top",
+      "rs_top_decile_bonus": true,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -1.06,
+        "pct_above_ma50": 7.95,
+        "rsi": 60.9
+      },
+      "volume_breakout_x": 0.72,
+      "adv": 158324171,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 7.9,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Healthpeak Properties, Inc.",
+      "setup": "VCP base (3 contractions 14.3->6.8->7.3%, depth 5.1%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 1.18,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 3 successive, TIGHTENING pullbacks (14.3% \u2192 6.8% \u2192 7.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.1%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +21.3%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 61): you'd buy the breakout ABOVE the 22.95 pivot, stop 21.77 (below base), measured-move target 30.2 (R:R 6.1).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "MRK",
+      "signal_date": "2026-07-29",
+      "close": 130.36,
+      "pivot": 135.05,
+      "entry": 135.05,
+      "stop": 124,
+      "target": 162.2,
+      "rr": 2.5,
+      "base_depth_pct": 8.2,
+      "vcp_depths_pct": [
+        7.1,
+        9.6,
+        7.8,
+        5.8
+      ],
+      "vcp_detail": "depths=[7.1, 9.6, 7.8, 5.8] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.1608,
+      "rs_rank": 0.883,
+      "rs_decile": "strong",
+      "rs_top_decile_bonus": false,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -1.4,
+        "pct_above_ma50": 6.94,
+        "rsi": 58.5
+      },
+      "volume_breakout_x": 0.72,
+      "adv": 1278687941,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 63.9,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Merck & Co., Inc.",
+      "setup": "VCP base (4 contractions 7.1->9.6->7.8->5.8%, depth 8.2%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 11.05,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 4 successive, TIGHTENING pullbacks (7.1% \u2192 9.6% \u2192 7.8% \u2192 5.8%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.2%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +16.1%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 135.05 pivot, stop 124 (below base), measured-move target 162.2 (R:R 2.5).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "HSBC",
+      "signal_date": "2026-07-29",
+      "close": 102.6,
+      "pivot": 104.33,
+      "entry": 104.33,
+      "stop": 102.2,
+      "target": 132.45,
+      "rr": 13.2,
+      "base_depth_pct": 2.0,
+      "vcp_depths_pct": [
+        8.2,
+        9.9
+      ],
+      "vcp_detail": "depths=[8.2, 9.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.1528,
+      "rs_rank": 0.878,
+      "rs_decile": "strong",
+      "rs_top_decile_bonus": false,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -0.84,
+        "pct_above_ma50": 7.37,
+        "rsi": 69.0
+      },
+      "volume_breakout_x": 0.98,
+      "adv": 144084389,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 7.2,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "HSBC Holdings PLC",
+      "setup": "VCP base (2 contractions 8.2->9.9%, depth 2.0%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 2.13,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (8.2% \u2192 9.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 2.0%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +15.3%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 69): you'd buy the breakout ABOVE the 104.33 pivot, stop 102.2 (below base), measured-move target 132.45 (R:R 13.2).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "GE",
-      "signal_date": "2026-07-28",
-      "close": 363.59,
+      "signal_date": "2026-07-29",
+      "close": 350.63,
       "pivot": 382.97,
       "entry": 382.97,
       "stop": 336.53,
@@ -1104,31 +1049,31 @@
         5.2
       ],
       "vcp_detail": "depths=[9.3, 12.1, 5.2] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1623,
-      "rs_rank": 0.888,
+      "rs_vs_spy": 0.1353,
+      "rs_rank": 0.867,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.82,
-        "pct_above_ma50": 7.08,
-        "rsi": 47.8
+        "atr_above_pivot": -2.99,
+        "pct_above_ma50": 2.9,
+        "rsi": 46.5
       },
-      "volume_breakout_x": 0.76,
-      "adv": 1613854386,
+      "volume_breakout_x": 0.78,
+      "adv": 1612614596,
       "adv_floor": 20000000,
-      "adv_headroom_x": 80.7,
+      "adv_headroom_x": 80.6,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "GE Aerospace",
       "setup": "VCP base (3 contractions 9.3->12.1->5.2%, depth 12.1%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -1141,416 +1086,72 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 3 successive, TIGHTENING pullbacks (9.3% \u2192 12.1% \u2192 5.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 12.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +16.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 48): you'd buy the breakout ABOVE the 382.97 pivot, stop 336.53 (below base), measured-move target 497.03 (R:R 2.5).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "HSBC",
-      "signal_date": "2026-07-28",
-      "close": 103.7,
-      "pivot": 104.33,
-      "entry": 104.33,
-      "stop": 98.37,
-      "target": 132.45,
-      "rr": 4.7,
-      "base_depth_pct": 5.7,
-      "vcp_depths_pct": [
-        8.2,
-        9.9
-      ],
-      "vcp_detail": "depths=[8.2, 9.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1605,
-      "rs_rank": 0.887,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.3,
-        "pct_above_ma50": 8.79,
-        "rsi": 68.1
-      },
-      "volume_breakout_x": 0.67,
-      "adv": 143663137,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 7.2,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "HSBC Holdings PLC",
-      "setup": "VCP base (2 contractions 8.2->9.9%, depth 5.7%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 5.96,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (8.2% \u2192 9.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.7%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +16.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 68): you'd buy the breakout ABOVE the 104.33 pivot, stop 98.37 (below base), measured-move target 132.45 (R:R 4.7).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "SMFG",
-      "signal_date": "2026-07-28",
-      "close": 25.59,
-      "pivot": 26.66,
-      "entry": 26.66,
-      "stop": 24.66,
-      "target": 34.39,
-      "rr": 3.9,
-      "base_depth_pct": 7.5,
-      "vcp_depths_pct": [
-        7.5,
-        7.5
-      ],
-      "vcp_detail": "depths=[7.5, 7.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1483,
-      "rs_rank": 0.882,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -1.84,
-        "pct_above_ma50": 6.22,
-        "rsi": 52.6
-      },
-      "volume_breakout_x": 0.82,
-      "adv": 46866898,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 2.3,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Sumitomo Mitsui Financial Group, Inc American Depositary Shares (each representing 3/5th of a share of common stock)",
-      "setup": "VCP base (2 contractions 7.5->7.5%, depth 7.5%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 2.0,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (7.5% \u2192 7.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.5%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +14.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 53): you'd buy the breakout ABOVE the 26.66 pivot, stop 24.66 (below base), measured-move target 34.39 (R:R 3.9).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "MRK",
-      "signal_date": "2026-07-28",
-      "close": 131.82,
-      "pivot": 135.05,
-      "entry": 135.05,
-      "stop": 122.75,
-      "target": 162.2,
-      "rr": 2.2,
-      "base_depth_pct": 9.1,
-      "vcp_depths_pct": [
-        7.1,
-        9.6,
-        7.8,
-        5.8
-      ],
-      "vcp_detail": "depths=[7.1, 9.6, 7.8, 5.8] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1436,
-      "rs_rank": 0.879,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.95,
-        "pct_above_ma50": 8.44,
-        "rsi": 55.4
-      },
-      "volume_breakout_x": 0.97,
-      "adv": 1271041121,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 63.6,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Merck & Co., Inc.",
-      "setup": "VCP base (4 contractions 7.1->9.6->7.8->5.8%, depth 9.1%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 12.3,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 4 successive, TIGHTENING pullbacks (7.1% \u2192 9.6% \u2192 7.8% \u2192 5.8%) on drying volume \u2014 the classic VCP volatility contraction (depth 9.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +14.4%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 55): you'd buy the breakout ABOVE the 135.05 pivot, stop 122.75 (below base), measured-move target 162.2 (R:R 2.2).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "CUZ",
-      "signal_date": "2026-07-28",
-      "close": 31.71,
-      "pivot": 32.35,
-      "entry": 32.35,
-      "stop": 31.07,
-      "target": 43.67,
-      "rr": 8.8,
-      "base_depth_pct": 4.0,
-      "vcp_depths_pct": [
-        6.0,
-        7.3
-      ],
-      "vcp_detail": "depths=[6.0, 7.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1382,
-      "rs_rank": 0.877,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.91,
-        "pct_above_ma50": 9.14,
-        "rsi": 58.7
-      },
-      "volume_breakout_x": 1.57,
-      "adv": 45157354,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 2.3,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Cousins Properties Inc.",
-      "setup": "VCP base (2 contractions 6.0->7.3%, depth 4.0%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 1.28,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.0% \u2192 7.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.0%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +13.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 59): you'd buy the breakout ABOVE the 32.35 pivot, stop 31.07 (below base), measured-move target 43.67 (R:R 8.8).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "AFL",
-      "signal_date": "2026-07-28",
-      "close": 129.55,
-      "pivot": 129.62,
-      "entry": 129.62,
-      "stop": 120.55,
-      "target": 153.48,
-      "rr": 2.6,
-      "base_depth_pct": 7.0,
-      "vcp_depths_pct": [
-        6.2,
-        7.7
-      ],
-      "vcp_detail": "depths=[6.2, 7.7] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1348,
-      "rs_rank": 0.874,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.04,
-        "pct_above_ma50": 8.95,
-        "rsi": 76.8
-      },
-      "volume_breakout_x": 0.79,
-      "adv": 291488433,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 14.6,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Aflac Inc.",
-      "setup": "VCP base (2 contractions 6.2->7.7%, depth 7.0%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 9.07,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.2% \u2192 7.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.0%).",
         "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +13.5%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 77): you'd buy the breakout ABOVE the 129.62 pivot, stop 120.55 (below base), measured-move target 153.48 (R:R 2.6).",
+        "It is NOT chased (not-extended, RSI 46): you'd buy the breakout ABOVE the 382.97 pivot, stop 336.53 (below base), measured-move target 497.03 (R:R 2.5).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "MFC",
-      "signal_date": "2026-07-28",
-      "close": 44.64,
+      "signal_date": "2026-07-29",
+      "close": 43.92,
       "pivot": 44.68,
       "entry": 44.68,
-      "stop": 41.87,
+      "stop": 42.34,
       "target": 56.78,
-      "rr": 4.3,
-      "base_depth_pct": 6.3,
+      "rr": 5.2,
+      "base_depth_pct": 5.2,
       "vcp_depths_pct": [
         8.5,
         6.1
       ],
       "vcp_detail": "depths=[8.5, 6.1] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1332,
-      "rs_rank": 0.873,
+      "rs_vs_spy": 0.1302,
+      "rs_rank": 0.863,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.06,
-        "pct_above_ma50": 10.62,
-        "rsi": 78.7
+        "atr_above_pivot": -1.05,
+        "pct_above_ma50": 8.49,
+        "rsi": 73.4
       },
-      "volume_breakout_x": 1.08,
-      "adv": 83766609,
+      "volume_breakout_x": 1.22,
+      "adv": 82174504,
       "adv_floor": 20000000,
-      "adv_headroom_x": 4.2,
+      "adv_headroom_x": 4.1,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Manulife Financial Corp.",
-      "setup": "VCP base (2 contractions 8.5->6.1%, depth 6.3%)",
-      "regime_at_signal": "CHOP",
+      "setup": "VCP base (2 contractions 8.5->6.1%, depth 5.2%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 2.81,
+        "R_per_share": 2.34,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (8.5% \u2192 6.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.3%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +13.3%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 79): you'd buy the breakout ABOVE the 44.68 pivot, stop 41.87 (below base), measured-move target 56.78 (R:R 4.3).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "ETR",
-      "signal_date": "2026-07-28",
-      "close": 112.32,
-      "pivot": 116.93,
-      "entry": 116.93,
-      "stop": 110.87,
-      "target": 141.57,
-      "rr": 4.1,
-      "base_depth_pct": 5.2,
-      "vcp_depths_pct": [
-        11.4,
-        5.2
-      ],
-      "vcp_detail": "depths=[11.4, 5.2] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1304,
-      "rs_rank": 0.871,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -2.05,
-        "pct_above_ma50": 0.02,
-        "rsi": 40.3
-      },
-      "volume_breakout_x": 1.34,
-      "adv": 358839460,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 17.9,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Entergy Corporation",
-      "setup": "VCP base (2 contractions 11.4->5.2%, depth 5.2%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 6.06,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (11.4% \u2192 5.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.2%).",
+        "Its base shows 2 successive, TIGHTENING pullbacks (8.5% \u2192 6.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.2%).",
         "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +13.0%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 40): you'd buy the breakout ABOVE the 116.93 pivot, stop 110.87 (below base), measured-move target 141.57 (R:R 4.1).",
+        "It is NOT chased (not-extended, RSI 73): you'd buy the breakout ABOVE the 44.68 pivot, stop 42.34 (below base), measured-move target 56.78 (R:R 5.2).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "D",
-      "signal_date": "2026-07-28",
-      "close": 70.62,
+      "signal_date": "2026-07-29",
+      "close": 70.55,
       "pivot": 72.99,
       "entry": 72.99,
       "stop": 69.78,
@@ -1562,31 +1163,31 @@
         6.4
       ],
       "vcp_detail": "depths=[7.0, 6.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.11,
-      "rs_rank": 0.857,
+      "rs_vs_spy": 0.1181,
+      "rs_rank": 0.854,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.96,
-        "pct_above_ma50": 3.33,
-        "rsi": 55.3
+        "atr_above_pivot": -1.93,
+        "pct_above_ma50": 3.0,
+        "rsi": 54.6
       },
-      "volume_breakout_x": 0.54,
-      "adv": 502104432,
+      "volume_breakout_x": 0.42,
+      "adv": 502484722,
       "adv_floor": 20000000,
       "adv_headroom_x": 25.1,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Dominion Energy, Inc Common Stock",
       "setup": "VCP base (2 contractions 7.0->6.4%, depth 4.4%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -1599,247 +1200,130 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (7.0% \u2192 6.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +11.0%, placing it in the TOP DECILE of the surviving set.",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +11.8%, placing it in the TOP DECILE of the surviving set.",
         "It is NOT chased (not-extended, RSI 55): you'd buy the breakout ABOVE the 72.99 pivot, stop 69.78 (below base), measured-move target 86.99 (R:R 4.4).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "OHI",
-      "signal_date": "2026-07-28",
-      "close": 51.64,
-      "pivot": 52.07,
-      "entry": 52.07,
-      "stop": 47.68,
-      "target": 61.89,
-      "rr": 2.2,
-      "base_depth_pct": 8.4,
+      "ticker": "TMV",
+      "signal_date": "2026-07-29",
+      "close": 41.95,
+      "pivot": 42.19,
+      "entry": 42.19,
+      "stop": 39.06,
+      "target": 51.37,
+      "rr": 2.9,
+      "base_depth_pct": 7.4,
       "vcp_depths_pct": [
-        6.2,
-        12.5
+        5.2,
+        16.9
       ],
-      "vcp_detail": "depths=[6.2, 12.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.1068,
-      "rs_rank": 0.854,
+      "vcp_detail": "depths=[5.2, 16.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.1139,
+      "rs_rank": 0.851,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -0.47,
-        "pct_above_ma50": 8.44,
-        "rsi": 63.4
+        "atr_above_pivot": -0.3,
+        "pct_above_ma50": 7.5,
+        "rsi": 67.3
       },
-      "volume_breakout_x": 1.18,
-      "adv": 105577396,
+      "volume_breakout_x": 1.47,
+      "adv": 24670289,
       "adv_floor": 20000000,
-      "adv_headroom_x": 5.3,
+      "adv_headroom_x": 1.2,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Omega Healthcare Investors Inc.",
-      "setup": "VCP base (2 contractions 6.2->12.5%, depth 8.4%)",
-      "regime_at_signal": "CHOP",
+      "is_etf": true,
+      "name": "Direxion Daily 20+ Year Treasury Bear 3X ETF",
+      "setup": "VCP base (2 contractions 5.2->16.9%, depth 7.4%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 4.39,
+        "R_per_share": 3.13,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (6.2% \u2192 12.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +10.7%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 63): you'd buy the breakout ABOVE the 52.07 pivot, stop 47.68 (below base), measured-move target 61.89 (R:R 2.2).",
+        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 2 successive, TIGHTENING pullbacks (5.2% \u2192 16.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.4%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +11.4%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 67): you'd buy the breakout ABOVE the 42.19 pivot, stop 39.06 (below base), measured-move target 51.37 (R:R 2.9).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "L",
-      "signal_date": "2026-07-28",
-      "close": 119.4,
+      "signal_date": "2026-07-29",
+      "close": 118.94,
       "pivot": 121.01,
       "entry": 121.01,
-      "stop": 111.48,
+      "stop": 112.79,
       "target": 139.85,
-      "rr": 2.0,
-      "base_depth_pct": 7.9,
+      "rr": 2.3,
+      "base_depth_pct": 6.8,
       "vcp_depths_pct": [
         9.6,
         7.2,
         6.4
       ],
       "vcp_detail": "depths=[9.6, 7.2, 6.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0973,
-      "rs_rank": 0.846,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.73,
-        "pct_above_ma50": 7.88,
-        "rsi": 58.5
-      },
-      "volume_breakout_x": 0.99,
-      "adv": 96386066,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 4.8,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Loews Corporation",
-      "setup": "VCP base (3 contractions 9.6->7.2->6.4%, depth 7.9%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 9.53,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (9.6% \u2192 7.2% \u2192 6.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +9.7%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 121.01 pivot, stop 111.48 (below base), measured-move target 139.85 (R:R 2.0).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "CLH",
-      "signal_date": "2026-07-28",
-      "close": 303.67,
-      "pivot": 314.88,
-      "entry": 314.88,
-      "stop": 299.15,
-      "target": 375.33,
-      "rr": 3.8,
-      "base_depth_pct": 5.0,
-      "vcp_depths_pct": [
-        10.7,
-        11.1,
-        6.3
-      ],
-      "vcp_detail": "depths=[10.7, 11.1, 6.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0953,
+      "rs_vs_spy": 0.1053,
       "rs_rank": 0.845,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.78,
-        "pct_above_ma50": 3.16,
-        "rsi": 59.4
+        "atr_above_pivot": -0.95,
+        "pct_above_ma50": 7.2,
+        "rsi": 64.3
       },
-      "volume_breakout_x": 1.43,
-      "adv": 140076655,
+      "volume_breakout_x": 1.42,
+      "adv": 97199525,
       "adv_floor": 20000000,
-      "adv_headroom_x": 7.0,
+      "adv_headroom_x": 4.9,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "Clean Harbors, Inc",
-      "setup": "VCP base (3 contractions 10.7->11.1->6.3%, depth 5.0%)",
-      "regime_at_signal": "CHOP",
+      "name": "Loews Corporation",
+      "setup": "VCP base (3 contractions 9.6->7.2->6.4%, depth 6.8%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 15.73,
+        "R_per_share": 8.22,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (10.7% \u2192 11.1% \u2192 6.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.0%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +9.5%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 59): you'd buy the breakout ABOVE the 314.88 pivot, stop 299.15 (below base), measured-move target 375.33 (R:R 3.8).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "WTS",
-      "signal_date": "2026-07-28",
-      "close": 346.59,
-      "pivot": 394.54,
-      "entry": 394.54,
-      "stop": 337.44,
-      "target": 513.82,
-      "rr": 2.1,
-      "base_depth_pct": 14.5,
-      "vcp_depths_pct": [
-        8.3,
-        6.2,
-        5.1,
-        5.4
-      ],
-      "vcp_detail": "depths=[8.3, 6.2, 5.1, 5.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0821,
-      "rs_rank": 0.831,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -5.31,
-        "pct_above_ma50": 3.63,
-        "rsi": 38.4
-      },
-      "volume_breakout_x": 0.45,
-      "adv": 130535946,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 6.5,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Watts Water Technologies, Inc. Class A",
-      "setup": "VCP base (4 contractions 8.3->6.2->5.1->5.4%, depth 14.5%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 57.1,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 4 successive, TIGHTENING pullbacks (8.3% \u2192 6.2% \u2192 5.1% \u2192 5.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 14.5%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +8.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 38): you'd buy the breakout ABOVE the 394.54 pivot, stop 337.44 (below base), measured-move target 513.82 (R:R 2.1).",
+        "Its base shows 3 successive, TIGHTENING pullbacks (9.6% \u2192 7.2% \u2192 6.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.8%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +10.5%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 64): you'd buy the breakout ABOVE the 121.01 pivot, stop 112.79 (below base), measured-move target 139.85 (R:R 2.3).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "WES",
-      "signal_date": "2026-07-28",
-      "close": 47.06,
+      "signal_date": "2026-07-29",
+      "close": 46.99,
       "pivot": 48.63,
       "entry": 48.63,
       "stop": 46.47,
@@ -1852,31 +1336,31 @@
         7.3
       ],
       "vcp_detail": "depths=[6.3, 10.9, 7.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0802,
-      "rs_rank": 0.829,
+      "rs_vs_spy": 0.1038,
+      "rs_rank": 0.844,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.67,
-        "pct_above_ma50": 5.01,
-        "rsi": 65.4
+        "atr_above_pivot": -1.72,
+        "pct_above_ma50": 4.81,
+        "rsi": 62.3
       },
-      "volume_breakout_x": 0.91,
-      "adv": 46828384,
+      "volume_breakout_x": 1.04,
+      "adv": 46492283,
       "adv_floor": 20000000,
       "adv_headroom_x": 2.3,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Western Midstream Partners, LP",
       "setup": "VCP base (3 contractions 6.3->10.9->7.3%, depth 4.4%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -1889,304 +1373,130 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 3 successive, TIGHTENING pullbacks (6.3% \u2192 10.9% \u2192 7.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +8.0%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 65): you'd buy the breakout ABOVE the 48.63 pivot, stop 46.47 (below base), measured-move target 57.75 (R:R 4.2).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +10.4%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 62): you'd buy the breakout ABOVE the 48.63 pivot, stop 46.47 (below base), measured-move target 57.75 (R:R 4.2).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "ACGL",
-      "signal_date": "2026-07-28",
-      "close": 106.48,
-      "pivot": 107.08,
-      "entry": 107.08,
-      "stop": 97.58,
-      "target": 127.12,
-      "rr": 2.1,
-      "base_depth_pct": 8.9,
-      "vcp_depths_pct": [
-        5.4,
-        10.7,
-        6.8,
-        5.6
-      ],
-      "vcp_detail": "depths=[5.4, 10.7, 6.8, 5.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0705,
-      "rs_rank": 0.817,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.25,
-        "pct_above_ma50": 11.03,
-        "rsi": 58.0
-      },
-      "volume_breakout_x": 0.93,
-      "adv": 210763459,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 10.5,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Arch Capital Group Ltd",
-      "setup": "VCP base (4 contractions 5.4->10.7->6.8->5.6%, depth 8.9%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 9.5,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 4 successive, TIGHTENING pullbacks (5.4% \u2192 10.7% \u2192 6.8% \u2192 5.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +7.0%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 107.08 pivot, stop 97.58 (below base), measured-move target 127.12 (R:R 2.1).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "AEP",
-      "signal_date": "2026-07-28",
-      "close": 133.02,
-      "pivot": 140.58,
-      "entry": 140.58,
-      "stop": 129.51,
-      "target": 165.8,
+      "ticker": "CTRE",
+      "signal_date": "2026-07-29",
+      "close": 42.34,
+      "pivot": 43.62,
+      "entry": 43.62,
+      "stop": 40.2,
+      "target": 51.64,
       "rr": 2.3,
-      "base_depth_pct": 7.9,
+      "base_depth_pct": 7.8,
       "vcp_depths_pct": [
-        10.6,
-        6.3,
-        7.9
+        16.3,
+        5.3
       ],
-      "vcp_detail": "depths=[10.6, 6.3, 7.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0656,
-      "rs_rank": 0.811,
+      "vcp_detail": "depths=[16.3, 5.3] tighten=True(0v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0904,
+      "rs_rank": 0.831,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -3.06,
-        "pct_above_ma50": 1.21,
-        "rsi": 36.2
+        "atr_above_pivot": -1.32,
+        "pct_above_ma50": 5.31,
+        "rsi": 55.7
       },
-      "volume_breakout_x": 0.75,
-      "adv": 652658081,
+      "volume_breakout_x": 0.44,
+      "adv": 114394574,
       "adv_floor": 20000000,
-      "adv_headroom_x": 32.6,
+      "adv_headroom_x": 5.7,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "American Electric Power Company, Inc.",
-      "setup": "VCP base (3 contractions 10.6->6.3->7.9%, depth 7.9%)",
-      "regime_at_signal": "CHOP",
+      "name": "CareTrust REIT, Inc",
+      "setup": "VCP base (2 contractions 16.3->5.3%, depth 7.8%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 11.07,
+        "R_per_share": 3.42,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (10.6% \u2192 6.3% \u2192 7.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +6.6%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 36): you'd buy the breakout ABOVE the 140.58 pivot, stop 129.51 (below base), measured-move target 165.8 (R:R 2.3).",
+        "Its base shows 2 successive, TIGHTENING pullbacks (16.3% \u2192 5.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.8%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +9.0%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 56): you'd buy the breakout ABOVE the 43.62 pivot, stop 40.2 (below base), measured-move target 51.64 (R:R 2.3).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "FITB",
-      "signal_date": "2026-07-28",
-      "close": 57.8,
-      "pivot": 59.5,
-      "entry": 59.5,
-      "stop": 55,
-      "target": 76.06,
-      "rr": 3.7,
-      "base_depth_pct": 7.6,
+      "ticker": "WTS",
+      "signal_date": "2026-07-29",
+      "close": 336.15,
+      "pivot": 394.54,
+      "entry": 394.54,
+      "stop": 334.12,
+      "target": 513.82,
+      "rr": 2.0,
+      "base_depth_pct": 15.3,
       "vcp_depths_pct": [
-        8.7,
-        5.4,
-        7.6
+        8.3,
+        6.2,
+        5.1,
+        5.4
       ],
-      "vcp_detail": "depths=[8.7, 5.4, 7.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0642,
-      "rs_rank": 0.809,
+      "vcp_detail": "depths=[8.3, 6.2, 5.1, 5.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0734,
+      "rs_rank": 0.813,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.16,
-        "pct_above_ma50": 7.4,
-        "rsi": 49.4
+        "atr_above_pivot": -6.2,
+        "pct_above_ma50": 0.3,
+        "rsi": 37.5
       },
-      "volume_breakout_x": 0.93,
-      "adv": 379380443,
+      "volume_breakout_x": 0.68,
+      "adv": 130293564,
       "adv_floor": 20000000,
-      "adv_headroom_x": 19.0,
+      "adv_headroom_x": 6.5,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "Fifth Third Bancorp",
-      "setup": "VCP base (3 contractions 8.7->5.4->7.6%, depth 7.6%)",
-      "regime_at_signal": "CHOP",
+      "name": "Watts Water Technologies, Inc. Class A",
+      "setup": "VCP base (4 contractions 8.3->6.2->5.1->5.4%, depth 15.3%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 4.5,
+        "R_per_share": 60.42,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (8.7% \u2192 5.4% \u2192 7.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.6%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +6.4%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 49): you'd buy the breakout ABOVE the 59.5 pivot, stop 55 (below base), measured-move target 76.06 (R:R 3.7).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "IBOC",
-      "signal_date": "2026-07-28",
-      "close": 77.68,
-      "pivot": 78.46,
-      "entry": 78.46,
-      "stop": 74.39,
-      "target": 92.7,
-      "rr": 3.5,
-      "base_depth_pct": 5.2,
-      "vcp_depths_pct": [
-        5.5,
-        5.6
-      ],
-      "vcp_detail": "depths=[5.5, 5.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0618,
-      "rs_rank": 0.806,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.6,
-        "pct_above_ma50": 4.09,
-        "rsi": 58.0
-      },
-      "volume_breakout_x": 0.56,
-      "adv": 26839022,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 1.3,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "International Bancshares Corp",
-      "setup": "VCP base (2 contractions 5.5->5.6%, depth 5.2%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 4.07,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.5% \u2192 5.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.2%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +6.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 78.46 pivot, stop 74.39 (below base), measured-move target 92.7 (R:R 3.5).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "KRE",
-      "signal_date": "2026-07-28",
-      "close": 76.79,
-      "pivot": 78.09,
-      "entry": 78.09,
-      "stop": 73.95,
-      "target": 94.39,
-      "rr": 3.9,
-      "base_depth_pct": 5.3,
-      "vcp_depths_pct": [
-        6.8,
-        5.0,
-        5.1
-      ],
-      "vcp_detail": "depths=[6.8, 5.0, 5.1] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0609,
-      "rs_rank": 0.805,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.93,
-        "pct_above_ma50": 5.79,
-        "rsi": 57.4
-      },
-      "volume_breakout_x": 0.86,
-      "adv": 1048431576,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 52.4,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": true,
-      "name": "State Street SPDR S&P Regional Banking ETF",
-      "setup": "VCP base (3 contractions 6.8->5.0->5.1%, depth 5.3%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 4.14,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (6.8% \u2192 5.0% \u2192 5.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.3%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +6.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 57): you'd buy the breakout ABOVE the 78.09 pivot, stop 73.95 (below base), measured-move target 94.39 (R:R 3.9).",
+        "Its base shows 4 successive, TIGHTENING pullbacks (8.3% \u2192 6.2% \u2192 5.1% \u2192 5.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 15.3%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +7.3%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 38): you'd buy the breakout ABOVE the 394.54 pivot, stop 334.12 (below base), measured-move target 513.82 (R:R 2.0).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "ET",
-      "signal_date": "2026-07-28",
+      "signal_date": "2026-07-29",
       "close": 20.2,
       "pivot": 20.56,
       "entry": 20.56,
@@ -2199,31 +1509,31 @@
         10.8
       ],
       "vcp_detail": "depths=[7.4, 10.8] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0479,
-      "rs_rank": 0.787,
+      "rs_vs_spy": 0.0717,
+      "rs_rank": 0.81,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.09,
-        "pct_above_ma50": 3.11,
-        "rsi": 57.8
+        "atr_above_pivot": -1.06,
+        "pct_above_ma50": 3.12,
+        "rsi": 57.0
       },
-      "volume_breakout_x": 1.27,
-      "adv": 175730734,
+      "volume_breakout_x": 1.06,
+      "adv": 174328165,
       "adv_floor": 20000000,
-      "adv_headroom_x": 8.8,
+      "adv_headroom_x": 8.7,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "Energy Transfer LP Common Units representing limited partner interests",
       "setup": "VCP base (2 contractions 7.4->10.8%, depth 3.4%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -2236,15 +1546,131 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (7.4% \u2192 10.8%) on drying volume \u2014 the classic VCP volatility contraction (depth 3.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +4.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 20.56 pivot, stop 19.86 (below base), measured-move target 23.42 (R:R 4.1).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +7.2%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 57): you'd buy the breakout ABOVE the 20.56 pivot, stop 19.86 (below base), measured-move target 23.42 (R:R 4.1).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "FITB",
+      "signal_date": "2026-07-29",
+      "close": 56.57,
+      "pivot": 59.5,
+      "entry": 59.5,
+      "stop": 55,
+      "target": 76.06,
+      "rr": 3.7,
+      "base_depth_pct": 7.6,
+      "vcp_depths_pct": [
+        8.7,
+        5.4,
+        7.6
+      ],
+      "vcp_detail": "depths=[8.7, 5.4, 7.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0674,
+      "rs_rank": 0.805,
+      "rs_decile": "strong",
+      "rs_top_decile_bonus": false,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -2.05,
+        "pct_above_ma50": 4.77,
+        "rsi": 54.3
+      },
+      "volume_breakout_x": 0.84,
+      "adv": 379219664,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 19.0,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Fifth Third Bancorp",
+      "setup": "VCP base (3 contractions 8.7->5.4->7.6%, depth 7.6%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 4.5,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 3 successive, TIGHTENING pullbacks (8.7% \u2192 5.4% \u2192 7.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.6%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +6.7%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 54): you'd buy the breakout ABOVE the 59.5 pivot, stop 55 (below base), measured-move target 76.06 (R:R 3.7).",
+        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
+      ]
+    },
+    {
+      "ticker": "HSIC",
+      "signal_date": "2026-07-29",
+      "close": 85.83,
+      "pivot": 89.34,
+      "entry": 89.34,
+      "stop": 83.19,
+      "target": 109.99,
+      "rr": 3.4,
+      "base_depth_pct": 6.9,
+      "vcp_depths_pct": [
+        6.5,
+        9.6,
+        5.3
+      ],
+      "vcp_detail": "depths=[6.5, 9.6, 5.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0532,
+      "rs_rank": 0.786,
+      "rs_decile": "strong",
+      "rs_top_decile_bonus": false,
+      "not_extended": true,
+      "not_extended_status": "NOT_EXTENDED",
+      "not_extended_metrics": {
+        "atr_above_pivot": -1.88,
+        "pct_above_ma50": 5.9,
+        "rsi": 61.1
+      },
+      "volume_breakout_x": 1.29,
+      "adv": 111200490,
+      "adv_floor": 20000000,
+      "adv_headroom_x": 5.6,
+      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
+      "is_etf": false,
+      "name": "Henry Schein Inc",
+      "setup": "VCP base (3 contractions 6.5->9.6->5.3%, depth 6.9%)",
+      "regime_at_signal": "TRANSITIONAL",
+      "regime_detail": {
+        "trendiness": 47,
+        "spy_vs_sma50": "DOWN",
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
+      },
+      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "max_safe": "deferred \u2014 needs n>=30 validated edge",
+        "R_per_share": 6.15,
+        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
+      },
+      "education": [
+        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
+        "Its base shows 3 successive, TIGHTENING pullbacks (6.5% \u2192 9.6% \u2192 5.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.9%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +5.3%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 61): you'd buy the breakout ABOVE the 89.34 pivot, stop 83.19 (below base), measured-move target 109.99 (R:R 3.4).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "JETS",
-      "signal_date": "2026-07-28",
-      "close": 31.86,
+      "signal_date": "2026-07-29",
+      "close": 30.97,
       "pivot": 33.98,
       "entry": 33.98,
       "stop": 29.01,
@@ -2258,30 +1684,30 @@
       ],
       "vcp_detail": "depths=[11.8, 8.9, 14.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
       "rs_vs_spy": 0.0406,
-      "rs_rank": 0.776,
+      "rs_rank": 0.77,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -2.42,
-        "pct_above_ma50": 6.49,
-        "rsi": 45.6
+        "atr_above_pivot": -3.55,
+        "pct_above_ma50": 3.19,
+        "rsi": 44.6
       },
-      "volume_breakout_x": 0.83,
-      "adv": 92839972,
+      "volume_breakout_x": 0.97,
+      "adv": 92163941,
       "adv_floor": 20000000,
       "adv_headroom_x": 4.6,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": true,
       "name": "U.S. Global Jets ETF",
       "setup": "VCP base (3 contractions 11.8->8.9->14.6%, depth 14.6%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -2295,244 +1721,14 @@
         "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 3 successive, TIGHTENING pullbacks (11.8% \u2192 8.9% \u2192 14.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 14.6%).",
         "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +4.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 46): you'd buy the breakout ABOVE the 33.98 pivot, stop 29.01 (below base), measured-move target 44.43 (R:R 2.1).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "HSIC",
-      "signal_date": "2026-07-28",
-      "close": 85.71,
-      "pivot": 89.34,
-      "entry": 89.34,
-      "stop": 83.19,
-      "target": 109.99,
-      "rr": 3.4,
-      "base_depth_pct": 6.9,
-      "vcp_depths_pct": [
-        7.9,
-        9.6,
-        5.3
-      ],
-      "vcp_detail": "depths=[7.9, 9.6, 5.3] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0352,
-      "rs_rank": 0.768,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -1.78,
-        "pct_above_ma50": 6.1,
-        "rsi": 46.3
-      },
-      "volume_breakout_x": 1.01,
-      "adv": 112671049,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 5.6,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Henry Schein Inc",
-      "setup": "VCP base (3 contractions 7.9->9.6->5.3%, depth 6.9%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 6.15,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (7.9% \u2192 9.6% \u2192 5.3%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.5%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 46): you'd buy the breakout ABOVE the 89.34 pivot, stop 83.19 (below base), measured-move target 109.99 (R:R 3.4).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "IWM",
-      "signal_date": "2026-07-28",
-      "close": 293.37,
-      "pivot": 302.72,
-      "entry": 302.72,
-      "stop": 290.17,
-      "target": 366.75,
-      "rr": 5.1,
-      "base_depth_pct": 4.1,
-      "vcp_depths_pct": [
-        5.9,
-        5.2
-      ],
-      "vcp_detail": "depths=[5.9, 5.2] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0329,
-      "rs_rank": 0.765,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -2.45,
-        "pct_above_ma50": 0.71,
-        "rsi": 44.4
-      },
-      "volume_breakout_x": 0.79,
-      "adv": 7483492464,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 374.2,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": true,
-      "name": "iShares Russell 2000 ETF",
-      "setup": "VCP base (2 contractions 5.9->5.2%, depth 4.1%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 12.55,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.9% \u2192 5.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.3%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 44): you'd buy the breakout ABOVE the 302.72 pivot, stop 290.17 (below base), measured-move target 366.75 (R:R 5.1).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "VTWO",
-      "signal_date": "2026-07-28",
-      "close": 118.57,
-      "pivot": 122.34,
-      "entry": 122.34,
-      "stop": 117.32,
-      "target": 148.28,
-      "rr": 5.2,
-      "base_depth_pct": 4.1,
-      "vcp_depths_pct": [
-        5.9,
-        5.2
-      ],
-      "vcp_detail": "depths=[5.9, 5.2] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.033,
-      "rs_rank": 0.765,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -2.48,
-        "pct_above_ma50": 0.72,
-        "rsi": 44.3
-      },
-      "volume_breakout_x": 0.58,
-      "adv": 227443371,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 11.4,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": true,
-      "name": "Vanguard Russell 2000 ETF",
-      "setup": "VCP base (2 contractions 5.9->5.2%, depth 4.1%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 5.02,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.9% \u2192 5.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.3%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 44): you'd buy the breakout ABOVE the 122.34 pivot, stop 117.32 (below base), measured-move target 148.28 (R:R 5.2).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "ESNT",
-      "signal_date": "2026-07-28",
-      "close": 67.38,
-      "pivot": 67.71,
-      "entry": 67.71,
-      "stop": 63.01,
-      "target": 80.08,
-      "rr": 2.6,
-      "base_depth_pct": 6.9,
-      "vcp_depths_pct": [
-        8.7,
-        13.2,
-        5.5
-      ],
-      "vcp_detail": "depths=[8.7, 13.2, 5.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0315,
-      "rs_rank": 0.763,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.25,
-        "pct_above_ma50": 9.33,
-        "rsi": 62.5
-      },
-      "volume_breakout_x": 0.86,
-      "adv": 48344336,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 2.4,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "Essent Group LTD",
-      "setup": "VCP base (3 contractions 8.7->13.2->5.5%, depth 6.9%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 4.7,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (8.7% \u2192 13.2% \u2192 5.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 62): you'd buy the breakout ABOVE the 67.71 pivot, stop 63.01 (below base), measured-move target 80.08 (R:R 2.6).",
+        "It is NOT chased (not-extended, RSI 45): you'd buy the breakout ABOVE the 33.98 pivot, stop 29.01 (below base), measured-move target 44.43 (R:R 2.1).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
       "ticker": "SO",
-      "signal_date": "2026-07-28",
-      "close": 96.78,
+      "signal_date": "2026-07-29",
+      "close": 96.05,
       "pivot": 99.26,
       "entry": 99.26,
       "stop": 93.21,
@@ -2544,31 +1740,31 @@
         6.1
       ],
       "vcp_detail": "depths=[8.6, 6.1] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0306,
+      "rs_vs_spy": 0.0365,
       "rs_rank": 0.761,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.39,
-        "pct_above_ma50": 2.55,
-        "rsi": 48.0
+        "atr_above_pivot": -1.78,
+        "pct_above_ma50": 1.73,
+        "rsi": 48.7
       },
-      "volume_breakout_x": 0.95,
-      "adv": 547327074,
+      "volume_breakout_x": 0.91,
+      "adv": 548503854,
       "adv_floor": 20000000,
       "adv_headroom_x": 27.4,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
       "name": "The Southern Company",
       "setup": "VCP base (2 contractions 8.6->6.1%, depth 6.1%)",
-      "regime_at_signal": "CHOP",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
@@ -2581,412 +1777,181 @@
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
         "Its base shows 2 successive, TIGHTENING pullbacks (8.6% \u2192 6.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.1%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 48): you'd buy the breakout ABOVE the 99.26 pivot, stop 93.21 (below base), measured-move target 112.51 (R:R 2.2).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.6%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 49): you'd buy the breakout ABOVE the 99.26 pivot, stop 93.21 (below base), measured-move target 112.51 (R:R 2.2).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "AEE",
-      "signal_date": "2026-07-28",
-      "close": 112.51,
-      "pivot": 118.32,
-      "entry": 118.32,
-      "stop": 109.02,
-      "target": 138.75,
-      "rr": 2.2,
-      "base_depth_pct": 7.9,
+      "ticker": "CAH",
+      "signal_date": "2026-07-29",
+      "close": 229.12,
+      "pivot": 243.21,
+      "entry": 243.21,
+      "stop": 220.37,
+      "target": 305.97,
+      "rr": 2.7,
+      "base_depth_pct": 9.4,
       "vcp_depths_pct": [
-        8.5,
-        6.3,
-        7.9
+        10.0,
+        5.1,
+        9.4
       ],
-      "vcp_detail": "depths=[8.5, 6.3, 7.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0247,
-      "rs_rank": 0.751,
+      "vcp_detail": "depths=[10.0, 5.1, 9.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0332,
+      "rs_rank": 0.755,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -2.8,
-        "pct_above_ma50": 1.62,
-        "rsi": 43.5
+        "atr_above_pivot": -2.84,
+        "pct_above_ma50": 4.25,
+        "rsi": 40.5
       },
-      "volume_breakout_x": 0.68,
-      "adv": 193554936,
+      "volume_breakout_x": 1.23,
+      "adv": 505551549,
       "adv_floor": 20000000,
-      "adv_headroom_x": 9.7,
+      "adv_headroom_x": 25.3,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "Ameren Corporation",
-      "setup": "VCP base (3 contractions 8.5->6.3->7.9%, depth 7.9%)",
-      "regime_at_signal": "CHOP",
+      "name": "Cardinal Health, Inc.",
+      "setup": "VCP base (3 contractions 10.0->5.1->9.4%, depth 9.4%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 9.3,
+        "R_per_share": 22.84,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (8.5% \u2192 6.3% \u2192 7.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.9%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +2.5%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 44): you'd buy the breakout ABOVE the 118.32 pivot, stop 109.02 (below base), measured-move target 138.75 (R:R 2.2).",
+        "Its base shows 3 successive, TIGHTENING pullbacks (10.0% \u2192 5.1% \u2192 9.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 9.4%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +3.3%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 40): you'd buy the breakout ABOVE the 243.21 pivot, stop 220.37 (below base), measured-move target 305.97 (R:R 2.7).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "TMV",
-      "signal_date": "2026-07-28",
-      "close": 40.02,
-      "pivot": 41.8,
-      "entry": 41.8,
-      "stop": 39.88,
-      "target": 50.59,
-      "rr": 4.6,
-      "base_depth_pct": 4.6,
+      "ticker": "UDR",
+      "signal_date": "2026-07-29",
+      "close": 39.72,
+      "pivot": 42,
+      "entry": 42,
+      "stop": 38.48,
+      "target": 50.52,
+      "rr": 2.4,
+      "base_depth_pct": 8.4,
       "vcp_depths_pct": [
-        5.2,
-        16.9
+        5.3,
+        6.5
       ],
-      "vcp_detail": "depths=[5.2, 16.9] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0218,
-      "rs_rank": 0.746,
+      "vcp_detail": "depths=[5.3, 6.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0205,
+      "rs_rank": 0.729,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -2.57,
-        "pct_above_ma50": 2.69,
-        "rsi": 56.8
+        "atr_above_pivot": -2.99,
+        "pct_above_ma50": 2.04,
+        "rsi": 48.9
       },
-      "volume_breakout_x": 0.92,
-      "adv": 24242737,
+      "volume_breakout_x": 0.97,
+      "adv": 168249707,
       "adv_floor": 20000000,
-      "adv_headroom_x": 1.2,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": true,
-      "name": "Direxion Daily 20+ Year Treasury Bear 3X ETF",
-      "setup": "VCP base (2 contractions 5.2->16.9%, depth 4.6%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 1.92,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.2% \u2192 16.9%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.6%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +2.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 57): you'd buy the breakout ABOVE the 41.8 pivot, stop 39.88 (below base), measured-move target 50.59 (R:R 4.6).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "AME",
-      "signal_date": "2026-07-28",
-      "close": 241.43,
-      "pivot": 244.71,
-      "entry": 244.71,
-      "stop": 226.51,
-      "target": 284.32,
-      "rr": 2.2,
-      "base_depth_pct": 7.4,
-      "vcp_depths_pct": [
-        5.5,
-        9.5,
-        7.4
-      ],
-      "vcp_detail": "depths=[5.5, 9.5, 7.4] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0188,
-      "rs_rank": 0.74,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.65,
-        "pct_above_ma50": 3.99,
-        "rsi": 70.3
-      },
-      "volume_breakout_x": 1.2,
-      "adv": 263490965,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 13.2,
+      "adv_headroom_x": 8.4,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "Ametek, Inc.",
-      "setup": "VCP base (3 contractions 5.5->9.5->7.4%, depth 7.4%)",
-      "regime_at_signal": "CHOP",
+      "name": "UDR, Inc.",
+      "setup": "VCP base (2 contractions 5.3->6.5%, depth 8.4%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 18.2,
+        "R_per_share": 3.52,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (5.5% \u2192 9.5% \u2192 7.4%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +1.9%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 70): you'd buy the breakout ABOVE the 244.71 pivot, stop 226.51 (below base), measured-move target 284.32 (R:R 2.2).",
+        "Its base shows 2 successive, TIGHTENING pullbacks (5.3% \u2192 6.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.4%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +2.1%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 49): you'd buy the breakout ABOVE the 42 pivot, stop 38.48 (below base), measured-move target 50.52 (R:R 2.4).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     },
     {
-      "ticker": "NWE",
-      "signal_date": "2026-07-28",
-      "close": 72.29,
-      "pivot": 74.13,
-      "entry": 74.13,
-      "stop": 70.85,
-      "target": 84.83,
-      "rr": 3.3,
-      "base_depth_pct": 4.4,
+      "ticker": "EXPD",
+      "signal_date": "2026-07-29",
+      "close": 170.13,
+      "pivot": 183.52,
+      "entry": 183.52,
+      "stop": 169.22,
+      "target": 237.45,
+      "rr": 3.8,
+      "base_depth_pct": 7.8,
       "vcp_depths_pct": [
-        6.0,
-        10.1,
-        5.6
+        9.7,
+        5.0,
+        5.7
       ],
-      "vcp_detail": "depths=[6.0, 10.1, 5.6] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0123,
-      "rs_rank": 0.726,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -1.22,
-        "pct_above_ma50": 1.64,
-        "rsi": 58.0
-      },
-      "volume_breakout_x": 0.66,
-      "adv": 35313507,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 1.8,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": false,
-      "name": "NorthWestern Energy Group, Inc. Common Stock",
-      "setup": "VCP base (3 contractions 6.0->10.1->5.6%, depth 4.4%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 3.28,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 3 successive, TIGHTENING pullbacks (6.0% \u2192 10.1% \u2192 5.6%) on drying volume \u2014 the classic VCP volatility contraction (depth 4.4%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +1.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 74.13 pivot, stop 70.85 (below base), measured-move target 84.83 (R:R 3.3).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "IBB",
-      "signal_date": "2026-07-28",
-      "close": 190.52,
-      "pivot": 198.71,
-      "entry": 198.71,
-      "stop": 185.26,
-      "target": 237.74,
-      "rr": 2.9,
-      "base_depth_pct": 6.8,
-      "vcp_depths_pct": [
-        7.0,
-        5.5
-      ],
-      "vcp_detail": "depths=[7.0, 5.5] tighten=True(0v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0117,
+      "vcp_detail": "depths=[9.7, 5.0, 5.7] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.0181,
       "rs_rank": 0.724,
       "rs_decile": "strong",
       "rs_top_decile_bonus": false,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -2.25,
-        "pct_above_ma50": 6.42,
-        "rsi": 34.5
-      },
-      "volume_breakout_x": 0.68,
-      "adv": 282667503,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 14.1,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": true,
-      "name": "iShares Biotechnology ETF",
-      "setup": "VCP base (2 contractions 7.0->5.5%, depth 6.8%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 13.45,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (7.0% \u2192 5.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 6.8%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +1.2%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 34): you'd buy the breakout ABOVE the 198.71 pivot, stop 185.26 (below base), measured-move target 237.74 (R:R 2.9).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "VXF",
-      "signal_date": "2026-07-28",
-      "close": 237.54,
-      "pivot": 247.67,
-      "entry": 247.67,
-      "stop": 235.1,
-      "target": 297.28,
-      "rr": 3.9,
-      "base_depth_pct": 5.1,
-      "vcp_depths_pct": [
-        5.5,
-        5.2
-      ],
-      "vcp_detail": "depths=[5.5, 5.2] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0076,
-      "rs_rank": 0.714,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -3.21,
-        "pct_above_ma50": 0.21,
-        "rsi": 39.6
-      },
-      "volume_breakout_x": 0.41,
-      "adv": 105564137,
-      "adv_floor": 20000000,
-      "adv_headroom_x": 5.3,
-      "detector": "zigzag_vcp_prereg_d102_2026-07-02",
-      "is_etf": true,
-      "name": "Vanguard Extended Market ETF",
-      "setup": "VCP base (2 contractions 5.5->5.2%, depth 5.1%)",
-      "regime_at_signal": "CHOP",
-      "regime_detail": {
-        "trendiness": 31,
-        "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
-      },
-      "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
-      "size_band_detail": {
-        "conservative": "1%/R",
-        "standard": "2%/R",
-        "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 12.57,
-        "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
-      },
-      "education": [
-        "It's a sector ETF (not a single stock \u2014 see caveat) in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.5% \u2192 5.2%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +0.8%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 40): you'd buy the breakout ABOVE the 247.67 pivot, stop 235.1 (below base), measured-move target 297.28 (R:R 3.9).",
-        "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
-      ]
-    },
-    {
-      "ticker": "OTTR",
-      "signal_date": "2026-07-28",
-      "close": 93.59,
-      "pivot": 95,
-      "entry": 95,
-      "stop": 90.15,
-      "target": 107.26,
-      "rr": 2.5,
-      "base_depth_pct": 5.1,
-      "vcp_depths_pct": [
-        6.9,
-        8.9,
-        6.5,
-        5.1
-      ],
-      "vcp_detail": "depths=[6.9, 8.9, 6.5, 5.1] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.0042,
-      "rs_rank": 0.706,
-      "rs_decile": "strong",
-      "rs_top_decile_bonus": false,
-      "not_extended": true,
-      "not_extended_status": "NOT_EXTENDED",
-      "not_extended_metrics": {
-        "atr_above_pivot": -0.68,
-        "pct_above_ma50": 5.06,
-        "rsi": 60.1
+        "atr_above_pivot": -3.33,
+        "pct_above_ma50": 2.68,
+        "rsi": 58.3
       },
       "volume_breakout_x": 0.72,
-      "adv": 22431791,
+      "adv": 204597415,
       "adv_floor": 20000000,
-      "adv_headroom_x": 1.1,
+      "adv_headroom_x": 10.2,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "Otter Tail Corp",
-      "setup": "VCP base (4 contractions 6.9->8.9->6.5->5.1%, depth 5.1%)",
-      "regime_at_signal": "CHOP",
+      "name": "Expeditors International of Washington, Inc.",
+      "setup": "VCP base (3 contractions 9.7->5.0->5.7%, depth 7.8%)",
+      "regime_at_signal": "TRANSITIONAL",
       "regime_detail": {
-        "trendiness": 31,
+        "trendiness": 47,
         "spy_vs_sma50": "DOWN",
-        "spy_close": 740.86,
-        "spy_sma50": 744.78
+        "spy_close": 729.46,
+        "spy_sma50": 744.4
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 4.85,
+        "R_per_share": 14.3,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 4 successive, TIGHTENING pullbacks (6.9% \u2192 8.9% \u2192 6.5% \u2192 5.1%) on drying volume \u2014 the classic VCP volatility contraction (depth 5.1%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +0.4%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 60): you'd buy the breakout ABOVE the 95 pivot, stop 90.15 (below base), measured-move target 107.26 (R:R 2.5).",
+        "Its base shows 3 successive, TIGHTENING pullbacks (9.7% \u2192 5.0% \u2192 5.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 7.8%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +1.8%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 183.52 pivot, stop 169.22 (below base), measured-move target 237.45 (R:R 3.8).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     }
@@ -3010,13 +1975,13 @@
     "note": "FORWARD only; never blended with historical. Expectancy-led; win% a footnote."
   },
   "honest_read": {
-    "verdict": "HEALTHY at the VCP stage (stage3=59); binding stage = stage3_vcp",
+    "verdict": "HEALTHY at the VCP stage (stage3=38); binding stage = stage3_vcp",
     "binding_stage": "stage3_vcp",
-    "single_stock_qualified": 44,
+    "single_stock_qualified": 31,
     "notes": [
-      "Universe 12315 -> trend 2346 -> liquidity 748 -> VCP 59 -> RS top-decile 51.",
-      "D102 recalibration: VCP tightening rule is now tolerance-based (<=0.85x + ONE violation allowed) on the ZigZag swing legs. Head-to-head vs the strict 0.75x/0-violation CONTROL: recal=59 vs strict-control=7 \u2014 SHADOW/ACCRUING, no 'recal beats strict' claim until n>=30 (pre-registration preregistration_vcp_detector_d102.json, detector zigzag_vcp_prereg_d102_2026-07-02).",
-      "44 single stock(s) qualify this session (was 0 under the strict rule). ZigZag/base/max-T/depth/dry-up/liquidity/RS all UNCHANGED \u2014 only the tightening rule changed.",
+      "Universe 12317 -> trend 1901 -> liquidity 661 -> VCP 38 -> RS top-decile 33.",
+      "D102 recalibration: VCP tightening rule is now tolerance-based (<=0.85x + ONE violation allowed) on the ZigZag swing legs. Head-to-head vs the strict 0.75x/0-violation CONTROL: recal=38 vs strict-control=6 \u2014 SHADOW/ACCRUING, no 'recal beats strict' claim until n>=30 (pre-registration preregistration_vcp_detector_d102.json, detector zigzag_vcp_prereg_d102_2026-07-02).",
+      "31 single stock(s) qualify this session (was 0 under the strict rule). ZigZag/base/max-T/depth/dry-up/liquidity/RS all UNCHANGED \u2014 only the tightening rule changed.",
       "Thresholds chosen by PRINCIPLE, NOT tuned to manufacture picks. Reported as-is. Nothing promoted to live; SHADOW/forward only (n<30 -> ACCRUING)."
     ]
   },
