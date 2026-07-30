@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-29T23:08:03",
+  "timestamp": "2026-07-30T00:00:00",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4073.9,
-  "es_change": null,
-  "price": 4073.9,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 4054.5,
+  "es_change": -11.0,
+  "price": 4054.5,
+  "change": -11.0,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
-  "hold_pct": 100.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 10.0,
+  "hold_pct": 90.0,
   "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 4073.90 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 30.0,
+      "reason": "price 4054.50 at 1-method confluence (VP) near 4050.92 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "SHORT",
+      "confidence": 45.0,
+      "reason": "price 4054.50 < prior_close 4065.50 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,9 +67,24 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "POC",
+      "price": 4050.92,
+      "dist": -3.58,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 4050.92,
+      "dist": -3.58,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
