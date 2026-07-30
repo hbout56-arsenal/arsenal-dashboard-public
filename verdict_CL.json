@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-30T01:25:46",
+  "timestamp": "2026-07-30T02:10:04",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 84.58,
-  "es_change": null,
-  "price": 84.58,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 84.94,
+  "es_change": 0.34,
+  "price": 84.94,
+  "change": 0.34,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "SHORT",
-      "confidence": 30.0,
-      "reason": "price 84.58 at 1-method confluence (VP) near 84.60 (resistance)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 84.94 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 84.94 > prior_close 84.60 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,15 +67,7 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "VP",
-      "label": "HVN",
-      "price": 84.6,
-      "dist": 0.02,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
+  "confluence_zones": [],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
@@ -85,22 +77,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 84.58,
-    "stop": 85.46,
-    "t1": 81.96,
-    "t2": 80.88,
-    "R": 0.88,
-    "rr": 2.98,
-    "stop_basis": "single-source",
+    "entry": 84.94,
+    "stop": 84.58,
+    "t1": 86.24,
+    "t2": 87.12,
+    "R": 0.36,
+    "rr": 3.61,
+    "stop_basis": "confluence",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A",
-    "stop_trace": "single-source: fib-cluster 85.44 only",
-    "t1_trace": "single-source: vp 81.96 only",
-    "t2_trace": "single-source: fib-cluster 80.88 only"
+    "grade": "A+",
+    "stop_trace": "confluence x2: session-level 84.6, vp 84.6",
+    "t1_trace": "single-source: fib-cluster 86.24 only",
+    "t2_trace": "single-source: fib-cluster 87.12 only"
   }
 }
