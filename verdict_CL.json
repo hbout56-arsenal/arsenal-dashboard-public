@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-29T20:19:43",
+  "timestamp": "2026-07-29T21:42:01",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 83.91,
-  "es_change": -0.69,
-  "price": 83.91,
-  "change": -0.69,
-  "price_source": "polygon daily fallback (intraday unavailable)",
+  "es_price": 83.78,
+  "es_change": null,
+  "price": 83.78,
+  "change": null,
+  "price_source": "unavailable",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": true,
-  "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
+  "structure_fresh": false,
+  "structure_source": "unavailable",
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 83.91 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 65.0,
+      "reason": "price 83.78 at 2-method confluence (FIB+TIME+PRICE) near 83.75 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
-      "confidence": 45.0,
-      "reason": "price 83.91 < prior_close 84.60 (daily fallback)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "structure unavailable"
     },
     {
       "name": "SectorDivergence",
@@ -67,8 +67,23 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": true,
+  "confluence_zones": [
+    {
+      "method": "FIB",
+      "label": "C3",
+      "price": 83.75,
+      "dist": -0.03,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 83.75,
+      "dist": -0.03,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -77,22 +92,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 83.91,
-    "stop": 85.39,
-    "t1": 80.88,
-    "t2": 77.78,
-    "R": 1.48,
-    "rr": 2.05,
-    "stop_basis": "confluence",
+    "entry": 83.78,
+    "stop": 81.94,
+    "t1": 87.12,
+    "t2": 87.67,
+    "R": 1.84,
+    "rr": 1.82,
+    "stop_basis": "single-source",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A+",
-    "stop_trace": "confluence x2: session-level 84.6, fib-cluster 85.44",
-    "t1_trace": "single-source: fib-cluster 80.88 only",
-    "t2_trace": "single-source: swing-pivot 77.78 only"
+    "grade": "A",
+    "stop_trace": "single-source: vp 81.96 only",
+    "t1_trace": "single-source: fib-cluster 87.12 only",
+    "t2_trace": "single-source: fib-cluster 87.67 only"
   }
 }
