@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-30T05:23:04",
+  "timestamp": "2026-07-30T06:04:01",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
@@ -13,16 +13,16 @@
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 10.0,
-  "hold_pct": 90.0,
-  "short_pct": 0.0,
+  "long_pct": 0.0,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "LONG",
-      "confidence": 30.0,
-      "reason": "price 84.22 at 1-method confluence (FIB) near 84.14 (support)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 84.22 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -67,15 +67,7 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "FIB",
-      "label": "C3",
-      "price": 84.14,
-      "dist": -0.08,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
+  "confluence_zones": [],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
@@ -84,6 +76,23 @@
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 84.22,
+    "stop": 84.61,
+    "t1": 83.48,
+    "t2": 82.67,
+    "R": 0.39,
+    "rr": 1.9,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "confluence x2: fib-cluster 84.58, session-level 84.6",
+    "t1_trace": "single-source: fib-cluster 83.48 only",
+    "t2_trace": "single-source: fib-cluster 82.67 only"
   }
 }
