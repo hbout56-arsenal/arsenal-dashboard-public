@@ -1,20 +1,14 @@
 {
- "generated_at": "2026-07-30T13:12:00.288831+00:00",
+ "generated_at": "2026-07-30T17:15:38.993358+00:00",
  "symbol": "JAZZ",
  "timeframe": "daily",
  "status": "ok",
- "verdict": "LEADING_DIAGONAL",
- "conviction": "HIGH",
+ "verdict": "CORRECTIVE_ABC",
+ "conviction": "CONFLICTED",
  "as_of": "2026-07-30",
- "last_price": 255.9101,
- "n_pivots": 98,
+ "last_price": 256.41,
+ "n_pivots": 99,
  "pivots": [
-  {
-   "t": 1772773200000,
-   "price": 176.67,
-   "type": "L",
-   "date": "2026-03-06"
-  },
   {
    "t": 1773115200000,
    "price": 188.62,
@@ -188,73 +182,65 @@
    "price": 261.3,
    "type": "H",
    "date": "2026-07-28"
+  },
+  {
+   "t": 1785384000000,
+   "price": 252.19,
+   "type": "L",
+   "date": "2026-07-30"
   }
  ],
  "primary": {
-  "name": "LEADING_DIAGONAL",
-  "narrative": "Leading diagonal up (overlapping 5) \u2014 often wave 1 of a new advance. Bullish: expect a pullback then continuation higher.",
-  "type": "diagonal",
-  "direction": "up",
+  "name": "CORRECTIVE_ABC",
+  "narrative": "Recent structure fits corrective (C incomplete \u2014 0.54A); the rally from A is a B-wave, with C to follow down.",
+  "type": "correction",
+  "direction": "down",
   "points": [
    {
     "label": "0",
-    "price": 220.74,
-    "t": 1781755200000,
-    "date": "2026-06-18",
-    "type": "L"
-   },
-   {
-    "label": "1",
-    "price": 234.08,
-    "t": 1782273600000,
-    "date": "2026-06-24",
-    "type": "H"
-   },
-   {
-    "label": "2",
-    "price": 224.95,
-    "t": 1782360000000,
-    "date": "2026-06-25",
-    "type": "L"
-   },
-   {
-    "label": "3",
     "price": 250.49,
     "t": 1783569600000,
     "date": "2026-07-09",
     "type": "H"
    },
    {
-    "label": "4",
+    "label": "A",
     "price": 233.46,
     "t": 1784088000000,
     "date": "2026-07-15",
     "type": "L"
    },
    {
-    "label": "5",
+    "label": "B",
     "price": 261.3,
     "t": 1785211200000,
     "date": "2026-07-28",
     "type": "H"
+   },
+   {
+    "label": "C",
+    "price": 252.19,
+    "t": 1785384000000,
+    "date": "2026-07-30",
+    "type": "L"
    }
   ],
   "invalidation": {
-   "level": 219.64,
-   "rule": "Break below the diagonal origin invalidates this count"
+   "level": 250.49,
+   "rule": "Break beyond wave 0 (250.49) invalidates ABC correction"
   },
   "targets": {
-   "diag_high_retest": 261.3,
-   "1.272_extension": 272.33
+   "c_equals_a": 278.33,
+   "c_1.618_a": 288.85
   },
   "confluence": {
-   "count": 2,
+   "count": 1,
    "trace": [
     {
      "pillar": "invalidation",
      "fired": true,
-     "level": 219.64,
-     "reason": "invalidation 219.64 = prior swing L 220.74"
+     "level": 250.49,
+     "reason": "invalidation 250.49 = prior swing H 250.49"
     },
     {
      "pillar": "direction",
@@ -263,8 +249,8 @@
     },
     {
      "pillar": "structure",
-     "fired": true,
-     "reason": "analyzer rates the primary count clean (HIGH conviction)"
+     "fired": false,
+     "reason": "analyzer conviction CONFLICTED \u2014 count not rated clean"
     }
    ],
    "unavailable": [
@@ -273,63 +259,38 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "unavailable",
-   "scenario_direction": "up",
+   "scenario_direction": "down",
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
    "status": "ok",
    "zone": [
-    261.3,
-    272.33
+    278.33,
+    288.85
    ],
    "targets_named": {
-    "diag_high_retest": 261.3,
-    "1.272_extension": 272.33
+    "c_equals_a": 278.33,
+    "c_1.618_a": 288.85
    },
    "direction": "up",
    "origin": {
-    "price": 261.3,
-    "t": 1785211200000,
-    "label": "5"
+    "price": 252.19,
+    "t": 1785384000000,
+    "label": "C"
    },
-   "from_price": 261.3,
+   "from_price": 252.19,
    "invalidation": {
-    "level": 219.64,
-    "rule": "Break below the diagonal origin invalidates this count"
+    "level": 250.49,
+    "rule": "Break beyond wave 0 (250.49) invalidates ABC correction"
    },
-   "basis": "fib targets the analyzer already computes (diag_high_retest, 1.272_extension)",
+   "basis": "fib targets the analyzer already computes (c_equals_a, c_1.618_a)",
    "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
    "one_wave_ahead": true,
    "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
   },
   "subwaves": [
    {
-    "leg": "2-3",
-    "points": [
-     {
-      "label": "(1)",
-      "price": 241.82,
-      "t": 1782792000000
-     },
-     {
-      "label": "(2)",
-      "price": 234.36,
-      "t": 1782964800000
-     },
-     {
-      "label": "(3)",
-      "price": 249.64,
-      "t": 1783396800000
-     },
-     {
-      "label": "(4)",
-      "price": 243.01,
-      "t": 1783483200000
-     }
-    ]
-   },
-   {
-    "leg": "4-5",
+    "leg": "A-B",
     "points": [
      {
       "label": "(1)",
@@ -346,27 +307,27 @@
   ]
  },
  "alternative": {
-  "name": "BULLISH_IMPULSE_CONTINUATION",
-  "narrative": "Trend is up (higher highs and higher lows). Treating the advance as impulsive \u2014 continuation higher after shallow pullbacks favored.",
+  "name": "IRREGULAR_B_C_DOWN",
+  "narrative": "Irregular B-wave (B exceeded A) \u2014 C-wave down in progress.",
   "type": null,
-  "direction": "up",
+  "direction": null,
   "points": [],
   "invalidation": {
-   "level": 232.99,
-   "rule": "Break of last higher-low (233.46) negates continuation"
+   "level": 262.61,
+   "rule": "Break above B-wave high invalidates this count"
   },
   "targets": {
-   "1.272_ext": 268.87,
-   "1.618_ext": 278.51
+   "c_equals_a": 235.76,
+   "c_1.618_a": 219.98
   },
   "confluence": {
-   "count": 1,
+   "count": 0,
    "trace": [
     {
      "pillar": "invalidation",
-     "fired": true,
-     "level": 232.99,
-     "reason": "invalidation 232.99 = prior swing H 234.08 + prior swing L 233.46"
+     "fired": false,
+     "level": 262.61,
+     "reason": "invalidation 262.61 not at a published structural level"
     },
     {
      "pillar": "direction",
@@ -380,27 +341,27 @@
     "fib clusters \u2014 no published cluster feed"
    ],
    "internals_bias": "unavailable",
-   "scenario_direction": "up",
+   "scenario_direction": null,
    "note": "CONFLUENCE COUNT = integer count of independent pillars that fire, NOT a probability (analyzer refuses a single confidence number). A liquidity-pool confluence is CONTEXT \u2014 ICT RAW is net-negative, not a validated edge. More confluence != certainty; both scenarios stay valid only while invalidation holds."
   },
   "projection": {
    "status": "ok",
    "zone": [
-    268.87,
-    278.51
+    219.98,
+    235.76
    ],
    "targets_named": {
-    "1.272_ext": 268.87,
-    "1.618_ext": 278.51
+    "c_equals_a": 235.76,
+    "c_1.618_a": 219.98
    },
-   "direction": "up",
+   "direction": "down",
    "origin": null,
-   "from_price": 255.9101,
+   "from_price": 256.41,
    "invalidation": {
-    "level": 232.99,
-    "rule": "Break of last higher-low (233.46) negates continuation"
+    "level": 262.61,
+    "rule": "Break above B-wave high invalidates this count"
    },
-   "basis": "fib targets the analyzer already computes (1.272_ext, 1.618_ext)",
+   "basis": "fib targets the analyzer already computes (c_equals_a, c_1.618_a)",
    "zone_confluence_note": "no independent VP / liquidity / fib confluence on the zone right now (evidence feeds dark off-hours)",
    "one_wave_ahead": true,
    "note": "PROJECTED, conditional on the count \u2014 NOT a prediction. The count can re-label (esp. sub-1h). Invalidation voids it. Price breaking the level is the trigger, not this zone. A ZONE (range), never a point. SHADOW: does not vote, does not change the confirmed count. One wave ahead only."
@@ -415,19 +376,19 @@
  "recommendation": {
   "status": "setup",
   "direction": "up",
-  "entry": 255.91,
-  "stop": 219.64,
-  "target": 261.3,
-  "rr": 0.15,
+  "entry": 256.41,
+  "stop": 250.49,
+  "target": 278.33,
+  "rr": 3.7,
   "conviction": "LOW",
-  "confluence": 2,
-  "actionable": false,
-  "poor_rr": true,
+  "confluence": 1,
+  "actionable": true,
+  "poor_rr": false,
   "far_inval": true,
-  "risk_pts": 36.27,
+  "risk_pts": 5.92,
   "usd_risk": 100.0,
-  "flag": "POOR R:R 0.15 \u2014 invalidation far from entry (risking 36.3 pts to make 5.4); NOT an actionable setup.",
-  "basis": "primary LEADING_DIAGONAL + projection + invalidation + 2 confluence(s)",
+  "flag": "Wide stop \u2014 invalidation 5.9 pts ($100.0/trade (stock $100 risk)) from entry; size down.",
+  "basis": "primary CORRECTIVE_ABC + projection + invalidation + 1 confluence(s)",
   "note": "SHADOW / informational synthesis of the whole chart \u2014 NOT a validated signal, does not vote. The TRIGGER is price breaking the level, not this card. Stop = the count's invalidation; target = the projected zone edge; conviction factors R:R; R:R<1 is not actionable. Counts re-label (esp. sub-1h)."
  },
  "trendlines": {
@@ -441,55 +402,55 @@
      "t": 1777003200000
     },
     "p2": {
-     "idx": 171,
-     "price": 220.74,
-     "t": 1781755200000
+     "idx": 199,
+     "price": 252.19,
+     "t": 1785384000000
     },
-    "slope": 0.6834,
-    "at_last": 239.88,
-    "touches": 6,
+    "slope": 0.87,
+    "at_last": 252.19,
+    "touches": 9,
     "validated": true,
-    "angle_atr": 0.102,
-    "violations": 0,
+    "angle_atr": 0.123,
+    "violations": 4,
     "span": 66,
-    "score": 67.64,
+    "score": 81.64,
     "with_filter": false,
     "channel": {
-     "opp_at_last": 260.74,
-     "opp_touches": 3,
-     "implied_target": 260.74
+     "opp_at_last": 264.11,
+     "opp_touches": 4,
+     "implied_target": 264.11
     },
     "break": null,
-    "last_touch": false
+    "last_touch": true
    },
    {
     "kind": "support",
     "p1": {
-     "idx": 142,
-     "price": 221.84,
-     "t": 1778126400000
+     "idx": 171,
+     "price": 220.74,
+     "t": 1781755200000
     },
     "p2": {
-     "idx": 148,
-     "price": 225,
-     "t": 1778817600000
+     "idx": 175,
+     "price": 224.95,
+     "t": 1782360000000
     },
-    "slope": 0.5267,
-    "at_last": 251.86,
-    "touches": 8,
+    "slope": 1.0525,
+    "at_last": 250.21,
+    "touches": 7,
     "validated": true,
-    "angle_atr": 0.079,
-    "violations": 6,
-    "span": 57,
-    "score": 63.28,
+    "angle_atr": 0.149,
+    "violations": 0,
+    "span": 28,
+    "score": 76.12,
     "with_filter": false,
     "channel": {
-     "opp_at_last": 260.95,
-     "opp_touches": 4,
-     "implied_target": 260.95
+     "opp_at_last": 291.44,
+     "opp_touches": 3,
+     "implied_target": 291.44
     },
     "break": null,
-    "last_touch": false
+    "last_touch": true
    },
    {
     "kind": "resistance",
@@ -507,7 +468,7 @@
     "at_last": 258.15,
     "touches": 8,
     "validated": true,
-    "angle_atr": 0.065,
+    "angle_atr": 0.062,
     "violations": 1,
     "span": 53,
     "score": 83.12,
@@ -517,7 +478,9 @@
      "opp_touches": 2,
      "implied_target": 246.74
     },
-    "break": null,
+    "break": {
+     "poke_only": true
+    },
     "last_touch": true
    },
    {
@@ -536,32 +499,32 @@
     "at_last": 263.01,
     "touches": 7,
     "validated": true,
-    "angle_atr": 0.128,
+    "angle_atr": 0.121,
     "violations": 3,
     "span": 67,
     "score": 65.68,
     "with_filter": true,
     "channel": {
-     "opp_at_last": 256.89,
+     "opp_at_last": 244.64,
      "opp_touches": 3,
-     "implied_target": 256.89
+     "implied_target": 244.64
     },
     "break": null,
     "last_touch": false
    }
   ],
   "regression": {
-   "slope": 0.7565979300645882,
-   "at_first": 166.9,
-   "at_last": 256.93,
+   "slope": 0.7568045003125214,
+   "at_first": 166.89,
+   "at_last": 256.95,
    "sigma": 7.85,
    "n_first": 80,
    "lookback": 120,
-   "dev_sigma": -0.13,
+   "dev_sigma": -0.07,
    "extended": null
   },
   "filter_trend_up": true,
-  "atr": 6.679,
+  "atr": 7.079,
   "params": {
    "TOUCH_ATR": 0.3,
    "MIN_VALID": 3,
@@ -598,7 +561,7 @@
    "raw_rr": null,
    "rr_rank": null,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -629,14 +592,14 @@
    "filtered": false,
    "forming": false,
    "entry": 221.29,
-   "stop": 231.31,
+   "stop": 231.91,
    "target": 182.63,
-   "risk_pts": 10.02,
-   "rr": 3.86,
+   "risk_pts": 10.62,
+   "rr": 3.64,
    "raw_rr": 4.34,
-   "rr_rank": 3.86,
+   "rr_rank": 3.64,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -644,8 +607,8 @@
     "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 8.92pt < floor) \u00b7 raw R:R 4.34 \u2192 floored 3.86",
-    "\u2465 R:R 3.86 (rank 3.86) \u2713",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 8.92pt < floor) \u00b7 raw R:R 4.34 \u2192 floored 3.64",
+    "\u2465 R:R 3.64 (rank 3.64) \u2713",
     "tier 1 (alert-eligible)"
    ],
    "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
@@ -674,7 +637,7 @@
    "raw_rr": null,
    "rr_rank": null,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -705,14 +668,14 @@
    "filtered": false,
    "forming": false,
    "entry": 240.99,
-   "stop": 230.97,
-   "target": 251.01,
-   "risk_pts": 10.02,
+   "stop": 230.37,
+   "target": 251.61,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.17,
+   "raw_rr": 1.23,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -720,7 +683,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 8.6pt < floor) \u00b7 raw R:R 1.17 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 8.6pt < floor) \u00b7 raw R:R 1.23 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -750,7 +713,7 @@
    "raw_rr": 0.03,
    "rr_rank": 0.03,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -788,7 +751,7 @@
    "raw_rr": null,
    "rr_rank": null,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -819,14 +782,14 @@
    "filtered": true,
    "forming": false,
    "entry": 225.55,
-   "stop": 235.57,
+   "stop": 236.17,
    "target": 182.63,
-   "risk_pts": 10.02,
-   "rr": 4.28,
+   "risk_pts": 10.62,
+   "rr": 4.04,
    "raw_rr": 6.89,
-   "rr_rank": 4.28,
+   "rr_rank": 4.04,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -834,8 +797,8 @@
     "\u2461 trend reversal-at-level",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 6.22pt < floor) \u00b7 raw R:R 6.89 \u2192 floored 4.28",
-    "\u2465 R:R 4.28 (rank 4.28) \u2713",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 6.22pt < floor) \u00b7 raw R:R 6.89 \u2192 floored 4.04",
+    "\u2465 R:R 4.04 (rank 4.04) \u2713",
     "tier 1 (alert-eligible)"
    ],
    "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
@@ -846,8 +809,8 @@
    "direction": "neutral",
    "idx": 172,
    "t": 1782100800000,
-   "at_level": false,
-   "location": "",
+   "at_level": true,
+   "location": "VAH 228.17",
    "quality": false,
    "in_trend": false,
    "trend_tag": "counter-trend",
@@ -864,11 +827,11 @@
    "raw_rr": null,
    "rr_rank": null,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
-    "\u2460 location \u2717 mid-range",
+    "\u2460 location VAH 228.17",
     "\u2461 trend counter-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
@@ -895,14 +858,14 @@
    "filtered": false,
    "forming": false,
    "entry": 230.94,
-   "stop": 220.92,
-   "target": 240.96,
-   "risk_pts": 10.02,
+   "stop": 220.32,
+   "target": 241.56,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.25,
+   "raw_rr": 1.33,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -910,7 +873,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 8.01pt < floor) \u00b7 raw R:R 1.25 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 8.01pt < floor) \u00b7 raw R:R 1.33 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -940,7 +903,7 @@
    "raw_rr": null,
    "rr_rank": null,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -971,14 +934,14 @@
    "filtered": true,
    "forming": false,
    "entry": 224.95,
-   "stop": 234.97,
+   "stop": 235.57,
    "target": 182.63,
-   "risk_pts": 10.02,
-   "rr": 4.22,
+   "risk_pts": 10.62,
+   "rr": 3.98,
    "raw_rr": 5.26,
-   "rr_rank": 4.22,
+   "rr_rank": 3.98,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -986,8 +949,8 @@
     "\u2461 trend reversal-at-level",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 8.05pt < floor) \u00b7 raw R:R 5.26 \u2192 floored 4.22",
-    "\u2465 R:R 4.22 (rank 4.22) \u2713",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 8.05pt < floor) \u00b7 raw R:R 5.26 \u2192 floored 3.98",
+    "\u2465 R:R 3.98 (rank 3.98) \u2713",
     "tier 1 (alert-eligible)"
    ],
    "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
@@ -1009,14 +972,14 @@
    "filtered": false,
    "forming": false,
    "entry": 231.14,
-   "stop": 221.12,
-   "target": 241.16,
-   "risk_pts": 10.02,
+   "stop": 220.52,
+   "target": 241.76,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 2.03,
+   "raw_rr": 2.15,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1024,7 +987,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 4.94pt < floor) \u00b7 raw R:R 2.03 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 4.94pt < floor) \u00b7 raw R:R 2.15 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -1047,14 +1010,14 @@
    "filtered": false,
    "forming": false,
    "entry": 243.81,
-   "stop": 233.79,
-   "target": 253.83,
-   "risk_pts": 10.02,
+   "stop": 233.19,
+   "target": 254.43,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.06,
+   "raw_rr": 1.12,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1062,7 +1025,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 9.45pt < floor) \u00b7 raw R:R 1.06 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 9.45pt < floor) \u00b7 raw R:R 1.12 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -1092,7 +1055,7 @@
    "raw_rr": null,
    "rr_rank": null,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -1130,7 +1093,7 @@
    "raw_rr": 1.0,
    "rr_rank": 1.0,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1161,14 +1124,14 @@
    "filtered": false,
    "forming": false,
    "entry": 248.66,
-   "stop": 238.64,
-   "target": 258.69,
-   "risk_pts": 10.02,
+   "stop": 238.04,
+   "target": 259.28,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.77,
+   "raw_rr": 1.88,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1176,7 +1139,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 5.66pt < floor) \u00b7 raw R:R 1.77 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 5.66pt < floor) \u00b7 raw R:R 1.88 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -1199,14 +1162,14 @@
    "filtered": false,
    "forming": false,
    "entry": 247.26,
-   "stop": 237.24,
-   "target": 257.28,
-   "risk_pts": 10.02,
+   "stop": 236.64,
+   "target": 257.88,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.13,
+   "raw_rr": 1.2,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1214,7 +1177,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 8.84pt < floor) \u00b7 raw R:R 1.13 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 8.84pt < floor) \u00b7 raw R:R 1.2 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -1237,14 +1200,14 @@
    "filtered": false,
    "forming": false,
    "entry": 238.68,
-   "stop": 228.66,
-   "target": 248.7,
-   "risk_pts": 10.02,
+   "stop": 228.06,
+   "target": 249.3,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 2.76,
+   "raw_rr": 2.93,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1252,7 +1215,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2717 weak",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 3.63pt < floor) \u00b7 raw R:R 2.76 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 3.63pt < floor) \u00b7 raw R:R 2.93 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -1275,14 +1238,14 @@
    "filtered": false,
    "forming": false,
    "entry": 240.93,
-   "stop": 230.91,
-   "target": 250.95,
-   "risk_pts": 10.02,
+   "stop": 230.31,
+   "target": 251.55,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.34,
+   "raw_rr": 1.42,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1290,7 +1253,7 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 7.47pt < floor) \u00b7 raw R:R 1.34 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 7.47pt < floor) \u00b7 raw R:R 1.42 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
@@ -1320,7 +1283,7 @@
    "raw_rr": 1.0,
    "rr_rank": 1.0,
    "atr_floored": false,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1351,14 +1314,14 @@
    "filtered": false,
    "forming": false,
    "entry": 249.28,
-   "stop": 259.3,
+   "stop": 259.89,
    "target": 228.17,
-   "risk_pts": 10.02,
-   "rr": 2.11,
+   "risk_pts": 10.62,
+   "rr": 1.99,
    "raw_rr": 3.57,
-   "rr_rank": 2.11,
+   "rr_rank": 1.99,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": false,
    "rr_suspect": false,
    "trace": [
@@ -1366,8 +1329,8 @@
     "\u2461 trend counter-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 5.91pt < floor) \u00b7 raw R:R 3.57 \u2192 floored 2.11",
-    "\u2465 R:R 2.11 (rank 2.11) \u2713",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 5.91pt < floor) \u00b7 raw R:R 3.57 \u2192 floored 1.99",
+    "\u2465 R:R 1.99 (rank 1.99) \u2713",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
    ],
    "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
@@ -1389,14 +1352,14 @@
    "filtered": false,
    "forming": false,
    "entry": 255.0,
-   "stop": 244.97,
-   "target": 265.01,
-   "risk_pts": 10.02,
+   "stop": 244.38,
+   "target": 265.62,
+   "risk_pts": 10.62,
    "rr": 1.0,
-   "raw_rr": 1.51,
+   "raw_rr": 1.61,
    "rr_rank": 1.0,
    "atr_floored": true,
-   "atr_floor_pts": 10.02,
+   "atr_floor_pts": 10.62,
    "rr_reject": true,
    "rr_suspect": false,
    "trace": [
@@ -1404,7 +1367,45 @@
     "\u2461 trend with-trend",
     "\u2462 quality \u2713 strong",
     "\u2463 confluence NA \u2014 internals N/A",
-    "\u2464 stop ATR-FLOORED to 10.02pt (structure 6.62pt < floor) \u00b7 raw R:R 1.51 \u2192 floored 1.0",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 6.62pt < floor) \u00b7 raw R:R 1.61 \u2192 floored 1.0",
+    "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
+    "tier 1 (alert-eligible)"
+   ],
+   "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
+  },
+  {
+   "type": "bull_outside",
+   "tier": 1,
+   "direction": "up",
+   "idx": 199,
+   "t": 1785384000000,
+   "at_level": false,
+   "location": "",
+   "quality": false,
+   "in_trend": true,
+   "trend_tag": "with-trend",
+   "reversal": false,
+   "confluence": "na",
+   "raw": true,
+   "filtered": false,
+   "forming": true,
+   "entry": 259.75,
+   "stop": 249.13,
+   "target": 270.37,
+   "risk_pts": 10.62,
+   "rr": 1.0,
+   "raw_rr": 1.4,
+   "rr_rank": 1.0,
+   "atr_floored": true,
+   "atr_floor_pts": 10.62,
+   "rr_reject": true,
+   "rr_suspect": false,
+   "trace": [
+    "\u2460 location \u2717 mid-range",
+    "\u2461 trend with-trend",
+    "\u2462 quality \u2717 weak",
+    "\u2463 confluence NA \u2014 internals N/A",
+    "\u2464 stop ATR-FLOORED to 10.62pt (structure 7.56pt < floor) \u00b7 raw R:R 1.4 \u2192 floored 1.0",
     "\u2465 R:R 1.0 (rank 1.0) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
     "tier 1 (alert-eligible)"
    ],
