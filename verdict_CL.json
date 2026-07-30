@@ -1,18 +1,18 @@
 {
-  "timestamp": "2026-07-30T00:11:06",
+  "timestamp": "2026-07-30T01:25:46",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 83.8,
-  "es_change": -0.8,
-  "price": 83.8,
-  "change": -0.8,
-  "price_source": "polygon daily fallback (intraday unavailable)",
+  "es_price": 84.58,
+  "es_change": null,
+  "price": 84.58,
+  "change": null,
+  "price_source": "unavailable",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": true,
-  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "structure_fresh": false,
+  "structure_source": "unavailable",
   "long_pct": 0.0,
   "hold_pct": 0.0,
   "short_pct": 100.0,
@@ -20,9 +20,9 @@
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 83.80 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 84.58 at 1-method confluence (VP) near 84.60 (resistance)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
-      "confidence": 45.0,
-      "reason": "price 83.80 < prior_close 84.60 (daily fallback)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "structure unavailable"
     },
     {
       "name": "SectorDivergence",
@@ -67,9 +67,17 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
-  "fib_available": false,
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 84.6,
+      "dist": 0.02,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
+  "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
@@ -80,19 +88,19 @@
     "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 83.8,
-    "stop": 85.39,
-    "t1": 80.47,
-    "t2": 77.58,
-    "R": 1.59,
-    "rr": 2.09,
-    "stop_basis": "confluence",
-    "target_basis": "confluence",
+    "entry": 84.58,
+    "stop": 85.46,
+    "t1": 81.96,
+    "t2": 80.88,
+    "R": 0.88,
+    "rr": 2.98,
+    "stop_basis": "single-source",
+    "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A+",
-    "stop_trace": "confluence x2: session-level 84.6, fib-cluster 85.44",
-    "t1_trace": "confluence x2: vp 80.05, fib-cluster 80.88",
-    "t2_trace": "confluence x2: vp 77.37, swing-pivot 77.78"
+    "grade": "A",
+    "stop_trace": "single-source: fib-cluster 85.44 only",
+    "t1_trace": "single-source: vp 81.96 only",
+    "t2_trace": "single-source: fib-cluster 80.88 only"
   }
 }

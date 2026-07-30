@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-30T00:00:00",
+  "timestamp": "2026-07-30T00:59:05",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4054.5,
-  "es_change": -11.0,
-  "price": 4054.5,
-  "change": -11.0,
-  "price_source": "polygon daily fallback (intraday unavailable)",
+  "es_price": 4101.2,
+  "es_change": null,
+  "price": 4101.2,
+  "change": null,
+  "price_source": "unavailable",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": true,
-  "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 10.0,
-  "hold_pct": 90.0,
+  "structure_fresh": false,
+  "structure_source": "unavailable",
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
   "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "LONG",
-      "confidence": 30.0,
-      "reason": "price 4054.50 at 1-method confluence (VP) near 4050.92 (support)"
+      "confidence": 65.0,
+      "reason": "price 4101.20 at 2-method confluence (FIB+TIME+PRICE) near 4097.41 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
-      "confidence": 45.0,
-      "reason": "price 4054.50 < prior_close 4065.50 (daily fallback)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "structure unavailable"
     },
     {
       "name": "SectorDivergence",
@@ -69,28 +69,52 @@
   ],
   "confluence_zones": [
     {
-      "method": "VP",
-      "label": "POC",
-      "price": 4050.92,
-      "dist": -3.58,
+      "method": "FIB",
+      "label": "C3",
+      "price": 4097.41,
+      "dist": -3.79,
       "vp_timeframe": "daily_swing"
     },
     {
-      "method": "VP",
-      "label": "HVN",
-      "price": 4050.92,
-      "dist": -3.58,
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 4097.41,
+      "dist": -3.79,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 4097.41,
+      "dist": -3.79,
       "vp_timeframe": "daily_swing"
     }
   ],
   "vp_available": true,
-  "fib_available": false,
+  "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure GOLD NEUTRAL (6/25 flip from short-term BEARISH): low may be in at 3959 with positive divergence; prior W-v final-flush target (~4000\u00b1100) reached. Break >4453/4595 without a new low confirms the low is in. GDX W-ii 78-80, then W-iii 110-115.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 4101.2,
+    "stop": 4088.99,
+    "t1": 4135.96,
+    "t2": 4171.4,
+    "R": 12.21,
+    "rr": 2.85,
+    "stop_basis": "single-source",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "single-source: fib-cluster 4089.81 only",
+    "t1_trace": "single-source: fib-cluster 4135.96 only",
+    "t2_trace": "single-source: swing-pivot 4171.4 only"
   }
 }
