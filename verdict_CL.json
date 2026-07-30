@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-29T22:36:42",
+  "timestamp": "2026-07-29T23:10:43",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 83.8,
-  "es_change": -0.8,
-  "price": 83.8,
-  "change": -0.8,
+  "es_price": 83.34,
+  "es_change": -1.26,
+  "price": 83.34,
+  "change": -1.26,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 58.5,
-  "hold_pct": 41.5,
-  "short_pct": 0.0,
+  "long_pct": 0.0,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "LONG",
-      "confidence": 65.0,
-      "reason": "price 83.80 at 2-method confluence (FIB+TIME+PRICE) near 83.75 (support)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 83.34 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -43,7 +43,7 @@
       "pillar": "Structure",
       "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "price 83.80 < prior_close 84.60 (daily fallback)"
+      "reason": "price 83.34 < prior_close 84.60 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,30 +67,32 @@
       "reason": "not applicable to Crude Oil (CL) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "FIB",
-      "label": "C3",
-      "price": 83.75,
-      "dist": -0.05,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "TIME+PRICE",
-      "label": "coincidence",
-      "price": 83.75,
-      "dist": -0.05,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
+  "confluence_zones": [],
   "vp_available": true,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 83.34,
+    "stop": 84.87,
+    "t1": 79.98,
+    "t2": 78.66,
+    "R": 1.53,
+    "rr": 2.2,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x2: session-level 84.6, vp 84.6",
+    "t1_trace": "single-source: vp 79.98 only",
+    "t2_trace": "single-source: vp 78.66 only"
   }
 }
