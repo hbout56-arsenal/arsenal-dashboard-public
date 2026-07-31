@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-07-31T17:50:03.318637+00:00",
+ "generated_at": "2026-07-31T18:28:43.437659+00:00",
  "symbol": "UGP",
  "timeframe": "60m",
  "status": "ok",
  "verdict": "CORRECTIVE_ABC",
  "conviction": "CONFLICTED",
  "as_of": "2026-07-31",
- "last_price": 6.48,
+ "last_price": 6.495,
  "n_pivots": 230,
  "pivots": [
   {
@@ -371,7 +371,7 @@
    },
    "direction": "down",
    "origin": null,
-   "from_price": 6.48,
+   "from_price": 6.495,
    "invalidation": {
     "level": 6.62,
     "rule": "Break above B-wave high invalidates this count"
@@ -391,16 +391,16 @@
  "recommendation": {
   "status": "setup",
   "direction": "up",
-  "entry": 6.48,
+  "entry": 6.5,
   "stop": 6.37,
   "target": 6.73,
-  "rr": 2.27,
+  "rr": 1.88,
   "conviction": "LOW",
   "confluence": 1,
   "actionable": true,
   "poor_rr": false,
   "far_inval": true,
-  "risk_pts": 0.11,
+  "risk_pts": 0.12,
   "usd_risk": 100.0,
   "flag": "Wide stop \u2014 invalidation 0.1 pts ($100.0/trade (stock $100 risk)) from entry; size down.",
   "basis": "primary CORRECTIVE_ABC + projection + invalidation + 1 confluence(s)",
@@ -425,7 +425,7 @@
     "at_last": 6.46,
     "touches": 6,
     "validated": true,
-    "angle_atr": 0.107,
+    "angle_atr": 0.103,
     "violations": 1,
     "span": 33,
     "score": 62.32,
@@ -435,8 +435,10 @@
      "opp_touches": 2,
      "implied_target": 6.83
     },
-    "break": null,
-    "last_touch": false
+    "break": {
+     "poke_only": true
+    },
+    "last_touch": true
    },
    {
     "kind": "support",
@@ -454,7 +456,7 @@
     "at_last": 6.19,
     "touches": 6,
     "validated": true,
-    "angle_atr": 0.052,
+    "angle_atr": 0.05,
     "violations": 2,
     "span": 41,
     "score": 53.64,
@@ -475,6 +477,41 @@
      "t": 1784797200000
     },
     "p2": {
+     "idx": 168,
+     "price": 6.4,
+     "t": 1785186000000
+    },
+    "slope": -0.0053,
+    "at_last": 6.23,
+    "touches": 8,
+    "validated": true,
+    "angle_atr": 0.089,
+    "violations": 4,
+    "span": 61,
+    "score": 66.44,
+    "with_filter": true,
+    "channel": {
+     "opp_at_last": 6.15,
+     "opp_touches": 3,
+     "implied_target": 6.15
+    },
+    "break": {
+     "direction": "up",
+     "bar_t": 1785520800000,
+     "close": 6.495,
+     "line_at": 6.23,
+     "confirmed": "close-confirmed"
+    },
+    "last_touch": false
+   },
+   {
+    "kind": "resistance",
+    "p1": {
+     "idx": 138,
+     "price": 6.56,
+     "t": 1784797200000
+    },
+    "p2": {
      "idx": 179,
      "price": 6.37,
      "t": 1785330000000
@@ -483,7 +520,7 @@
     "at_last": 6.28,
     "touches": 7,
     "validated": true,
-    "angle_atr": 0.081,
+    "angle_atr": 0.078,
     "violations": 4,
     "span": 61,
     "score": 56.44,
@@ -496,54 +533,25 @@
     "break": {
      "direction": "up",
      "bar_t": 1785520800000,
-     "close": 6.48,
+     "close": 6.495,
      "line_at": 6.28,
      "confirmed": "close-confirmed"
     },
     "last_touch": false
-   },
-   {
-    "kind": "resistance",
-    "p1": {
-     "idx": 126,
-     "price": 6.43,
-     "t": 1784710800000
-    },
-    "p2": {
-     "idx": 151,
-     "price": 6.54,
-     "t": 1784901600000
-    },
-    "slope": 0.0044,
-    "at_last": 6.75,
-    "touches": 6,
-    "validated": true,
-    "angle_atr": 0.077,
-    "violations": 4,
-    "span": 73,
-    "score": 46.92,
-    "with_filter": true,
-    "channel": {
-     "opp_at_last": 6.47,
-     "opp_touches": 2,
-     "implied_target": 6.47
-    },
-    "break": null,
-    "last_touch": false
    }
   ],
   "regression": {
-   "slope": 0.002285514619070771,
+   "slope": 0.0022917129661782065,
    "at_first": 6.19,
    "at_last": 6.46,
    "sigma": 0.14,
    "n_first": 80,
    "lookback": 120,
-   "dev_sigma": 0.15,
+   "dev_sigma": 0.26,
    "extended": null
   },
   "filter_trend_up": true,
-  "atr": 0.057,
+  "atr": 0.06,
   "params": {
    "TOUCH_ATR": 0.3,
    "MIN_VALID": 3,
@@ -1807,6 +1815,44 @@
     "\u2464 stop structure n/a",
     "\u2465 R:R None (rank None) \u2713",
     "tier 2 \u2014 folklore, scored not trusted, no alert"
+   ],
+   "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
+  },
+  {
+   "type": "hammer",
+   "tier": 1,
+   "direction": "up",
+   "idx": 199,
+   "t": 1785520800000,
+   "at_level": false,
+   "location": "",
+   "quality": true,
+   "in_trend": true,
+   "trend_tag": "with-trend",
+   "reversal": true,
+   "confluence": "na",
+   "raw": true,
+   "filtered": false,
+   "forming": true,
+   "entry": 6.5,
+   "stop": 6.41,
+   "target": 6.55,
+   "risk_pts": 0.09,
+   "rr": 0.56,
+   "raw_rr": 1.0,
+   "rr_rank": 0.56,
+   "atr_floored": true,
+   "atr_floor_pts": 0.09,
+   "rr_reject": true,
+   "rr_suspect": false,
+   "trace": [
+    "\u2460 location \u2717 mid-range",
+    "\u2461 trend with-trend",
+    "\u2462 quality \u2713 strong",
+    "\u2463 confluence NA \u2014 internals N/A",
+    "\u2464 stop ATR-FLOORED to 0.09pt (structure 0.05pt < floor) \u00b7 raw R:R 1.0 \u2192 floored 0.56",
+    "\u2465 R:R 0.56 (rank 0.56) \u2014 REJECTED: below 1.5 R:R min after ATR floor",
+    "tier 1 (alert-eligible)"
    ],
    "note": "SHADOW / informational. The TRIGGER is price breaking the bar, not the pattern. RAW candle patterns are ~null (coinflip) \u2014 only the A+ context-gated FILTERED instance is tested for edge. Tier-2 is scored to EXPOSE it, not trusted. Counts re-label; size 1\u20132%/R."
   }
