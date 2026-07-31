@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-30T23:14:04 UTC",
+  "generated_at": "2026-07-30T23:51:47 UTC",
   "source": "Polygon futures (DELAYED)",
   "delay_tag": "DELAYED ~10-15min (Polygon futures)",
   "delay_note": "DELAYED ~10-15min (Polygon futures) \u2014 context, NOT a live trigger. Price breaking the stop is the trigger.",
@@ -10,10 +10,10 @@
   "note": "16 tracks PER INSTRUMENT (2 pairs x 4 TFs x RAW/FILTERED). With 16 comparisons ~1-2 look good by chance; best-of-16 is NOT an edge \u2014 it needs a MUCH higher bar + mechanistic sense, not best-of-16.",
   "instruments": {
     "GC": {
-      "available": false,
+      "available": true,
       "ticker": "GCQ6",
       "product": "GC",
-      "feed_status": "dark",
+      "feed_status": "frozen",
       "market_open": true,
       "delay_tag": "DELAYED ~10-15min (Polygon futures)",
       "metric": "net_points",
@@ -22,10 +22,35 @@
       "context_lean": "NEUTRAL",
       "timeframes": {
         "15m": {
-          "available": false,
-          "state": "dark",
-          "note": "DARK \u2014 Polygon returned no bars (DELAYED ~10-15min (Polygon futures) feed)",
-          "delay_tag": "DELAYED ~10-15min (Polygon futures)"
+          "available": true,
+          "state": "frozen",
+          "note": "STALE \u2014 DELAYED ~10-15min (Polygon futures) feed not advancing (latest bar 488m old > 150m ceiling)",
+          "delay_tag": "DELAYED ~10-15min (Polygon futures)",
+          "bar_ts": "2026-07-30 15:45 UTC",
+          "bar_age_min": 488.0,
+          "close": 4106.9,
+          "atr": 14.75,
+          "ema9": 4096.19,
+          "ema21": 4087.18,
+          "ema20": 4087.84,
+          "ema50": 4074.41,
+          "ema200": null,
+          "9>21": true,
+          "20>50": true,
+          "htf_trend": "60m trend n/a",
+          "raw_dir": "LONG",
+          "filtered_dir": null,
+          "filtered_pass": false,
+          "guidance": {
+            "track": "9_21_15m_filtered",
+            "direction": "SHORT",
+            "tf": "15m",
+            "entry": 4118.0,
+            "stop": 4125.4,
+            "t1": 4110.6,
+            "R": 7.4,
+            "stop_basis": "atr_fallback"
+          }
         },
         "30m": {
           "available": false,
@@ -48,15 +73,15 @@
       },
       "tracks_summary": {
         "9_21_15m_raw": {
-          "n_trades": 1678,
-          "n_matured": 1587,
-          "win_rate": 46.4,
-          "net_points_total": 296.39,
-          "net_points_expectancy": 0.19,
-          "t1_hit_rate": 47.5,
-          "stopout_rate": 52.5,
+          "n_trades": 1680,
+          "n_matured": 1589,
+          "win_rate": 46.5,
+          "net_points_total": 336.96,
+          "net_points_expectancy": 0.21,
+          "t1_hit_rate": 47.6,
+          "stopout_rate": 52.4,
           "profit_factor": 1.02,
-          "avg_R": 16.38,
+          "avg_R": 16.39,
           "status": "n>=30, edge unconfirmed"
         },
         "9_21_15m_filtered": {
@@ -144,13 +169,13 @@
           "status": "DESCRIPTIVE \u2014 n<30, not validated"
         },
         "20_50_15m_raw": {
-          "n_trades": 1458,
-          "n_matured": 1414,
-          "win_rate": 50.4,
-          "net_points_total": 1264.52,
-          "net_points_expectancy": 0.89,
-          "t1_hit_rate": 51.6,
-          "stopout_rate": 48.4,
+          "n_trades": 1460,
+          "n_matured": 1416,
+          "win_rate": 50.5,
+          "net_points_total": 1300.19,
+          "net_points_expectancy": 0.92,
+          "t1_hit_rate": 51.7,
+          "stopout_rate": 48.3,
           "profit_factor": 1.11,
           "avg_R": 16.26,
           "status": "n>=30, edge unconfirmed"
@@ -244,10 +269,10 @@
       "disclaimer": "SIMULATED GC/CL EMA on DELAYED ~10-15min (Polygon futures) \u2014 context, NOT a live trigger. Price breaking the structure stop is the trigger, not the EMA cross. NET-POINTS metric, per instrument (GC and CL have different $/point \u2014 not comparable). DESCRIPTIVE until n>=30 per track. NON-VOTING (weight 0) \u2014 the GC/CL meters do not consume this."
     },
     "CL": {
-      "available": true,
+      "available": false,
       "ticker": "CLU6",
       "product": "CL",
-      "feed_status": "frozen",
+      "feed_status": "dark",
       "market_open": true,
       "delay_tag": "DELAYED ~10-15min (Polygon futures)",
       "metric": "net_points",
@@ -256,66 +281,16 @@
       "context_lean": "NEUTRAL",
       "timeframes": {
         "15m": {
-          "available": true,
-          "state": "frozen",
-          "note": "STALE \u2014 DELAYED ~10-15min (Polygon futures) feed not advancing (latest bar 483m old > 150m ceiling)",
-          "delay_tag": "DELAYED ~10-15min (Polygon futures)",
-          "bar_ts": "2026-07-30 15:15 UTC",
-          "bar_age_min": 483.1,
-          "close": 84.31,
-          "atr": 0.63,
-          "ema9": 84.11,
-          "ema21": 84.05,
-          "ema20": 84.05,
-          "ema50": 84.14,
-          "ema200": null,
-          "9>21": true,
-          "20>50": false,
-          "htf_trend": "60m trend n/a",
-          "raw_dir": "LONG",
-          "filtered_dir": null,
-          "filtered_pass": false,
-          "guidance": {
-            "track": "9_21_15m_filtered",
-            "direction": "SHORT",
-            "tf": "15m",
-            "entry": 81.86,
-            "stop": 82.55,
-            "t1": 81.17,
-            "R": 0.69,
-            "stop_basis": "atr_fallback"
-          }
+          "available": false,
+          "state": "dark",
+          "note": "DARK \u2014 Polygon returned no bars (DELAYED ~10-15min (Polygon futures) feed)",
+          "delay_tag": "DELAYED ~10-15min (Polygon futures)"
         },
         "30m": {
-          "available": true,
-          "state": "frozen",
-          "note": "STALE \u2014 DELAYED ~10-15min (Polygon futures) feed not advancing (latest bar 498m old > 240m ceiling)",
-          "delay_tag": "DELAYED ~10-15min (Polygon futures)",
-          "bar_ts": "2026-07-30 15:00 UTC",
-          "bar_age_min": 498.1,
-          "close": 84.31,
-          "atr": 0.77,
-          "ema9": 84.09,
-          "ema21": 84.18,
-          "ema20": 84.18,
-          "ema50": 84.01,
-          "ema200": null,
-          "9>21": false,
-          "20>50": true,
-          "htf_trend": "daily trend n/a",
-          "raw_dir": "SHORT",
-          "filtered_dir": null,
-          "filtered_pass": false,
-          "guidance": {
-            "track": "9_21_30m_filtered",
-            "direction": "LONG",
-            "tf": "30m",
-            "entry": 85.31,
-            "stop": 84.44,
-            "t1": 86.18,
-            "R": 0.87,
-            "stop_basis": "atr_fallback"
-          }
+          "available": false,
+          "state": "dark",
+          "note": "DARK \u2014 Polygon returned no bars (DELAYED ~10-15min (Polygon futures) feed)",
+          "delay_tag": "DELAYED ~10-15min (Polygon futures)"
         },
         "60m": {
           "available": false,
