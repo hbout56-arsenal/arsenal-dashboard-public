@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-07-31T17:21:01",
+  "timestamp": "2026-08-02T18:26:05",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4049.5,
-  "es_change": -50.4,
-  "price": 4049.5,
-  "change": -50.4,
+  "es_price": 4123.1,
+  "es_change": 24.5,
+  "price": 4123.1,
+  "change": 24.5,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 4049.50 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 4123.10 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
+      "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 4049.50 < prior_close 4099.90 (daily fallback)"
+      "reason": "price 4123.10 > prior_close 4098.60 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -77,15 +77,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4049.5,
-    "levels_incomplete": true,
-    "note": "nearest structural target 4044.0 too close for 1.5 R:R (risk 48.53 pts) \u2014 not actionable",
-    "stop": 4098.03,
-    "R": 48.53,
-    "stop_trace": "single-source: vp 4089.57 only",
-    "context_level": "single-source: swing-pivot 4044.0 only"
+    "entry": 4123.1,
+    "stop": 4083.35,
+    "t1": 4221.82,
+    "t2": 4271.48,
+    "R": 39.75,
+    "rr": 2.48,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x2: vp 4085.36, fib-cluster 4097.41",
+    "t1_trace": "single-source: fib-cluster 4221.82 only",
+    "t2_trace": "confluence x2: vp 4259.77, fib-cluster 4283.18"
   }
 }

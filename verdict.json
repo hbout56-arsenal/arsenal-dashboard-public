@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-31T16:52:00",
+  "timestamp": "2026-08-02T18:06:05",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,19 +10,19 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 2822,
+  "internals_age_s": 180066,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
-  "long_pct": 100.0,
-  "hold_pct": 0.0,
+  "long_pct": 0.0,
+  "hold_pct": 100.0,
   "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "LONG",
-      "confidence": 30.0,
-      "reason": "price 7537.75 at 1-method confluence (VP) near 7536.25 (support)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "price 7537.75 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -95,23 +95,8 @@
       "reason": "Inside Bar DARK (VM down/off-hrs) \u2014 context only, non-voting"
     }
   ],
-  "confluence_zones": [
-    {
-      "method": "VP",
-      "label": "POC",
-      "price": 7536.25,
-      "dist": -1.5,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "VP",
-      "label": "HVN",
-      "price": 7536.25,
-      "dist": -1.5,
-      "vp_timeframe": "daily_swing"
-    }
-  ],
-  "vp_available": true,
+  "confluence_zones": [],
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -320,10 +305,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 0.0,
-      "hold_pct": 41.5,
-      "short_pct": 58.5,
-      "price": 7520.5,
+      "long_pct": 100.0,
+      "hold_pct": 0.0,
+      "short_pct": 0.0,
+      "price": 7624,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -333,9 +318,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "SHORT",
+          "verdict": "LONG",
           "confidence": 65.0,
-          "reason": "price 7520.50 at 2-method confluence (FIB+TIME+PRICE) near 7522.46 (resistance)"
+          "reason": "price 7624.00 at 2-method confluence (FIB+TIME+PRICE) near 7623.50 (support)"
         },
         {
           "name": "Breadth",
@@ -355,8 +340,8 @@
           "name": "Structure",
           "pillar": "Structure",
           "verdict": "LONG",
-          "confidence": 45.0,
-          "reason": "price 7520.50 > prior_close 7474.50 (daily fallback)"
+          "confidence": 55.0,
+          "reason": "price 7624.00 > prior_close 7570.00 & at 10d swing-high 7630.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -383,23 +368,23 @@
       "confluence_zones": [
         {
           "method": "FIB",
-          "label": "C6",
-          "price": 7522.46,
-          "dist": 1.96,
+          "label": "C4",
+          "price": 7623.5,
+          "dist": -0.5,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "TIME+PRICE",
           "label": "coincidence",
-          "price": 7522.46,
-          "dist": 1.96,
+          "price": 7623.5,
+          "dist": -0.5,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "TIME+PRICE",
           "label": "coincidence",
-          "price": 7522.46,
-          "dist": 1.96,
+          "price": 7623.5,
+          "dist": -0.5,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -408,23 +393,6 @@
     }
   },
   "guidance": {
-    "active": true,
-    "direction": "LONG",
-    "threshold": 100,
-    "engine": "confluence",
-    "entry": 7537.75,
-    "stop": 7512.17,
-    "t1": 7664.5,
-    "t2": 7712.25,
-    "R": 25.58,
-    "rr": 4.96,
-    "stop_basis": "confluence",
-    "target_basis": "single-source",
-    "levels_source": "confluence engine",
-    "coarse": false,
-    "grade": "A+",
-    "stop_trace": "confluence x2: session-level 7515.5, swing-pivot 7528.5",
-    "t1_trace": "single-source: swing-pivot 7664.5 only",
-    "t2_trace": "single-source: swing-pivot 7712.25 only"
+    "active": false
   }
 }
