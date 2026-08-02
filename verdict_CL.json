@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-08-02T18:46:03",
+  "timestamp": "2026-08-02T19:20:08",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": 81.15,
-  "es_change": null,
-  "price": 81.15,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 80.83,
+  "es_change": -5.97,
+  "price": 80.83,
+  "change": -5.97,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
   "long_pct": 0.0,
-  "hold_pct": 100.0,
-  "short_pct": 0.0,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "price 81.15 not at any VP/fib level (\u00b10.1%)"
+      "reason": "price 80.83 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "SHORT",
+      "confidence": 45.0,
+      "reason": "price 80.83 < prior_close 86.80 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -68,7 +68,7 @@
     }
   ],
   "confluence_zones": [],
-  "vp_available": true,
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -76,6 +76,23 @@
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 80.83,
+    "stop": 84.21,
+    "t1": 73.67,
+    "t2": 71.58,
+    "R": 3.38,
+    "rr": 2.12,
+    "stop_basis": "confluence",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x3: session-level 83.35, fib-cluster 83.65, vp 84.14",
+    "t1_trace": "confluence x2: vp 73.67, fib-cluster 73.67",
+    "t2_trace": "single-source: vp 71.58 only"
   }
 }
