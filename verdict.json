@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-03T04:15:08",
+  "timestamp": "2026-08-03T05:03:01",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 216609,
+  "internals_age_s": 219483,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -96,7 +96,7 @@
     }
   ],
   "confluence_zones": [],
-  "vp_available": true,
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -305,10 +305,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 100.0,
-      "hold_pct": 0.0,
-      "short_pct": 0.0,
-      "price": 7556.5,
+      "long_pct": 0.0,
+      "hold_pct": 41.5,
+      "short_pct": 58.5,
+      "price": 7621.5,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -318,9 +318,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7556.50 at 1-method confluence (VP) near 7549.11 (support)"
+          "verdict": "SHORT",
+          "confidence": 65.0,
+          "reason": "price 7621.50 at 2-method confluence (FIB+TIME+PRICE) near 7626.04 (resistance)"
         },
         {
           "name": "Breadth",
@@ -341,7 +341,7 @@
           "pillar": "Structure",
           "verdict": "LONG",
           "confidence": 45.0,
-          "reason": "price 7556.50 > prior_close 7503.25 (daily fallback)"
+          "reason": "price 7621.50 > prior_close 7570.00 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -367,21 +367,28 @@
       ],
       "confluence_zones": [
         {
-          "method": "VP",
-          "label": "POC",
-          "price": 7549.11,
-          "dist": -7.39,
+          "method": "FIB",
+          "label": "C4",
+          "price": 7626.04,
+          "dist": 4.54,
           "vp_timeframe": "daily_swing"
         },
         {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7549.11,
-          "dist": -7.39,
+          "method": "TIME+PRICE",
+          "label": "coincidence",
+          "price": 7626.04,
+          "dist": 4.54,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "TIME+PRICE",
+          "label": "coincidence",
+          "price": 7626.04,
+          "dist": 4.54,
           "vp_timeframe": "daily_swing"
         }
       ],
-      "vp_available": true,
+      "vp_available": false,
       "fib_available": true
     }
   },
