@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-03T00:48:02 UTC",
+  "generated_at": "2026-08-03T01:54:03 UTC",
   "source": "Polygon futures (DELAYED)",
   "delay_tag": "DELAYED ~10-15min (Polygon futures)",
   "delay_note": "DELAYED ~10-15min (Polygon futures) \u2014 context, NOT a live trigger. Price breaking the stop is the trigger.",
-  "feed_status": "DARK",
+  "feed_status": "DELAYED",
   "metric": "net_points",
   "n_tracks_per_instrument": 16,
   "min_matured_per_track": 30,
@@ -244,10 +244,10 @@
       "disclaimer": "SIMULATED GC/CL EMA on DELAYED ~10-15min (Polygon futures) \u2014 context, NOT a live trigger. Price breaking the structure stop is the trigger, not the EMA cross. NET-POINTS metric, per instrument (GC and CL have different $/point \u2014 not comparable). DESCRIPTIVE until n>=30 per track. NON-VOTING (weight 0) \u2014 the GC/CL meters do not consume this."
     },
     "CL": {
-      "available": false,
+      "available": true,
       "ticker": "CLU6",
       "product": "CL",
-      "feed_status": "dark",
+      "feed_status": "frozen",
       "market_open": true,
       "delay_tag": "DELAYED ~10-15min (Polygon futures)",
       "metric": "net_points",
@@ -256,10 +256,35 @@
       "context_lean": "NEUTRAL",
       "timeframes": {
         "15m": {
-          "available": false,
-          "state": "dark",
-          "note": "DARK \u2014 Polygon returned no bars (DELAYED ~10-15min (Polygon futures) feed)",
-          "delay_tag": "DELAYED ~10-15min (Polygon futures)"
+          "available": true,
+          "state": "frozen",
+          "note": "STALE \u2014 DELAYED ~10-15min (Polygon futures) feed not advancing (latest bar 3193m old > 150m ceiling)",
+          "delay_tag": "DELAYED ~10-15min (Polygon futures)",
+          "bar_ts": "2026-07-31 20:45 UTC",
+          "bar_age_min": 3193.0,
+          "close": 86.8,
+          "atr": 0.46,
+          "ema9": 85.1,
+          "ema21": 84.92,
+          "ema20": 84.93,
+          "ema50": 84.58,
+          "ema200": null,
+          "9>21": true,
+          "20>50": true,
+          "htf_trend": "60m trend n/a",
+          "raw_dir": "LONG",
+          "filtered_dir": null,
+          "filtered_pass": false,
+          "guidance": {
+            "track": "9_21_15m_filtered",
+            "direction": "LONG",
+            "tf": "15m",
+            "entry": 76.23,
+            "stop": 75.08,
+            "t1": 77.38,
+            "R": 1.15,
+            "stop_basis": "structure"
+          }
         },
         "30m": {
           "available": false,
