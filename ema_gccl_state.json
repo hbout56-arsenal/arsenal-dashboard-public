@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-08-03T02:53:03 UTC",
+  "generated_at": "2026-08-03T03:34:01 UTC",
   "source": "Polygon futures (DELAYED)",
   "delay_tag": "DELAYED ~10-15min (Polygon futures)",
   "delay_note": "DELAYED ~10-15min (Polygon futures) \u2014 context, NOT a live trigger. Price breaking the stop is the trigger.",
-  "feed_status": "DARK",
+  "feed_status": "DELAYED",
   "metric": "net_points",
   "n_tracks_per_instrument": 16,
   "min_matured_per_track": 30,
   "note": "16 tracks PER INSTRUMENT (2 pairs x 4 TFs x RAW/FILTERED). With 16 comparisons ~1-2 look good by chance; best-of-16 is NOT an edge \u2014 it needs a MUCH higher bar + mechanistic sense, not best-of-16.",
   "instruments": {
     "GC": {
-      "available": false,
+      "available": true,
       "ticker": "GCZ6",
       "product": "GC",
-      "feed_status": "dark",
+      "feed_status": "frozen",
       "market_open": true,
       "delay_tag": "DELAYED ~10-15min (Polygon futures)",
       "metric": "net_points",
@@ -22,10 +22,35 @@
       "context_lean": "NEUTRAL",
       "timeframes": {
         "15m": {
-          "available": false,
-          "state": "dark",
-          "note": "DARK \u2014 Polygon returned no bars (DELAYED ~10-15min (Polygon futures) feed)",
-          "delay_tag": "DELAYED ~10-15min (Polygon futures)"
+          "available": true,
+          "state": "frozen",
+          "note": "STALE \u2014 DELAYED ~10-15min (Polygon futures) feed not advancing (latest bar 3290m old > 150m ceiling)",
+          "delay_tag": "DELAYED ~10-15min (Polygon futures)",
+          "bar_ts": "2026-07-31 20:45 UTC",
+          "bar_age_min": 3290.1,
+          "close": 4098.6,
+          "atr": 5.53,
+          "ema9": 4104.58,
+          "ema21": 4104.55,
+          "ema20": 4104.54,
+          "ema50": 4108.83,
+          "ema200": null,
+          "9>21": true,
+          "20>50": false,
+          "htf_trend": "60m trend n/a",
+          "raw_dir": "LONG",
+          "filtered_dir": null,
+          "filtered_pass": false,
+          "guidance": {
+            "track": "9_21_15m_filtered",
+            "direction": "SHORT",
+            "tf": "15m",
+            "entry": 4118.0,
+            "stop": 4125.4,
+            "t1": 4110.6,
+            "R": 7.4,
+            "stop_basis": "atr_fallback"
+          }
         },
         "30m": {
           "available": false,
@@ -245,7 +270,7 @@
     },
     "CL": {
       "available": false,
-      "ticker": "CLU6",
+      "ticker": "CLZ6",
       "product": "CL",
       "feed_status": "dark",
       "market_open": true,
