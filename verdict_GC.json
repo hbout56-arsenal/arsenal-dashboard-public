@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-08-03T17:27:54",
+  "timestamp": "2026-08-03T18:51:43",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4110.9,
-  "es_change": 12.3,
-  "price": 4110.9,
-  "change": 12.3,
+  "es_price": 4107.6,
+  "es_change": -3.3,
+  "price": 4107.6,
+  "change": -3.3,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 100.0,
+  "long_pct": 0.0,
   "hold_pct": 0.0,
-  "short_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 4110.90 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 30.0,
+      "reason": "price 4107.60 at 1-method confluence (VP) near 4111.29 (resistance)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "LONG",
+      "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "price 4110.90 > prior_close 4098.60 (daily fallback)"
+      "reason": "price 4107.60 < prior_close 4110.90 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,9 +67,17 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 4111.29,
+      "dist": 3.69,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
@@ -77,22 +85,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "LONG",
+    "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4110.9,
-    "stop": 4083.4,
-    "t1": 4171.68,
-    "t2": 4221.82,
-    "R": 27.5,
-    "rr": 2.21,
+    "entry": 4107.6,
+    "stop": 4176.08,
+    "t1": 3951.02,
+    "t2": 3769.57,
+    "R": 68.48,
+    "rr": 2.29,
     "stop_basis": "confluence",
-    "target_basis": "confluence",
+    "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A+",
-    "stop_trace": "confluence x2: vp 4085.36, fib-cluster 4097.41",
-    "t1_trace": "confluence x3: vp 4169.08, swing-pivot 4171.4, fib-cluster 4174.57",
-    "t2_trace": "single-source: fib-cluster 4221.82 only"
+    "stop_trace": "confluence x2: vp 4161.95, fib-cluster 4174.57",
+    "t1_trace": "single-source: fib-cluster 3951.02 only",
+    "t2_trace": "single-source: fib-cluster 3769.57 only"
   }
 }
