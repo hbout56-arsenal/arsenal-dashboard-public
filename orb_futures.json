@@ -1,8 +1,9 @@
 {
-  "generated_at": "2026-08-04T16:57:51.762852Z",
+  "generated_at": "2026-08-04T17:51:35.914816Z",
   "status": "SHADOW / INFORMATIONAL / DELAYED \u2014 NOT loaded, A+ not validated",
   "sessions": {
-    "MGC": "2026-08-03"
+    "MES": "2026-08-03",
+    "MCL": "2026-08-03"
   },
   "instruments": [
     "MES",
@@ -10,7 +11,7 @@
     "MGC",
     "MCL"
   ],
-  "raw_triggers": 1,
+  "raw_triggers": 2,
   "aplus_triggers": 0,
   "correlation_flag": null,
   "half_day_flag": true,
@@ -18,25 +19,84 @@
   "preregistration": "ORB_FUTURES_PREREGISTRATION.md (FROZEN)",
   "triggers": [
     {
-      "micro": "MGC",
-      "data": "GC",
-      "side": "SHORT",
-      "trigger_time": "09:00",
-      "trigger_price": 4129.5,
-      "vol_mult": 3.77,
-      "or_high": 4140.8,
-      "or_low": 4131.8,
-      "or_window_et": "08:20-08:50",
-      "or_window_flag": "COMEX pit open (assumption-under-test)",
+      "micro": "MES",
+      "data": "ES",
+      "side": "LONG",
+      "trigger_time": "10:10",
+      "trigger_price": 7591,
+      "vol_mult": 5.28,
+      "or_high": 7588.25,
+      "or_low": 7542.75,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
       "raw": true,
       "aplus": false,
       "fails": [
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": true,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "LEADING_DIAGONAL"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime CHOP (trendiness 34)",
+          "tag": "CHOP"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.42 (band 0.2-0.8)",
+          "value": 0.42
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.42xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "CHOP",
+      "daily_bias": "LONG",
+      "entry": 7588.25,
+      "stop": 7542.75,
+      "t1": 7633.75,
+      "t2": 7754.75,
+      "R_pts": 45.5,
+      "rr_t2": 3.7,
+      "stop_basis": "or_edge",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 45.5,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-08-03"
+    },
+    {
+      "micro": "MCL",
+      "data": "CL",
+      "side": "LONG",
+      "trigger_time": "10:10",
+      "trigger_price": 70.46,
+      "vol_mult": 1.69,
+      "or_high": 70.38,
+      "or_low": 70.23,
+      "or_window_et": "09:00-09:30",
+      "or_window_flag": "NYMEX open (assumption-under-test)",
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "trend",
         "regime",
         "range_quality"
       ],
       "filters": {
         "trend": {
-          "pass": true,
+          "pass": false,
           "detail": {
             "bias": "SHORT",
             "verdict": "CORRECTIVE_ABC"
@@ -44,33 +104,33 @@
         },
         "regime": {
           "pass": false,
-          "detail": "proxy regime TRANSITIONAL (trendiness 38)",
+          "detail": "proxy regime TRANSITIONAL (trendiness 56)",
           "tag": "TRANSITIONAL"
         },
         "range_quality": {
           "pass": false,
-          "detail": "OR/ATR 0.12 (band 0.2-0.8)",
-          "value": 0.12
+          "detail": "OR/ATR 0.09 (band 0.2-0.8)",
+          "value": 0.09
         },
         "not_extended": {
           "pass": true,
-          "detail": "0.11xATR from open (max 2.0)"
+          "detail": "0.14xATR from open (max 2.0)"
         }
       },
       "regime_at_signal": "TRANSITIONAL",
       "daily_bias": "SHORT",
-      "entry": 4131.8,
-      "stop": 4150.9,
-      "t1": 4112.7,
-      "t2": 4093.6,
-      "R_pts": 19.1,
-      "rr_t2": 2.0,
+      "entry": 70.38,
+      "stop": 69.96,
+      "t1": 70.8,
+      "t2": 71.12,
+      "R_pts": 0.42,
+      "rr_t2": 1.8,
       "stop_basis": "atr_floor",
       "size_band": "1\u20132% risk per R on the micro (sim)",
       "size_band_detail": {
         "conservative": "1%/R",
         "standard": "2%/R",
-        "R_per_point": 19.1,
+        "R_per_point": 0.42,
         "basis": "D44 advisory; micro contract; %/R only, no $/positions"
       },
       "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
