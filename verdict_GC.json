@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-08-03T22:19:01",
+  "timestamp": "2026-08-03T23:30:03",
   "symbol": "GC",
   "display_name": "Gold (GC)",
   "internals_applicable": false,
-  "es_price": 4105.5,
-  "es_change": -5.4,
-  "price": 4105.5,
-  "change": -5.4,
+  "es_price": 4113.2,
+  "es_change": 2.3,
+  "price": 4113.2,
+  "change": 2.3,
   "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
   "structure_fresh": true,
   "structure_source": "polygon daily fallback (intraday unavailable)",
-  "long_pct": 0.0,
+  "long_pct": 100.0,
   "hold_pct": 0.0,
-  "short_pct": 100.0,
+  "short_pct": 0.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 4105.50 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "LONG",
+      "confidence": 30.0,
+      "reason": "price 4113.20 at 1-method confluence (VP) near 4111.29 (support)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "SHORT",
+      "verdict": "LONG",
       "confidence": 45.0,
-      "reason": "price 4105.50 < prior_close 4110.90 (daily fallback)"
+      "reason": "price 4113.20 > prior_close 4110.90 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -67,7 +67,22 @@
       "reason": "not applicable to Gold (GC) \u2014 equity breadth only"
     }
   ],
-  "confluence_zones": [],
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "POC",
+      "price": 4111.29,
+      "dist": -1.91,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "VP",
+      "label": "HVN",
+      "price": 4111.29,
+      "dist": -1.91,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
   "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
@@ -77,22 +92,22 @@
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
     "active": true,
-    "direction": "SHORT",
+    "direction": "LONG",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 4105.5,
-    "stop": 4152.09,
-    "t1": 3977.81,
-    "t2": 3951.02,
-    "R": 46.59,
-    "rr": 2.74,
-    "stop_basis": "confluence",
+    "entry": 4113.2,
+    "stop": 4096.59,
+    "t1": 4148.64,
+    "t2": 4161.95,
+    "R": 16.61,
+    "rr": 2.13,
+    "stop_basis": "single-source",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A+",
-    "stop_trace": "confluence x2: vp 4140.28, fib-cluster 4148.64",
-    "t1_trace": "single-source: vp 3977.81 only",
-    "t2_trace": "single-source: fib-cluster 3951.02 only"
+    "grade": "A",
+    "stop_trace": "single-source: fib-cluster 4097.41 only",
+    "t1_trace": "single-source: fib-cluster 4148.64 only",
+    "t2_trace": "single-source: vp 4161.95 only"
   }
 }

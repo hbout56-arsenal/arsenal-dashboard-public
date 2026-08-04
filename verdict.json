@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-03T21:57:05",
+  "timestamp": "2026-08-03T23:07:44",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 21133,
+  "internals_age_s": 25372,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 100.0,
@@ -21,8 +21,8 @@
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "LONG",
-      "confidence": 90.0,
-      "reason": "price 7628.25 at 3-method confluence (FIB+TIME+PRICE+VP) near 7627.21 (support)"
+      "confidence": 30.0,
+      "reason": "price 7628.25 at 1-method confluence (VP) near 7620.89 (support)"
     },
     {
       "name": "Breadth",
@@ -109,31 +109,10 @@
       "price": 7620.89,
       "dist": -7.36,
       "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "FIB",
-      "label": "C4",
-      "price": 7627.21,
-      "dist": -1.04,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "TIME+PRICE",
-      "label": "coincidence",
-      "price": 7627.21,
-      "dist": -1.04,
-      "vp_timeframe": "daily_swing"
-    },
-    {
-      "method": "TIME+PRICE",
-      "label": "coincidence",
-      "price": 7627.21,
-      "dist": -1.04,
-      "vp_timeframe": "daily_swing"
     }
   ],
   "vp_available": true,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
@@ -344,7 +323,7 @@
       "long_pct": 100.0,
       "hold_pct": 0.0,
       "short_pct": 0.0,
-      "price": 7632,
+      "price": 7638.75,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -354,9 +333,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 65.0,
-          "reason": "price 7632.00 at 2-method confluence (FIB+TIME+PRICE) near 7627.21 (support)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7638.75 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -376,8 +355,8 @@
           "name": "Structure",
           "pillar": "Structure",
           "verdict": "LONG",
-          "confidence": 55.0,
-          "reason": "price 7632.00 > prior_close 7631.25 & at 10d swing-high 7637.75 (daily fallback)"
+          "confidence": 45.0,
+          "reason": "price 7638.75 > prior_close 7631.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -401,30 +380,8 @@
           "reason": "active-T grade A active (daily cadence, low weight)"
         }
       ],
-      "confluence_zones": [
-        {
-          "method": "FIB",
-          "label": "C4",
-          "price": 7627.21,
-          "dist": -4.79,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "TIME+PRICE",
-          "label": "coincidence",
-          "price": 7627.21,
-          "dist": -4.79,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "TIME+PRICE",
-          "label": "coincidence",
-          "price": 7627.21,
-          "dist": -4.79,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
-      "vp_available": true,
+      "confluence_zones": [],
+      "vp_available": false,
       "fib_available": true
     }
   },
@@ -435,10 +392,10 @@
     "engine": "confluence",
     "entry": 7628.25,
     "levels_incomplete": true,
-    "note": "nearest structural target 7646.34 too close for 1.5 R:R (risk 37.23 pts) \u2014 not actionable",
-    "stop": 7591.02,
-    "R": 37.23,
-    "stop_trace": "confluence x3: session-level 7588.25, swing-pivot 7593.75, vp 7620.89",
-    "context_level": "confluence x2: swing-pivot 7632.0, vp 7660.69"
+    "note": "nearest structural target 7632.0 too close for 1.5 R:R (risk 37.95 pts) \u2014 not actionable",
+    "stop": 7590.3,
+    "R": 37.95,
+    "stop_trace": "confluence x4: session-level 7588.25, swing-pivot 7593.75, vp 7595.27, fib-cluster 7623.69",
+    "context_level": "single-source: swing-pivot 7632.0 only"
   }
 }
