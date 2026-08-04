@@ -1,20 +1,20 @@
 {
-  "timestamp": "2026-08-04T03:23:42",
+  "timestamp": "2026-08-04T04:34:04",
   "symbol": "CL",
   "display_name": "Crude Oil (CL)",
   "internals_applicable": false,
-  "es_price": null,
-  "es_change": null,
-  "price": null,
-  "change": null,
-  "price_source": "unavailable",
+  "es_price": 81.69,
+  "es_change": 1.63,
+  "price": 81.69,
+  "change": 1.63,
+  "price_source": "polygon daily fallback (intraday unavailable)",
   "price_age_s": null,
   "internals_fresh": null,
   "internals_age_s": null,
-  "structure_fresh": false,
-  "structure_source": "unavailable",
-  "long_pct": 0.0,
-  "hold_pct": 100.0,
+  "structure_fresh": true,
+  "structure_source": "polygon daily fallback (intraday unavailable)",
+  "long_pct": 100.0,
+  "hold_pct": 0.0,
   "short_pct": 0.0,
   "signals": [
     {
@@ -22,7 +22,7 @@
       "pillar": "Confluence",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "no price"
+      "reason": "price 81.69 not at any VP/fib level (\u00b10.1%)"
     },
     {
       "name": "Breadth",
@@ -41,9 +41,9 @@
     {
       "name": "Structure",
       "pillar": "Structure",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "structure unavailable"
+      "verdict": "LONG",
+      "confidence": 45.0,
+      "reason": "price 81.69 > prior_close 80.06 (daily fallback)"
     },
     {
       "name": "SectorDivergence",
@@ -68,14 +68,31 @@
     }
   ],
   "confluence_zones": [],
-  "vp_available": true,
-  "fib_available": false,
+  "vp_available": false,
+  "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "structure + VP/fib confluence only \u2014 equity internals N/A for this instrument",
   "newsletter_context": "Ter Schure BRENT/WTIC NEUTRAL: W-5/c reached 74-76/68-75 target, no reversal signal yet; downside risk limited, favors eventual upside. Watch washout+reversal.",
   "disclaimer": "Context meter, not a trade trigger. Price breaking structure is the trigger. Confluence/internals inform; they don't fill orders.",
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "LONG",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 81.69,
+    "stop": 79.43,
+    "t1": 85.4,
+    "t2": 88.63,
+    "R": 2.26,
+    "rr": 1.64,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "confluence x3: fib-cluster 79.78, vp 79.98, session-level 80.06",
+    "t1_trace": "single-source: fib-cluster 85.4 only",
+    "t2_trace": "confluence x2: vp 87.89, fib-cluster 89.37"
   }
 }
