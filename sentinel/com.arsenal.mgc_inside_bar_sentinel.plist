@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  com.arsenal.mgc_inside_bar_sentinel — MGC inside-bar DETECTION-ONLY leg.
+
+  SHIPS DISABLED. `Disabled=true` + `RunAtLoad=false` below are the launchd-level
+  guard; `ENABLED=False` in mgc_inside_bar_sentinel.py is the code-level guard. BOTH
+  must be flipped, on the Mac, before anything fires — and only after the operator
+  confirms the frozen GC_RAW rule (see mgc_inside_bar_prereg.TEMPLATE.md).
+
+  TEMPLATE: the paths below are placeholders. Reconcile ProgramArguments,
+  WorkingDirectory, and the log paths to the real ~/arsenal layout on the Mac before
+  loading. This file is not loadable as-is inside the public mirror.
+
+  Detection-only: the job runs the sentinel to ARM a watch and append to the forward
+  ledger. It issues NO orders and logs NO taken trades.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.arsenal.mgc_inside_bar_sentinel</string>
+
+    <key>Disabled</key>
+    <true/>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/REPLACE_ME/arsenal/sentinel/mgc_inside_bar_sentinel.py</string>
+        <string>--run</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/REPLACE_ME/arsenal</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>MGC_IB_LEDGER</key>
+        <string>/Users/REPLACE_ME/arsenal/ledgers/mgc_inside_bar_forward.csv</string>
+    </dict>
+
+    <!-- Debounce is enforced in-code (10 min); this cadence only wakes the check. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key><integer>17</integer>
+        <key>Minute</key><integer>5</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/REPLACE_ME/arsenal/logs/mgc_inside_bar_sentinel.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/REPLACE_ME/arsenal/logs/mgc_inside_bar_sentinel.err.log</string>
+</dict>
+</plist>
