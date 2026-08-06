@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-06T07:36:32",
+  "timestamp": "2026-08-06T07:46:28",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 55916,
+  "internals_age_s": 56511,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 100.0,
@@ -118,7 +118,7 @@
       "vp_timeframe": "daily_swing"
     }
   ],
-  "vp_available": false,
+  "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -340,9 +340,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "price 7764.00 not at any VP/fib level (\u00b10.1%)"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7764.00 at 1-method confluence (VP) near 7760.85 (support)"
         },
         {
           "name": "Breadth",
@@ -387,8 +387,16 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [],
-      "vp_available": false,
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7760.85,
+          "dist": -3.15,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
+      "vp_available": true,
       "fib_available": true
     }
   },
@@ -398,18 +406,11 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7628.25,
-    "stop": 7590.52,
-    "t1": 7721.25,
-    "t2": 7760.85,
-    "R": 37.73,
-    "rr": 2.46,
-    "stop_basis": "confluence",
-    "target_basis": "single-source",
-    "levels_source": "confluence engine",
-    "coarse": false,
-    "grade": "A+",
-    "stop_trace": "confluence x2: session-level 7588.25, vp 7595.85",
-    "t1_trace": "single-source: vp 7721.25 only",
-    "t2_trace": "single-source: vp 7760.85 only"
+    "levels_incomplete": true,
+    "note": "no structural level ahead \u2014 NOT synthesizing an R-multiple",
+    "stop": 7598.49,
+    "R": 29.76,
+    "stop_trace": "single-source: session-level 7600.02 only",
+    "context_level": null
   }
 }
