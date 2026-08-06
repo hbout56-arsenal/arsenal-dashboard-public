@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-06T00:07:18",
+  "timestamp": "2026-08-06T00:18:25",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 28961,
+  "internals_age_s": 29628,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 100.0,
@@ -327,22 +327,22 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 0.0,
-      "hold_pct": 100.0,
+      "long_pct": 100.0,
+      "hold_pct": 0.0,
       "short_pct": 0.0,
-      "price": null,
+      "price": 7763.5,
       "internals_fresh": false,
-      "structure_fresh": false,
+      "structure_fresh": true,
       "structure_source": "polygon ES daily",
-      "state": "dark",
+      "state": "live",
       "bar_age_min": 0.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "no price"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7763.50 at 1-method confluence (VP) near 7760.85 (support)"
         },
         {
           "name": "Breadth",
@@ -361,9 +361,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "structure unavailable"
+          "verdict": "LONG",
+          "confidence": 45.0,
+          "reason": "price 7763.50 > prior_close 7758.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -387,9 +387,17 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [],
-      "vp_available": false,
-      "fib_available": false
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7760.85,
+          "dist": -2.65,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
+      "vp_available": true,
+      "fib_available": true
     }
   },
   "guidance": {
@@ -398,18 +406,18 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7628.25,
-    "stop": 7589.47,
-    "t1": 7786.0,
-    "t2": null,
-    "R": 38.78,
-    "rr": 4.07,
+    "stop": 7591.09,
+    "t1": 7721.25,
+    "t2": 7760.85,
+    "R": 37.16,
+    "rr": 2.5,
     "stop_basis": "confluence",
     "target_basis": "single-source",
     "levels_source": "confluence engine",
     "coarse": false,
     "grade": "A+",
-    "stop_trace": "confluence x2: session-level 7588.25, swing-pivot 7593.75",
-    "t1_trace": "single-source: swing-pivot 7786.0 only",
-    "t2_trace": null
+    "stop_trace": "confluence x3: session-level 7588.25, swing-pivot 7593.75, vp 7595.85",
+    "t1_trace": "single-source: vp 7721.25 only",
+    "t2_trace": "single-source: vp 7760.85 only"
   }
 }
