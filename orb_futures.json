@@ -1,7 +1,9 @@
 {
-  "generated_at": "2026-08-07T18:16:14.002842Z",
+  "generated_at": "2026-08-07T19:19:45.749280Z",
   "status": "SHADOW / INFORMATIONAL / DELAYED \u2014 NOT loaded, A+ not validated",
   "sessions": {
+    "MES": "2026-08-06",
+    "MNQ": "2026-08-06",
     "MGC": "2026-08-04",
     "MCL": "2026-08-04"
   },
@@ -11,13 +13,129 @@
     "MGC",
     "MCL"
   ],
-  "raw_triggers": 2,
+  "raw_triggers": 4,
   "aplus_triggers": 0,
-  "correlation_flag": null,
+  "correlation_flag": "MES & MNQ both LONG \u2014 ~85-90% correlated, count as ONE risk.",
   "half_day_flag": false,
   "delayed_note": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
   "preregistration": "ORB_FUTURES_PREREGISTRATION.md (FROZEN)",
   "triggers": [
+    {
+      "micro": "MES",
+      "data": "ES",
+      "side": "LONG",
+      "trigger_time": "10:10",
+      "trigger_price": 7765.75,
+      "vol_mult": 5.61,
+      "or_high": 7765.5,
+      "or_low": 7740.25,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": true,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "LEADING_DIAGONAL"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime TRANSITIONAL (trendiness 50)",
+          "tag": "TRANSITIONAL"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.24 (band 0.2-0.8)",
+          "value": 0.24
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.13xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "TRANSITIONAL",
+      "daily_bias": "LONG",
+      "entry": 7765.5,
+      "stop": 7739.58,
+      "t1": 7791.42,
+      "t2": 7817.35,
+      "R_pts": 25.92,
+      "rr_t2": 2.0,
+      "stop_basis": "atr_floor",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 25.92,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-08-06"
+    },
+    {
+      "micro": "MNQ",
+      "data": "NQ",
+      "side": "LONG",
+      "trigger_time": "10:05",
+      "trigger_price": 29579.25,
+      "vol_mult": 5.88,
+      "or_high": 29551,
+      "or_low": 29241.25,
+      "or_window_et": "09:30-10:00",
+      "or_window_flag": null,
+      "raw": true,
+      "aplus": false,
+      "fails": [
+        "regime"
+      ],
+      "filters": {
+        "trend": {
+          "pass": true,
+          "detail": {
+            "bias": "LONG",
+            "verdict": "LEADING_DIAGONAL"
+          }
+        },
+        "regime": {
+          "pass": false,
+          "detail": "proxy regime TRANSITIONAL (trendiness 57)",
+          "tag": "TRANSITIONAL"
+        },
+        "range_quality": {
+          "pass": true,
+          "detail": "OR/ATR 0.44 (band 0.2-0.8)",
+          "value": 0.44
+        },
+        "not_extended": {
+          "pass": true,
+          "detail": "0.34xATR from open (max 2.0)"
+        }
+      },
+      "regime_at_signal": "TRANSITIONAL",
+      "daily_bias": "LONG",
+      "entry": 29551,
+      "stop": 29241.25,
+      "t1": 29860.75,
+      "t2": 29867.75,
+      "R_pts": 309.75,
+      "rr_t2": 1.0,
+      "stop_basis": "or_edge",
+      "size_band": "1\u20132% risk per R on the micro (sim)",
+      "size_band_detail": {
+        "conservative": "1%/R",
+        "standard": "2%/R",
+        "R_per_point": 309.75,
+        "basis": "D44 advisory; micro contract; %/R only, no $/positions"
+      },
+      "delayed": "DELAYED ~10-15min \u2014 context, confirm the break on your live ToS feed.",
+      "session_date": "2026-08-06"
+    },
     {
       "micro": "MGC",
       "data": "GC",
