@@ -1,0 +1,109 @@
+{
+  "kind": "sentinel_preregistration",
+  "dispatch": 114,
+  "id": "sentinel_qualification_prereg_2026-08-08",
+  "frozen_at": "2026-08-08",
+  "status": "FROZEN — every gate constant set BEFORE the qualifier goes live. Any change is a NEW pre-registration with its own forward series.",
+  "mandate": "SENTINEL is a QUALIFICATION layer, not an arming layer. It suppresses (no email) unless ALL Part-1 gates pass. It NEVER changes the engine's setup detection; it decides whether a detected setup is allowed to reach the lock screen. DESCRIPTIVE until n>=30. SIMULATED / advisory — not financial advice.",
+  "why": "30d of sent alerts (~201 fires, ~6-7/day) were mostly noise: 0-for-6 ascending Cluster-Fade shorts into a one-way grind on 8/3; ~1/3 fired outside the tradeable window; the washout leg was 4-of-7 opening-rotation TRIN spikes. The fix is qualification gates, a washout retune, a lock-screen format, and a forward scorecard so this is never email archaeology again.",
+
+  "part1_qualification_gates": {
+    "gate1_window": {
+      "role": "HARD GATE",
+      "windows_et": [["09:35", "11:30"], ["14:00", "15:15"]],
+      "outside_window": "logged (qualified=N, reason=WINDOW), never emailed",
+      "note": "kills the 9:30/9:32/9:38 pre-classification fires and the 7/28 15:46 after-flat-rule fire"
+    },
+    "gate2_slope_v3_1": {
+      "role": "HARD GATE (the big one)",
+      "method": "least-squares slope over a 30-min / 30-row window on ADD, VOLD, TRIN (1-min rows)",
+      "short_rule": "ADD_slope < 0 AND (VOLD_slope < 0 OR TRIN_slope > 0)",
+      "long_rule": "ADD_slope > 0 AND (VOLD_slope > 0 OR TRIN_slope < 0)",
+      "flat_test": "abs(slope * (n_rows-1)) must be >= flat_frac * level, where level = abs(mean(series)); else FLAT => fail",
+      "flat_frac": 0.10,
+      "min_rows": 15,
+      "unreliable_if_rows_lt": 15,
+      "max_feed_age_s": 120,
+      "unreliable_action": "log only (qualified=N, reason=UNRELIABLE), no email",
+      "note": "8/3 fails here all session: VOLD rising + TRIN falling => the SHORT OR-clause is false"
+    },
+    "gate3_divergence_floor": {
+      "role": "HARD GATE",
+      "metric": "abs(ADD_last - ADD_first) over the window",
+      "floor": "max(150 issues, 0.10 * abs(ADD_last))",
+      "min_issues_floor": 150.0,
+      "pct_floor": 0.10,
+      "note": "the 8/3 11:26 fire cited ADD 1155->1140 (delta 15) — floor 150 kills it as micro-noise"
+    },
+    "gate4_event_completion": {
+      "role": "HARD GATE",
+      "cluster_fade": "pool must be TAGGED and price must REJECT — re-cross back through the level within 3x 1-min bars",
+      "failed_retest": "a 15m boundary close >= 1pt beyond the boundary, THEN the retest of it",
+      "rejection_bars": 3,
+      "boundary_beyond_pts": 1.0,
+      "no_approaching": "no 'approaching'/'testing' fires — the event must have COMPLETED"
+    },
+    "gate5_risk_floor": {
+      "role": "HARD GATE",
+      "stop_rule": "stop >= 1.5 * ATR(5m) beyond the invalidating extreme",
+      "target_rule": "target pays >= 1.5R at that stop",
+      "atr_mult": 1.5,
+      "min_rr": 1.5,
+      "else": "NO ALERT"
+    },
+    "gate6_debounce": {
+      "role": "HARD GATE",
+      "rule": "one alert per (setup, level +/- 3pts) per SESSION",
+      "level_tol_pts": 3.0,
+      "note": "the 7618 double-fire (11:05 & 13:21, identical level) must be impossible"
+    },
+    "gate7_daily_cap": {
+      "role": "HARD GATE",
+      "max_qualified_per_day": 2,
+      "after_taken_trade": "suppress the rest of the session (honors 'one loss = done')"
+    }
+  },
+
+  "part2_washout_retune": {
+    "drop_standalone_trin_spike_before_et": "09:45",
+    "reason": "opening rotation noise — 4 of 7 washout fires were TRIN spikes within 2 min of the bell",
+    "washout_requires_all": [
+      "TICK <= -900",
+      "price AT a named support level",
+      "reclaim of that level within 3x 1-min bars"
+    ],
+    "tick_floor": -900,
+    "reclaim_bars": 3,
+    "note": "only 7/29 TICK=-920 was a real washout under this rule"
+  },
+
+  "part3_alert_format": {
+    "subject": "TRADE: {CARD} {LONG|SHORT} {entry}",
+    "body_fields": ["entry", "stop", "T1", "T2", "half_size", "level_name",
+                    "gate_values (ADD_slope, VOLD_slope, TRIN_slope)", "expires 10 min if untaken"],
+    "expiry_min": 10
+  },
+
+  "part4_scorecard": {
+    "ledger_csv": "ledgers/sentinel_forward.csv",
+    "row_fields": ["ts", "setup", "level", "dir", "entry", "stop", "T1", "T2",
+                   "add_slope", "vold_slope", "trin_slope", "divergence", "atr5m",
+                   "qualified", "suppression_reason", "taken", "outcome", "R"],
+    "logs": "every fire AND every suppressed near-miss",
+    "outcome": "triple-barrier via nightly labeler (T1/T2/stop, else time-barrier)",
+    "publish": "sentinel_scorecard.json to the dashboard: n_fired, n_qualified, win%, expectancy, by setup and by day-type",
+    "honesty": "DESCRIPTIVE until n>=30"
+  },
+
+  "acceptance_tests": {
+    "A": "Replay 8/3 => ZERO alerts (all six fail slope gates: VOLD rising, TRIN falling)",
+    "B": "Replay 7/16 10:49 => MUST fire Cluster Fade SHORT (TRIN rising, VOLD falling, TICK neg at highs) — the +$150 trade",
+    "C": "Replay 7/22 10:37 => MUST fire pullback-hold LONG (ALIGNED_UP)",
+    "D": "Replay 7/24 11:35 => must NOT fire (first-touch, ADD rising into a short)",
+    "E": "Debounce: two tags of 7618 in one session => exactly one email",
+    "F": "Window: a 9:32 or 15:46 qualifying setup => logged, not emailed"
+  },
+
+  "privacy": "OHLCV + internals slopes + R-multiples + level names only. No account $, no positions. Mirror-safe.",
+  "not_loaded": "This is a SHADOW qualifier planted alongside the engine. It is NOT wired into index.html and does NOT arm any sender until reviewed + explicitly enabled (the plist step lives in the private tree)."
+}
