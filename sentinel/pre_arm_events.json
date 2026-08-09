@@ -1,0 +1,78 @@
+{
+  "kind": "sentinel_pre_arm_events",
+  "dispatch": 114,
+  "note": "Non-internals event params + expected verdicts for the six acceptance tests, so real_replay.py can JOIN these against the REAL archived internals rows on the Mac. Internals (ADD/VOLD/TRIN/TICK) come from internals_live.csv at replay time — NOT from this file. Prices/levels/risk params are the engine-supplied event context; adjust to the collector's exact archived values if they differ, then re-run.",
+  "expected_slope_signs_from_evidence": {
+    "_doc": "documented signs from the 30-day sent-alert evidence; real_replay flags any real-row divergence",
+    "2026-08-03": {"add": "+", "vold": "+", "trin": "-", "why": "one-way grind, VOLD rising / TRIN falling all session"},
+    "2026-07-16": {"add": "-", "vold": "-", "trin": "+", "why": "TRIN rising, VOLD falling, TICK negative at highs"},
+    "2026-07-22": {"add": "+", "vold": "+", "trin": "-", "why": "ALIGNED_UP"},
+    "2026-07-24": {"add": "+", "why": "ADD rising into a first-touch short"}
+  },
+  "events": [
+    {
+      "test": "B", "date": "2026-07-16", "ts_et": "10:49",
+      "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7618.0, "level_name": "cluster-VAH",
+      "entry": 7617.0, "stop": 7627.0, "t1": 7601.0, "t2": 7589.0,
+      "invalidating_extreme": 7620.0, "atr5m": 4.0,
+      "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": true, "expect_reason": "OK"
+    },
+    {
+      "test": "C", "date": "2026-07-22", "ts_et": "10:37",
+      "setup": "Pullback-Hold", "direction": "LONG",
+      "level": 7500.0, "level_name": "pullback-VAL",
+      "entry": 7502.0, "stop": 7492.0, "t1": 7518.0, "t2": 7530.0,
+      "invalidating_extreme": 7499.0, "atr5m": 4.0,
+      "pool_tagged": true, "rejected_within_bars": 2, "aligned": "ALIGNED_UP",
+      "expect_emit": true, "expect_reason": "OK"
+    },
+    {
+      "test": "D", "date": "2026-07-24", "ts_et": "11:35",
+      "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7660.0, "level_name": "cluster",
+      "entry": 7659.0, "stop": 7669.0, "t1": 7643.0, "t2": 7631.0,
+      "invalidating_extreme": 7661.0, "atr5m": 4.0,
+      "pool_tagged": false, "rejected_within_bars": null,
+      "expect_emit": false, "expect_reason": "WINDOW",
+      "in_window_probe_ts": "11:25", "in_window_expect_reason_prefix": "SLOPE"
+    },
+    {
+      "test": "A1", "date": "2026-08-03", "ts_et": "09:32", "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7566.0, "level_name": "cluster", "entry": 7565.0, "stop": 7575.0, "t1": 7550.0, "t2": 7538.0,
+      "invalidating_extreme": 7567.0, "atr5m": 4.0, "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": false, "expect_reason": "WINDOW", "in_window_probe_ts": "11:00", "in_window_expect_reason_prefix": "SLOPE"
+    },
+    {
+      "test": "A2", "date": "2026-08-03", "ts_et": "11:05", "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7618.0, "level_name": "cluster", "entry": 7617.0, "stop": 7627.0, "t1": 7602.0, "t2": 7590.0,
+      "invalidating_extreme": 7619.0, "atr5m": 4.0, "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": false, "expect_reason_prefix": "SLOPE"
+    },
+    {
+      "test": "A3", "date": "2026-08-03", "ts_et": "11:26", "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7614.0, "level_name": "cluster", "entry": 7613.0, "stop": 7623.0, "t1": 7598.0, "t2": 7586.0,
+      "invalidating_extreme": 7615.0, "atr5m": 4.0, "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": false, "expect_reason_prefix": "SLOPE"
+    },
+    {
+      "test": "A4", "date": "2026-08-03", "ts_et": "12:13", "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7603.0, "level_name": "cluster", "entry": 7602.0, "stop": 7612.0, "t1": 7587.0, "t2": 7575.0,
+      "invalidating_extreme": 7604.0, "atr5m": 4.0, "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": false, "expect_reason": "WINDOW", "in_window_probe_ts": "11:00", "in_window_expect_reason_prefix": "SLOPE"
+    },
+    {
+      "test": "A5", "date": "2026-08-03", "ts_et": "12:54", "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7606.0, "level_name": "cluster", "entry": 7605.0, "stop": 7615.0, "t1": 7590.0, "t2": 7578.0,
+      "invalidating_extreme": 7607.0, "atr5m": 4.0, "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": false, "expect_reason": "WINDOW", "in_window_probe_ts": "11:00", "in_window_expect_reason_prefix": "SLOPE"
+    },
+    {
+      "test": "A6", "date": "2026-08-03", "ts_et": "13:21", "setup": "Cluster Fade", "direction": "SHORT",
+      "level": 7618.0, "level_name": "cluster", "entry": 7617.0, "stop": 7627.0, "t1": 7602.0, "t2": 7590.0,
+      "invalidating_extreme": 7619.0, "atr5m": 4.0, "pool_tagged": true, "rejected_within_bars": 2,
+      "expect_emit": false, "expect_reason": "WINDOW", "in_window_probe_ts": "11:00", "in_window_expect_reason_prefix": "SLOPE"
+    }
+  ]
+}
