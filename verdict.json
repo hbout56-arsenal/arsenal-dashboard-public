@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-09T18:51:10",
+  "timestamp": "2026-08-09T19:00:17",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 182799,
+  "internals_age_s": 183346,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -305,10 +305,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 0.0,
-      "hold_pct": 0.0,
-      "short_pct": 100.0,
-      "price": 7774.5,
+      "long_pct": 10.0,
+      "hold_pct": 90.0,
+      "short_pct": 0.0,
+      "price": 7769,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -318,9 +318,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "price 7774.50 not at any VP/fib level (\u00b10.1%)"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7769.00 at 1-method confluence (VP) near 7764.42 (support)"
         },
         {
           "name": "Breadth",
@@ -341,7 +341,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7774.50 < prior_close 7777.25 (daily fallback)"
+          "reason": "price 7769.00 < prior_close 7777.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -365,7 +365,15 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [],
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7764.42,
+          "dist": -4.58,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
       "vp_available": true,
       "fib_available": true
     }
