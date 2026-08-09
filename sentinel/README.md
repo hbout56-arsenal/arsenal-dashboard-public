@@ -24,6 +24,7 @@ The fix is qualification, not more signals.
 | `acceptance_tests.py` | the six required tests **A–F** (fixtures reconstructed from the sent-alert evidence). |
 | `seed.py` | regenerates the forward-ledger header, the D114 replay CSV, and the scorecard. |
 | `D114_report.md` | the report + **LOCKED DECISION** freeze (staged for Knowledge). |
+| **pre-arm** | `D114_PREARM.md` (protocol) + `real_replay.py` (step 1: A–F on **real** archived internals) + `shadow_run.py` (step 2: live, email-off, ≥10 sessions) + `morning_compare.py` (step 3) + `pre_arm_gate.py` (step 4: the mechanical **ARM/DO-NOT-ARM** decision) + `pre_arm_events.json`. |
 
 ## The gates (Part 1 — no email unless ALL pass)
 1. **Window** — 09:35–11:30 and 14:00–15:15 ET only. Hard.
