@@ -194,6 +194,63 @@ def f_liquidity(bars, i, p=PARAMS["liquidity"]) -> FilterResult:
     adv = sum(b["c"] * b["v"] for b in bars[i - n + 1:i + 1]) / n
     return FilterResult("liquidity", adv >= p["min_avg_dollar_vol"], adv, f"ADV ${adv/1e6:.1f}M")
 
+
+# ---- CHURN (dollar volume) — DISPLAY fields, NON-GATING (Dispatch: rsi5-churn-2r) --
+# Rationale (logged): "Volume x Price = Value." 10M shares x $100 and 5M x $200 both
+# move $10B — the same dollars change hands. Declining SHARE volume into a RISING
+# price is not inherently bearish; churn (dollar volume) is what actually measures the
+# money flowing through the tape. These functions are additive and inform DISPLAY only:
+# they gate nothing and do not vote. They exist so a rising, thinning-SHARE-volume name
+# is not mislabeled "weakening" when the DOLLARS traded are flat or rising. Anti-look-
+# ahead like every primitive here — they read bars[0..i] ONLY.
+def dollar_volume(bar) -> float:
+    """Churn for a single bar = close x volume (dollars that changed hands)."""
+    return bar["c"] * bar["v"]
+
+def dollar_volume_avg(bars, i, n=20):
+    """Trailing n-bar average churn, inclusive of bar i (bars[i-n+1..i])."""
+    if i + 1 < n:
+        return None
+    return sum(dollar_volume(b) for b in bars[i - n + 1:i + 1]) / n
+
+def dollar_volume_pct_change(bars, i, n=20):
+    """Today's churn vs its own trailing n-bar average, in percent.
+    Positive == more dollars trading than the recent norm (accumulation/interest)."""
+    avg = dollar_volume_avg(bars, i, n)
+    if avg is None or avg == 0:
+        return None
+    return (dollar_volume(bars[i]) / avg - 1.0) * 100.0
+
+def share_volume_pct_change(bars, i, n=20):
+    """SHARE-volume analogue of dollar_volume_pct_change — the metric the scan's
+    volume rules key off today. Exposed next to churn so the two can be compared."""
+    if i + 1 < n:
+        return None
+    avg = sum(b["v"] for b in bars[i - n + 1:i + 1]) / n
+    if avg == 0:
+        return None
+    return (bars[i]["v"] / avg - 1.0) * 100.0
+
+def churn(bars, i, n=20) -> Dict[str, Optional[float]]:
+    """The DISPLAY column: churn + its 20d avg + %chg, with the SHARE-volume %chg
+    beside it and a `divergence` flag = True when SHARE volume is falling but the
+    DOLLARS traded are NOT (share %chg < 0 <= dollar %chg). That is precisely the
+    case the share-volume rules can mislabel as 'weakening'. Non-gating; report-only."""
+    dv = dollar_volume(bars[i])
+    dv_avg = dollar_volume_avg(bars, i, n)
+    dv_pct = dollar_volume_pct_change(bars, i, n)
+    sv_pct = share_volume_pct_change(bars, i, n)
+    divergence = (sv_pct is not None and dv_pct is not None
+                  and sv_pct < 0.0 <= dv_pct)
+    return {
+        "dollar_volume": dv,
+        "dollar_volume_20d_avg": dv_avg,
+        "dollar_volume_pct_change": dv_pct,
+        "share_volume_pct_change": sv_pct,
+        "thinning_shares_stable_churn": divergence,
+        "lookback": n,
+    }
+
 # #6 earnings/growth (CANSLIM) is DEFERRED — not computable from OHLCV. The engine
 # must supply fundamentals (Polygon/feeds). Flagged deferred, never fabricated.
 def f_earnings_growth(*_args, **_kw) -> FilterResult:
@@ -258,6 +315,23 @@ def _selftest():
     # 4) deferred filters return None (not a silent pass)
     assert f_earnings_growth().passed is None
     assert f_rs_rank(bars, i, spy, None).passed is None  # no peer cross-section
+    # 5) CHURN (dollar volume) — present, correct, anti-look-ahead, and it catches the
+    #    thinning-shares / stable-dollars divergence the share-vol rules can mislabel.
+    ch = churn(bars, j, 20)
+    assert ch["dollar_volume"] == bars[j]["c"] * bars[j]["v"]
+    assert abs(ch["dollar_volume_20d_avg"]
+               - sum(b["c"] * b["v"] for b in bars[j - 19:j + 1]) / 20) < 1e-6
+    ch_trunc = churn(bars[:j + 1], j, 20)   # future bars removed -> must be identical
+    assert ch == ch_trunc, f"LOOK-AHEAD LEAK in churn: {ch} != {ch_trunc}"
+    #    divergence case: cut SHARE volume in half but lift price enough that the
+    #    DOLLARS traded still exceed the trailing norm -> share%chg<0<=dollar%chg.
+    div = [dict(x) for x in bars]
+    div[j] = dict(div[j]); div[j]["v"] = bars[j]["v"] * 0.5; div[j]["c"] = bars[j]["c"] * 4.0
+    dch = churn(div, j, 20)
+    assert dch["share_volume_pct_change"] < 0 <= dch["dollar_volume_pct_change"], \
+        f"divergence not detected: {dch}"
+    assert dch["thinning_shares_stable_churn"] is True
+    print("CHURN OK — dollar_volume/avg/%chg correct, anti-look-ahead, divergence caught")
     print("SELF-TEST PASS — no look-ahead leak; gates behave; deferred==None (not pass)")
     print("sample verdicts @ i:", {k: v.passed for k, v in res.items()})
     print("enhanced_pass(sample):", enhanced_pass(res))
