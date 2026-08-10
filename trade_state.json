@@ -1,0 +1,511 @@
+{
+  "schema": "trade_state/1",
+  "generated_at": "2026-08-10T22:05:19.203295+00:00",
+  "generated_by": "build_trade_state.py (dashboard mirror aggregator)",
+  "reference_clock": "newest published feed timestamp (snapshot mirror; NOT wall-clock \u2014 ages are relative to the freshest feed)",
+  "session_date": "2026-08-10",
+  "phase": "CLOSED",
+  "classification": {
+    "day_type": null,
+    "evaluated_at": null,
+    "inputs": {
+      "add_end": -574.0,
+      "adspd_end": -40.0,
+      "trin_end": 0.6384,
+      "vold_end": 11592.0,
+      "tick_end": -48.0
+    },
+    "inputs_note": "end-of-session row only (16:04) \u2014 CONTEXT, not the 9:35-10:00 classification window",
+    "unclassified_reason": "intraday day-type classifier is Mac-side and does not publish to this mirror; the 9:35-10:00 internals archive it reads is not mirrored either",
+    "_prov": {
+      "source": "internals_snapshot.json",
+      "age_s": 7241,
+      "status": "STALE",
+      "budget_s": 120
+    }
+  },
+  "gates": {
+    "long": "UNRELIABLE",
+    "short": "UNRELIABLE",
+    "add_slope": null,
+    "vold_slope": null,
+    "trin_slope": null,
+    "magnitude_floor_pct": 10,
+    "unreliable_reason": "<15 rows (1 available) \u2014 morning internals archive (9:35-10:00 LSQ series) is Mac-side, not mirrored",
+    "rows_used": 1,
+    "_prov": {
+      "source": "internals_snapshot.json",
+      "age_s": 7241,
+      "status": "STALE",
+      "budget_s": 120
+    }
+  },
+  "risk": {
+    "atr_5m": {
+      "value": null,
+      "reason": "5m bars not published to mirror; es_bars_* carry 15m/60m/daily only"
+    },
+    "atr_15m": {
+      "value": 7.34,
+      "render": "STALE(43m)",
+      "source": "es_bars_15m.json",
+      "age_s": 2598,
+      "status": "STALE",
+      "budget_s": 900
+    },
+    "atr_source": "computed Wilder-14 on es_bars_15m.bars (same bars ict/fvg use)",
+    "min_stop": 11.01,
+    "min_stop_basis": "atr_15m * 1.5",
+    "min_rr": 2.0,
+    "size": "half (1 MES)",
+    "trades_today": 4,
+    "max_trades": 2,
+    "one_loss_done": true,
+    "daily_stop_R": -2.0,
+    "daily_stop_pct": -3.0,
+    "flat_by": "15:30",
+    "_prov": {
+      "loss_limits": {
+        "source": "loss_limits.json",
+        "age_s": 3741155,
+        "status": "STALE",
+        "budget_s": 259200
+      },
+      "bars": {
+        "source": "es_bars_15m.json",
+        "age_s": 2598,
+        "status": "STALE",
+        "budget_s": 900
+      }
+    }
+  },
+  "levels": {
+    "pools_above": [
+      {
+        "price": 7820.25,
+        "kind": "VAH",
+        "dist": 49.0
+      }
+    ],
+    "pools_below": [
+      {
+        "price": 7763.39,
+        "kind": "POC",
+        "dist": -7.86
+      },
+      {
+        "price": 7693.75,
+        "kind": "swing-high",
+        "dist": -77.5
+      },
+      {
+        "price": 7648.75,
+        "kind": "swing-high",
+        "dist": -122.5
+      }
+    ],
+    "pools_source": "es_swing_thesis.nearest_levels",
+    "fvg_unmitigated": [],
+    "prior_rth": {
+      "value": {
+        "h": 7786.75,
+        "l": 7725.5,
+        "c": 7777.25
+      },
+      "render": "STALE(43m)",
+      "source": "es_bars_daily.json",
+      "age_s": 2598,
+      "status": "STALE",
+      "budget_s": 900
+    },
+    "overnight": {
+      "value": null,
+      "reason": "overnight H/L not published as a discrete field on the mirror"
+    },
+    "vah": {
+      "value": 7771.12,
+      "render": "STALE(43m)",
+      "source": "es_bars_15m.json",
+      "age_s": 2598,
+      "status": "STALE",
+      "budget_s": 900
+    },
+    "poc": {
+      "value": 7758.76,
+      "render": "STALE(43m)",
+      "source": "es_bars_15m.json",
+      "age_s": 2598,
+      "status": "STALE",
+      "budget_s": 900
+    },
+    "val": {
+      "value": 7733.36,
+      "render": "STALE(43m)",
+      "source": "es_bars_15m.json",
+      "age_s": 2598,
+      "status": "STALE",
+      "budget_s": 900
+    },
+    "vp_basis": "VRVP over the published bar range \u2014 volume distributed across each bar's [low,high] (real bar volume); 70% value area. D88: replaces single-bin typical-price method.",
+    "newsletter": {
+      "ter_schure": {
+        "value": {
+          "context": "SPX medium-term bearish / short-term neutral; Chart-1 W-b to ~7495\u00b135 then W-c ~7740\u00b110; Chart-2 kill = close below 7/9 low ES ~7469-74 \u2192 7195-6960; his system long from 7499."
+        },
+        "render": "STALE(5h)",
+        "source": "verdict.json",
+        "age_s": 18480,
+        "status": "STALE",
+        "budget_s": 300
+      },
+      "tammy": {
+        "value": {
+          "levels": [
+            {
+              "level": 7446,
+              "role": "support",
+              "context": "ci support on /ES daily (continuous) chart zone 7446-52 which includes the 50SMA. If we bust this zo",
+              "vs_price": "above"
+            },
+            {
+              "level": 7400,
+              "role": "support",
+              "context": "SMA. If we bust this zone, then we need to hold 7400 or we will retest the previous low of 7357.</sp",
+              "vs_price": "above"
+            },
+            {
+              "level": 7357,
+              "role": "support",
+              "context": "hold 7400 or we will retest the previous low of 7357.</span></div></td></tr><tr height=\"4\"><td></td>",
+              "vs_price": "above"
+            }
+          ],
+          "as_of": "Wed, 8 Jul 2026 13:16:18 +0000"
+        },
+        "render": {
+          "levels": [
+            {
+              "level": 7446,
+              "role": "support",
+              "context": "ci support on /ES daily (continuous) chart zone 7446-52 which includes the 50SMA. If we bust this zo",
+              "vs_price": "above"
+            },
+            {
+              "level": 7400,
+              "role": "support",
+              "context": "SMA. If we bust this zone, then we need to hold 7400 or we will retest the previous low of 7357.</sp",
+              "vs_price": "above"
+            },
+            {
+              "level": 7357,
+              "role": "support",
+              "context": "hold 7400 or we will retest the previous low of 7357.</span></div></td></tr><tr height=\"4\"><td></td>",
+              "vs_price": "above"
+            }
+          ],
+          "as_of": "Wed, 8 Jul 2026 13:16:18 +0000"
+        },
+        "source": "tammy_levels.json",
+        "age_s": 0,
+        "status": "LIVE",
+        "budget_s": 604800
+      },
+      "tic_toc": {
+        "value": {
+          "levels": [
+            {
+              "level": 7450,
+              "role": "level",
+              "context": "a trend move, we need to see a close here below 7450. In fact this level again was almost the low of",
+              "vs_price": "above"
+            }
+          ],
+          "as_of": "Wed, 8 Jul 2026 23:46:21 +0000"
+        },
+        "render": {
+          "levels": [
+            {
+              "level": 7450,
+              "role": "level",
+              "context": "a trend move, we need to see a close here below 7450. In fact this level again was almost the low of",
+              "vs_price": "above"
+            }
+          ],
+          "as_of": "Wed, 8 Jul 2026 23:46:21 +0000"
+        },
+        "source": "tictoc_levels.json",
+        "age_s": 6,
+        "status": "LIVE",
+        "budget_s": 604800
+      }
+    },
+    "es_spx_basis": {
+      "value": null,
+      "reason": "es-spx basis not published as a discrete field on the mirror; es_bars are unadjusted (offset 0) front-month ESU6"
+    },
+    "_prov": {
+      "bars": {
+        "source": "es_bars_15m.json",
+        "age_s": 2598,
+        "status": "STALE",
+        "budget_s": 900
+      },
+      "swing": {
+        "source": "es_swing_thesis.json",
+        "age_s": 15,
+        "status": "LIVE",
+        "budget_s": 3600
+      }
+    }
+  },
+  "context": {
+    "megacap_pct": {
+      "value": null,
+      "reason": "megacap breadth not published to mirror"
+    },
+    "megacap_verdict": null,
+    "vix": {
+      "value": 15.43,
+      "render": "STALE(2h)",
+      "source": "internals_snapshot.json",
+      "age_s": 7241,
+      "status": "STALE",
+      "budget_s": 120
+    },
+    "vix_term": {
+      "value": null,
+      "reason": "vix9d / vix3m term structure not published to mirror; spot VIX only (internals_snapshot)"
+    },
+    "nyad_cum": {
+      "value": 82119,
+      "render": 82119,
+      "source": "breadth_snapshot.json",
+      "age_s": 2115,
+      "status": "LIVE",
+      "budget_s": 86400
+    },
+    "nyad_vs_ath": {
+      "value": -700,
+      "render": -700,
+      "source": "breadth_snapshot.json",
+      "age_s": 2115,
+      "status": "LIVE",
+      "budget_s": 86400
+    },
+    "nyad_at_new_high": {
+      "value": false,
+      "render": false,
+      "source": "breadth_snapshot.json",
+      "age_s": 2115,
+      "status": "LIVE",
+      "budget_s": 86400
+    },
+    "breadth_gate": "divergence",
+    "fld_status": {
+      "value": "ALL OFFSETS BULL (short_fast +1.3% above)",
+      "render": "STALE(3d)",
+      "source": "macro_pillars_cache.json",
+      "age_s": 275112,
+      "status": "STALE",
+      "budget_s": 259200
+    },
+    "_prov": {
+      "breadth": {
+        "source": "breadth_snapshot.json",
+        "age_s": 2115,
+        "status": "LIVE",
+        "budget_s": 86400
+      },
+      "internals": {
+        "source": "internals_snapshot.json",
+        "age_s": 7241,
+        "status": "STALE",
+        "budget_s": 120
+      },
+      "macro": {
+        "source": "macro_pillars_cache.json",
+        "age_s": 275112,
+        "status": "STALE",
+        "budget_s": 259200
+      }
+    }
+  },
+  "calendar": {
+    "today_events": [],
+    "next_event": "Labor Day \u2014 markets closed",
+    "no_position_into": null,
+    "is_turn_of_month": false,
+    "days_to_month_end": 15,
+    "nyse_status": "closed",
+    "_prov": {
+      "source": "calendar_context.json",
+      "age_s": 17710,
+      "status": "LIVE",
+      "budget_s": 86400
+    }
+  },
+  "cards": [
+    {
+      "name": "ORB MES SHORT",
+      "status": "BLOCKED",
+      "blocking_reason": "A+ filters failed: trend, range_quality",
+      "proposed": {
+        "entry": 7751.75,
+        "stop": 7777.67,
+        "t1": 7725.83,
+        "t2": 7725.5,
+        "rr": 1.0
+      },
+      "trigger_time": "10:10",
+      "source": "orb_futures.json",
+      "_prov": {
+        "source": "orb_futures.json",
+        "age_s": 8495,
+        "status": "LIVE",
+        "budget_s": 86400
+      }
+    },
+    {
+      "name": "ORB MGC SHORT",
+      "status": "BLOCKED",
+      "blocking_reason": "A+ filters failed: trend, regime",
+      "proposed": {
+        "entry": 4122,
+        "stop": 4144.56,
+        "t1": 4099.44,
+        "t2": 4076.88,
+        "rr": 2.0
+      },
+      "trigger_time": "09:00",
+      "source": "orb_futures.json",
+      "_prov": {
+        "source": "orb_futures.json",
+        "age_s": 8495,
+        "status": "LIVE",
+        "budget_s": 86400
+      }
+    },
+    {
+      "name": "ORB MCL SHORT",
+      "status": "BLOCKED",
+      "blocking_reason": "A+ filters failed: regime",
+      "proposed": {
+        "entry": 76.25,
+        "stop": 77.86,
+        "t1": 74.64,
+        "t2": 74.24,
+        "rr": 1.2
+      },
+      "trigger_time": "09:35",
+      "source": "orb_futures.json",
+      "_prov": {
+        "source": "orb_futures.json",
+        "age_s": 8495,
+        "status": "LIVE",
+        "budget_s": 86400
+      }
+    },
+    {
+      "name": "ES Swing (60m break)",
+      "status": "BLOCKED",
+      "blocking_reason": "NO A+ ES SETUP TODAY \u2014 tape is divergent (breadth against price), no level-break at all. Stand down.",
+      "proposed": null,
+      "source": "es_swing_verdict.json",
+      "_prov": {
+        "source": "es_swing_verdict.json",
+        "age_s": 15,
+        "status": "LIVE",
+        "budget_s": 3600
+      }
+    }
+  ],
+  "freshness": {
+    "verdict": {
+      "age_s": 18480,
+      "status": "STALE",
+      "source_path": "verdict.json"
+    },
+    "internals_snapshot": {
+      "age_s": 7241,
+      "status": "STALE",
+      "source_path": "internals_snapshot.json"
+    },
+    "breadth_snapshot": {
+      "age_s": 2115,
+      "status": "LIVE",
+      "source_path": "breadth_snapshot.json"
+    },
+    "es_bars_15m": {
+      "age_s": 2598,
+      "status": "STALE",
+      "source_path": "es_bars_15m.json"
+    },
+    "prices_futures": {
+      "age_s": 4213,
+      "status": "STALE",
+      "source_path": "prices_futures.json"
+    },
+    "ict_state": {
+      "age_s": 17773,
+      "status": "STALE",
+      "source_path": "ict_state.json"
+    },
+    "fvg_state": {
+      "age_s": 17944,
+      "status": "STALE",
+      "source_path": "fvg_state.json"
+    },
+    "es_swing_thesis": {
+      "age_s": 15,
+      "status": "LIVE",
+      "source_path": "es_swing_thesis.json"
+    },
+    "es_swing_verdict": {
+      "age_s": 15,
+      "status": "LIVE",
+      "source_path": "es_swing_verdict.json"
+    },
+    "tammy_levels": {
+      "age_s": 0,
+      "status": "LIVE",
+      "source_path": "tammy_levels.json"
+    },
+    "tictoc_levels": {
+      "age_s": 6,
+      "status": "LIVE",
+      "source_path": "tictoc_levels.json"
+    },
+    "calendar_context": {
+      "age_s": 17710,
+      "status": "LIVE",
+      "source_path": "calendar_context.json"
+    },
+    "regime_label": {
+      "age_s": 3769639,
+      "status": "STALE",
+      "source_path": "regime_label.json"
+    },
+    "macro_pillars_cache": {
+      "age_s": 275112,
+      "status": "STALE",
+      "source_path": "macro_pillars_cache.json"
+    },
+    "orb_futures": {
+      "age_s": 8495,
+      "status": "LIVE",
+      "source_path": "orb_futures.json"
+    },
+    "loss_limits": {
+      "age_s": 3741155,
+      "status": "STALE",
+      "source_path": "loss_limits.json"
+    }
+  },
+  "mirror_gaps": [
+    "day-type classifier (Mac-side; needs 9:35-10:00 internals archive)",
+    "30-row LSQ slope gates (needs the same morning internals archive)",
+    "atr_5m (no 5m bars mirrored)",
+    "es_spx_basis, vix term structure, megacap breadth (not mirrored)"
+  ],
+  "provenance_note": "Every value carries source + age_s + status. STALE(age)/DARK is rendered instead of a bare value when a feed is past its freshness budget. null+reason marks a field owned by a module that does not publish to this mirror \u2014 never fabricated."
+}
