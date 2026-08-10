@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-10T12:41:52",
+  "timestamp": "2026-08-10T13:14:26",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -8,9 +8,9 @@
   "price": 7773.25,
   "change": -6.5,
   "price_source": "internals_live (IQFeed @ES#)",
-  "price_age_s": -186,
+  "price_age_s": -24,
   "internals_fresh": true,
-  "internals_age_s": -186,
+  "internals_age_s": -24,
   "structure_fresh": true,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -29,35 +29,35 @@
       "pillar": "Breadth",
       "verdict": "SHORT",
       "confidence": 40.0,
-      "reason": "ADD -606 mildly negative (TRIN 0.60)"
+      "reason": "ADD -662 mildly negative (TRIN 0.59)"
     },
     {
       "name": "TickMomentum",
       "pillar": "Internals",
       "verdict": "HOLD",
       "confidence": 25.0,
-      "reason": "TICK -299 chop (<400) \u2014 no momentum edge"
+      "reason": "TICK -307 chop (<400) \u2014 no momentum edge"
     },
     {
       "name": "Structure",
       "pillar": "Structure",
       "verdict": "SHORT",
       "confidence": 50.0,
-      "reason": "price 7773.25 < VWAP 7782.59 & prior_close 7778.50 (inside OR)"
+      "reason": "price 7773.25 < VWAP 7781.39 & prior_close 7778.50 (inside OR)"
     },
     {
       "name": "SectorDivergence",
       "pillar": "SectorDivergence",
       "verdict": "SHORT",
       "confidence": 45.0,
-      "reason": "broad-aligned down (NQ -0.2% SOX -1.6% YM -0.2%)"
+      "reason": "broad-aligned down (NQ -0.2% SOX -2.0% YM -0.2%)"
     },
     {
       "name": "VIX",
       "pillar": "Macro",
       "verdict": "HOLD",
       "confidence": 20.0,
-      "reason": "VIX 15.12 (+0.22) \u2014 neutral"
+      "reason": "VIX 15.30 (+0.40) \u2014 neutral"
     },
     {
       "name": "SlowPillars",
@@ -90,14 +90,14 @@
     {
       "name": "InsideBar_Context",
       "pillar": "InsideBar_Context",
-      "verdict": "HOLD",
+      "verdict": "SHORT",
       "confidence": 0.0,
-      "reason": "Inside Bar: no A+ coil near price \u2014 context, NON-VOTING (weight 0)"
+      "reason": "Inside Bar A+ coil: short @ round 7775 \u00b7 ratio 0.373 \u00b7 break 7770.5 stop 7777.75 (bar break=trigger) \u2014 context, NON-VOTING (weight 0)"
     }
   ],
   "confluence_zones": [],
   "vp_available": true,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
@@ -107,166 +107,57 @@
   "timeframes": {
     "5m": {
       "timeframe": "5m",
-      "long_pct": 16.4,
-      "hold_pct": 83.6,
-      "short_pct": 0.0,
-      "price": 7767.75,
+      "long_pct": 0.0,
+      "hold_pct": 79.2,
+      "short_pct": 20.8,
+      "price": 7777.25,
       "internals_fresh": true,
       "structure_fresh": true,
       "structure_source": "IQFeed @ES# 5m (in-guest)",
       "state": "live",
-      "bar_age_min": 1.9,
+      "bar_age_min": 9.4,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 65.0,
-          "reason": "price 7767.75 at 2-method confluence (FIB+VP) near 7766.11 (support)"
-        },
-        {
-          "name": "Breadth",
-          "pillar": "Breadth",
-          "verdict": "SHORT",
-          "confidence": 40.0,
-          "reason": "ADD -606 mildly negative (TRIN 0.60)"
-        },
-        {
-          "name": "TickMomentum",
-          "pillar": "Internals",
-          "verdict": "HOLD",
-          "confidence": 25.0,
-          "reason": "TICK -299 chop (<400) \u2014 no momentum edge"
-        },
-        {
-          "name": "Structure",
-          "pillar": "Structure",
-          "verdict": "HOLD",
-          "confidence": 35.0,
-          "reason": "price 7767.75 ~ VWAP 7782.02 \u2014 mixed (intraday)"
-        },
-        {
-          "name": "SectorDivergence",
-          "pillar": "SectorDivergence",
-          "verdict": "SHORT",
-          "confidence": 45.0,
-          "reason": "broad-aligned down (NQ -0.2% SOX -1.6% YM -0.2%)"
-        },
-        {
-          "name": "VIX",
-          "pillar": "Macro",
-          "verdict": "HOLD",
-          "confidence": 20.0,
-          "reason": "VIX 15.12 (+0.22) \u2014 neutral"
-        },
-        {
-          "name": "SlowPillars",
-          "pillar": "SlowPillars",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "no usable nightly-cache bias"
-        }
-      ],
-      "confluence_zones": [
-        {
-          "method": "VP",
-          "label": "VAL",
-          "price": 7769.65,
-          "dist": 1.9,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7764.93,
-          "dist": -2.82,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7770.18,
-          "dist": 2.43,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7765.98,
-          "dist": -1.77,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "VP",
-          "label": "LVN",
-          "price": 7771.23,
-          "dist": 3.48,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "FIB",
-          "label": "C22",
-          "price": 7766.11,
-          "dist": -1.64,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
-      "vp_available": true,
-      "fib_available": true
-    },
-    "15m": {
-      "timeframe": "15m",
-      "long_pct": 0.0,
-      "hold_pct": 33.0,
-      "short_pct": 67.0,
-      "price": 7767.75,
-      "internals_fresh": true,
-      "structure_fresh": true,
-      "structure_source": "IQFeed @ES# 15m (in-guest)",
-      "state": "live",
-      "bar_age_min": 11.9,
-      "signals": [
-        {
-          "name": "Confluence",
-          "pillar": "Confluence",
-          "verdict": "SHORT",
           "confidence": 30.0,
-          "reason": "price 7767.75 at 1-method confluence (VP) near 7768.65 (resistance)"
+          "reason": "price 7777.25 at 1-method confluence (VP) near 7776.48 (support)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "SHORT",
           "confidence": 40.0,
-          "reason": "ADD -606 mildly negative (TRIN 0.60)"
+          "reason": "ADD -662 mildly negative (TRIN 0.59)"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK -299 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK -307 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
           "verdict": "HOLD",
           "confidence": 35.0,
-          "reason": "price 7767.75 ~ VWAP 7782.17 \u2014 mixed (intraday)"
+          "reason": "price 7777.25 ~ VWAP 7781.33 \u2014 mixed (intraday)"
         },
         {
           "name": "SectorDivergence",
           "pillar": "SectorDivergence",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "broad-aligned down (NQ -0.2% SOX -1.6% YM -0.2%)"
+          "reason": "broad-aligned down (NQ -0.2% SOX -2.0% YM -0.2%)"
         },
         {
           "name": "VIX",
           "pillar": "Macro",
           "verdict": "HOLD",
           "confidence": 20.0,
-          "reason": "VIX 15.12 (+0.22) \u2014 neutral"
+          "reason": "VIX 15.30 (+0.40) \u2014 neutral"
         },
         {
           "name": "SlowPillars",
@@ -280,88 +171,137 @@
         {
           "method": "VP",
           "label": "POC",
-          "price": 7768.65,
-          "dist": 0.9,
+          "price": 7776.48,
+          "dist": -0.77,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "VAL",
+          "price": 7769.65,
+          "dist": -7.6,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "HVN",
-          "price": 7768.65,
-          "dist": 0.9,
+          "price": 7770.18,
+          "dist": -7.07,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7776.48,
+          "dist": -0.77,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7780.68,
+          "dist": 3.43,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7782.77,
+          "dist": 5.52,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "HVN",
+          "price": 7784.88,
+          "dist": 7.62,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "LVN",
-          "price": 7761.45,
-          "dist": -6.3,
+          "price": 7771.23,
+          "dist": -6.02,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "VP",
           "label": "LVN",
-          "price": 7773.45,
-          "dist": 5.7,
+          "price": 7779.62,
+          "dist": 2.38,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7781.73,
+          "dist": 4.48,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7783.82,
+          "dist": 6.57,
           "vp_timeframe": "daily_swing"
         }
       ],
       "vp_available": true,
       "fib_available": true
     },
-    "60m": {
-      "timeframe": "60m",
-      "long_pct": 0.0,
-      "hold_pct": 72.5,
-      "short_pct": 27.5,
-      "price": 7771.5,
+    "15m": {
+      "timeframe": "15m",
+      "long_pct": 16.4,
+      "hold_pct": 83.6,
+      "short_pct": 0.0,
+      "price": 7777.5,
       "internals_fresh": true,
-      "structure_fresh": false,
-      "structure_source": "IQFeed @ES# 60m (in-guest)",
+      "structure_fresh": true,
+      "structure_source": "IQFeed @ES# 15m (in-guest)",
       "state": "live",
-      "bar_age_min": 41.9,
+      "bar_age_min": 14.4,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7771.50 at 1-method confluence (VP) near 7764.42 (support)"
+          "confidence": 65.0,
+          "reason": "price 7777.50 at 2-method confluence (FIB+VP) near 7775.85 (support)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "SHORT",
           "confidence": 40.0,
-          "reason": "ADD -606 mildly negative (TRIN 0.60)"
+          "reason": "ADD -662 mildly negative (TRIN 0.59)"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK -299 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK -307 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
           "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "structure unavailable"
+          "confidence": 35.0,
+          "reason": "price 7777.50 ~ VWAP 7781.48 \u2014 mixed (intraday)"
         },
         {
           "name": "SectorDivergence",
           "pillar": "SectorDivergence",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "broad-aligned down (NQ -0.2% SOX -1.6% YM -0.2%)"
+          "reason": "broad-aligned down (NQ -0.2% SOX -2.0% YM -0.2%)"
         },
         {
           "name": "VIX",
           "pillar": "Macro",
           "verdict": "HOLD",
           "confidence": 20.0,
-          "reason": "VIX 15.12 (+0.22) \u2014 neutral"
+          "reason": "VIX 15.30 (+0.40) \u2014 neutral"
         },
         {
           "name": "SlowPillars",
@@ -375,67 +315,81 @@
         {
           "method": "VP",
           "label": "HVN",
-          "price": 7764.42,
-          "dist": -7.08,
+          "price": 7775.85,
+          "dist": -1.65,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7773.45,
+          "dist": -4.05,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "FIB",
+          "label": "C5",
+          "price": 7784.67,
+          "dist": 7.17,
           "vp_timeframe": "daily_swing"
         }
       ],
       "vp_available": true,
       "fib_available": true
     },
-    "daily": {
-      "timeframe": "daily",
+    "60m": {
+      "timeframe": "60m",
       "long_pct": 0.0,
-      "hold_pct": 67.9,
-      "short_pct": 32.1,
-      "price": 7788,
+      "hold_pct": 44.5,
+      "short_pct": 55.5,
+      "price": 7779.0,
       "internals_fresh": true,
       "structure_fresh": true,
-      "structure_source": "polygon ES daily",
+      "structure_source": "IQFeed @ES# 60m (in-guest)",
       "state": "live",
-      "bar_age_min": 0.0,
+      "bar_age_min": 14.4,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "price 7788.00 not at any VP/fib level (\u00b10.1%)"
+          "reason": "price 7779.00 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
           "verdict": "SHORT",
           "confidence": 40.0,
-          "reason": "ADD -606 mildly negative (TRIN 0.60)"
+          "reason": "ADD -662 mildly negative (TRIN 0.59)"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
           "confidence": 25.0,
-          "reason": "TICK -299 chop (<400) \u2014 no momentum edge"
+          "reason": "TICK -307 chop (<400) \u2014 no momentum edge"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
-          "confidence": 45.0,
-          "reason": "price 7788.00 > prior_close 7777.25 (daily fallback)"
+          "verdict": "HOLD",
+          "confidence": 35.0,
+          "reason": "price 7779.00 ~ VWAP 7783.35 \u2014 mixed (intraday)"
         },
         {
           "name": "SectorDivergence",
           "pillar": "SectorDivergence",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "broad-aligned down (NQ -0.2% SOX -1.6% YM -0.2%)"
+          "reason": "broad-aligned down (NQ -0.2% SOX -2.0% YM -0.2%)"
         },
         {
           "name": "VIX",
           "pillar": "Macro",
           "verdict": "HOLD",
           "confidence": 20.0,
-          "reason": "VIX 15.12 (+0.22) \u2014 neutral"
+          "reason": "VIX 15.30 (+0.40) \u2014 neutral"
         },
         {
           "name": "SlowPillars",
@@ -448,6 +402,72 @@
       "confluence_zones": [],
       "vp_available": true,
       "fib_available": true
+    },
+    "daily": {
+      "timeframe": "daily",
+      "long_pct": 0.0,
+      "hold_pct": 26.7,
+      "short_pct": 73.3,
+      "price": null,
+      "internals_fresh": true,
+      "structure_fresh": false,
+      "structure_source": "polygon ES daily",
+      "state": "live",
+      "bar_age_min": 0.0,
+      "signals": [
+        {
+          "name": "Confluence",
+          "pillar": "Confluence",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7773.25 not at any VP/fib level (\u00b10.1%)"
+        },
+        {
+          "name": "Breadth",
+          "pillar": "Breadth",
+          "verdict": "SHORT",
+          "confidence": 40.0,
+          "reason": "ADD -662 mildly negative (TRIN 0.59)"
+        },
+        {
+          "name": "TickMomentum",
+          "pillar": "Internals",
+          "verdict": "HOLD",
+          "confidence": 25.0,
+          "reason": "TICK -307 chop (<400) \u2014 no momentum edge"
+        },
+        {
+          "name": "Structure",
+          "pillar": "Structure",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "structure unavailable"
+        },
+        {
+          "name": "SectorDivergence",
+          "pillar": "SectorDivergence",
+          "verdict": "SHORT",
+          "confidence": 45.0,
+          "reason": "broad-aligned down (NQ -0.2% SOX -2.0% YM -0.2%)"
+        },
+        {
+          "name": "VIX",
+          "pillar": "Macro",
+          "verdict": "HOLD",
+          "confidence": 20.0,
+          "reason": "VIX 15.30 (+0.40) \u2014 neutral"
+        },
+        {
+          "name": "SlowPillars",
+          "pillar": "SlowPillars",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "no usable nightly-cache bias"
+        }
+      ],
+      "confluence_zones": [],
+      "vp_available": false,
+      "fib_available": false
     }
   },
   "guidance": {
