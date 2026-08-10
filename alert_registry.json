@@ -183,12 +183,13 @@
       "enable_env": "(config / daily orchestrator)",
       "default_on": true,
       "wired": true,
-      "on_now": true,
+      "on_now": false,
       "rate_cap": "max 1/ticker/day (resets daily)",
       "dedup": "ticker/day",
       "timeframes": "opening-range breakout on volume",
       "dark_delayed": "no scan => no alert",
-      "status": "ON: wired via com.arsenal.alerts",
+      "status": "SUSPENDED 2026-08-10 (INBOX RESET): alert_prefs.orb_intraday.enabled=false; prior on_now=true; reversible. Forward scorecard exp -2.50%, PF 0.4.",
+      "suspended_2026-08-10": {"prior_on_now": true, "gate": "alert_prefs.json orb_intraday.enabled", "reversible": true},
       "wiring_plan": "(already wired)"
     },
     {
@@ -205,7 +206,8 @@
       "dedup": "per-check hourly",
       "timeframes": "verdict/ema/fvg/ict/stock feed staleness",
       "dark_delayed": "DARK/stale IS the alert condition",
-      "status": "ON: wired via com.arsenal.watchdog (Dispatch 9)",
+      "status": "EMAIL SUSPENDED 2026-08-10 (INBOX RESET): keep LOGGING to file; gate left enabled (a false gate would kill logging too). Email-vs-log split is a Mac-local sender flag (WATCHDOG_EMAIL=False). Reason: 5-7 identical hourly alarms + false RECOVERED; P2 unfixed.",
+      "suspended_2026-08-10": {"scope": "email_only", "log_kept": true, "gate_left_enabled": true, "mac_flag": "WATCHDOG_EMAIL=False", "reversible": true},
       "wiring_plan": "(already wired)"
     },
     {
