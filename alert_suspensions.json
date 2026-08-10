@@ -1,0 +1,59 @@
+{
+  "schema": "alert_suspensions/1",
+  "dispatch": "INBOX RESET + 10:00 READ + D114 SHADOW TRAINING",
+  "generated_at": "2026-08-10",
+  "principle": "Nothing deleted. Every entry is a DATED REVERSIBLE FLAG that preserves prior state. Reverse by restoring prior_state and, on the Mac, re-loading the plist / setting ENABLED=True.",
+  "recipient": "hbout56@gmail.com (self-only)",
+  "note_repo_scope": "This public/dashboard repo carries the alert CONFIG (alert_prefs.json gate + alert_registry.json) and the D114 code (sentinel/, PR #20). The launchd plists and the Mac-local senders (setup_sentinel, candle_pattern_alert, feed_watchdog, arsenal_alerts) live in the private engine tree. In-repo we flip the gate we own (orb_intraday in alert_prefs.json) and record the intent + prior state for the Mac-local ones so the reversal is mechanical.",
+  "suspensions": [
+    {
+      "id": "setup_sentinel",
+      "legs": ["Cluster Fade", "Failed Retest", "Washout"],
+      "action": "SUSPEND all three legs",
+      "mechanism_repo": "n/a (Mac-local sender; not in alert_registry.json/alert_prefs.json)",
+      "mechanism_mac": "launchctl unload com.arsenal.sentinel.plist  (or set ENABLED=False in the sender config)",
+      "prior_state": "LOADED / ENABLED / emailing (~201 alerts / 30d)",
+      "new_state": "SUSPENDED (unloaded)",
+      "evidence": "~201 alerts/30d; 8/3 fired SIX Cluster Fades in one trending session incl. TWO at the identical level 7618.0; ~1/3 fire outside the tradeable window (9:30/9:32/9:38, and 7/28 @ 15:46); Washout leg fired 4 of 7 times as TRIN-spikes within 2 min of the bell.",
+      "successor": "D114 SENTINEL qualification layer (sentinel/, PR #20) in SHADOW — replaces this once armed.",
+      "reversible": true
+    },
+    {
+      "id": "candle_pattern_alert",
+      "mode": "SHADOW",
+      "action": "SUSPEND",
+      "mechanism_repo": "n/a (Mac-local SHADOW sender; scorecard_summary_candle_patterns.json keeps accruing)",
+      "mechanism_mac": "launchctl unload com.arsenal.candle_pattern.plist  (or set ENABLED=False)",
+      "prior_state": "LOADED / SHADOW-emailing (informational, never traded off)",
+      "new_state": "SUSPENDED (unloaded)",
+      "rationale": "Informational only, never traded off; FILTERED scorecard net_points_exp -4.41 (n=68). Data continues to accrue via the nightly labeler; only the email is silenced.",
+      "reversible": true
+    },
+    {
+      "id": "feed_watchdog",
+      "action": "SUSPEND EMAIL output only — KEEP LOGGING to file",
+      "mechanism_repo": "alert_prefs.json gate LEFT ENABLED (a false gate would kill logging too); email-vs-log split is a Mac-local sender flag.",
+      "mechanism_mac": "set WATCHDOG_EMAIL=False (keep WATCHDOG_LOG=True) in the sender config; plist stays LOADED so the log keeps writing.",
+      "prior_state": "email ON + log ON (5-7 identical hourly alarms + false RECOVERED; P2 unfixed)",
+      "new_state": "email SUSPENDED, log KEPT",
+      "reversible": true
+    },
+    {
+      "id": "orb_intraday",
+      "alias": "arsenal_alerts.py (5-min opening-range job, com.arsenal.alerts)",
+      "action": "SUSPEND",
+      "mechanism_repo": "alert_prefs.json -> orb_intraday.enabled = false (this IS the gate every sender reads; SUPPRESSES the source without deleting it).",
+      "mechanism_mac": "gate above is authoritative; optionally launchctl unload com.arsenal.alerts.plist.",
+      "prior_state": {"alert_prefs.orb_intraday.enabled": true},
+      "new_state": {"alert_prefs.orb_intraday.enabled": false},
+      "evidence": "Fires on STRONG_LONG picks whose own forward scorecard reads exp -2.50%, PF 0.4.",
+      "reversible": true
+    }
+  ],
+  "kept_unchanged": [
+    "com.arsenal.daily 8:00 AM + 4:30 PM briefs",
+    "com.arsenal.breadth / bpspx / macropillars (nightly, no email)",
+    "all ledger + nightly-labeler jobs (data must keep accruing)"
+  ],
+  "email_emitting_jobs_enumeration": "See inbox_reset/REPORT.md §Part 1.5 and the per-source state in alert_registry.json."
+}
