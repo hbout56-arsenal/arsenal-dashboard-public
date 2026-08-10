@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-09T20:50:19",
+  "timestamp": "2026-08-09T21:03:23",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 189948,
+  "internals_age_s": 190732,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -97,7 +97,7 @@
   ],
   "confluence_zones": [],
   "vp_available": true,
-  "fib_available": true,
+  "fib_available": false,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
   "signal_basis": "full: equity internals + structure + VP/fib confluence",
@@ -305,10 +305,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 10.0,
-      "hold_pct": 90.0,
-      "short_pct": 0.0,
-      "price": 7768,
+      "long_pct": 0.0,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7773.5,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -318,9 +318,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7768.00 at 1-method confluence (VP) near 7764.42 (support)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7773.50 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -341,7 +341,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7768.00 < prior_close 7777.25 (daily fallback)"
+          "reason": "price 7773.50 < prior_close 7777.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -365,15 +365,7 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7764.42,
-          "dist": -3.58,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
+      "confluence_zones": [],
       "vp_available": true,
       "fib_available": true
     }
