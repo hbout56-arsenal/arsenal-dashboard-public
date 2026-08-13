@@ -3,6 +3,38 @@
   "generated_at": "2026-08-10T22:05:19.203295+00:00",
   "generated_by": "build_trade_state.py (dashboard mirror aggregator)",
   "reference_clock": "newest published feed timestamp (snapshot mirror; NOT wall-clock \u2014 ages are relative to the freshest feed)",
+  "heartbeat": {
+    "wall_now": "2026-08-13T14:39:22.956196+00:00",
+    "basis": "REAL wall clock (NOT the anchored reference clock)",
+    "mirror_age_s": 232443,
+    "mirror_age_hms": "64h34m",
+    "mirror_status": "STALE",
+    "budget_s": 900,
+    "in_rth": true,
+    "newest_feed_ts": "2026-08-10T22:05:19.203295+00:00",
+    "internals": {
+      "last_row_ts": "2026-08-10T20:04:38+00:00",
+      "last_write_ts": "2026-08-10T16:04:38-04:00",
+      "last_push_ts": "2026-08-10T16:04:44-04:00",
+      "push_status": "OK",
+      "push_is_the_break": false
+    },
+    "guard": {
+      "status": "DARK",
+      "age_s": 239684,
+      "incident_open": true,
+      "escalation": "P3",
+      "last_dark_gap_wall_s": null,
+      "alert": {
+        "severity": "P3",
+        "feed": "internals_snapshot",
+        "gap_s": 239684,
+        "message": "internals_snapshot: no fresh row for 66h34m during RTH (budget 15m) \u2014 feed DARK"
+      },
+      "recovered": null
+    },
+    "note": "If mirror_status is STALE/DARK while the freshness board below reads LIVE, the whole chain has frozen together and the anchored board cannot see it \u2014 trust THIS section."
+  },
   "session_date": "2026-08-10",
   "phase": "CLOSED",
   "classification": {
@@ -152,9 +184,9 @@
         "value": {
           "context": "SPX medium-term bearish / short-term neutral; Chart-1 W-b to ~7495\u00b135 then W-c ~7740\u00b110; Chart-2 kill = close below 7/9 low ES ~7469-74 \u2192 7195-6960; his system long from 7499."
         },
-        "render": "STALE(5h)",
+        "render": "STALE(3h)",
         "source": "verdict.json",
-        "age_s": 18480,
+        "age_s": 13801,
         "status": "STALE",
         "budget_s": 300
       },
@@ -303,10 +335,10 @@
     "breadth_gate": "divergence",
     "fld_status": {
       "value": "ALL OFFSETS BULL (short_fast +1.3% above)",
-      "render": "STALE(3d)",
+      "render": "ALL OFFSETS BULL (short_fast +1.3% above)",
       "source": "macro_pillars_cache.json",
-      "age_s": 275112,
-      "status": "STALE",
+      "age_s": 15911,
+      "status": "LIVE",
       "budget_s": 259200
     },
     "_prov": {
@@ -324,8 +356,8 @@
       },
       "macro": {
         "source": "macro_pillars_cache.json",
-        "age_s": 275112,
-        "status": "STALE",
+        "age_s": 15911,
+        "status": "LIVE",
         "budget_s": 259200
       }
     }
@@ -339,7 +371,7 @@
     "nyse_status": "closed",
     "_prov": {
       "source": "calendar_context.json",
-      "age_s": 17710,
+      "age_s": 13391,
       "status": "LIVE",
       "budget_s": 86400
     }
@@ -421,7 +453,7 @@
   ],
   "freshness": {
     "verdict": {
-      "age_s": 18480,
+      "age_s": 13801,
       "status": "STALE",
       "source_path": "verdict.json"
     },
@@ -446,12 +478,12 @@
       "source_path": "prices_futures.json"
     },
     "ict_state": {
-      "age_s": 17773,
+      "age_s": 13439,
       "status": "STALE",
       "source_path": "ict_state.json"
     },
     "fvg_state": {
-      "age_s": 17944,
+      "age_s": 13439,
       "status": "STALE",
       "source_path": "fvg_state.json"
     },
@@ -476,7 +508,7 @@
       "source_path": "tictoc_levels.json"
     },
     "calendar_context": {
-      "age_s": 17710,
+      "age_s": 13391,
       "status": "LIVE",
       "source_path": "calendar_context.json"
     },
@@ -486,8 +518,8 @@
       "source_path": "regime_label.json"
     },
     "macro_pillars_cache": {
-      "age_s": 275112,
-      "status": "STALE",
+      "age_s": 15911,
+      "status": "LIVE",
       "source_path": "macro_pillars_cache.json"
     },
     "orb_futures": {
