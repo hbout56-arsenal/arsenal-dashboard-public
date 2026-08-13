@@ -37,6 +37,18 @@ import sys
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+from engine_freshness_guard import (  # noqa: E402  (local, path-injected above)
+    staleness_check, _load_state, _save_state, in_rth, _hms,
+)
+
+# Wall-clock budget for the mirror heartbeat: a mirror whose newest row is
+# >15 min old during RTH is not slow, it is down. Independent of the anchored
+# reference clock on purpose — see build_heartbeat().
+HEARTBEAT_BUDGET_S = 15 * 60
+GUARD_STATE_PATH = os.path.join(HERE, "freshness_guard_state.json")
 
 # ----------------------------------------------------------------------------
 # provenance-aware readers
@@ -519,10 +531,103 @@ def build_freshness():
 
 
 # ----------------------------------------------------------------------------
+# wall-clock heartbeat — closes the anchored-reference-clock blind spot
+# ----------------------------------------------------------------------------
+
+def build_heartbeat(persist=False):
+    """
+    The one section judged against the REAL wall clock, not the anchored
+    reference clock. `reference_now()` anchors to the newest feed timestamp,
+    so a total freeze (whole collector/push chain dead) reads ~0s => LIVE and
+    the mirror lies FRESH — exactly the failure that hid a 42h outage. This
+    section asks the question that anchoring cannot: is the newest row recent
+    against real time, right now?
+
+    It also surfaces the collector heartbeat fields so "local-fine-but-
+    mirror-stale" is self-evident:
+      last_write_ts advancing while last_push_ts stalls  => the PUSH is broken
+      both stalled                                        => the COLLECTOR is broken
+    """
+    wall_now = datetime.now(timezone.utc)
+
+    # newest DATA-row timestamp across every published feed (wall-clock age)
+    newest = None
+    for name in FEED_FILES:
+        dt = feed_ts(load(name))
+        if dt and (newest is None or dt > newest):
+            newest = dt
+    mirror_age = None if newest is None else int(
+        (wall_now - newest).total_seconds())
+
+    snap = load("internals_snapshot.json") or {}
+    internals_dt = feed_ts(snap)
+    internals_row = internals_dt.isoformat() if internals_dt else None
+
+    # run the shared guard for the intraday tape against the WALL clock
+    state_all = _load_state(GUARD_STATE_PATH)
+    res = staleness_check(
+        wall_now, "internals_snapshot", internals_row,
+        state_all.get("internals_snapshot", {}),
+        budget_s=HEARTBEAT_BUDGET_S,
+    )
+    if persist:
+        state_all["internals_snapshot"] = res["state"]
+        _save_state(GUARD_STATE_PATH, state_all)
+
+    rth = in_rth(wall_now)
+    if mirror_age is None:
+        mirror_status = "DARK"
+    elif not rth:
+        mirror_status = "OFF_HOURS"
+    elif mirror_age > HEARTBEAT_BUDGET_S:
+        mirror_status = "STALE"
+    else:
+        mirror_status = "LIVE"
+
+    # collector heartbeat fields (may be absent on older snapshots)
+    lw = parse_ts(snap.get("last_write_ts"))
+    lp = parse_ts(snap.get("last_push_ts"))
+    push_break = None
+    if lw and lp:
+        # local write meaningfully ahead of last push => push is the break
+        push_break = (lw - lp).total_seconds() > HEARTBEAT_BUDGET_S
+
+    return {
+        "wall_now": wall_now.isoformat(),
+        "basis": "REAL wall clock (NOT the anchored reference clock)",
+        "mirror_age_s": mirror_age,
+        "mirror_age_hms": _hms(mirror_age),
+        "mirror_status": mirror_status,
+        "budget_s": HEARTBEAT_BUDGET_S,
+        "in_rth": rth,
+        "newest_feed_ts": newest.isoformat() if newest else None,
+        "internals": {
+            "last_row_ts": internals_row,
+            "last_write_ts": snap.get("last_write_ts"),
+            "last_push_ts": snap.get("last_push_ts"),
+            "push_status": snap.get("push_status"),
+            "push_is_the_break": push_break,
+        },
+        "guard": {
+            "status": res["status"],
+            "age_s": res["age_s"],
+            "incident_open": bool(res["state"].get("incident_open")),
+            "escalation": res["state"].get("escalation"),
+            "last_dark_gap_wall_s": res["state"].get("last_dark_gap_wall_s"),
+            "alert": res["alert"],
+            "recovered": res["recovered"],
+        },
+        "note": "If mirror_status is STALE/DARK while the freshness board "
+                "below reads LIVE, the whole chain has frozen together and "
+                "the anchored board cannot see it — trust THIS section.",
+    }
+
+
+# ----------------------------------------------------------------------------
 # assemble
 # ----------------------------------------------------------------------------
 
-def build():
+def build(persist_guard=False):
     cal = load("calendar_context.json") or {}
     state = {
         "schema": "trade_state/1",
@@ -531,6 +636,7 @@ def build():
         "reference_clock": "newest published feed timestamp (snapshot mirror; "
                            "NOT wall-clock — ages are relative to the freshest "
                            "feed)",
+        "heartbeat": build_heartbeat(persist=persist_guard),
         "session_date": cal.get("date"),
         "phase": build_phase(),
         "classification": build_classification(),
@@ -559,14 +665,21 @@ def build():
 def main():
     global NOW
     NOW = reference_now()
-    state = build()
-    if "--check" in sys.argv:
+    check_only = "--check" in sys.argv
+    # --check must not advance/persist the guard incident state
+    state = build(persist_guard=not check_only)
+    if check_only:
         print(json.dumps(state, indent=2, default=str))
         # light validation
         assert state["freshness"], "empty freshness board"
         assert state["levels"]["poc"]["value"] is not None, "no POC read"
+        assert state["heartbeat"]["basis"].startswith("REAL wall clock"), \
+            "heartbeat not on wall clock"
         print("\nOK: trade_state assembled, POC/VAH/VAL read, freshness board "
-              f"has {len(state['freshness'])} feeds.", file=sys.stderr)
+              f"has {len(state['freshness'])} feeds. "
+              f"heartbeat mirror_status={state['heartbeat']['mirror_status']} "
+              f"(age {state['heartbeat']['mirror_age_hms']}).",
+              file=sys.stderr)
         return
     out = os.path.join(HERE, "trade_state.json")
     with open(out, "w") as fh:

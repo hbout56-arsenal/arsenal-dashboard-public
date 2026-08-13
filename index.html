@@ -123,6 +123,24 @@ function render(d){
   app.append(el('div','sub', `${esc(d.session_date||'—')} · phase ${esc(d.phase||'—')} · `
     + `<code>ref: newest feed</code>`));
 
+  /* WALL-CLOCK heartbeat banner — the loudest, and the one the anchored
+     board cannot raise. On a total freeze every feed anchors to the same
+     frozen "newest" and the board below reads LIVE; this reads real time. */
+  const hb = d.heartbeat || {};
+  if (hb.mirror_status === 'STALE' || hb.mirror_status === 'DARK'){
+    const g = hb.guard || {};
+    const hbb = el('div', 'banner b-neg');
+    const sev = g.escalation ? ` [${g.escalation}]` : '';
+    const brk = (hb.internals && hb.internals.push_is_the_break)
+      ? ' — local writes ahead of last push: the PUSH is the break'
+      : '';
+    hbb.innerHTML = `⛔ MIRROR ${esc(hb.mirror_status)}${sev} — newest row `
+      + `${esc(hb.mirror_age_hms||ageStr(hb.mirror_age_s))} old vs wall clock`
+      + `${esc(brk)}. The feed board below is anchored and can read LIVE while `
+      + `frozen — trust this line.`;
+    app.append(hbb);
+  }
+
   /* one loud honesty banner */
   if (nDark || nStale){
     const b = el('div', 'banner ' + (nDark? 'b-neg':'b-warn'));
