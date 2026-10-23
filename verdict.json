@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-08-10T18:15:18",
+  "timestamp": "2026-10-23T11:37:34",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
-  "es_price": 7771.25,
+  "es_price": 7688.25,
   "es_change": null,
-  "price": 7771.25,
+  "price": 7688.25,
   "change": null,
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 7841,
+  "internals_age_s": 6223097,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
-  "long_pct": 100.0,
+  "long_pct": 0.0,
   "hold_pct": 0.0,
-  "short_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "LONG",
-      "confidence": 30.0,
-      "reason": "price 7771.25 at 1-method confluence (VP) near 7764.42 (support)"
+      "verdict": "SHORT",
+      "confidence": 90.0,
+      "reason": "price 7688.25 at 3-method confluence (FIB+TIME+PRICE+VP) near 7691.91 (resistance)"
     },
     {
       "name": "Breadth",
@@ -99,8 +99,22 @@
     {
       "method": "VP",
       "label": "HVN",
-      "price": 7764.42,
-      "dist": -6.83,
+      "price": 7691.91,
+      "dist": 3.66,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "FIB",
+      "label": "C5",
+      "price": 7695.11,
+      "dist": 6.86,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 7695.11,
+      "dist": 6.86,
       "vp_timeframe": "daily_swing"
     }
   ],
@@ -313,10 +327,10 @@
     },
     "daily": {
       "timeframe": "daily",
-      "long_pct": 100.0,
-      "hold_pct": 0.0,
+      "long_pct": 10.0,
+      "hold_pct": 90.0,
       "short_pct": 0.0,
-      "price": 7778.5,
+      "price": 7683,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -326,9 +340,9 @@
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "price 7778.50 not at any VP/fib level (\u00b10.1%)"
+          "verdict": "LONG",
+          "confidence": 30.0,
+          "reason": "price 7683.00 at 1-method confluence (VP) near 7679.81 (support)"
         },
         {
           "name": "Breadth",
@@ -347,9 +361,9 @@
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
+          "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7778.50 > prior_close 7777.25 (daily fallback)"
+          "reason": "price 7683.00 < prior_close 7703.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -373,22 +387,37 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [],
+      "confluence_zones": [
+        {
+          "method": "VP",
+          "label": "VAL",
+          "price": 7679.81,
+          "dist": -3.19,
+          "vp_timeframe": "daily_swing"
+        }
+      ],
       "vp_available": true,
       "fib_available": true
     }
   },
   "guidance": {
     "active": true,
-    "direction": "LONG",
+    "direction": "SHORT",
     "threshold": 100,
     "engine": "confluence",
-    "entry": 7771.25,
-    "levels_incomplete": true,
-    "note": "nearest structural target 7778.5 too close for 1.5 R:R (risk 152.17 pts) \u2014 not actionable",
-    "stop": 7619.08,
-    "R": 152.17,
-    "stop_trace": "confluence x2: fib-cluster 7625.44, swing-pivot 7632.0",
-    "context_level": "single-source: session-level 7778.5 only"
+    "entry": 7688.25,
+    "stop": 7738.82,
+    "t1": 7586.17,
+    "t2": 7534.31,
+    "R": 50.57,
+    "rr": 2.02,
+    "stop_basis": "confluence",
+    "target_basis": "single-source",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A+",
+    "stop_trace": "confluence x2: fib-cluster 7729.33, vp 7732.22",
+    "t1_trace": "single-source: fib-cluster 7586.17 only",
+    "t2_trace": "confluence x2: swing-pivot 7524.75, fib-cluster 7543.86"
   }
 }
