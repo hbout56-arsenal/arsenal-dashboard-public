@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-23T12:44:39",
+  "timestamp": "2026-10-23T13:19:55",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 6227123,
+  "internals_age_s": 6229238,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -21,8 +21,8 @@
       "name": "Confluence",
       "pillar": "Confluence",
       "verdict": "SHORT",
-      "confidence": 90.0,
-      "reason": "price 7688.25 at 3-method confluence (FIB+TIME+PRICE+VP) near 7691.91 (resistance)"
+      "confidence": 65.0,
+      "reason": "price 7688.25 at 2-method confluence (FIB+TIME+PRICE) near 7695.11 (resistance)"
     },
     {
       "name": "Breadth",
@@ -97,13 +97,6 @@
   ],
   "confluence_zones": [
     {
-      "method": "VP",
-      "label": "HVN",
-      "price": 7691.91,
-      "dist": 3.66,
-      "vp_timeframe": "daily_swing"
-    },
-    {
       "method": "FIB",
       "label": "C5",
       "price": 7695.11,
@@ -118,7 +111,7 @@
       "vp_timeframe": "daily_swing"
     }
   ],
-  "vp_available": true,
+  "vp_available": false,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -330,7 +323,7 @@
       "long_pct": 0.0,
       "hold_pct": 0.0,
       "short_pct": 100.0,
-      "price": 7689.25,
+      "price": 7675,
       "internals_fresh": false,
       "structure_fresh": true,
       "structure_source": "polygon ES daily",
@@ -342,7 +335,7 @@
           "pillar": "Confluence",
           "verdict": "SHORT",
           "confidence": 30.0,
-          "reason": "price 7689.25 at 1-method confluence (VP) near 7691.91 (resistance)"
+          "reason": "price 7675.00 at 1-method confluence (VP) near 7679.81 (resistance)"
         },
         {
           "name": "Breadth",
@@ -363,7 +356,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7689.25 < prior_close 7703.75 (daily fallback)"
+          "reason": "price 7675.00 < prior_close 7703.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -390,14 +383,14 @@
       "confluence_zones": [
         {
           "method": "VP",
-          "label": "HVN",
-          "price": 7691.91,
-          "dist": 2.66,
+          "label": "VAL",
+          "price": 7679.81,
+          "dist": 4.81,
           "vp_timeframe": "daily_swing"
         }
       ],
       "vp_available": true,
-      "fib_available": false
+      "fib_available": true
     }
   },
   "guidance": {
@@ -406,18 +399,18 @@
     "threshold": 100,
     "engine": "confluence",
     "entry": 7688.25,
-    "stop": 7726.3,
-    "t1": 7622.25,
+    "stop": 7708.62,
+    "t1": 7632.49,
     "t2": 7580.59,
-    "R": 38.05,
-    "rr": 1.73,
+    "R": 20.37,
+    "rr": 2.74,
     "stop_basis": "confluence",
-    "target_basis": "single-source",
+    "target_basis": "confluence",
     "levels_source": "confluence engine",
     "coarse": false,
-    "grade": "A",
-    "stop_trace": "confluence x4: session-level 7716.25, swing-pivot 7721.25, fib-cluster 7729.33, vp 7732.22",
-    "t1_trace": "single-source: session-level 7622.25 only",
+    "grade": "A+",
+    "stop_trace": "confluence x4: vp 7691.91, session-level 7694.0, fib-cluster 7695.11, swing-pivot 7721.25",
+    "t1_trace": "confluence x2: session-level 7622.25, fib-cluster 7642.73",
     "t2_trace": "confluence x2: swing-pivot 7575.0, fib-cluster 7586.17"
   }
 }
