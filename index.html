@@ -11,120 +11,167 @@
 <title>Arsenal</title>
 <style>
 :root{
-  --bg:#0e1116;--card:#161b22;--line:#262d37;--ink:#e6e9ee;--dim:#8b95a5;--mute:#5c6675;
+  --bg:#0e1116;--card:#161b22;--line:#262d37;--ink:#e6e9ee;--dim:#98a2b3;--mute:#6b7585;
   --pos:#1f8f4e;--pos-ink:#5fd38d;--neg:#b23a3a;--neg-ink:#ff7b7b;--warn:#9a6b00;--warn-ink:#ffc44d;
-  --info:#2a5aa8;--info-ink:#7db3ff;--idle:#3a414c;--acc:#f5c451;
-  --r:12px;--pad:12px;--font:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,Segoe UI,Roboto,sans-serif;
+  --info:#2a5aa8;--info-ink:#7db3ff;--idle:#3a414c;--acc:#f5c451;--inner:#11161d;
+  --r:14px;--pad:14px;--font:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,Segoe UI,Roboto,sans-serif;
   --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--font);-webkit-text-size-adjust:100%}
-body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--font);-webkit-text-size-adjust:100%}
+body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 a{color:var(--info-ink)}
-#status{position:sticky;top:0;z-index:20;background:rgba(14,17,22,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:8px var(--pad) 6px}
-#status .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#status .px{font:700 22px/1 var(--mono)}
-#status .chg{font:600 14px var(--mono)}
-#status .what{font-size:13px;color:var(--dim);margin-top:4px}
-#banner{display:none;margin:6px var(--pad) 0;padding:8px 10px;border-radius:8px;background:var(--neg);color:#fff;font-weight:600;font-size:13px}
+button{font-family:var(--font)}
+#top{position:sticky;top:0;z-index:20;background:rgba(14,17,22,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:8px var(--pad) 8px}
+#top .row{display:flex;gap:8px;align-items:center}
+#top .brand{font-weight:800;letter-spacing:.6px}
+#top .px{font:700 24px/1 var(--mono);margin-left:auto}
+#top .chg{font:600 14px var(--mono)}
+#top .row2{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;font-size:13px;color:var(--dim)}
+.btn{border:1px solid var(--line);background:var(--inner);color:var(--ink);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer}
+.btn.on{background:var(--acc);color:#1a1300;border-color:var(--acc)}
+#banner{display:none;margin:8px var(--pad) 0;padding:10px 12px;border-radius:10px;background:var(--neg);color:#fff;font-weight:600;font-size:14px}
 #banner.warn{background:var(--warn)}
 main{padding:10px var(--pad) 0;max-width:720px;margin:0 auto}
 .view{display:none}.view.on{display:block}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin:0 0 10px}
-.card h2{font-size:14px;margin:0 0 8px;letter-spacing:.3px;color:var(--ink);display:flex;align-items:center;gap:6px}
-.card h2 .sub{font-weight:400;color:var(--dim);font-size:12px;margin-left:auto}
-.tag{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.3;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:0 0 12px}
+.card h2{font-size:15px;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.card h2 .sub{font-weight:400;color:var(--dim);font-size:12px;margin-left:auto;text-align:right}
+.help{display:none;background:rgba(42,90,168,.12);border:1px dashed var(--info);border-radius:10px;padding:8px 10px;font-size:13px;color:var(--ink);margin:4px 0 10px;line-height:1.4}
+body.helpmode .help{display:block}
+.tag{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;line-height:1.3;white-space:nowrap}
 .pos{background:rgba(31,143,78,.22);color:var(--pos-ink)}.neg{background:rgba(178,58,58,.22);color:var(--neg-ink)}
 .warn{background:rgba(154,107,0,.25);color:var(--warn-ink)}.info{background:rgba(42,90,168,.25);color:var(--info-ink)}
 .idle{background:var(--idle);color:var(--dim)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
-.kv{background:#11161d;border:1px solid var(--line);border-radius:8px;padding:8px}
+/* verdict */
+#verdict{border-width:2px}
+#verdict .light{display:flex;align-items:center;gap:12px}
+#verdict .dot{width:46px;height:46px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff}
+#verdict .dot.g{background:var(--pos)}#verdict .dot.a{background:var(--warn)}#verdict .dot.r{background:var(--neg)}#verdict .dot.x{background:var(--idle)}
+#verdict .big{font-size:20px;font-weight:800;line-height:1.2}
+#verdict .one{font-size:14px;color:var(--dim);margin-top:2px}
+.chk{list-style:none;margin:10px 0 0;padding:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.chk li .box{flex:none;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.chk li .box.ok{background:var(--pos);color:#fff}.chk li .box.no{background:var(--idle);color:var(--dim)}.chk li .box.wt{background:var(--warn);color:#fff}
+.chk li .txt b{display:block}
+.chk li .txt span{color:var(--dim);font-size:13px}
+.nearest{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.nearest .n{background:var(--inner);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.nearest .n .k{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+.nearest .n .v{font:700 20px var(--mono)}
+.nearest .n .s{font-size:12px;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px}
+.kv{background:var(--inner);border:1px solid var(--line);border-radius:10px;padding:9px}
 .kv .k{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
-.kv .v{font:600 18px/1.2 var(--mono);margin-top:2px}
-.kv .s{font-size:11px;color:var(--dim);margin-top:2px}
-table{width:100%;border-collapse:collapse;font-size:13px}
+.kv .v{font:700 19px/1.2 var(--mono);margin-top:2px}
+.kv .s{font-size:12px;color:var(--dim);margin-top:2px}
+.kv .e{display:none;font-size:12px;color:var(--info-ink);margin-top:4px}
+body.helpmode .kv .e{display:block}
+table{width:100%;border-collapse:collapse;font-size:14px}
 th{color:var(--dim);font-weight:600;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:4px 6px;border-bottom:1px solid var(--line)}
-td{padding:6px;border-bottom:1px solid #1d232c;vertical-align:top}
+td{padding:7px 6px;border-bottom:1px solid #1d232c;vertical-align:top}
 tr:last-child td{border-bottom:0}
 .num{font-family:var(--mono);text-align:right;white-space:nowrap}
 .ci{white-space:normal;font-size:12px}
-.card table{table-layout:auto;word-break:break-word}
 .card table td:first-child{word-break:break-all}
-.ladder{font-family:var(--mono);font-size:13px}
-.ladder .lv{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px}
+.ladder{font-family:var(--mono);font-size:14px}
+.ladder .lv{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px}
 .ladder .lv.px{background:rgba(245,196,81,.12);border:1px dashed var(--acc)}
-.ladder .lv .p{width:78px;text-align:right;font-weight:600}
-.ladder .lv .d{width:52px;text-align:right;color:var(--dim);font-size:12px}
-.ladder .lv .l{flex:1;font-family:var(--font);font-size:12px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gate{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:8px;background:#11161d;border:1px solid var(--line);margin-bottom:6px}
-.gate .name{font-weight:600;min-width:118px}
-.gate .why{font-size:12px;color:var(--dim);flex:1}
-.bar{height:8px;border-radius:4px;background:var(--idle);overflow:hidden;display:flex}
+.ladder .lv .p{width:82px;text-align:right;font-weight:700}
+.ladder .lv .d{width:54px;text-align:right;color:var(--dim);font-size:12px}
+.ladder .lv .l{flex:1;font-family:var(--font);font-size:13px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gate{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--inner);border:1px solid var(--line);margin-bottom:8px}
+.gate .name{font-weight:700;min-width:120px}
+.gate .why{font-size:13px;color:var(--dim);flex:1}
+.bar{height:10px;border-radius:5px;background:var(--idle);overflow:hidden;display:flex}
 .bar i{display:block;height:100%}
-.tfrow{display:flex;align-items:center;gap:8px;font-size:12px;margin:4px 0}
-.tfrow .n{width:38px;color:var(--dim);font-family:var(--mono)}
+.tfrow{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}
+.tfrow .n{width:42px;color:var(--dim);font-family:var(--mono)}
 .tfrow .bar{flex:1}
-.tfrow .pct{width:84px;text-align:right;font-family:var(--mono);color:var(--dim)}
-details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:8px 0 0;background:#11161d}
-summary{cursor:pointer;color:var(--dim);font-size:13px}
-.note{font-size:12px;color:var(--dim);margin-top:6px}
+.tfrow .pct{width:88px;text-align:right;font-family:var(--mono);color:var(--dim)}
+details{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:10px 0 0;background:var(--inner)}
+summary{cursor:pointer;color:var(--dim);font-size:14px;font-weight:600}
+.note{font-size:13px;color:var(--dim);margin-top:8px}
 .muted{color:var(--mute)}
-#nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:rgba(14,17,22,.97);border-top:1px solid var(--line);padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
-#nav button{flex:1;background:none;border:0;color:var(--dim);font:600 11px var(--font);padding:4px 0;letter-spacing:.3px}
-#nav button .ic{display:block;font-size:20px;line-height:1.1}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:rgba(14,17,22,.97);border-top:1px solid var(--line);padding:6px 0 calc(8px + env(safe-area-inset-bottom))}
+#nav button{flex:1;background:none;border:0;color:var(--dim);font:700 11px var(--font);padding:4px 0;letter-spacing:.3px}
+#nav button .ic{display:block;font-size:22px;line-height:1.1}
 #nav button.on{color:var(--acc)}
-.pill{display:inline-block;padding:3px 9px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--dim);margin:0 6px 6px 0}
-.setup{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:#11161d}
-.setup .h{display:flex;gap:8px;align-items:center;font-weight:600}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--dim);margin:0 6px 6px 0}
+.setup{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:var(--inner)}
+.setup .h{display:flex;gap:8px;align-items:center;font-weight:700;font-size:16px}
 .setup .h .t{font-family:var(--mono)}
-.setup .lv{font:12px var(--mono);color:var(--dim);margin-top:4px}
-.setup .why{font-size:12px;color:var(--dim);margin-top:3px}
-.empty{color:var(--dim);font-size:13px;padding:6px 2px}
-.foot{font-size:11px;color:var(--mute);text-align:center;padding:14px 0 4px}
+.setup .h .cp{margin-left:auto}
+.setup .lv{font:14px var(--mono);color:var(--ink);margin-top:6px}
+.setup .why{font-size:13px;color:var(--dim);margin-top:4px}
+.setup .plain{font-size:13px;margin-top:6px;padding:6px 8px;border-radius:8px;background:rgba(245,196,81,.08);border-left:3px solid var(--acc)}
+.empty{color:var(--dim);font-size:14px;padding:6px 2px}
+.foot{font-size:12px;color:var(--mute);text-align:center;padding:14px 0 4px}
+.sheet{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;align-items:flex-end}
+.sheet.on{display:flex}
+.sheet .in{background:var(--card);border-radius:16px 16px 0 0;padding:16px var(--pad) calc(16px + env(safe-area-inset-bottom));width:100%;max-height:80vh;overflow:auto;font-size:14px}
+.sheet .in h3{margin:0 0 8px}
+.sheet .in p{margin:6px 0}
 @media (prefers-color-scheme: light){
-  :root{--bg:#f4f6f9;--card:#fff;--line:#dfe4ec;--ink:#111722;--dim:#5b6675;--mute:#8a94a3;--idle:#e3e7ee;--acc:#a86f00}
-  #status{background:rgba(244,246,249,.96)} #nav{background:rgba(244,246,249,.97)} .kv,.gate,details,.setup{background:#f8fafc}
+  :root{--bg:#f4f6f9;--card:#fff;--line:#dfe4ec;--ink:#111722;--dim:#5b6675;--mute:#8a94a3;--idle:#e3e7ee;--acc:#a86f00;--inner:#f8fafc}
+  #top{background:rgba(244,246,249,.96)} #nav{background:rgba(244,246,249,.97)}
   .pos{background:#dff3e6;color:#166b3a}.neg{background:#fbe2e2;color:#9b2c2c}.warn{background:#fff1cc;color:#7a5200}.info{background:#e1ecff;color:#1e4d9b}
-  tr td{border-color:#edf0f5}
+  tr td{border-color:#edf0f5} .btn.on{color:#fff;background:#a86f00}
 }
 </style>
 </head>
 <body>
-<div id="status">
+<div id="top">
   <div class="row">
-    <span style="font-weight:800;letter-spacing:.5px">ARSENAL</span>
+    <span class="brand">ARSENAL</span>
     <span id="feedtag" class="tag idle">…</span>
-    <span id="sess" class="tag idle">…</span>
-    <span style="margin-left:auto" class="px" id="es">—</span>
-    <span class="chg" id="eschg"></span>
+    <span class="px" id="es">—</span><span class="chg" id="eschg"></span>
   </div>
-  <div class="what" id="what">loading…</div>
+  <div class="row2">
+    <span id="sess">…</span>
+    <span style="margin-left:auto" id="upd"></span>
+    <button class="btn" id="refresh" title="Reload all data">↻</button>
+    <button class="btn" id="helpbtn" title="Explain everything in plain English">? Explain</button>
+    <button class="btn" id="howbtn">How to use</button>
+  </div>
 </div>
 <div id="banner"></div>
 
 <main>
 <!-- ───────────── NOW ───────────── -->
 <section class="view on" id="v-now">
+  <div class="card" id="verdict">
+    <div class="light"><div class="dot x" id="vdot">·</div><div><div class="big" id="vbig">Loading…</div><div class="one" id="vone"></div></div></div>
+    <div class="help">This is the whole page in one line. <b>Green</b> = internals and a card agree, a trade may be on; <b>Amber</b> = something is set up but not confirmed — watch, don't act; <b>Red</b> = stand aside; <b>Grey</b> = market closed or no data. The checklist below shows exactly which conditions are met. Price breaking a level is always the trigger — never this light by itself.</div>
+    <ul class="chk" id="chk"></ul>
+    <div class="nearest" id="nearest"></div>
+  </div>
+
   <div class="card">
     <h2>Internals <span class="sub" id="int-age"></span></h2>
+    <div class="help">The market's "vital signs" from the NYSE tape. <b>TICK</b> = stocks upticking minus downticking right now (±900 is extreme). <b>TRIN</b> = where the volume is going: above 1.5 the volume is in sellers, below 0.6 in buyers — but during broad rallies TRIN can sit above 1 because the big-cap volume dominates; that's "rotation," not weakness. <b>ADD</b> = advancing minus declining stocks. <b>VOLD</b> = up-volume minus down-volume. <b>ADSPD</b> = the same breadth count inside the S&amp;P 500 only.</div>
     <div class="grid" id="int-grid"></div>
   </div>
   <div class="card">
-    <h2>Slope gates <span class="sub">30-min LSQ · Playbook v3.1</span></h2>
+    <h2>Internals trend (gates) <span class="sub">last 30 minutes</span></h2>
+    <div class="help">Instead of reading one tick, we look at the <b>direction</b> of the last 30 minutes. If breadth (ADD) is building and either volume (VOLD) is building or TRIN is falling, the <b>long gate</b> is open — the tape agrees with buyers. The mirror opens the <b>short gate</b>. "FLAT" means the move is too small to matter. No open gate = no day trade, no matter how good the chart looks. Needs 15+ minutes of live data; otherwise it says UNRELIABLE.</div>
     <div id="gates"></div>
-    <div class="note">LONG gate = ADD slope &gt;0 and (VOLD slope &gt;0 or TRIN slope &lt;0). SHORT = mirror. Slope must exceed ~10% of the series level or it is FLAT. No gate = no day-trade card. Internals confirm, <b>price triggers</b>.</div>
   </div>
   <div class="card">
-    <h2>Cards <span class="sub">state only — you pull the trigger</span></h2>
+    <h2>Trade cards <span class="sub">state only — you pull the trigger</span></h2>
+    <div class="help">The three plays that have actually worked (reaction trades, not predictions). <b>Washout Long</b>: TICK flushes to −900 or worse, then price reclaims the flush low → buy the reclaim. <b>Cluster Fade</b>: price reaches a liquidity pool while internals disagree with the move → fade it. <b>Failed Retest</b>: price breaks a level by a full 15-minute close, comes back to retest, and the retest fails → go with the break. A card that says ARMED still needs a gate open and your stop defined.</div>
     <div id="cards"></div>
   </div>
   <div class="card">
-    <h2>Level ladder <span class="sub" id="lad-sub">nearest first</span></h2>
-    <div class="ladder" id="ladder"></div>
-    <div class="note">One ladder, every source: pools (ICT), gaps (FVG), confluence (VP/FIB), swing levels, newsletter levels, meter guidance. Tags say where a level comes from; nothing here is a trigger until price breaks it.</div>
+    <h2>Level ladder <span class="sub" id="lad-sub"></span></h2>
+    <div class="help">Every important price, from every method, on one ruler. <b>pool</b> = where stops are resting (liquidity); <b>fvg</b> = an unfilled price gap; <b>conf</b> = volume-profile / fibonacci confluence; <b>swing</b> = recent swing high/low; <b>session</b> = VWAP / opening range; <b>TicToc</b> = newsletter level (dated); <b>meter</b> = the engine's suggested entry/stop/targets. Nothing here is a trade until price actually breaks or holds the level.</div>
+    <div class="nearest" id="nearest2"></div>
+    <details><summary>Show the full ladder</summary><div class="ladder" id="ladder" style="margin-top:8px"></div></details>
   </div>
   <div class="card">
     <h2>Meter <span class="sub" id="meter-sub"></span></h2>
+    <div class="help">An opinion poll of 11 signals (structure, breadth, confluence, sector, VIX…) for each timeframe: green share says LONG, red says SHORT, grey says HOLD. It is <b>context</b>, not a trigger. When it prints an A+ guidance block, those are suggested levels — still confirm against the ladder and the gate.</div>
     <div id="meter"></div>
     <details><summary>Signals behind the meter</summary><div id="meter-sig"></div></details>
   </div>
@@ -134,15 +181,17 @@ summary{cursor:pointer;color:var(--dim);font-size:13px}
 <section class="view" id="v-setups">
   <div class="card">
     <h2>MES / futures <span class="sub" id="fut-sub"></span></h2>
+    <div class="help">Hours-hold futures ideas. "Stand down" is a real answer — most days have no A+ level-break. When a setup shows, tap <b>Copy</b> to put entry / stop / target on the clipboard for ToS. Half size on event days (Fed, CPI, mega-cap earnings).</div>
     <div id="fut-setups"></div>
   </div>
   <div class="card">
     <h2>Stocks — today's A+ <span class="sub" id="stk-sub"></span></h2>
+    <div class="help">Only the setup types that have measured edge are shown as actionable: <b>convergence-HIGH</b> (65% win, +0.47R over 81 trades), <b>PULLBACK_LONG</b> and <b>BOUNCE_SHORT</b>. Ideas tagged "informational" (Minervini reset, ORB A+) are shadows still being measured — fine to study, size small if at all. Names that are extended (RSI pinned, far above the 50-day) are hidden so you don't chase.</div>
     <div id="stk-setups"></div>
-    <div class="note">Only buckets with demonstrated edge are shown as actionable (PULLBACK_LONG / BOUNCE_SHORT / convergence-HIGH). STRONG_LONG at-market is measured negative forward and is not listed. Extended names (RSI-pinned / &gt;12% over 50MA) are demoted to context.</div>
   </div>
   <div class="card">
     <h2>Gold / crude (trial) <span class="sub" id="gc-sub"></span></h2>
+    <div class="help">Gold EMA signals have real edge in testing (9/21 on 60-minute bars +11 pts per trade over 113 trades). Crude does not — it's ~0 after costs. Prices here are delayed 10–15 minutes; confirm on ToS before acting.</div>
     <div id="gc-setups"></div>
   </div>
 </section>
@@ -150,20 +199,26 @@ summary{cursor:pointer;color:var(--dim);font-size:13px}
 <!-- ───────────── EDGE ───────────── -->
 <section class="view" id="v-edge">
   <div class="card">
-    <h2>What's working <span class="sub">n≥30 and CI excludes 0</span></h2>
+    <h2>In plain English</h2>
+    <div id="edge-plain"></div>
+  </div>
+  <div class="card">
+    <h2>What's working <span class="sub">30+ trades, statistically real</span></h2>
+    <div class="help">A strategy only lands here when it has at least 30 completed trades <b>and</b> the 95% confidence interval of its average result stays above zero. "exp" = average points per trade. Anything flagged "≈ costs" is positive but too thin to trade on ES.</div>
     <table><thead><tr><th>System · track</th><th class="num">n</th><th class="num">exp</th><th class="num">95% CI</th><th class="num">win</th></tr></thead><tbody id="edge-pos"></tbody></table>
   </div>
   <div class="card">
     <h2>Measured no-edge — retired from the front screen</h2>
+    <div class="help">These were tested properly and lost (or made nothing) over 30+ trades. They still run in the background so the record keeps growing, but they don't vote and never appear on NOW or SETUPS.</div>
     <table><thead><tr><th>System · track</th><th class="num">n</th><th class="num">exp</th><th class="num">95% CI</th></tr></thead><tbody id="edge-neg"></tbody></table>
-    <div class="note">Negative or zero after costs with n≥30. Still logged in the background for forward tracking; they do not vote and are not shown on NOW/SETUPS.</div>
   </div>
   <div class="card">
-    <h2>Still accruing <span class="sub">descriptive, n&lt;30</span></h2>
+    <h2>Too early to tell <span class="sub">under 30 trades</span></h2>
     <div id="edge-acc"></div>
   </div>
   <div class="card">
-    <h2>Swing pick buckets <span class="sub">email engine</span></h2>
+    <h2>Email pick buckets</h2>
+    <div class="help">How each verdict type from the morning email has actually done. Forward = logged live, no hindsight. In-sample = the original study. The lesson so far: <b>pullback entries beat at-market entries</b>, and STRONG_LONG bought at market loses money.</div>
     <table><thead><tr><th>Bucket</th><th class="num">n</th><th class="num">exp %</th><th class="num">PF</th><th>read</th></tr></thead><tbody id="edge-picks"></tbody></table>
   </div>
 </section>
@@ -171,20 +226,23 @@ summary{cursor:pointer;color:var(--dim);font-size:13px}
 <!-- ───────────── STRUCTURE ───────────── -->
 <section class="view" id="v-struct">
   <div class="card">
-    <h2>ES wave read <span class="sub">candidate counts, not predictions</span></h2>
-    <div id="waves"></div>
-  </div>
-  <div class="card">
-    <h2>Breadth &amp; T-Theory <span class="sub" id="br-sub"></span></h2>
+    <h2>Big picture <span class="sub" id="bp-sub"></span></h2>
+    <div class="help">What the slower pillars say. <b>Breadth</b>: is the cumulative advance/decline line near its high or lagging price? <b>T-Theory</b>: is a new "T" (a bull phase measured from a volume-oscillator low) confirmed yet? <b>Wave read</b>: the engine's best-guess Elliott count — a candidate, not a prediction; what matters is its invalidation level.</div>
     <div class="grid" id="breadth"></div>
     <div id="tstate" class="note"></div>
   </div>
   <div class="card">
+    <h2>ES wave read <span class="sub">candidate counts, not predictions</span></h2>
+    <div id="waves"></div>
+  </div>
+  <div class="card">
     <h2>Calendar &amp; regime</h2>
+    <div class="help"><b>Half size</b> appears on turn-of-month / quarter-end days when rebalancing distorts the tape. <b>Regime</b> says whether the recent tape has been trending or choppy — in CHOP, fade extremes and size down; in TRENDING, follow.</div>
     <div id="cal"></div>
   </div>
   <div class="card">
     <h2>Feeds</h2>
+    <div class="help">Age of each data source. Green = fresh, amber = old, red = missing. If internals are stale, the gates and cards are unreliable — fall back to levels only.</div>
     <div id="feeds"></div>
     <div class="note"><a href="index_full.html">Open the full legacy dashboard</a> (all 19 views, unchanged).</div>
   </div>
@@ -199,6 +257,18 @@ summary{cursor:pointer;color:var(--dim);font-size:13px}
   <button data-v="struct"><span class="ic">≋</span>STRUCTURE</button>
 </nav>
 
+<div class="sheet" id="how"><div class="in">
+  <h3>How to use this page (60 seconds)</h3>
+  <p><b>1. Look at the light.</b> Green = internals and a card agree, a trade may be on. Amber = set up but unconfirmed. Red = stand aside. Grey = closed / no data.</p>
+  <p><b>2. Read the checklist.</b> Every box must be ✓ before you take a day trade: live feed · gate open · a card armed · price at a ladder level · stop defined · not an event day.</p>
+  <p><b>3. Use the two nearest levels.</b> "Next above / next below" are the prices that matter in the next hour. The full ladder is one tap away.</p>
+  <p><b>4. SETUPS</b> lists only ideas with measured edge, with Copy buttons for ToS. "Stand down" is a normal answer.</p>
+  <p><b>5. EDGE</b> is the scoreboard — what works, what doesn't, what's too early to say. If a strategy isn't under "What's working," don't trade it.</p>
+  <p><b>6. Tap "? Explain"</b> any time to turn on plain-English notes under every section.</p>
+  <p class="muted">Internals confirm. <b>Price triggers.</b> Cycle dates are windows, not switches.</p>
+  <button class="btn on" id="howclose" style="margin-top:8px;width:100%">Got it</button>
+</div></div>
+
 <script>
 (function(){
 "use strict";
@@ -208,266 +278,249 @@ var esc = function(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c)
 var tag = function(k,t){ return '<span class="tag '+k+'">'+esc(t)+'</span>'; };
 var fmt = function(x,d){ if(x==null||isNaN(x)) return "—"; return Number(x).toFixed(d==null?2:d); };
 var fmt0 = function(x){ return fmt(x,0); };
-var DATA = {};
+var DATA = {}, LAST_LOAD = 0;
 
-function fetchJ(f){
-  return fetch(BASE+f+"?t="+Date.now(),{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).catch(function(){ return null; });
-}
-function parseTs(s){ if(!s) return null; var d=new Date(s); if(isNaN(d)) { d=new Date(String(s).replace(" ","T")); } return isNaN(d)?null:d; }
+function fetchJ(f){ return fetch(BASE+f+"?t="+Date.now(),{cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).catch(function(){ return null; }); }
+function parseTs(s){ if(!s) return null; var d=new Date(s); if(isNaN(d)) d=new Date(String(s).replace(" ","T")); return isNaN(d)?null:d; }
 function etNow(){ return new Date(new Date().toLocaleString("en-US",{timeZone:"America/New_York"})); }
-function inRTH(d){ var w=d.getDay(); if(w===0||w===6) return false; var m=d.getHours()*60+d.getMinutes(); return m>=570 && m<=960; }
+function mins(d){ return d.getHours()*60+d.getMinutes(); }
+function inRTH(d){ var w=d.getDay(); if(w===0||w===6) return false; var m=mins(d); return m>=570 && m<=960; }
 function ageS(ts){ var d=parseTs(ts); return d? Math.round((Date.now()-d.getTime())/1000) : null; }
-function ageTxt(s){ if(s==null) return "n/a"; if(s<90) return s+"s"; if(s<5400) return Math.round(s/60)+"m"; if(s<172800) return (s/3600).toFixed(1)+"h"; return Math.round(s/86400)+"d"; }
-
-/* ── nav ── */
-document.querySelectorAll("#nav button").forEach(function(b){
-  b.onclick=function(){ show(b.dataset.v); };
-});
-function show(v){
-  document.querySelectorAll(".view").forEach(function(s){ s.classList.toggle("on", s.id==="v-"+v); });
-  document.querySelectorAll("#nav button").forEach(function(b){ b.classList.toggle("on", b.dataset.v===v); });
-  try{ localStorage.setItem("arsenal.v2.view", v); }catch(e){}
-  window.scrollTo(0,0);
+function ageTxt(s){ if(s==null) return "n/a"; if(s<90) return s+"s"; if(s<5400) return Math.round(s/60)+" min"; if(s<172800) return (s/3600).toFixed(1)+" h"; return Math.round(s/86400)+" d"; }
+function hm(m){ var h=Math.floor(m/60), mm=m%60; return h+"h "+(mm<10?"0":"")+mm+"m"; }
+function sessionLine(){
+  var d=etNow(), w=d.getDay(), m=mins(d);
+  if(w===0||w===6) return {t:"Weekend — market closed. Plan the week; nothing here is live.", k:"idle"};
+  if(m<570) return {t:"Pre-market — opens in "+hm(570-m)+". Levels are live, internals are not.", k:"idle"};
+  if(m<600) return {t:"Opening range (first 30 min) — no cards until 10:00, let the range set.", k:"warn"};
+  if(m<=930) return {t:"Session open — card window until 15:30.", k:"pos"};
+  if(m<=960) return {t:"Last 30 min — flat by 15:30 per playbook; no new day trades.", k:"warn"};
+  return {t:"Closed — review mode. Evening brief 4:30 PM; breadth updates ~5:40 PM.", k:"idle"};
 }
 
-/* ── math ── */
+/* nav + help */
+document.querySelectorAll("#nav button").forEach(function(b){ b.onclick=function(){ show(b.dataset.v); }; });
+function show(v){ document.querySelectorAll(".view").forEach(function(s){ s.classList.toggle("on", s.id==="v-"+v); }); document.querySelectorAll("#nav button").forEach(function(b){ b.classList.toggle("on", b.dataset.v===v); }); try{ localStorage.setItem("arsenal.v2.view", v); }catch(e){} window.scrollTo(0,0); }
+$("helpbtn").onclick=function(){ var on=document.body.classList.toggle("helpmode"); $("helpbtn").classList.toggle("on",on); try{ localStorage.setItem("arsenal.v2.help", on?"1":"0"); }catch(e){} };
+$("howbtn").onclick=function(){ $("how").classList.add("on"); };
+$("howclose").onclick=function(){ $("how").classList.remove("on"); try{ localStorage.setItem("arsenal.v2.seenhow","1"); }catch(e){} };
+$("how").onclick=function(e){ if(e.target===$("how")) $("how").classList.remove("on"); };
+$("refresh").onclick=function(){ $("refresh").textContent="…"; load(Object.keys(FILES)).then(function(){ renderAll(); $("refresh").textContent="↻"; }); };
+function copyText(t, btn){ var done=function(){ btn.textContent="Copied ✓"; setTimeout(function(){ btn.textContent="Copy"; },1500); }; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done, function(){ window.prompt("Copy:", t); }); } else { window.prompt("Copy:", t); } }
+document.addEventListener("click", function(e){ var b=e.target.closest("[data-copy]"); if(b) copyText(b.getAttribute("data-copy"), b); });
+
+/* math */
 function lsq(ys){ var n=ys.length; if(n<2) return 0; var sx=0,sy=0,sxy=0,sxx=0; for(var i=0;i<n;i++){ sx+=i; sy+=ys[i]; sxy+=i*ys[i]; sxx+=i*i; } var d=n*sxx-sx*sx; return d? (n*sxy-sx*sy)/d : 0; }
 function mean(a){ return a.length? a.reduce(function(p,c){return p+c;},0)/a.length : 0; }
+function slope(W,key){ var ys=W.map(function(r){ return +r[key]; }); var s=lsq(ys), lvl=Math.abs(mean(ys))||1, mag=Math.abs(s*ys.length); return {s:s, dir: mag>=0.10*lvl ? (s>0?1:-1) : 0, mag:mag, lvl:lvl, n:ys.length}; }
 
-/* ── STATUS + INTERNALS + GATES + CARDS ── */
-function renderNow(){
-  var snap = DATA.snap, rows = (snap && snap.rows)||[];
-  rows = rows.slice().sort(function(a,b){ return String(a.ts)<String(b.ts)?-1:1; });
-  var last = rows[rows.length-1];
-  var age = snap? ageS(snap.pushed_at) : null;
-  var now = etNow(), rth = inRTH(now);
-  var fresh = age!=null && age<180;
-  $("sess").className = "tag "+(rth?"pos":"idle"); $("sess").textContent = rth? "RTH":"CLOSED";
-  var ft = $("feedtag");
-  if(!snap){ ft.className="tag neg"; ft.textContent="FEED DARK"; }
-  else if(rth && !fresh){ ft.className="tag warn"; ft.textContent="STALE "+ageTxt(age); }
-  else if(!rth){ ft.className="tag idle"; ft.textContent="last "+ageTxt(age); }
-  else { ft.className="tag pos"; ft.textContent="LIVE "+ageTxt(age); }
-  var es = last? parseFloat(last.es_last) : null, chg = last? parseFloat(last.es_chg): null;
-  $("es").textContent = es? fmt(es,2) : "—";
-  $("eschg").textContent = chg==null||isNaN(chg)? "" : (chg>=0?"+":"")+fmt(chg,2);
-  $("eschg").style.color = chg>=0? "var(--pos-ink)":"var(--neg-ink)";
-  $("int-age").textContent = last? ("row "+String(last.ts).slice(11,19)+" ET · "+rows.length+" rows") : "no rows";
+/* shared state computed each render */
+var S = {};
 
-  // internals grid
-  var g=[];
-  if(last){
-    var tick=+last.tick, trin=+last.trin, add=+last.add, vold=+last.vold, adspd=+last.adspd, vix=+last.vix, sox=+last.sox_chg;
-    g.push(kv("TICK", fmt0(tick), tick<=-900?"washout zone":tick>=900?"blowoff zone":"", tick<=-900||tick>=900?"warn":""));
-    g.push(kv("TRIN", fmt(trin,2), trin>1.5?"vol to sellers":trin<0.6?"vol to buyers":"", ""));
-    g.push(kv("ADD", (add>=0?"+":"")+fmt0(add), "NYSE adv−dec"));
-    g.push(kv("VOLD", (vold>=0?"+":"")+fmt0(vold/1000)+"k", "up−down vol"));
-    g.push(kv("ADSPD", (adspd>=0?"+":"")+fmt0(adspd), "SPX adv−dec"));
-    g.push(kv("VIX", fmt(vix,2), (+last.vix_chg>=0?"+":"")+fmt(+last.vix_chg,2)));
-    g.push(kv("NQ", fmt0(+last.nq_last), (+last.nq_chg>=0?"+":"")+fmt0(+last.nq_chg)));
-    g.push(kv("SOX", fmt0(+last.sox_last), (sox>=0?"+":"")+fmt0(sox)));
-  }
-  $("int-grid").innerHTML = g.join("") || '<div class="empty">no internals rows yet — collector may be restarting</div>';
-
-  // slope gates (v3.1)
-  var W = rows.slice(-30);
-  var gates = [], verdict = "NO GATE", vcls="idle", why="";
-  if(W.length<15 || !rth || !fresh){
-    why = !rth? "outside RTH" : !fresh? "feed stale ("+ageTxt(age)+")" : "only "+W.length+" rows (need 15)";
-    verdict="UNRELIABLE"; vcls="warn";
-  } else {
-    var sA = slope(W,"add"), sV = slope(W,"vold"), sT = slope(W,"trin");
-    gates.push(gateRow("ADD", sA)); gates.push(gateRow("VOLD", sV)); gates.push(gateRow("TRIN", sT, true));
-    var longOK = sA.dir>0 && (sV.dir>0 || sT.dir<0);
-    var shortOK = sA.dir<0 && (sV.dir<0 || sT.dir>0);
-    if(longOK){ verdict="LONG GATE OPEN"; vcls="pos"; why="breadth building with volume/TRIN confirming"; }
-    else if(shortOK){ verdict="SHORT GATE OPEN"; vcls="neg"; why="breadth eroding with volume/TRIN confirming"; }
-    else { verdict="NO GATE"; vcls="idle"; why="slopes flat or conflicting — no day-trade card"; }
-    var tr=+W[W.length-1].trin; if(tr>1.2 && sA.dir>0) why += " · TRIN "+fmt(tr,2)+" with ADD rising = ROTATION (cap-weighted volume), not a short";
-  }
-  $("gates").innerHTML = '<div class="gate"><span class="name">'+tag(vcls,verdict)+'</span><span class="why">'+esc(why)+'</span></div>'+gates.join("");
-  DATA._gate = verdict;
-
-  // cards
-  var cards=[];
-  var minTick = W.length? Math.min.apply(null, W.map(function(r){return +r.tick;})) : null;
-  var lastTick = last? +last.tick : null;
-  var washArmed = minTick!=null && minTick<=-900 && lastTick>-400;
-  cards.push(cardRow("Washout Long", washArmed? "pos":"idle", washArmed? "ARMED — TICK hit "+minTick+" and reclaimed; long only on price reclaim of the flush low" : "waiting — needs TICK ≤ −900 (last 30m min "+(minTick==null?"n/a":minTick)+")"));
-  var ict = DATA.ict, pools = (ict && ict.untapped_pools_near)||[];
-  var near = pools.filter(function(p){ return Math.abs(+p.dist_pts)<=2; });
-  var sTq = W.length>=15? slope(W,"trin") : null, sAq = W.length>=15? slope(W,"add") : null;
-  var div = sTq && sAq && ((sTq.dir>0 && chg>0) || (sTq.dir<0 && chg<0));
-  cards.push(cardRow("Cluster Fade", near.length&&div? "pos" : near.length? "warn":"idle", near.length? ("price at pool "+near.map(function(p){return p.kind.replace("-side","")+" "+fmt(p.price,2);}).join(", ")+(div?" + TRIN/ADD divergence → fade candidate":" — no divergence yet")) : "no pool within ±2 pts (nearest "+(pools[0]? fmt(pools[0].price,2)+" / "+fmt(+pools[0].dist_pts,1)+"pt":"n/a")+")"));
-  cards.push(cardRow("Failed Retest", "idle", "manual: 15m close ≥1pt through a ladder level, then retest fails → enter on the failure bar. Internals gate must be open."));
-  $("cards").innerHTML = cards.join("");
-
-  // what's actionable line
-  var g2 = DATA.verdict && DATA.verdict.guidance;
-  var line = [];
-  line.push(verdict==="UNRELIABLE"? "internals: "+why : verdict);
-  var esv = DATA.esswing; if(esv && esv.state) line.push("ES swing: "+esv.state.replace(/_/g," ").toLowerCase());
-  if(g2 && g2.active && g2.grade) line.push("meter "+g2.grade+" "+g2.direction+" from "+fmt(g2.entry,2));
-  $("what").textContent = line.join(" · ");
-
-  // banner
-  var b=$("banner");
-  if(!snap){ b.style.display="block"; b.className=""; b.textContent="Internals feed unreachable — treat every internals read as unknown; lean on structure."; }
-  else if(rth && !fresh){ b.style.display="block"; b.className="warn"; b.textContent="Internals STALE ("+ageTxt(age)+" old) — gates downgraded; price-only until the collector catches up."; }
-  else b.style.display="none";
-}
-function kv(k,v,s,cls){ return '<div class="kv"><div class="k">'+esc(k)+'</div><div class="v'+(cls?" "+cls:"")+'">'+esc(v)+'</div><div class="s">'+esc(s||"")+'</div></div>'; }
-function slope(W,key){
-  var ys = W.map(function(r){ return +r[key]; });
-  var s = lsq(ys), lvl = Math.abs(mean(ys))||1, mag = Math.abs(s*ys.length);
-  var dir = mag >= 0.10*lvl ? (s>0?1:-1) : 0;
-  return {s:s, dir:dir, mag:mag, lvl:lvl, n:ys.length};
-}
-function gateRow(name, s, inverse){
-  var k = s.dir===0? "idle" : (s.dir>0? (inverse?"neg":"pos") : (inverse?"pos":"neg"));
-  var t = s.dir===0? "FLAT" : (s.dir>0? "rising":"falling");
-  return '<div class="gate"><span class="name">'+esc(name)+' '+tag(k,t)+'</span><span class="why">Δ over '+s.n+' rows = '+(s.s*s.n>=0?"+":"")+fmt(s.s*s.n, name==="TRIN"?2:0)+' vs level '+fmt(s.lvl, name==="TRIN"?2:0)+'</span></div>';
-}
-function cardRow(name, k, why){ return '<div class="gate"><span class="name">'+tag(k, name)+'</span><span class="why">'+esc(why)+'</span></div>'; }
-
-/* ── LADDER ── */
-function renderLadder(){
-  var snap=DATA.snap, rows=(snap&&snap.rows)||[], last=rows[rows.length-1];
-  var px = last? parseFloat(last.es_last) : (DATA.verdict? DATA.verdict.price : null);
+function computeState(){
+  var snap=DATA.snap, rows=((snap&&snap.rows)||[]).slice().sort(function(a,b){ return String(a.ts)<String(b.ts)?-1:1; });
+  var last=rows[rows.length-1], age=snap? ageS(snap.pushed_at):null, now=etNow(), rth=inRTH(now), fresh=age!=null&&age<180;
+  var W=rows.slice(-30), gate="NO GATE", gcls="idle", why="", sA=null,sV=null,sT=null;
+  if(W.length<15||!rth||!fresh){ gate="UNRELIABLE"; gcls="warn"; why = !rth? "market closed" : !fresh? "feed is "+ageTxt(age)+" old" : "only "+W.length+" minutes of data (need 15)"; }
+  else { sA=slope(W,"add"); sV=slope(W,"vold"); sT=slope(W,"trin");
+    if(sA.dir>0&&(sV.dir>0||sT.dir<0)){ gate="LONG GATE OPEN"; gcls="pos"; why="breadth is building and volume/TRIN agree"; }
+    else if(sA.dir<0&&(sV.dir<0||sT.dir>0)){ gate="SHORT GATE OPEN"; gcls="neg"; why="breadth is eroding and volume/TRIN agree"; }
+    else { why="slopes are flat or disagree — no day trade"; }
+    var tr=+W[W.length-1].trin; if(tr>1.2&&sA.dir>0) why+=". TRIN "+fmt(tr,2)+" while breadth rises = rotation, not weakness"; }
+  var px = last? parseFloat(last.es_last) : (DATA.verdict? DATA.verdict.price : null), chg = last? parseFloat(last.es_chg) : null;
+  var minTick = W.length? Math.min.apply(null,W.map(function(r){return +r.tick;})) : null, lastTick = last? +last.tick : null;
+  var wash = minTick!=null && minTick<=-900 && lastTick>-400;
+  var ict=DATA.ict, pools=(ict&&ict.untapped_pools_near)||[], near=pools.filter(function(p){ return Math.abs(+p.dist_pts)<=2; });
+  var div = sT&&sA&&((sT.dir>0&&chg>0)||(sT.dir<0&&chg<0));
+  var cluster = near.length&&div;
+  // ladder
   var L=[];
-  var ict=DATA.ict; if(ict){ (ict.untapped_pools_near||[]).forEach(function(p){ L.push({p:+p.price, src:"pool", lbl:(p.kind||"")+" pool", k:"info"}); }); if(ict.mss_state&&ict.mss_state.opp_level) L.push({p:+ict.mss_state.opp_level, src:"ict", lbl:"MSS level", k:"info"}); }
-  var fvg=DATA.fvg; if(fvg){ (fvg.unmitigated_near_price||[]).forEach(function(f){ L.push({p:(+f.gap_lo + +f.gap_hi)/2, src:"fvg", lbl:f.dir+" gap "+fmt(f.gap_lo,2)+"–"+fmt(f.gap_hi,2)+(f.at_confluence?" ✓conf":""), k:"info"}); }); }
-  var v=DATA.verdict; if(v){ (v.confluence_zones||[]).forEach(function(z){ L.push({p:+z.price, src:"conf", lbl:(z.method||"")+" "+(z.label||""), k:"warn"}); });
-    var g=v.guidance; if(g&&g.active){ L.push({p:+g.entry,src:"meter",lbl:"meter entry ("+g.grade+" "+g.direction+")",k:"pos"}); L.push({p:+g.stop,src:"meter",lbl:"meter stop",k:"neg"}); L.push({p:+g.t1,src:"meter",lbl:"meter T1",k:"pos"}); if(g.t2) L.push({p:+g.t2,src:"meter",lbl:"meter T2",k:"pos"}); }
-    var st=(v.signals||[]).filter(function(s){return s.name==="Structure";})[0]; if(st&&st.reason){ var m; var re=/(VWAP|prior_close|OR-high|OR-low)\s+([0-9.]+)/g; while((m=re.exec(st.reason))){ L.push({p:+m[2], src:"session", lbl:m[1].replace("_"," "), k:"idle"}); } } }
+  if(ict){ pools.forEach(function(p){ L.push({p:+p.price, src:"pool", lbl:(p.kind||"").replace("-side","")+" stops resting here", k:"info"}); }); if(ict.mss_state&&ict.mss_state.opp_level) L.push({p:+ict.mss_state.opp_level, src:"ict", lbl:"structure-shift level", k:"info"}); }
+  var fvg=DATA.fvg; if(fvg){ (fvg.unmitigated_near_price||[]).forEach(function(f){ L.push({p:(+f.gap_lo + +f.gap_hi)/2, src:"fvg", lbl:"unfilled "+f.dir+" gap "+fmt(f.gap_lo,2)+"–"+fmt(f.gap_hi,2), k:"info"}); }); }
+  var v=DATA.verdict; if(v){ (v.confluence_zones||[]).forEach(function(z){ L.push({p:+z.price, src:"conf", lbl:(z.method||"")+" "+(z.label||"")+" confluence", k:"warn"}); });
+    var g=v.guidance; if(g&&g.active){ L.push({p:+g.entry,src:"meter",lbl:"meter entry ("+g.grade+" "+g.direction+")",k:"pos"}); L.push({p:+g.stop,src:"meter",lbl:"meter stop",k:"neg"}); L.push({p:+g.t1,src:"meter",lbl:"meter target 1",k:"pos"}); if(g.t2) L.push({p:+g.t2,src:"meter",lbl:"meter target 2",k:"pos"}); }
+    var st=(v.signals||[]).filter(function(s){return s.name==="Structure";})[0]; if(st&&st.reason){ var m, re=/(VWAP|prior_close|OR-high|OR-low)\s+([0-9.]+)/g; while((m=re.exec(st.reason))){ L.push({p:+m[2], src:"session", lbl:m[1].replace("_"," ").replace("OR-","opening range "), k:"idle"}); } } }
   var e=DATA.esswing; if(e){ (e.nearest_levels||[]).forEach(function(x){ L.push({p:+x.level, src:"swing", lbl:x.kind, k:"idle"}); }); }
   var t=DATA.tictoc; if(t){ (t.levels||[]).forEach(function(x){ L.push({p:+x.level, src:"TicToc", lbl:"Tic Toc "+(x.role||"level")+(t.as_of?" ("+String(t.as_of).slice(5,16)+")":""), k:"warn"}); }); }
-  // dedupe within 0.5pt keeping richer label
-  L = L.filter(function(x){ return x.p && !isNaN(x.p); }).sort(function(a,b){ return b.p-a.p; });
-  var out=[]; L.forEach(function(x){ var prev=out[out.length-1]; if(prev && Math.abs(prev.p-x.p)<=0.5){ prev.lbl += " · "+x.lbl; } else out.push(x); });
-  if(px){ out.push({p:px, src:"px", lbl:"ES now", k:"", px:true}); out.sort(function(a,b){ return b.p-a.p; }); }
-  // keep within ±120 pts of price, max 18 rows
-  var keep = out.filter(function(x){ return !px || Math.abs(x.p-px)<=120; });
-  if(keep.length>18){ var i=keep.findIndex(function(x){return x.px;}); keep = keep.slice(Math.max(0,i-9), Math.max(0,i-9)+18); }
-  $("ladder").innerHTML = keep.length? keep.map(function(x){ var d = px? (x.p-px) : null; return '<div class="lv'+(x.px?" px":"")+'"><span class="p">'+fmt(x.p,2)+'</span><span class="d">'+(d==null||x.px?"":(d>0?"+":"")+fmt(d,1))+'</span><span class="l">'+(x.px?"◉ ES now":tag(x.k||"idle",x.src)+" "+esc(x.lbl))+'</span></div>'; }).join("") : '<div class="empty">no levels available</div>';
-  $("lad-sub").textContent = keep.length? (keep.length-1)+" levels within ±120" : "";
+  L=L.filter(function(x){ return x.p&&!isNaN(x.p); }).sort(function(a,b){ return b.p-a.p; });
+  var out=[]; L.forEach(function(x){ var prev=out[out.length-1]; if(prev&&Math.abs(prev.p-x.p)<=0.5){ prev.lbl+=" · "+x.lbl; } else out.push(x); });
+  var above = px? out.filter(function(x){ return x.p>px; }).slice(-1)[0] : null;
+  var below = px? out.filter(function(x){ return x.p<px; })[0] : null;
+  var atLevel = px && ((above&&above.p-px<=2)||(below&&px-below.p<=2));
+  S={rows:rows,last:last,age:age,rth:rth,fresh:fresh,W:W,gate:gate,gcls:gcls,why:why,sA:sA,sV:sV,sT:sT,px:px,chg:chg,minTick:minTick,lastTick:lastTick,wash:wash,cluster:cluster,near:near,pools:pools,ladder:out,above:above,below:below,atLevel:atLevel,
+     event: !!(DATA.cal&&DATA.cal.half_size), esv:DATA.esswing};
 }
 
-/* ── METER ── */
+function renderVerdict(){
+  var cls="x", big="", one="";
+  var cardArmed = S.wash||S.cluster;
+  var gateOpen = /OPEN/.test(S.gate);
+  var sl=sessionLine();
+  if(!S.rth){ cls="x"; big="Market closed"; one=sl.t; }
+  else if(!DATA.snap||!S.fresh){ cls="r"; big="No live read — stand aside"; one="Internals are "+(DATA.snap? ageTxt(S.age)+" old":"missing")+". Use levels only; no day trades without confirmation."; }
+  else if(S.gate==="UNRELIABLE"){ cls="a"; big="Warming up"; one=S.why+". Watch the ladder; nothing to do yet."; }
+  else if(gateOpen && cardArmed && S.atLevel){ cls="g"; big=(S.gcls==="pos"?"Long":"Short")+" conditions met"; one="Gate open, a card is armed and price is at a level. Wait for the price trigger, define the stop, half size if event day."; }
+  else if(gateOpen && cardArmed){ cls="a"; big="Card armed — wait for a level"; one=S.gate.toLowerCase()+" and "+(S.wash?"Washout Long":"Cluster Fade")+" is armed, but price is between levels. Next: "+(S.above? fmt(S.above.p,2)+" above":"")+(S.below? " / "+fmt(S.below.p,2)+" below":"")+"."; }
+  else if(gateOpen){ cls="a"; big=(S.gcls==="pos"?"Buyers":"Sellers")+" have the tape"; one=S.why+". No card armed yet — don't force it. Fade only at a ladder level with the gate on your side."; }
+  else { cls="r"; big="Stand aside"; one="No gate: "+S.why+". Defend positions, no new day trades."; }
+  $("vdot").className="dot "+cls; $("vdot").textContent = cls==="g"?"✓":cls==="a"?"!":cls==="r"?"✗":"·";
+  $("vbig").textContent=big; $("vone").textContent=one;
+  var items=[
+    ["Live internals", DATA.snap&&S.fresh, DATA.snap? (S.fresh? "feed "+ageTxt(S.age)+" old" : "stale "+ageTxt(S.age)) : "feed missing"],
+    ["Gate open", gateOpen, S.gate==="UNRELIABLE"? "unreliable — "+S.why : gateOpen? S.gate.toLowerCase() : "no gate"],
+    ["A card is armed", cardArmed, S.wash? "Washout Long armed" : S.cluster? "Cluster Fade armed" : "none armed"],
+    ["Price at a level", S.atLevel, S.px? ("nearest "+(S.above? "+"+fmt(S.above.p-S.px,1):"")+(S.below? " / −"+fmt(S.px-S.below.p,1):"")+" pts") : "no price"],
+    ["Not an event day", !S.event, S.event? "half size — calendar flag" : (DATA.cal? "calendar clear":"calendar unknown")]
+  ];
+  $("chk").innerHTML = items.map(function(it){ var k=it[1]?"ok":(it[0]==="Not an event day"&&!it[1]?"wt":"no"); return '<li><span class="box '+k+'">'+(it[1]?"✓":k==="wt"?"!":"·")+'</span><span class="txt"><b>'+esc(it[0])+'</b><span>'+esc(it[2])+'</span></span></li>'; }).join("");
+  var nh = function(x,dir){ if(!x) return '<div class="n"><div class="k">next '+dir+'</div><div class="v">—</div></div>'; var d=x.p-S.px; return '<div class="n"><div class="k">next '+dir+' · '+(d>0?"+":"")+fmt(d,1)+' pts</div><div class="v">'+fmt(x.p,2)+'</div><div class="s">'+tag(x.k||"idle",x.src)+' '+esc(x.lbl)+'</div></div>'; };
+  $("nearest").innerHTML = nh(S.above,"above")+nh(S.below,"below"); $("nearest2").innerHTML = $("nearest").innerHTML;
+}
+
+function renderNow(){
+  var last=S.last, sl=sessionLine();
+  var ft=$("feedtag");
+  if(!DATA.snap){ ft.className="tag neg"; ft.textContent="FEED DARK"; }
+  else if(S.rth&&!S.fresh){ ft.className="tag warn"; ft.textContent="STALE "+ageTxt(S.age); }
+  else if(!S.rth){ ft.className="tag idle"; ft.textContent="last "+ageTxt(S.age); }
+  else { ft.className="tag pos"; ft.textContent="LIVE "+ageTxt(S.age); }
+  $("es").textContent = S.px? fmt(S.px,2):"—"; $("eschg").textContent = S.chg==null||isNaN(S.chg)? "" : (S.chg>=0?"+":"")+fmt(S.chg,2); $("eschg").style.color = S.chg>=0?"var(--pos-ink)":"var(--neg-ink)";
+  $("sess").innerHTML = tag(sl.k, S.rth? "OPEN":"CLOSED")+" "+esc(sl.t);
+  $("int-age").textContent = last? ("as of "+String(last.ts).slice(11,16)+" ET · "+S.rows.length+" min") : "no rows";
+  var g=[];
+  if(last){ var tick=+last.tick,trin=+last.trin,add=+last.add,vold=+last.vold,adspd=+last.adspd,vix=+last.vix,sox=+last.sox_chg;
+    g.push(kv("TICK",fmt0(tick), tick<=-900?"flush — watch for reclaim":tick>=900?"blow-off":"", "stocks upticking − downticking right now"));
+    g.push(kv("TRIN",fmt(trin,2), trin>1.5?"volume in sellers":trin<0.6?"volume in buyers":"balanced", ">1 = volume favors sellers; stays high in rotation rallies"));
+    g.push(kv("ADD",(add>=0?"+":"")+fmt0(add), "advancing − declining", "breadth: how many stocks are up vs down"));
+    g.push(kv("VOLD",(vold>=0?"+":"")+fmt0(vold/1000)+"k", "up − down volume", "is the volume flowing into up or down stocks"));
+    g.push(kv("ADSPD",(adspd>=0?"+":"")+fmt0(adspd), "S&P 500 breadth", "same count inside the S&P 500 only"));
+    g.push(kv("VIX",fmt(vix,2), (+last.vix_chg>=0?"+":"")+fmt(+last.vix_chg,2), "fear gauge; rising VIX with rising price = suspect rally"));
+    g.push(kv("NQ",fmt0(+last.nq_last), (+last.nq_chg>=0?"+":"")+fmt0(+last.nq_chg), "Nasdaq futures — is tech leading or lagging?"));
+    g.push(kv("SOX",fmt0(+last.sox_last), (sox>=0?"+":"")+fmt0(sox), "semiconductors — your IRA's main exposure")); }
+  $("int-grid").innerHTML = g.join("")||'<div class="empty">no internals yet — collector may be restarting</div>';
+  var gates='<div class="gate"><span class="name">'+tag(S.gcls,S.gate)+'</span><span class="why">'+esc(S.why)+'</span></div>';
+  if(S.sA){ gates+=gateRow("Breadth (ADD)",S.sA,false,0)+gateRow("Volume (VOLD)",S.sV,false,0)+gateRow("TRIN",S.sT,true,2); }
+  $("gates").innerHTML=gates;
+  var cards=[];
+  cards.push(cardRow("Washout Long", S.wash?"pos":"idle", S.wash? "ARMED — TICK hit "+S.minTick+" and came back. Buy only when price reclaims the flush low; stop under it." : "waiting — needs a TICK flush to −900 or worse (lowest in last 30 min: "+(S.minTick==null?"n/a":S.minTick)+")"));
+  cards.push(cardRow("Cluster Fade", S.cluster?"pos":S.near.length?"warn":"idle", S.near.length? ("price is at a pool ("+S.near.map(function(p){return fmt(p.price,2);}).join(", ")+")"+(S.cluster?" and internals disagree with the move → fade candidate":" but internals agree with the move — no fade")) : "waiting — no pool within 2 pts (nearest "+(S.pools[0]? fmt(S.pools[0].price,2)+", "+fmt(Math.abs(+S.pools[0].dist_pts),1)+" pts away":"none")+")"));
+  cards.push(cardRow("Failed Retest", "idle", "manual — a 15-min close through a ladder level, then a retest that fails. Enter on the failure bar with the gate on your side."));
+  $("cards").innerHTML=cards.join("");
+  var b=$("banner");
+  if(S.rth && !DATA.snap){ b.style.display="block"; b.className=""; b.textContent="Internals feed is down — gates and cards are off. Levels only."; }
+  else if(S.rth && !S.fresh){ b.style.display="block"; b.className="warn"; b.textContent="Internals are "+ageTxt(S.age)+" old — gates downgraded until the collector catches up."; }
+  else b.style.display="none";
+  $("upd").textContent = "updated "+new Date(LAST_LOAD).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+}
+function kv(k,v,s,e){ return '<div class="kv"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div><div class="s">'+esc(s||"")+'</div><div class="e">'+esc(e||"")+'</div></div>'; }
+function gateRow(name,s,inverse,dec){ var k=s.dir===0?"idle":(s.dir>0?(inverse?"neg":"pos"):(inverse?"pos":"neg")); var t=s.dir===0?"FLAT":(s.dir>0?"rising":"falling"); return '<div class="gate"><span class="name">'+esc(name)+' '+tag(k,t)+'</span><span class="why">moved '+(s.s*s.n>=0?"+":"")+fmt(s.s*s.n,dec)+' over 30 min (level '+fmt(s.lvl,dec)+')</span></div>'; }
+function cardRow(name,k,why){ return '<div class="gate"><span class="name">'+tag(k,name)+'</span><span class="why">'+esc(why)+'</span></div>'; }
+
+function renderLadder(){
+  var out=S.ladder.slice(); if(S.px){ out.push({p:S.px,src:"px",lbl:"ES now",px:true}); out.sort(function(a,b){ return b.p-a.p; }); }
+  var keep=out.filter(function(x){ return !S.px||Math.abs(x.p-S.px)<=120; });
+  if(keep.length>18){ var i=keep.findIndex(function(x){return x.px;}); keep=keep.slice(Math.max(0,i-9),Math.max(0,i-9)+18); }
+  $("ladder").innerHTML = keep.length? keep.map(function(x){ var d=S.px?(x.p-S.px):null; return '<div class="lv'+(x.px?" px":"")+'"><span class="p">'+fmt(x.p,2)+'</span><span class="d">'+(d==null||x.px?"":(d>0?"+":"")+fmt(d,1))+'</span><span class="l">'+(x.px?"◉ ES now":tag(x.k||"idle",x.src)+" "+esc(x.lbl))+'</span></div>'; }).join("") : '<div class="empty">no levels available</div>';
+  $("lad-sub").textContent = keep.length? (keep.length-1)+" levels within ±120 pts" : "";
+}
+
 function renderMeter(){
-  var v=DATA.verdict; if(!v){ $("meter").innerHTML='<div class="empty">verdict.json unavailable</div>'; return; }
-  var tfs=["5m","15m","60m","daily"], h="";
-  tfs.forEach(function(tf){ var t=(v.timeframes||{})[tf]; if(!t) return; h+='<div class="tfrow"><span class="n">'+tf+'</span><div class="bar"><i style="width:'+t.long_pct+'%;background:var(--pos)"></i><i style="width:'+t.hold_pct+'%;background:var(--idle)"></i><i style="width:'+t.short_pct+'%;background:var(--neg)"></i></div><span class="pct">'+fmt0(t.long_pct)+'/'+fmt0(t.hold_pct)+'/'+fmt0(t.short_pct)+'</span></div>'; });
+  var v=DATA.verdict; if(!v){ $("meter").innerHTML='<div class="empty">meter unavailable</div>'; return; }
+  var h=""; ["5m","15m","60m","daily"].forEach(function(tf){ var t=(v.timeframes||{})[tf]; if(!t) return; h+='<div class="tfrow"><span class="n">'+tf+'</span><div class="bar"><i style="width:'+t.long_pct+'%;background:var(--pos)"></i><i style="width:'+t.hold_pct+'%;background:var(--idle)"></i><i style="width:'+t.short_pct+'%;background:var(--neg)"></i></div><span class="pct">'+fmt0(t.long_pct)+'/'+fmt0(t.hold_pct)+'/'+fmt0(t.short_pct)+'</span></div>'; });
   var g=v.guidance;
-  if(g&&g.active){ h+='<div class="gate" style="margin-top:8px"><span class="name">'+tag(g.direction==="LONG"?"pos":"neg", (g.grade||"")+" "+g.direction)+'</span><span class="why">entry '+fmt(g.entry,2)+' · stop '+fmt(g.stop,2)+' · T1 '+fmt(g.t1,2)+(g.t2?' · T2 '+fmt(g.t2,2):'')+' · R '+fmt(g.R,1)+' · '+fmt(g.rr,1)+'R — context meter, not a trigger</span></div>'; }
-  else h+='<div class="note">meter inactive — no guidance above threshold</div>';
-  $("meter").innerHTML=h; $("meter-sub").textContent = "long/hold/short % · "+String(v.timestamp||"").slice(11,16)+" ET";
+  if(g&&g.active){ var txt="ES "+g.direction+" entry "+fmt(g.entry,2)+" stop "+fmt(g.stop,2)+" T1 "+fmt(g.t1,2)+(g.t2?" T2 "+fmt(g.t2,2):""); h+='<div class="setup"><div class="h">'+tag(g.direction==="LONG"?"pos":"neg",(g.grade||"")+" "+g.direction)+' <span>meter guidance</span><button class="btn cp" data-copy="'+esc(txt)+'">Copy</button></div><div class="lv">entry '+fmt(g.entry,2)+' · stop '+fmt(g.stop,2)+' · T1 '+fmt(g.t1,2)+(g.t2?' · T2 '+fmt(g.t2,2):'')+' · risk '+fmt(g.R,1)+' pts · '+fmt(g.rr,1)+'R</div><div class="plain">Context, not a trigger: only act if the gate is open and price confirms at the level.</div></div>'; }
+  else h+='<div class="note">Meter is quiet — no guidance above threshold.</div>';
+  $("meter").innerHTML=h; $("meter-sub").textContent="green long · grey hold · red short · "+String(v.timestamp||"").slice(11,16)+" ET";
   $("meter-sig").innerHTML='<table>'+(v.signals||[]).map(function(s){ return '<tr><td>'+esc(s.name)+'</td><td>'+tag(s.verdict==="LONG"?"pos":s.verdict==="SHORT"?"neg":"idle",s.verdict)+'</td><td class="num">'+fmt0(s.confidence)+'</td><td class="muted" style="font-size:12px">'+esc(s.reason)+'</td></tr>'; }).join("")+'</table>';
 }
 
-/* ── SETUPS ── */
+function setupBox(grade,dir,tkr,entry,stop,t1,t2,why,honesty,plain){
+  var k=/LONG|long|buy/.test(dir||"")?"pos":/SHORT|short|sell/.test(dir||"")?"neg":"idle";
+  var R=(entry!=null&&stop!=null)?Math.abs(entry-stop):null, rr=(R&&t1!=null)?Math.abs(t1-entry)/R:null;
+  var txt=tkr+" "+String(dir||"").toUpperCase()+" entry "+fmt(entry,2)+" stop "+fmt(stop,2)+(t1!=null?" T1 "+fmt(t1,2):"")+(t2!=null?" T2 "+fmt(t2,2):"");
+  return '<div class="setup"><div class="h">'+tag(k,String(dir||"").toUpperCase())+' <span class="t">'+esc(tkr)+'</span> <span class="muted" style="font-size:12px;font-weight:400">'+esc(grade)+'</span><button class="btn cp" data-copy="'+esc(txt)+'">Copy</button></div>'+
+    '<div class="lv">entry '+fmt(entry,2)+' · stop '+fmt(stop,2)+(t1!=null?' · T1 '+fmt(t1,2):'')+(t2!=null?' · T2 '+fmt(t2,2):'')+(rr?' · '+fmt(rr,1)+'R':'')+'</div>'+(why?'<div class="why">'+why+'</div>':'')+(plain?'<div class="plain">'+esc(plain)+'</div>':'')+'<div class="why muted">'+esc(honesty)+'</div></div>';
+}
 function renderSetups(){
-  // futures
   var h=[], e=DATA.esswing;
-  if(e){ var k = e.state==="STAND_DOWN"||/NO/.test(e.state||"")? "idle":"pos";
-    h.push('<div class="setup"><div class="h">'+tag(k, e.state||"?")+' <span>ES swing (60m level-break)</span></div><div class="why">'+esc(e.headline||"")+'</div><div class="lv">breadth gate '+esc(e.breadth_gate)+' · posture '+esc(e.posture)+' · ATR14 '+fmt(e.atr14,1)+'</div></div>');
-    (e.setups_graded||[]).forEach(function(s){ h.push(setupBox(s.grade||"?", s.direction||s.dir, "ES", s.entry, s.stop, s.t1, s.t2, s.reason||s.why||"", "validated bucket? no — forward-accruing")); });
-  }
-  var of=DATA.orbf; if(of){ (of.triggers||[]).filter(function(t){return t.aplus;}).forEach(function(t){ h.push(setupBox("A+ ORB", t.side, t.instrument||t.ticker||"", t.entry, t.stop, t.t1, t.t2, "OR "+fmt(t.or_low,2)+"–"+fmt(t.or_high,2)+" · vol "+fmt(t.vol_mult,1)+"x", "informational — ORB A+ not validated (n=0)")); }); }
-  var ict=DATA.ict; if(ict && ict.live_setup && ict.killzone_active && !ict.standing_down){ var s=ict.live_setup; h.push(setupBox(s.filtered?"ICT filtered":"ICT raw", s.dir==="bull"?"LONG":"SHORT", "ES", s.entry, s.stop, s.t1, s.t2, "killzone "+esc(s.killzone)+(s.fvg?" · FVG "+esc(s.fvg):""), "ICT RAW +1.0 pt/trade n=888 — real but ~costs; filtered n<30")); }
-  $("fut-setups").innerHTML = h.join("") || '<div class="empty">no futures setup right now</div>';
-  $("fut-sub").textContent = DATA._gate||"";
-
-  // stocks
-  var s=[], n=0, now=Date.now();
-  var sd=DATA.stockdash, conv = sd && sd.sections && sd.sections.convergence;
-  if(conv){ (conv.actionable||[]).concat(conv.engine_top5||[]).forEach(function(p){
-      var od = p.origin_date||((p.pick_id||"").match(/_(\d{8})_/)||[])[1]; var ageD = od? Math.round((now-new Date(od.length===8? od.slice(0,4)+"-"+od.slice(4,6)+"-"+od.slice(6,8):od).getTime())/86400000) : null;
-      if(ageD!=null && ageD>30) return; if(p.extended||p.gate_status==="EXTENDED") return; if(p.outcome && p.outcome!=="OPEN") return;
-      n++; s.push(setupBox((p.conviction||"")+" conv", p.direction, p.ticker, p.entry, p.stop, p.t1, p.t2, (p.pillars?"pillars "+p.pillars+" · ":"")+(od?"from "+od:""), "convergence-HIGH: 65% win +0.47R n=81 (validated)")); }); }
-  var mp=DATA.minervini; if(mp){ (mp.candidates||[]).filter(function(c){return c.triggered;}).slice(0,6).forEach(function(c){ n++; s.push(setupBox("Minervini reset", "LONG", c.ticker, c.entry, c.stop, c.target, null, "RS "+c.rs_pct+" · "+esc(c.detail), "informational — Class-B leader reset, shadow")); }); }
-  var oa=DATA.orba; if(oa){ (oa.triggers||[]).filter(function(t){return t.aplus;}).forEach(function(t){ n++; s.push(setupBox("A+ ORB", t.side, t.ticker, t.entry, t.stop, t.t1, t.t2, "vol "+fmt(t.vol_mult,1)+"x · RS "+fmt(t.rs_daily*100,0)+"%", "informational — A+ filter, not a validated win rate")); }); }
-  $("stk-setups").innerHTML = s.join("") || '<div class="empty">no clean stock setup today — the rest would be reaches</div>';
-  $("stk-sub").textContent = n? n+" candidates" : "";
-
-  // gold/crude
+  if(e){ var k=/STAND|NO/.test(e.state||"")?"idle":"pos"; h.push('<div class="setup"><div class="h">'+tag(k,(e.state||"?").replace(/_/g," "))+' <span>ES swing (60-min level break)</span></div><div class="why">'+esc(e.headline||"")+'</div><div class="plain">'+(k==="idle"? "Nothing to do on ES swings today. That is the normal answer — the edge is in waiting for a real level break.":"A graded setup exists — check the levels below and the gate on NOW.")+'</div><div class="why">breadth gate '+esc(e.breadth_gate)+' · posture '+esc(e.posture)+' · ATR '+fmt(e.atr14,1)+' pts</div></div>');
+    (e.setups_graded||[]).forEach(function(s){ h.push(setupBox(s.grade||"?",s.direction||s.dir,"ES",s.entry,s.stop,s.t1,s.t2,s.reason||s.why||"","forward-accruing — not yet validated","Trigger = 60-min close beyond the level. Half size on event days.")); }); }
+  var of=DATA.orbf; if(of){ (of.triggers||[]).filter(function(t){return t.aplus;}).forEach(function(t){ h.push(setupBox("A+ opening-range breakout",t.side,t.instrument||t.ticker||"",t.entry,t.stop,t.t1,t.t2,"range "+fmt(t.or_low,2)+"–"+fmt(t.or_high,2)+" · volume "+fmt(t.vol_mult,1)+"x normal","informational — ORB A+ win rate not yet measured (n=0)","Delayed data: confirm the break on your live ToS chart before entering.")); }); }
+  var ict=DATA.ict; if(ict&&ict.live_setup&&ict.killzone_active&&!ict.standing_down){ var s=ict.live_setup; h.push(setupBox(s.filtered?"ICT (filtered)":"ICT (raw)",s.dir==="bull"?"LONG":"SHORT","ES",s.entry,s.stop,s.t1,s.t2,"killzone "+esc(s.killzone)+(s.fvg?" · gap "+esc(s.fvg):""),"ICT raw averages +1 pt/trade over 888 trades — about what commissions cost","Small edge at best. Only with the gate open.")); }
+  $("fut-setups").innerHTML=h.join("")||'<div class="empty">No futures setup right now.</div>'; $("fut-sub").textContent=S.gate||"";
+  var s=[], n=0, now=Date.now(), sd=DATA.stockdash, conv=sd&&sd.sections&&sd.sections.convergence;
+  if(conv){ (conv.actionable||[]).concat(conv.engine_top5||[]).forEach(function(p){ var od=p.origin_date||((p.pick_id||"").match(/_(\d{8})_/)||[])[1]; var ageD=od? Math.round((now-new Date(od.length===8? od.slice(0,4)+"-"+od.slice(4,6)+"-"+od.slice(6,8):od).getTime())/86400000):null; if(ageD!=null&&ageD>30) return; if(p.extended||p.gate_status==="EXTENDED") return; if(p.outcome&&p.outcome!=="OPEN") return; n++; s.push(setupBox((p.conviction||"")+" convergence",p.direction,p.ticker,p.entry,p.stop,p.t1,p.t2,(p.pillars?"pillars "+p.pillars+" · ":"")+(od?"from "+od:""),"validated bucket: convergence-HIGH 65% win, +0.47R over 81 trades","Enter on the pullback to the entry, not at market. Stop is structural — honor it.")); }); }
+  var mp=DATA.minervini; if(mp){ (mp.candidates||[]).filter(function(c){return c.triggered;}).slice(0,6).forEach(function(c){ n++; s.push(setupBox("Minervini leader reset","LONG",c.ticker,c.entry,c.stop,c.target,null,"relative strength "+c.rs_pct+"th pct · "+esc(String(c.detail||"").split(" armed")[0]),"informational — shadow strategy, not yet validated","A strong stock resting at its moving-average zone. Study it; size small if you take it.")); }); }
+  var oa=DATA.orba; if(oa){ (oa.triggers||[]).filter(function(t){return t.aplus;}).forEach(function(t){ n++; s.push(setupBox("A+ opening-range breakout",t.side,t.ticker,t.entry,t.stop,t.t1,t.t2,"volume "+fmt(t.vol_mult,1)+"x · relative strength "+fmt(t.rs_daily*100,0)+"%","informational — A+ filter, not a validated win rate","Breakout play: only valid while price holds above the range high.")); }); }
+  $("stk-setups").innerHTML=s.join("")||'<div class="empty">No clean stock setup today — the rest would be reaches.</div>'; $("stk-sub").textContent=n? n+" ideas":"";
   var g=DATA.gccl, gh=[];
-  if(g&&g.instruments){ Object.keys(g.instruments).forEach(function(k){ var x=g.instruments[k]; gh.push('<div class="gate"><span class="name">'+esc(k)+' '+tag(x.available?"pos":"warn", x.available? (x.feed_status||"ok") : "DARK")+'</span><span class="why">'+esc(x.available? ("ticker "+x.ticker+(x.signal? " · "+x.signal:"")) : (x.reason||"unavailable"))+'</span></div>'); }); }
-  gh.push('<div class="note">Edge here is the GC EMA filtered tracks (9/21 60m +11.4 pts n=113; 20/50 15m +3.2 n=327; 9/21 15m +2.2 n=431 — all CI&gt;0). CL tracks ≈ 0 after costs. Data is DELAYED Polygon; confirm on ToS.</div>');
-  $("gc-setups").innerHTML = gh.join(""); $("gc-sub").textContent = g? (g.feed_status||"") : "no feed";
-}
-function setupBox(grade, dir, tkr, entry, stop, t1, t2, why, honesty){
-  var k = /LONG|long|buy/.test(dir||"")? "pos" : /SHORT|short|sell/.test(dir||"")? "neg":"idle";
-  var R = (entry!=null&&stop!=null)? Math.abs(entry-stop) : null, rr = (R&&t1!=null)? Math.abs(t1-entry)/R : null;
-  return '<div class="setup"><div class="h">'+tag(k, String(dir||"").toUpperCase())+' <span class="t">'+esc(tkr)+'</span> <span class="muted" style="font-size:12px">'+esc(grade)+'</span></div>'+
-    '<div class="lv">entry '+fmt(entry,2)+' · stop '+fmt(stop,2)+(t1!=null?' · T1 '+fmt(t1,2):'')+(t2!=null?' · T2 '+fmt(t2,2):'')+(rr?' · '+fmt(rr,1)+'R':'')+'</div>'+
-    (why?'<div class="why">'+why+'</div>':'')+'<div class="why muted">'+esc(honesty)+'</div></div>';
+  if(g&&g.instruments){ Object.keys(g.instruments).forEach(function(k){ var x=g.instruments[k]; gh.push('<div class="gate"><span class="name">'+esc(k)+' '+tag(x.available?"pos":"warn",x.available?(x.feed_status||"ok"):"DARK")+'</span><span class="why">'+esc(x.available?("contract "+x.ticker+(x.signal?" · "+x.signal:"")):(x.reason||"unavailable — Polygon futures feed not resolving a contract"))+'</span></div>'); }); }
+  $("gc-setups").innerHTML=gh.join("")||'<div class="empty">no gold/crude feed</div>'; $("gc-sub").textContent=g?(g.feed_status||""):"no feed";
 }
 
-/* ── EDGE ── */
 function renderEdge(){
-  var P=DATA.perf, pos=[], neg=[], acc=[];
-  function row(sys,track,n,exp,ci,win,unit){ return {sys:sys,track:track,n:n,exp:exp,ci:ci,win:win,unit:unit||"pts"}; }
-  if(P&&P.systems){ Object.keys(P.systems).forEach(function(sk){ (P.systems[sk].tracks||[]).forEach(function(t){
-      var r=row(sk, t.track+(t.mode?" ("+t.mode+")":""), t.n_matured||0, t.expectancy, t.exp_ci||[null,null], t.win_rate);
-      if(sk==="wave") r.unit="pts (wave accuracy)";
-      if(r.n<30) acc.push(r); else if(r.ci[0]!=null && r.ci[0]>0 && r.exp>0) pos.push(r); else neg.push(r); }); }); }
-  var ict=DATA.ict; if(ict&&ict.tracks_summary){ Object.keys(ict.tracks_summary).forEach(function(k){ var t=ict.tracks_summary[k]; var r=row("ict", k, t.n_matured, t.net_points_expectancy, [null,null], t.win_rate); if(r.n<30) acc.push(r); }); }
-  var cp=DATA.candles; if(cp&&cp.by_pattern){ Object.keys(cp.by_pattern).forEach(function(pn){ ["RAW","FILTERED"].forEach(function(m){ var t=cp.by_pattern[pn][m]; if(!t) return; var r=row("candle", pn+" ("+m+")", t.n_matured, t.net_points_exp, t.net_ci||[null,null], t.target_hit_rate!=null? t.target_hit_rate*100:null); if(r.n<30) acc.push(r); else if(r.ci[0]!=null&&r.ci[0]>0&&r.exp>0) pos.push(r); else neg.push(r); }); }); }
-  // known artifact: inside_bar GC_RAW rides a dead-contract price artifact until FIX2 lands
-  pos.forEach(function(r){ if(r.sys==="inside_bar" && /GC_RAW/.test(r.track)) r.flag="⚠ dead-contract artifact (FIX2 pending)"; else if((r.sys==="ema_gccl"||r.sys==="ict"||r.sys==="ema"||(r.sys==="inside_bar"&&/ES|CL/.test(r.track))) && r.exp<1) r.flag="thin — ≈ costs on ES/CL (1 pt ≈ slippage+commission)"; });
-  var sortf=function(a,b){ return (b.exp||0)-(a.exp||0); }; pos.sort(sortf); neg.sort(function(a,b){ return (a.exp||0)-(b.exp||0); });
-  $("edge-pos").innerHTML = pos.map(function(r){ return '<tr><td>'+esc(r.sys)+' · '+esc(r.track)+(r.flag?'<div class="muted" style="font-size:11px">'+esc(r.flag)+'</div>':'')+'</td><td class="num">'+r.n+'</td><td class="num" style="color:var(--pos-ink)">'+fmt(r.exp,2)+'</td><td class="num ci">['+fmt(r.ci[0],1)+', '+fmt(r.ci[1],1)+']</td><td class="num">'+fmt(r.win,0)+'%</td></tr>'; }).join("") || '<tr><td colspan="5" class="empty">none</td></tr>';
-  $("edge-neg").innerHTML = neg.slice(0,40).map(function(r){ return '<tr><td>'+esc(r.sys)+' · '+esc(r.track)+'</td><td class="num">'+r.n+'</td><td class="num" style="color:'+(r.exp<0?'var(--neg-ink)':'var(--dim)')+'">'+fmt(r.exp,2)+'</td><td class="num ci">['+fmt(r.ci[0],1)+', '+fmt(r.ci[1],1)+']</td></tr>'; }).join("") || '<tr><td colspan="4" class="empty">none</td></tr>';
-  var accH = acc.slice(0,30).map(function(r){ return '<span class="pill">'+esc(r.sys)+' '+esc(r.track)+' <b>n='+r.n+'</b></span>'; }).join("");
-  var extra=[]; var es=DATA.esswing_sc; if(es) extra.push("ES swing book n="+(es.n_scoreable||0)+" — "+(es.gate||""));
-  var tt=DATA.tictoc_sc; if(tt) extra.push("Tic Toc picks n="+(tt.n_scoreable||0)+" of "+(tt.n_picks_total||0)+" — "+(tt.gate||""));
-  var tm=DATA.tammy_sc; if(tm) extra.push("Tammy setups n="+(tm.n_scoreable||0)+" hit "+fmt(tm.hit_rate,0)+"% — "+(tm.gate||""));
+  var P=DATA.perf,pos=[],neg=[],acc=[];
+  function row(sys,track,n,exp,ci,win){ return {sys:sys,track:track,n:n,exp:exp,ci:ci,win:win}; }
+  if(P&&P.systems){ Object.keys(P.systems).forEach(function(sk){ (P.systems[sk].tracks||[]).forEach(function(t){ var r=row(sk,t.track+(t.mode?" ("+t.mode+")":""),t.n_matured||0,t.expectancy,t.exp_ci||[null,null],t.win_rate); if(r.n<30) acc.push(r); else if(r.ci[0]!=null&&r.ci[0]>0&&r.exp>0) pos.push(r); else neg.push(r); }); }); }
+  var ict=DATA.ict; if(ict&&ict.tracks_summary){ Object.keys(ict.tracks_summary).forEach(function(k){ var t=ict.tracks_summary[k]; var r=row("ict",k,t.n_matured,t.net_points_expectancy,[null,null],t.win_rate); if(r.n<30) acc.push(r); }); }
+  var cp=DATA.candles; if(cp&&cp.by_pattern){ Object.keys(cp.by_pattern).forEach(function(pn){ ["RAW","FILTERED"].forEach(function(m){ var t=cp.by_pattern[pn][m]; if(!t) return; var r=row("candle",pn+" ("+m+")",t.n_matured,t.net_points_exp,t.net_ci||[null,null],t.target_hit_rate!=null?t.target_hit_rate*100:null); if(r.n<30) acc.push(r); else if(r.ci[0]!=null&&r.ci[0]>0&&r.exp>0) pos.push(r); else neg.push(r); }); }); }
+  pos.forEach(function(r){ if(r.sys==="inside_bar"&&/GC_RAW/.test(r.track)) r.flag="⚠ dead-contract artifact (FIX2 pending)"; else if((r.sys==="ema_gccl"||r.sys==="ict"||r.sys==="ema"||(r.sys==="inside_bar"&&/ES|CL/.test(r.track)))&&r.exp<1) r.flag="thin — ≈ costs on ES/CL (1 pt ≈ slippage+commission)"; });
+  pos.sort(function(a,b){ return (b.exp||0)-(a.exp||0); }); neg.sort(function(a,b){ return (a.exp||0)-(b.exp||0); });
+  var real=pos.filter(function(r){ return !r.flag; });
+  var plain=[];
+  plain.push("<b>Trade these:</b> "+(real.length? real.slice(0,5).map(function(r){ return friendly(r)+" (+"+fmt(r.exp,1)+" pts/trade, "+r.n+" trades)"; }).join("; ") : "nothing clears the bar yet")+".");
+  var retired=neg.filter(function(r){ return r.exp<0; }); plain.push("<b>Don't trade these:</b> ES EMA scalps on 5/15-minute bars, the wave-engine calls, STRONG_LONG bought at market — all measured losers. "+retired.length+" tracks in total are retired.");
+  plain.push("<b>Too early:</b> "+acc.length+" tracks have under 30 trades (ES swing book, Tic Toc picks, Tammy setups, ORB, filtered ICT/FVG). Watch, don't size.");
+  plain.push("<b>Stock picks:</b> enter on pullbacks, never at market; convergence-HIGH is the one validated bucket.");
+  $("edge-plain").innerHTML=plain.map(function(p){ return '<p style="margin:6px 0">'+p+'</p>'; }).join("");
+  $("edge-pos").innerHTML=pos.map(function(r){ return '<tr><td>'+esc(friendly(r))+(r.flag?'<div class="muted" style="font-size:11px">'+esc(r.flag)+'</div>':'')+'</td><td class="num">'+r.n+'</td><td class="num" style="color:var(--pos-ink)">'+fmt(r.exp,2)+'</td><td class="num ci">['+fmt(r.ci[0],1)+', '+fmt(r.ci[1],1)+']</td><td class="num">'+fmt(r.win,0)+'%</td></tr>'; }).join("")||'<tr><td colspan="5" class="empty">none</td></tr>';
+  $("edge-neg").innerHTML=neg.slice(0,40).map(function(r){ return '<tr><td>'+esc(friendly(r))+'</td><td class="num">'+r.n+'</td><td class="num" style="color:'+(r.exp<0?'var(--neg-ink)':'var(--dim)')+'">'+fmt(r.exp,2)+'</td><td class="num ci">['+fmt(r.ci[0],1)+', '+fmt(r.ci[1],1)+']</td></tr>'; }).join("")||'<tr><td colspan="4" class="empty">none</td></tr>';
+  var extra=[]; var es=DATA.esswing_sc; if(es) extra.push("ES swing book: "+(es.n_scoreable||0)+" trades — "+(es.gate||""));
+  var tt=DATA.tictoc_sc; if(tt) extra.push("Tic Toc picks: "+(tt.n_scoreable||0)+" scoreable of "+(tt.n_picks_total||0)+" — "+(tt.gate||""));
+  var tm=DATA.tammy_sc; if(tm) extra.push("Tammy setups: "+(tm.n_scoreable||0)+" scored, "+fmt(tm.hit_rate,0)+"% hit — "+(tm.gate||""));
   var of=DATA.orbf; if(of&&of.gauntlet) extra.push("ORB futures: "+(of.gauntlet.status||""));
   var oa=DATA.orba; if(oa) extra.push("ORB stocks A+: "+(oa.status||""));
-  $("edge-acc").innerHTML = accH + (extra.length? '<div class="note">'+extra.map(esc).join("<br>")+'</div>':'');
-  // picks
+  $("edge-acc").innerHTML=acc.slice(0,30).map(function(r){ return '<span class="pill">'+esc(friendly(r))+' <b>n='+r.n+'</b></span>'; }).join("")+(extra.length?'<div class="note">'+extra.map(esc).join("<br>")+'</div>':'');
   var pa=DATA.picks, pr=[];
-  if(pa){ var F=(pa.FORWARD||{}); Object.keys(F.by_sub_bucket||{}).forEach(function(k){ var b=F.by_sub_bucket[k]; pr.push({b:k+" (forward)", n:b.n, e:b.expectancy, pf:b.profit_factor, r: b.expectancy>0?"edge":"no edge — do not chase"}); });
-    Object.keys(F.by_bucket||{}).forEach(function(k){ var b=F.by_bucket[k]; pr.push({b:k+" (forward)", n:b.n, e:b.expectancy, pf:b.profit_factor, r: b.expectancy>0?"edge":"negative forward"}); });
-    var H=(pa.HISTORICAL_BASELINE||{}).by_bucket||{}; Object.keys(H).forEach(function(k){ var b=H[k]; pr.push({b:k+" (in-sample)", n:b.n, e:b.expectancy, pf:b.profit_factor, r: (b.n<30?"n<30 descriptive":"in-sample only")}); }); }
-  $("edge-picks").innerHTML = pr.map(function(r){ return '<tr><td>'+esc(r.b)+'</td><td class="num">'+r.n+'</td><td class="num" style="color:'+(r.e>0?'var(--pos-ink)':'var(--neg-ink)')+'">'+fmt(r.e,2)+'</td><td class="num">'+fmt(r.pf,2)+'</td><td class="muted" style="font-size:12px">'+esc(r.r)+'</td></tr>'; }).join("") || '<tr><td colspan="5" class="empty">pick_asymmetry.json unavailable</td></tr>';
+  if(pa){ var F=(pa.FORWARD||{}); Object.keys(F.by_sub_bucket||{}).forEach(function(k){ var b=F.by_sub_bucket[k]; pr.push({b:k+" (forward)",n:b.n,e:b.expectancy,pf:b.profit_factor,r:b.expectancy>0?"edge":"loses — do not chase"}); }); Object.keys(F.by_bucket||{}).forEach(function(k){ var b=F.by_bucket[k]; pr.push({b:k+" (forward)",n:b.n,e:b.expectancy,pf:b.profit_factor,r:b.expectancy>0?"edge":"negative forward"}); }); var H=(pa.HISTORICAL_BASELINE||{}).by_bucket||{}; Object.keys(H).forEach(function(k){ var b=H[k]; pr.push({b:k+" (in-sample)",n:b.n,e:b.expectancy,pf:b.profit_factor,r:(b.n<30?"n<30 descriptive":"in-sample only")}); }); }
+  $("edge-picks").innerHTML=pr.map(function(r){ return '<tr><td>'+esc(r.b)+'</td><td class="num">'+r.n+'</td><td class="num" style="color:'+(r.e>0?'var(--pos-ink)':'var(--neg-ink)')+'">'+fmt(r.e,2)+'</td><td class="num">'+fmt(r.pf,2)+'</td><td class="muted" style="font-size:12px">'+esc(r.r)+'</td></tr>'; }).join("")||'<tr><td colspan="5" class="empty">unavailable</td></tr>';
+}
+function friendly(r){
+  var t=r.track, m=t.match(/^(GC|CL)_(\d+)_(\d+)_(\w+?)_(filtered|raw)/); if(r.sys==="ema_gccl"&&m) return (m[1]==="GC"?"Gold":"Crude")+" EMA "+m[2]+"/"+m[3]+" on "+m[4].replace("m","-min").replace("daily","daily")+" bars"+(m[5]==="filtered"?" (filtered)":" (raw)");
+  var m2=t.match(/^(\d+)_(\d+)_(\w+?)_(filtered|raw)/); if(r.sys==="ema"&&m2) return "ES EMA "+m2[1]+"/"+m2[2]+" on "+m2[3].replace("m","-min")+" bars"+(m2[4]==="filtered"?" (filtered)":" (raw)");
+  if(r.sys==="ema_stocks"&&m2) return "Stocks EMA "+m2[1]+"/"+m2[2]+" daily"+(m2[4]==="filtered"?" (filtered)":" (raw)");
+  if(r.sys==="inside_bar") return "Inside bar — "+t.replace("_RAW"," raw").replace("_FILTERED"," filtered");
+  if(r.sys==="wave") return "Wave engine accuracy — "+t;
+  if(r.sys==="candle") return "Candle pattern — "+t.replace(/_/g," ");
+  if(r.sys==="ict") return "ICT — "+t; if(r.sys==="fvg") return "FVG — "+t;
+  return r.sys+" · "+t;
 }
 
-/* ── STRUCTURE ── */
 function renderStruct(){
-  var h=[]; ["daily","60m","15m"].forEach(function(tf){ var w=DATA["wave_"+tf]; if(!w) return; var p=w.primary||{}; var inv=p.invalidation||{}; var tg=p.targets||{};
-    h.push('<div class="setup"><div class="h">'+tag(w.conviction==="HIGH"?"info":"idle", tf)+' <span>'+esc(w.verdict||"")+'</span> <span class="muted" style="font-size:12px">conv '+esc(w.conviction||"")+' · as of '+esc(w.as_of||"")+'</span></div>'+
-      '<div class="lv">invalidation '+fmt(inv.level,2)+(Object.keys(tg).length? ' · targets '+Object.keys(tg).map(function(k){return k.replace(/_/g," ")+" "+fmt(tg[k],0);}).join(", "):"")+'</div>'+
-      '<div class="why">'+esc(p.narrative||"")+'</div>'+(w.recommendation?'<div class="why muted">'+esc(w.recommendation.status+": "+w.recommendation.reason)+'</div>':'')+'</div>'); });
-  $("waves").innerHTML = h.join("") || '<div class="empty">wave files unavailable</div>';
-  var b=DATA.breadth, g=[];
-  if(b){ g.push(kv("A/D cum", fmt0(b.nyad_cum), "as of "+b.last_row_date)); g.push(kv("vs ATH", fmt0(b.below_peak), b.sessions_since_ath+" sessions since "+b.ath_date, b.below_peak<0?"warn":"")); }
-  var t=DATA.tcache; if(t){ g.push(kv("T-Theory", (t.state||"").toUpperCase(), t.quality? "grade "+t.quality : (t.recovery_date? "recovered "+t.recovery_date : ""), t.state==="confirmed"?"pos":"")); }
-  $("breadth").innerHTML = g.join("") || '<div class="empty">breadth snapshot unavailable</div>';
-  $("br-sub").textContent = b? "pushed "+ageTxt(ageS(b.pushed_at))+" ago" : "";
-  $("tstate").textContent = t? ("VO low "+(t.low_date||"?")+" → crossed up "+(t.recovery_date||"?")+"; confirmation "+(t.confirmation_date||"not yet")+". Bull-T needs McOsc/VO above their pre-zero lows, BPSPX>50, A/D over its 20-EMA. Bear-T watch: McOsc ≤ −72 / VO ≤ −169M / SPX close < 7507. Windows, not switches.") : "";
-  var c=DATA.cal, r=DATA.regime, ch=[];
-  if(c){ ch.push('<div class="gate"><span class="name">'+tag(c.half_size?"warn":"idle", c.half_size?"HALF SIZE":"normal")+'</span><span class="why">'+esc(c.display_line||c.note||("month-end in "+c.days_to_month_end+" days"))+'</span></div>'); }
-  if(r&&r.instruments){ Object.keys(r.instruments).forEach(function(k){ var x=r.instruments[k]; ch.push('<div class="gate"><span class="name">'+esc(k)+' '+tag(x.label==="TRENDING"?"pos":x.label==="CHOP"?"warn":"idle", x.label)+'</span><span class="why">trendiness '+x.trendiness+' · '+esc(String(x.depth||"").slice(0,60))+' · readout dated '+esc(String(r.generated_at||"").slice(0,10))+'</span></div>'); }); }
-  $("cal").innerHTML = ch.join("") || '<div class="empty">no calendar/regime context</div>';
-  // feeds
-  var f=[], add=function(n,o,key){ var a=o? ageS(o[key]) : null; f.push('<div class="gate"><span class="name">'+esc(n)+' '+tag(!o?"neg":a!=null&&a<900?"pos":a!=null&&a<86400?"warn":"idle", !o?"missing":ageTxt(a))+'</span><span class="why">'+esc(o? String(o[key]||"") : "")+'</span></div>'); };
-  add("internals", DATA.snap, "pushed_at"); add("verdict meter", DATA.verdict, "timestamp"); add("ICT", DATA.ict, "generated_at"); add("FVG", DATA.fvg, "generated_at"); add("ES swing", DATA.esswing, "generated_at"); add("breadth", DATA.breadth, "pushed_at"); add("perf scorecards", DATA.perf, "generated_at"); add("stock dashboard", DATA.stockdash, "generated_at"); add("GC/CL EMA", DATA.gccl, "generated_at");
-  var eh=DATA.email; if(eh) f.push('<div class="gate"><span class="name">email '+tag(eh.status==="ok"?"pos":"neg", eh.status||"?")+'</span><span class="why">last success '+esc(String(eh.last_success_ts||"").slice(0,16))+'</span></div>');
-  $("feeds").innerHTML = f.join("");
+  var h=[]; ["daily","60m","15m"].forEach(function(tf){ var w=DATA["wave_"+tf]; if(!w) return; var p=w.primary||{},inv=p.invalidation||{},tg=p.targets||{}; h.push('<div class="setup"><div class="h">'+tag(w.conviction==="HIGH"?"info":"idle",tf)+' <span>'+esc((w.verdict||"").replace(/_/g," "))+'</span> <span class="muted" style="font-size:12px;font-weight:400">as of '+esc(w.as_of||"")+'</span></div><div class="lv">invalid above/below '+fmt(inv.level,2)+(Object.keys(tg).length?' · targets '+Object.keys(tg).map(function(k){return fmt(tg[k],0);}).join(" / "):"")+'</div><div class="why">'+esc(p.narrative||"")+'</div>'+(w.recommendation?'<div class="plain">'+esc(w.recommendation.status.replace(/_/g," ")+" — "+w.recommendation.reason)+'</div>':'')+'</div>'); });
+  $("waves").innerHTML=h.join("")||'<div class="empty">wave files unavailable</div>';
+  var b=DATA.breadth,g=[]; if(b){ g.push(kv("A/D line",fmt0(b.nyad_cum),"as of "+b.last_row_date,"cumulative advancers − decliners; should make new highs with price")); g.push(kv("vs its high",fmt0(b.below_peak),b.sessions_since_ath+" sessions since "+b.ath_date,"negative = breadth lagging price = divergence warning")); }
+  var t=DATA.tcache; if(t){ g.push(kv("T-Theory",(t.state||"").toUpperCase(),t.quality?"grade "+t.quality:(t.recovery_date?"VO turned up "+t.recovery_date:""),"a confirmed T = a measured bull phase; unconfirmed = still a window")); }
+  $("breadth").innerHTML=g.join("")||'<div class="empty">breadth snapshot unavailable</div>'; $("bp-sub").textContent=b?"breadth "+ageTxt(ageS(b.pushed_at))+" old":"";
+  $("tstate").textContent=t?("Volume-oscillator low "+(t.low_date||"?")+", turned up "+(t.recovery_date||"?")+", confirmation "+(t.confirmation_date||"not yet")+". Bull-T needs McOsc & VO above their pre-zero lows, BPSPX above 50, A/D above its 20-day average. Bear-T watch: McOsc ≤ −72, VO ≤ −169M, or SPX closing under 7507. These are windows, not switches."):"";
+  var c=DATA.cal,r=DATA.regime,ch=[]; if(c){ ch.push('<div class="gate"><span class="name">'+tag(c.half_size?"warn":"idle",c.half_size?"HALF SIZE":"normal size")+'</span><span class="why">'+esc(c.display_line||c.note||("month-end in "+c.days_to_month_end+" days"))+'</span></div>'); }
+  if(r&&r.instruments){ Object.keys(r.instruments).forEach(function(k){ var x=r.instruments[k]; ch.push('<div class="gate"><span class="name">'+esc(k.replace("_"," "))+' '+tag(x.label==="TRENDING"?"pos":x.label==="CHOP"?"warn":"idle",x.label)+'</span><span class="why">trendiness '+x.trendiness+'/100 · readout dated '+esc(String(r.generated_at||"").slice(0,10))+'</span></div>'); }); }
+  $("cal").innerHTML=ch.join("")||'<div class="empty">no calendar/regime context</div>';
+  var f=[],add=function(n,o,key){ var a=o?ageS(o[key]):null; f.push('<div class="gate"><span class="name">'+esc(n)+' '+tag(!o?"neg":a!=null&&a<900?"pos":a!=null&&a<86400?"warn":"idle",!o?"missing":ageTxt(a))+'</span><span class="why">'+esc(o?String(o[key]||""):"")+'</span></div>'); };
+  add("internals",DATA.snap,"pushed_at"); add("meter",DATA.verdict,"timestamp"); add("ICT",DATA.ict,"generated_at"); add("FVG",DATA.fvg,"generated_at"); add("ES swing",DATA.esswing,"generated_at"); add("breadth",DATA.breadth,"pushed_at"); add("scorecards",DATA.perf,"generated_at"); add("stock dashboard",DATA.stockdash,"generated_at"); add("GC/CL EMA",DATA.gccl,"generated_at");
+  var eh=DATA.email; if(eh) f.push('<div class="gate"><span class="name">email '+tag(eh.status==="ok"?"pos":"neg",eh.status||"?")+'</span><span class="why">last success '+esc(String(eh.last_success_ts||"").slice(0,16))+'</span></div>');
+  $("feeds").innerHTML=f.join("");
 }
 
-/* ── LOAD ── */
-var FILES = {snap:"internals_snapshot.json", verdict:"verdict.json", ict:"ict_state.json", fvg:"fvg_state.json", esswing:"es_swing_verdict.json", esswing_sc:"es_swing_scorecard.json", tictoc:"tictoc_levels.json", tictoc_sc:"tictoc_scorecard.json", tammy_sc:"tammy_scorecard.json", orbf:"orb_futures.json", orba:"orb_aplus.json", stockdash:"stock_dashboard.json", minervini:"minervini_pullback.json", gccl:"ema_gccl_state.json", perf:"perf_summary.json", candles:"scorecard_summary_candle_patterns.json", picks:"pick_asymmetry.json", wave_daily:"es_wave_daily.json", wave_60m:"es_wave_60m.json", wave_15m:"es_wave_15m.json", breadth:"breadth_snapshot.json", tcache:"active_t_cache.json", cal:"calendar_context.json", regime:"regime_label.json", email:"email_health.json"};
-var FAST = ["snap","verdict","ict","fvg","esswing"];
-function load(keys){
-  return Promise.all(keys.map(function(k){ return fetchJ(FILES[k]).then(function(j){ DATA[k]=j; }); }));
-}
-function renderAll(){ try{renderNow();}catch(e){console.error(e);} try{renderLadder();}catch(e){console.error(e);} try{renderMeter();}catch(e){console.error(e);} try{renderSetups();}catch(e){console.error(e);} try{renderEdge();}catch(e){console.error(e);} try{renderStruct();}catch(e){console.error(e);} }
-load(Object.keys(FILES)).then(function(){ renderAll(); var v="now"; try{ v=localStorage.getItem("arsenal.v2.view")||"now"; }catch(e){} show(v); $("foot").textContent="recommendations from your engine, filtered — you decide · built "+new Date().toLocaleTimeString(); });
-setInterval(function(){ load(FAST).then(function(){ try{renderNow();}catch(e){} try{renderLadder();}catch(e){} try{renderMeter();}catch(e){} try{renderSetups();}catch(e){} }); }, 60000);
-setInterval(function(){ load(Object.keys(FILES)).then(renderAll); }, 10*60000);
+var FILES={snap:"internals_snapshot.json",verdict:"verdict.json",ict:"ict_state.json",fvg:"fvg_state.json",esswing:"es_swing_verdict.json",esswing_sc:"es_swing_scorecard.json",tictoc:"tictoc_levels.json",tictoc_sc:"tictoc_scorecard.json",tammy_sc:"tammy_scorecard.json",orbf:"orb_futures.json",orba:"orb_aplus.json",stockdash:"stock_dashboard.json",minervini:"minervini_pullback.json",gccl:"ema_gccl_state.json",perf:"perf_summary.json",candles:"scorecard_summary_candle_patterns.json",picks:"pick_asymmetry.json",wave_daily:"es_wave_daily.json",wave_60m:"es_wave_60m.json",wave_15m:"es_wave_15m.json",breadth:"breadth_snapshot.json",tcache:"active_t_cache.json",cal:"calendar_context.json",regime:"regime_label.json",email:"email_health.json"};
+var FAST=["snap","verdict","ict","fvg","esswing","cal"];
+function load(keys){ return Promise.all(keys.map(function(k){ return fetchJ(FILES[k]).then(function(j){ DATA[k]=j; }); })).then(function(){ LAST_LOAD=Date.now(); }); }
+function renderFast(){ try{computeState();}catch(e){console.error(e);} try{renderVerdict();}catch(e){console.error(e);} try{renderNow();}catch(e){console.error(e);} try{renderLadder();}catch(e){console.error(e);} try{renderMeter();}catch(e){console.error(e);} try{renderSetups();}catch(e){console.error(e);} }
+function renderAll(){ renderFast(); try{renderEdge();}catch(e){console.error(e);} try{renderStruct();}catch(e){console.error(e);} }
+load(Object.keys(FILES)).then(function(){ renderAll(); var v="now",hp="0",seen="0"; try{ v=localStorage.getItem("arsenal.v2.view")||"now"; hp=localStorage.getItem("arsenal.v2.help")||"0"; seen=localStorage.getItem("arsenal.v2.seenhow")||"0"; }catch(e){} show(v); if(hp==="1"){ document.body.classList.add("helpmode"); $("helpbtn").classList.add("on"); } if(seen!=="1") $("how").classList.add("on"); $("foot").textContent="recommendations from your engine, filtered — you decide"; });
+setInterval(function(){ load(FAST).then(renderFast); },60000);
+setInterval(function(){ load(Object.keys(FILES)).then(renderAll); },10*60000);
+setInterval(function(){ if(DATA.snap){ try{renderNow();}catch(e){} } },30000);
 if("serviceWorker" in navigator){ try{ navigator.serviceWorker.register("sw.js"); }catch(e){} }
 })();
 </script>
