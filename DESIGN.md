@@ -75,3 +75,20 @@ Before pushing any presentation change: back up `index.html`; every prior panel 
 and still bound to the **same** `ghFetch` source (diff the data-binding set — it must be
 byte-identical unless a merge is explicitly listed); 0 conflict markers; `node --check` clean;
 headless-render every tab; confirm no `ghFetch` URL changed. Push only when all pass.
+
+## 7. v2 (2026-10-26) — the simplified front page
+
+`index.html` is now the 4-screen page (NOW · SETUPS · EDGE · STRUCTURE); the full 19-view page is
+preserved unchanged as `index_full.html` and linked from STRUCTURE → Feeds. Rules that produced v2:
+
+- **One ladder, not five panels.** ICT pools, FVG gaps, VP/FIB confluence, swing levels, newsletter
+  levels and meter guidance merge into a single price-sorted ladder with a source tag per row.
+- **Doctrine on the front screen.** Slope gates v3.1 (30-row LSQ on ADD/VOLD/TRIN, 10%-of-level
+  magnitude rule, <15 rows or stale feed = UNRELIABLE) and the three Playbook v3 cards (Washout Long,
+  Cluster Fade, Failed Retest) are computed in the page from `internals_snapshot.json`.
+- **Evidence decides what is shown as actionable.** EDGE splits every scorecard track into
+  working (n≥30, CI excludes 0, exp>0), measured no-edge (retired from NOW/SETUPS, still logged),
+  and accruing (n<30). SETUPS lists only validated buckets (convergence-HIGH, PULLBACK_LONG,
+  BOUNCE_SHORT) plus clearly-tagged informational shadows (Minervini reset, ORB A+, ICT in killzone).
+  STRONG_LONG at-market (forward −2.4%/trade) and ES EMA 5m/15m scalps (all negative) are not shown.
+- **No new data fetch.** v2 binds only to files already in the allowlist; nothing in push_public_display changed.

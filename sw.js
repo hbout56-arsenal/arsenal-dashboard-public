@@ -5,7 +5,7 @@
    - The JSON data feeds are CROSS-ORIGIN (raw.githubusercontent.com) and are NOT intercepted at
      all — the app's own ?t= cache-busting + freshness logic is left completely untouched.
    - Only same-origin static assets (icon, manifest) are cache-first with a background refresh. */
-const CACHE = "arsenal-shell-v1";
+const CACHE = "arsenal-shell-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", function(e){
