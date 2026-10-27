@@ -92,3 +92,25 @@ preserved unchanged as `index_full.html` and linked from STRUCTURE → Feeds. Ru
   BOUNCE_SHORT) plus clearly-tagged informational shadows (Minervini reset, ORB A+, ICT in killzone).
   STRONG_LONG at-market (forward −2.4%/trade) and ES EMA 5m/15m scalps (all negative) are not shown.
 - **No new data fetch.** v2 binds only to files already in the allowlist; nothing in push_public_display changed.
+
+## 8. v2.1 (2026-10-26) — "extremely user friendly" pass
+
+Same data bindings as v2 (no new fetch, same allowlist). Presentation changes only:
+
+- **Traffic light + checklist at the top of NOW.** One verdict card: a coloured dot (green = gate open
+  + card armed + price at a level; amber = set up but unconfirmed; red = stand aside / no live read;
+  grey = closed), a one-line plain-English headline, and a 5-box checklist (live internals · gate open ·
+  card armed · price at a level · not an event day). Price is still the trigger; the light never is.
+- **Next above / next below.** The two nearest ladder levels are shown as big tiles with distance in
+  points; the full ladder sits behind "Show the full ladder".
+- **"? Explain" mode.** A sticky toggle (`body.helpmode`) reveals a plain-language note under every
+  panel and a one-liner under every internals tile. Persisted in `localStorage` (`arsenal.v2.help`).
+- **"How to use" sheet** opens on first visit only (`arsenal.v2.seenhow`), six steps, 60 seconds.
+- **Session clock** in the header: pre-market / opening range (no cards until 10:00) / open / last 30 min
+  (flat by 15:30) / closed, with the countdown to the open.
+- **Copy buttons** on every setup and on meter guidance: puts `TICKER DIR entry X stop Y T1 Z` on the
+  clipboard for ToS. Every setup also carries a one-sentence "what to do" line and its honesty tag.
+- **EDGE opens with "In plain English"**: trade these / don't trade these / too early. Track names are
+  humanised (`GC_9_21_60m_filtered` → "Gold EMA 9/21 on 60-min bars (filtered)").
+- **Light/dark**: follows `prefers-color-scheme`; tokens redefined for light.
+- Nav labels unchanged (NOW · SETUPS · EDGE · STRUCTURE), 44 px targets, 16 px base type.
