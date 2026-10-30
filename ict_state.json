@@ -1,41 +1,41 @@
 {
-  "generated_at": "2026-10-30T09:36:54",
+  "generated_at": "2026-10-30T09:57:28",
   "feed_status": "LIVE",
   "standing_down": false,
   "standing_down_note": "",
-  "last_bar_ts": "2026-10-30T09:25:00 ET",
-  "price": 7669.5,
+  "last_bar_ts": "2026-10-30T09:45:00 ET",
+  "price": 7658.5,
   "bias": "SHORT",
   "untapped_pools_near": [
     {
+      "kind": "sell-side",
+      "price": 7649.75,
+      "dist_pts": 8.75
+    },
+    {
+      "kind": "buy-side",
+      "price": 7671.25,
+      "dist_pts": 12.75
+    },
+    {
       "kind": "buy-side",
       "price": 7673.25,
-      "dist_pts": 3.75
+      "dist_pts": 14.75
     },
     {
       "kind": "buy-side",
       "price": 7674.5,
-      "dist_pts": 5.0
-    },
-    {
-      "kind": "sell-side",
-      "price": 7664.25,
-      "dist_pts": 5.25
-    },
-    {
-      "kind": "sell-side",
-      "price": 7664.0,
-      "dist_pts": 5.5
+      "dist_pts": 16.0
     },
     {
       "kind": "buy-side",
       "price": 7676.0,
-      "dist_pts": 6.5
+      "dist_pts": 17.5
     },
     {
       "kind": "buy-side",
       "price": 7677.75,
-      "dist_pts": 8.25
+      "dist_pts": 19.25
     }
   ],
   "swept_recent": [
@@ -166,7 +166,17 @@
       "stopout_rate": 55.0,
       "profit_factor": 1.21,
       "avg_R": 6.33,
-      "status": "n>=30, edge unconfirmed"
+      "status": "n>=30, edge unconfirmed (CI includes 0)",
+      "exp_ci": [
+        -0.06,
+        1.36
+      ],
+      "status_class": "unconfirmed",
+      "n_raw_rows": 1092,
+      "n_matured_old": 1010,
+      "n_duplicate": 200,
+      "n_correlated": 215,
+      "n_independent": 595
     },
     "FILTERED": {
       "n_trades": 5,
@@ -180,7 +190,17 @@
       "stopout_rate": 50.0,
       "profit_factor": 5.9,
       "avg_R": 8.68,
-      "status": "DESCRIPTIVE \u2014 n<30, not validated"
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "exp_ci": [
+        -3.59,
+        16.9
+      ],
+      "status_class": "descriptive",
+      "n_raw_rows": 5,
+      "n_matured_old": 4,
+      "n_duplicate": 0,
+      "n_correlated": 0,
+      "n_independent": 4
     },
     "OFF_KILLZONE": {
       "n_trades": 2,
@@ -199,5 +219,12 @@
   },
   "metric": "net_points",
   "note": "3 pre-registered tracks (RAW control vs FILTERED full-ICT INSIDE killzone vs OFF_KILLZONE full-ICT OUTSIDE killzone) \u2014 anti multiple-comparison across 3. ICT validation is usually screenshot-based + discretionary hindsight; this measures it properly on net points. FILTERED must beat RAW past n>=30 before any vote; OFF_KILLZONE is the control on the killzone time-filter.",
-  "disclaimer": "SIMULATED ICT sequenced-chain \u2014 descriptive, NOT a signal. A step out of order = no setup. Trigger is PRICE breaking the swept wick (invalidation) / the MSS close / the FVG entry \u2014 NOT the pattern's existence. NET POINTS; DESCRIPTIVE until n>=30 per mode. RAW=control, FILTERED=full-ICT tested-for-edge. Separate from my_trades_inbox.txt."
+  "disclaimer": "SIMULATED ICT sequenced-chain \u2014 descriptive, NOT a signal. A step out of order = no setup. Trigger is PRICE breaking the swept wick (invalidation) / the MSS close / the FVG entry \u2014 NOT the pattern's existence. NET POINTS; DESCRIPTIVE until n>=30 per mode. RAW=control, FILTERED=full-ICT tested-for-edge. Separate from my_trades_inbox.txt.",
+  "rescored_at": "2026-10-30T09:57:57",
+  "rescored_in_place": true,
+  "rescore_note": "stats computed on INDEPENDENT setups only; correlated/duplicate entries excluded (Dispatch 21 scoring-integrity fix). n_raw_rows vs n_independent shows the prior inflation.",
+  "dedup": {
+    "entry_tol_pts": 0.25,
+    "window_bars": 2
+  }
 }
