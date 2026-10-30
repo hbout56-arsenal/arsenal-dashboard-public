@@ -1,24 +1,24 @@
 {
-  "generated_at": "2026-10-28T21:50:21.225679+00:00",
+  "generated_at": "2026-10-30T02:23:53.506143+00:00",
   "source": "REAL",
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "snapshot_disclaimer": "Current-universe SNAPSHOT for education + forward logging, NOT a historical backtest. Each name judged once at the last completed session bar.",
-  "universe_note": "12458 alpha-ticker names from the grouped-daily snapshot (ETFs included and FLAGGED; universe_scan's stock set excludes ETFs).",
+  "universe_note": "12451 alpha-ticker names from the grouped-daily snapshot (ETFs included and FLAGGED; universe_scan's stock set excludes ETFs).",
   "funnel": {
-    "universe": 12458,
-    "stage1_trend_template": 1542,
-    "stage1": 1542,
-    "stage2_liquidity": 412,
-    "stage2": 412,
-    "stage2_liquidity_passed": 412,
-    "stage2_liquidity_failed": 1130,
+    "universe": 12451,
+    "stage1_trend_template": 1429,
+    "stage1": 1429,
+    "stage2_liquidity": 408,
+    "stage2": 408,
+    "stage2_liquidity_passed": 408,
+    "stage2_liquidity_failed": 1021,
     "stage2_liquidity_threshold_usd": 20000000,
-    "stage3_vcp": 9,
+    "stage3_vcp": 12,
     "stage3_vcp_strict_control": 0,
     "stage4_rs_top_decile": 1,
     "stage4_top": 1,
-    "insufficient_history": 2056,
-    "rs_ranked_pool": 9
+    "insufficient_history": 2037,
+    "rs_ranked_pool": 12
   },
   "vcp_method": {
     "detector": "zigzag_vcp_prereg_d102_2026-07-02",
@@ -40,58 +40,59 @@
   },
   "liquidity_gate": {
     "threshold_usd": 20000000,
-    "passed": 412,
-    "failed": 1130,
-    "of_trend_survivors": 1542,
+    "passed": 408,
+    "failed": 1021,
+    "of_trend_survivors": 1429,
     "note": "avg daily dollar volume must clear $20M so slippage doesn't eat the edge; thin names rejected here."
   },
   "regime_at_signal": "CHOP",
   "regime_detail": {
     "trendiness": 24,
     "spy_vs_sma50": "UP",
-    "spy_close": 772.31,
+    "spy_close": 769.36,
     "spy_sma50": 767.63
   },
   "qualified": [
     {
-      "ticker": "ARX",
-      "signal_date": "2026-10-28",
-      "close": 19.81,
-      "pivot": 19.9,
-      "entry": 19.9,
-      "stop": 19.51,
-      "target": 29.23,
-      "rr": 23.9,
-      "base_depth_pct": 2.0,
+      "ticker": "UFPT",
+      "signal_date": "2026-10-29",
+      "close": 293.3,
+      "pivot": 310.15,
+      "entry": 310.15,
+      "stop": 283.2,
+      "target": 446.44,
+      "rr": 5.1,
+      "base_depth_pct": 8.7,
       "vcp_depths_pct": [
-        5.6,
-        9.5
+        6.3,
+        17.4,
+        8.7
       ],
-      "vcp_detail": "depths=[5.6, 9.5] tighten=True(1v,recal0.85/<= 1v) dryup=True",
-      "rs_vs_spy": 0.3932,
+      "vcp_detail": "depths=[6.3, 17.4, 8.7] tighten=True(1v,recal0.85/<= 1v) dryup=True",
+      "rs_vs_spy": 0.5004,
       "rs_rank": 1.0,
       "rs_decile": "top",
       "rs_top_decile_bonus": true,
       "not_extended": true,
       "not_extended_status": "NOT_EXTENDED",
       "not_extended_metrics": {
-        "atr_above_pivot": -1.54,
-        "pct_above_ma50": 0.3,
-        "rsi": 58.3
+        "atr_above_pivot": -1.81,
+        "pct_above_ma50": 0.4,
+        "rsi": 53.6
       },
-      "volume_breakout_x": 0.14,
-      "adv": 36578005,
+      "volume_breakout_x": 0.95,
+      "adv": 32925013,
       "adv_floor": 20000000,
-      "adv_headroom_x": 1.8,
+      "adv_headroom_x": 1.6,
       "detector": "zigzag_vcp_prereg_d102_2026-07-02",
       "is_etf": false,
-      "name": "Accelerant Holdings",
-      "setup": "VCP base (2 contractions 5.6->9.5%, depth 2.0%)",
+      "name": "UFP Technologies Inc",
+      "setup": "VCP base (3 contractions 6.3->17.4->8.7%, depth 8.7%)",
       "regime_at_signal": "CHOP",
       "regime_detail": {
         "trendiness": 24,
         "spy_vs_sma50": "UP",
-        "spy_close": 772.31,
+        "spy_close": 769.36,
         "spy_sma50": 767.63
       },
       "size_band": "1\u20132% risk per R (sim; max-safe deferred \u2192 ACCRUING)",
@@ -99,14 +100,14 @@
         "conservative": "1%/R",
         "standard": "2%/R",
         "max_safe": "deferred \u2014 needs n>=30 validated edge",
-        "R_per_share": 0.39,
+        "R_per_share": 26.95,
         "basis": "D44 risk_model advisory default; %/R only, no $/positions; name-specific max-safe deferred until forward n>=30 (ACCRUING)"
       },
       "education": [
         "It's a stock in a HARD uptrend: price > 50 > 150 > 200-day averages, all rising.",
-        "Its base shows 2 successive, TIGHTENING pullbacks (5.6% \u2192 9.5%) on drying volume \u2014 the classic VCP volatility contraction (depth 2.0%).",
-        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +39.3%, placing it in the TOP DECILE of the surviving set.",
-        "It is NOT chased (not-extended, RSI 58): you'd buy the breakout ABOVE the 19.9 pivot, stop 19.51 (below base), measured-move target 29.23 (R:R 23.9).",
+        "Its base shows 3 successive, TIGHTENING pullbacks (6.3% \u2192 17.4% \u2192 8.7%) on drying volume \u2014 the classic VCP volatility contraction (depth 8.7%).",
+        "It clears the $20M/day liquidity floor and its 126-day return beats SPY by +50.0%, placing it in the TOP DECILE of the surviving set.",
+        "It is NOT chased (not-extended, RSI 54): you'd buy the breakout ABOVE the 310.15 pivot, stop 283.2 (below base), measured-move target 446.44 (R:R 5.1).",
         "SHADOW / educational \u2014 not a recommendation. Logged forward to prove itself vs the current engine (n<30 \u2192 ACCRUING)."
       ]
     }
@@ -130,12 +131,12 @@
     "note": "FORWARD only; never blended with historical. Expectancy-led; win% a footnote."
   },
   "honest_read": {
-    "verdict": "HEALTHY at the VCP stage (stage3=9); binding stage = stage3_vcp",
+    "verdict": "HEALTHY at the VCP stage (stage3=12); binding stage = stage3_vcp",
     "binding_stage": "stage3_vcp",
     "single_stock_qualified": 1,
     "notes": [
-      "Universe 12458 -> trend 1542 -> liquidity 412 -> VCP 9 -> RS top-decile 1.",
-      "D102 recalibration: VCP tightening rule is now tolerance-based (<=0.85x + ONE violation allowed) on the ZigZag swing legs. Head-to-head vs the strict 0.75x/0-violation CONTROL: recal=9 vs strict-control=0 \u2014 SHADOW/ACCRUING, no 'recal beats strict' claim until n>=30 (pre-registration preregistration_vcp_detector_d102.json, detector zigzag_vcp_prereg_d102_2026-07-02).",
+      "Universe 12451 -> trend 1429 -> liquidity 408 -> VCP 12 -> RS top-decile 1.",
+      "D102 recalibration: VCP tightening rule is now tolerance-based (<=0.85x + ONE violation allowed) on the ZigZag swing legs. Head-to-head vs the strict 0.75x/0-violation CONTROL: recal=12 vs strict-control=0 \u2014 SHADOW/ACCRUING, no 'recal beats strict' claim until n>=30 (pre-registration preregistration_vcp_detector_d102.json, detector zigzag_vcp_prereg_d102_2026-07-02).",
       "1 single stock(s) qualify this session (was 0 under the strict rule). ZigZag/base/max-T/depth/dry-up/liquidity/RS all UNCHANGED \u2014 only the tightening rule changed.",
       "Thresholds chosen by PRINCIPLE, NOT tuned to manufacture picks. Reported as-is. Nothing promoted to live; SHADOW/forward only (n<30 -> ACCRUING)."
     ]
