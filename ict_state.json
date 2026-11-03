@@ -1,41 +1,41 @@
 {
-  "generated_at": "2026-11-03T10:22:29",
+  "generated_at": "2026-11-03T10:42:55",
   "feed_status": "LIVE",
   "standing_down": false,
   "standing_down_note": "",
-  "last_bar_ts": "2026-11-03T10:10:00 ET",
-  "price": 7596.5,
+  "last_bar_ts": "2026-11-03T10:30:00 ET",
+  "price": 7596.0,
   "bias": "LONG",
   "untapped_pools_near": [
     {
       "kind": "buy-side",
-      "price": 7599.75,
-      "dist_pts": 3.25
-    },
-    {
-      "kind": "buy-side",
       "price": 7604.75,
-      "dist_pts": 8.25
-    },
-    {
-      "kind": "buy-side",
-      "price": 7609.25,
-      "dist_pts": 12.75
+      "dist_pts": 8.75
     },
     {
       "kind": "sell-side",
       "price": 7583.5,
-      "dist_pts": 13.0
+      "dist_pts": 12.5
+    },
+    {
+      "kind": "buy-side",
+      "price": 7609.25,
+      "dist_pts": 13.25
     },
     {
       "kind": "buy-side",
       "price": 7617.0,
-      "dist_pts": 20.5
+      "dist_pts": 21.0
     },
     {
       "kind": "sell-side",
       "price": 7570.75,
-      "dist_pts": 25.75
+      "dist_pts": 25.25
+    },
+    {
+      "kind": "sell-side",
+      "price": 7555.25,
+      "dist_pts": 40.75
     }
   ],
   "swept_recent": [
@@ -74,11 +74,11 @@
   "killzone_active": "NY-AM",
   "live_setup": {
     "dir": "bull",
-    "entry": 7644.75,
-    "stop": 7636.02,
-    "t1": 7653.48,
+    "entry": 7647.25,
+    "stop": 7637.68,
+    "t1": 7656.82,
     "t2": null,
-    "R": 8.73,
+    "R": 9.57,
     "stop_basis": "atr_fallback",
     "fvg": "7640.0-7646.5",
     "confluence": "",
@@ -91,16 +91,16 @@
       "\u2462 MSS: close above 7649.75 \u2713",
       "\u2463 FVG 7640.0-7646.5 OUTSIDE OTE (7659.1-7661.4) floating",
       "\u2464 killzone OUTSIDE \u2014 stand down",
-      "\u2465 entry 7644.75 \u00b7 stop 7636.02 (wick 7664.25, atr_fallback) \u00b7 T1 7653.48 \u00b7 T2 next-pool/EMA-runner"
+      "\u2465 entry 7647.25 \u00b7 stop 7637.68 (wick 7664.25, atr_fallback) \u00b7 T1 7656.82 \u00b7 T2 next-pool/EMA-runner"
     ]
   },
   "guidance": {
     "dir": "bull",
-    "entry": 7644.75,
-    "stop": 7636.02,
-    "t1": 7653.48,
+    "entry": 7647.25,
+    "stop": 7637.68,
+    "t1": 7656.82,
     "t2": null,
-    "R": 8.73,
+    "R": 9.57,
     "stop_basis": "atr_fallback",
     "fvg": "7640.0-7646.5",
     "confluence": "",
@@ -113,7 +113,7 @@
       "\u2462 MSS: close above 7649.75 \u2713",
       "\u2463 FVG 7640.0-7646.5 OUTSIDE OTE (7659.1-7661.4) floating",
       "\u2464 killzone OUTSIDE \u2014 stand down",
-      "\u2465 entry 7644.75 \u00b7 stop 7636.02 (wick 7664.25, atr_fallback) \u00b7 T1 7653.48 \u00b7 T2 next-pool/EMA-runner"
+      "\u2465 entry 7647.25 \u00b7 stop 7637.68 (wick 7664.25, atr_fallback) \u00b7 T1 7656.82 \u00b7 T2 next-pool/EMA-runner"
     ]
   },
   "off_killzone_setup": null,
@@ -131,7 +131,17 @@
       "stopout_rate": 54.6,
       "profit_factor": 1.23,
       "avg_R": 6.4,
-      "status": "n>=30, edge unconfirmed"
+      "status": "n>=30, edge unconfirmed (CI includes 0)",
+      "exp_ci": [
+        -0.01,
+        1.48
+      ],
+      "status_class": "unconfirmed",
+      "n_raw_rows": 1124,
+      "n_matured_old": 1040,
+      "n_duplicate": 210,
+      "n_correlated": 218,
+      "n_independent": 612
     },
     "FILTERED": {
       "n_trades": 5,
@@ -145,7 +155,17 @@
       "stopout_rate": 50.0,
       "profit_factor": 5.9,
       "avg_R": 8.68,
-      "status": "DESCRIPTIVE \u2014 n<30, not validated"
+      "status": "DESCRIPTIVE \u2014 n<30, not validated",
+      "exp_ci": [
+        -2.48,
+        16.9
+      ],
+      "status_class": "descriptive",
+      "n_raw_rows": 5,
+      "n_matured_old": 4,
+      "n_duplicate": 0,
+      "n_correlated": 0,
+      "n_independent": 4
     },
     "OFF_KILLZONE": {
       "n_trades": 2,
@@ -164,5 +184,12 @@
   },
   "metric": "net_points",
   "note": "3 pre-registered tracks (RAW control vs FILTERED full-ICT INSIDE killzone vs OFF_KILLZONE full-ICT OUTSIDE killzone) \u2014 anti multiple-comparison across 3. ICT validation is usually screenshot-based + discretionary hindsight; this measures it properly on net points. FILTERED must beat RAW past n>=30 before any vote; OFF_KILLZONE is the control on the killzone time-filter.",
-  "disclaimer": "SIMULATED ICT sequenced-chain \u2014 descriptive, NOT a signal. A step out of order = no setup. Trigger is PRICE breaking the swept wick (invalidation) / the MSS close / the FVG entry \u2014 NOT the pattern's existence. NET POINTS; DESCRIPTIVE until n>=30 per mode. RAW=control, FILTERED=full-ICT tested-for-edge. Separate from my_trades_inbox.txt."
+  "disclaimer": "SIMULATED ICT sequenced-chain \u2014 descriptive, NOT a signal. A step out of order = no setup. Trigger is PRICE breaking the swept wick (invalidation) / the MSS close / the FVG entry \u2014 NOT the pattern's existence. NET POINTS; DESCRIPTIVE until n>=30 per mode. RAW=control, FILTERED=full-ICT tested-for-edge. Separate from my_trades_inbox.txt.",
+  "rescored_at": "2026-11-03T10:43:59",
+  "rescored_in_place": true,
+  "rescore_note": "stats computed on INDEPENDENT setups only; correlated/duplicate entries excluded (Dispatch 21 scoring-integrity fix). n_raw_rows vs n_independent shows the prior inflation.",
+  "dedup": {
+    "entry_tol_pts": 0.25,
+    "window_bars": 2
+  }
 }
