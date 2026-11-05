@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-05T08:51:14",
+  "timestamp": "2026-11-05T09:15:17",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
@@ -10,7 +10,7 @@
   "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
   "price_age_s": null,
   "internals_fresh": false,
-  "internals_age_s": 60385,
+  "internals_age_s": 61829,
   "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
@@ -76,23 +76,23 @@
     {
       "name": "FVG_Context",
       "pillar": "FVG_Context",
-      "verdict": "HOLD",
+      "verdict": "LONG",
       "confidence": 0.0,
-      "reason": "FVG DARK (VM down/off-hrs) \u2014 context only, non-voting"
+      "reason": "FVG +setup: bull gap 7728.25-7732.75 @ VP HVN, in-trend \u2014 entry 7733.75 stop 7727.75 (far-side=trigger) \u2014 context, NON-VOTING (weight 0)"
     },
     {
       "name": "ICT_Context",
       "pillar": "ICT_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "ICT DARK (VM down/off-hrs) \u2014 context only, non-voting"
+      "reason": "ICT standing down \u2014 outside killzone \u2014 context only, non-voting"
     },
     {
       "name": "InsideBar_Context",
       "pillar": "InsideBar_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "Inside Bar DARK (VM down/off-hrs) \u2014 context only, non-voting"
+      "reason": "Inside Bar: no A+ coil near price \u2014 context, NON-VOTING (weight 0)"
     }
   ],
   "confluence_zones": [],
@@ -107,22 +107,22 @@
   "timeframes": {
     "5m": {
       "timeframe": "5m",
-      "long_pct": 70.0,
-      "hold_pct": 30.0,
+      "long_pct": 58.5,
+      "hold_pct": 41.5,
       "short_pct": 0.0,
-      "price": 7730.5,
+      "price": 7715.75,
       "internals_fresh": false,
       "structure_fresh": true,
-      "structure_source": "polygon ES daily FALLBACK (IQFeed 5m dark: prlctl rc=255: Unable to perform the operation because \"Windows 11\" is not started. This operation can be performed for running virtual machines only.)",
+      "structure_source": "IQFeed @ES# 5m (in-guest)",
       "state": "live",
-      "bar_age_min": 0.0,
+      "bar_age_min": 5.3,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "LONG",
-          "confidence": 90.0,
-          "reason": "price 7730.50 at 3-method confluence (FIB+TIME+PRICE+VP) near 7729.41 (support)"
+          "confidence": 65.0,
+          "reason": "price 7715.75 at 2-method confluence (FIB+VP) near 7715.16 (support)"
         },
         {
           "name": "Breadth",
@@ -143,7 +143,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7730.50 < prior_close 7734.50 (daily fallback)"
+          "reason": "price 7715.75 < prior_close 7721.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -170,23 +170,30 @@
       "confluence_zones": [
         {
           "method": "VP",
+          "label": "VAL",
+          "price": 7710.34,
+          "dist": -5.41,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
           "label": "HVN",
-          "price": 7729.41,
-          "dist": -1.09,
+          "price": 7713.93,
+          "dist": -1.82,
+          "vp_timeframe": "daily_swing"
+        },
+        {
+          "method": "VP",
+          "label": "LVN",
+          "price": 7721.12,
+          "dist": 5.37,
           "vp_timeframe": "daily_swing"
         },
         {
           "method": "FIB",
-          "label": "C5",
-          "price": 7733.72,
-          "dist": 3.22,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "TIME+PRICE",
-          "label": "coincidence",
-          "price": 7733.72,
-          "dist": 3.22,
+          "label": "C21",
+          "price": 7715.16,
+          "dist": -0.59,
           "vp_timeframe": "daily_swing"
         }
       ],
@@ -195,22 +202,22 @@
     },
     "15m": {
       "timeframe": "15m",
-      "long_pct": 70.0,
-      "hold_pct": 30.0,
-      "short_pct": 0.0,
-      "price": 7730.5,
+      "long_pct": 0.0,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7715.75,
       "internals_fresh": false,
       "structure_fresh": true,
-      "structure_source": "polygon ES daily FALLBACK (IQFeed 15m dark: prlctl rc=255: Unable to perform the operation because \"Windows 11\" is not started. This operation can be performed for running virtual machines only.)",
+      "structure_source": "IQFeed @ES# 15m (in-guest)",
       "state": "live",
-      "bar_age_min": 0.0,
+      "bar_age_min": 15.3,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 90.0,
-          "reason": "price 7730.50 at 3-method confluence (FIB+TIME+PRICE+VP) near 7729.41 (support)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7715.75 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -231,7 +238,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7730.50 < prior_close 7734.50 (daily fallback)"
+          "reason": "price 7715.75 < prior_close 7721.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -255,50 +262,28 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7729.41,
-          "dist": -1.09,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "FIB",
-          "label": "C5",
-          "price": 7733.72,
-          "dist": 3.22,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "TIME+PRICE",
-          "label": "coincidence",
-          "price": 7733.72,
-          "dist": 3.22,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
+      "confluence_zones": [],
       "vp_available": true,
       "fib_available": true
     },
     "60m": {
       "timeframe": "60m",
-      "long_pct": 70.0,
-      "hold_pct": 30.0,
-      "short_pct": 0.0,
-      "price": 7730.5,
+      "long_pct": 0.0,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7711.5,
       "internals_fresh": false,
       "structure_fresh": true,
-      "structure_source": "polygon ES daily FALLBACK (IQFeed 60m dark: prlctl rc=255: Unable to perform the operation because \"Windows 11\" is not started. This operation can be performed for running virtual machines only.)",
+      "structure_source": "IQFeed @ES# 60m (in-guest)",
       "state": "live",
-      "bar_age_min": 0.0,
+      "bar_age_min": 15.3,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 90.0,
-          "reason": "price 7730.50 at 3-method confluence (FIB+TIME+PRICE+VP) near 7729.41 (support)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7711.50 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
@@ -319,7 +304,7 @@
           "pillar": "Structure",
           "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7730.50 < prior_close 7734.50 (daily fallback)"
+          "reason": "price 7711.50 < prior_close 7721.75 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
@@ -343,29 +328,7 @@
           "reason": "no usable nightly-cache bias"
         }
       ],
-      "confluence_zones": [
-        {
-          "method": "VP",
-          "label": "HVN",
-          "price": 7729.41,
-          "dist": -1.09,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "FIB",
-          "label": "C5",
-          "price": 7733.72,
-          "dist": 3.22,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "TIME+PRICE",
-          "label": "coincidence",
-          "price": 7733.72,
-          "dist": 3.22,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
+      "confluence_zones": [],
       "vp_available": true,
       "fib_available": true
     },
