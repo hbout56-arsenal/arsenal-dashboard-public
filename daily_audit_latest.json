@@ -1,6 +1,6 @@
 {
- "date": "2026-11-11",
- "generated_at": "2026-11-11T17:22:53.914675-05:00",
+ "date": "2026-11-12",
+ "generated_at": "2026-11-12T17:27:45.466666-05:00",
  "kind": "daily_audit",
  "mode": "OBSERVE + PROPOSE (no auto-tune)",
  "section_1_ran_broke": {
@@ -8,48 +8,48 @@
    {
     "feed": "internals/snapshot",
     "state": "STALE",
-    "age_min": 133,
+    "age_min": 126,
     "detail": "stale/missed run"
    },
    {
     "feed": "performance scorecard",
-    "state": "FRESH",
-    "age_min": 1770,
-    "detail": "ran/fresh"
+    "state": "STALE",
+    "age_min": 3214,
+    "detail": "stale/missed run"
    },
    {
     "feed": "trendline scorecard",
     "state": "STALE",
-    "age_min": 7589,
+    "age_min": 9034,
     "detail": "stale/missed run"
    },
    {
     "feed": "candle scorecard",
     "state": "STALE",
-    "age_min": 7589,
+    "age_min": 9033,
     "detail": "stale/missed run"
    },
    {
     "feed": "wave scorecard",
     "state": "STALE",
-    "age_min": 7589,
+    "age_min": 9034,
     "detail": "stale/missed run"
    },
    {
     "feed": "breadth",
     "state": "FRESH",
-    "age_min": 55,
+    "age_min": 66,
     "detail": "ran/fresh"
    },
    {
     "feed": "wave-chart bars",
     "state": "STALE",
-    "age_min": 9983,
+    "age_min": 11428,
     "detail": "stale/missed run"
    }
   ],
   "n_dark": 0,
-  "n_stale": 5,
+  "n_stale": 6,
   "watchdog_last": null
  },
  "section_2_system_assessment": {
@@ -137,54 +137,63 @@
  ],
  "section_5_proposals": [
   {
-   "pid": "844096d7",
+   "pid": "f0b906f1",
    "kind": "feed-health",
-   "observation": "feed 'internals/snapshot' is STALE (age 133m) \u2014 31 days running.",
+   "observation": "feed 'internals/snapshot' is STALE (age 126m) \u2014 31 days running.",
    "evidence": "multi-day",
    "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
    "strength": 3
   },
   {
-   "pid": "d8f0e703",
+   "pid": "436852d9",
    "kind": "feed-health",
-   "observation": "feed 'trendline scorecard' is STALE (age 7589m) \u2014 9 days running.",
+   "observation": "feed 'performance scorecard' is STALE (age 3214m) \u2014 5 days running.",
    "evidence": "multi-day",
    "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
    "strength": 3
   },
   {
-   "pid": "f3071bcb",
+   "pid": "9519a399",
    "kind": "feed-health",
-   "observation": "feed 'candle scorecard' is STALE (age 7589m) \u2014 9 days running.",
+   "observation": "feed 'trendline scorecard' is STALE (age 9034m) \u2014 10 days running.",
    "evidence": "multi-day",
    "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
    "strength": 3
   },
   {
-   "pid": "32e104db",
+   "pid": "4f592f5f",
    "kind": "feed-health",
-   "observation": "feed 'wave scorecard' is STALE (age 7589m) \u2014 9 days running.",
+   "observation": "feed 'candle scorecard' is STALE (age 9033m) \u2014 10 days running.",
    "evidence": "multi-day",
    "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
    "strength": 3
   },
   {
-   "pid": "0eb97019",
+   "pid": "c5e6fa56",
    "kind": "feed-health",
-   "observation": "feed 'wave-chart bars' is STALE (age 9983m) \u2014 10 days running.",
+   "observation": "feed 'wave scorecard' is STALE (age 9034m) \u2014 10 days running.",
    "evidence": "multi-day",
    "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
    "strength": 3
   },
   {
-   "pid": "e18a3591",
+   "pid": "c839b96c",
+   "kind": "feed-health",
+   "observation": "feed 'wave-chart bars' is STALE (age 11428m) \u2014 11 days running.",
+   "evidence": "multi-day",
+   "action": "propose investigating the cron/credential.",
+   "tag": "REVIEW \u2014 not auto-applied",
+   "strength": 3
+  },
+  {
+   "pid": "304e1dd9",
    "kind": "price-source",
-   "observation": "ema_state 5m (IQFeed) ES price 7608.25 vs freshest 7602.75 (5.5pts): LIVE source disagrees with freshest \u2014 investigate.",
+   "observation": "ema_state 5m (IQFeed) ES price 7634.25 vs freshest 7605.25 (29.0pts): LIVE source disagrees with freshest \u2014 investigate.",
    "evidence": "multi-night",
    "action": "propose repointing the meter/panel at the freshest IQFeed (D88 pattern).",
    "tag": "REVIEW \u2014 not auto-applied",
@@ -203,6 +212,15 @@
    "pid": "d0cb2ed0",
    "kind": "freshness",
    "observation": "integrity feed 'verdict/meter' is stale/dark.",
+   "evidence": "multi-night",
+   "action": "propose investigating the cron/credential.",
+   "tag": "REVIEW \u2014 not auto-applied",
+   "strength": 3
+  },
+  {
+   "pid": "a687a039",
+   "kind": "freshness",
+   "observation": "integrity feed 'prices (futures)' is stale/dark.",
    "evidence": "multi-night",
    "action": "propose investigating the cron/credential.",
    "tag": "REVIEW \u2014 not auto-applied",
@@ -235,24 +253,17 @@
    "sources": [
     {
      "name": "verdict/meter",
-     "price": 7602.75,
-     "age_s": -4954,
+     "price": 7605.25,
+     "age_s": -5929,
      "source": "internals_live (IQFeed @ES#)",
      "delayed": false
     },
     {
      "name": "ema_state 5m (IQFeed)",
-     "price": 7608.25,
-     "age_s": 744,
+     "price": 7634.25,
+     "age_s": 630,
      "source": "IQFeed @ES# 5m",
      "delayed": false
-    },
-    {
-     "name": "prices_futures",
-     "price": 7562.5,
-     "age_s": null,
-     "source": "Polygon front-month",
-     "delayed": true
     },
     {
      "name": "es_bars_daily (wave)",
@@ -265,25 +276,17 @@
    "flags": [
     {
      "source": "ema_state 5m (IQFeed)",
-     "price": 7608.25,
-     "ref": 7602.75,
-     "divergence_pts": 5.5,
+     "price": 7634.25,
+     "ref": 7605.25,
+     "divergence_pts": 29.0,
      "expected": false,
      "note": "LIVE source disagrees with freshest \u2014 investigate"
     },
     {
-     "source": "prices_futures",
-     "price": 7562.5,
-     "ref": 7602.75,
-     "divergence_pts": 40.25,
-     "expected": true,
-     "note": "delayed feed \u2014 divergence expected/ok"
-    },
-    {
      "source": "es_bars_daily (wave)",
      "price": 7455.5,
-     "ref": 7602.75,
-     "divergence_pts": 147.25,
+     "ref": 7605.25,
+     "divergence_pts": 149.75,
      "expected": true,
      "note": "delayed feed \u2014 divergence expected/ok"
     }
@@ -339,26 +342,27 @@
     {
      "feed": "verdict/meter",
      "state": "STALE",
-     "age_min": 500
+     "age_min": 533
     },
     {
      "feed": "prices (futures)",
-     "state": "FRESH",
-     "age_min": 12
+     "state": "STALE",
+     "age_min": 122
     },
     {
      "feed": "ema_state (IQFeed price src)",
      "state": "STALE",
-     "age_min": 435
+     "age_min": 192
     },
     {
      "feed": "breadth",
      "state": "FRESH",
-     "age_min": 55
+     "age_min": 66
     }
    ],
    "stale": [
     "verdict/meter",
+    "prices (futures)",
     "ema_state (IQFeed price src)"
    ]
   },
