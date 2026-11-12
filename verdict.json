@@ -1,63 +1,63 @@
 {
-  "timestamp": "2026-11-11T09:03:06",
+  "timestamp": "2026-11-11T18:09:52",
   "symbol": "ES",
   "display_name": "S&P 500 (ES)",
   "internals_applicable": true,
-  "es_price": 7602.75,
-  "es_change": 58.5,
-  "price": 7602.75,
-  "change": 58.5,
-  "price_source": "internals_live (IQFeed @ES#)",
-  "price_age_s": -4954,
-  "internals_fresh": true,
-  "internals_age_s": -4954,
-  "structure_fresh": true,
+  "es_price": 7662.25,
+  "es_change": null,
+  "price": 7662.25,
+  "change": null,
+  "price_source": "intraday_levels 'last' (stale \u2014 no fresher IQFeed pull)",
+  "price_age_s": null,
+  "internals_fresh": false,
+  "internals_age_s": 10819,
+  "structure_fresh": false,
   "structure_source": "feed/intraday_levels.json (IQFeed @ES# 5m)",
   "long_pct": 0.0,
-  "hold_pct": 73.3,
-  "short_pct": 26.7,
+  "hold_pct": 0.0,
+  "short_pct": 100.0,
   "signals": [
     {
       "name": "Confluence",
       "pillar": "Confluence",
-      "verdict": "HOLD",
-      "confidence": 0.0,
-      "reason": "price 7602.75 not at any VP/fib level (\u00b10.1%)"
+      "verdict": "SHORT",
+      "confidence": 90.0,
+      "reason": "price 7662.25 at 3-method confluence (FIB+TIME+PRICE+VP) near 7667.40 (resistance)"
     },
     {
       "name": "Breadth",
       "pillar": "Breadth",
-      "verdict": "SHORT",
-      "confidence": 40.0,
-      "reason": "ADD -269 mildly negative (TRIN 0.76)"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "internals stale/unavailable \u2014 cannot vote"
     },
     {
       "name": "TickMomentum",
       "pillar": "Internals",
       "verdict": "HOLD",
-      "confidence": 25.0,
-      "reason": "TICK -24 chop (<400) \u2014 no momentum edge"
+      "confidence": 0.0,
+      "reason": "internals stale/unavailable \u2014 cannot vote"
     },
     {
       "name": "Structure",
       "pillar": "Structure",
       "verdict": "HOLD",
-      "confidence": 35.0,
-      "reason": "price 7602.75 ~ VWAP 7608.34 \u2014 mixed/at value"
+      "confidence": 0.0,
+      "reason": "structure feed stale/unavailable \u2014 cannot vote"
     },
     {
       "name": "SectorDivergence",
       "pillar": "SectorDivergence",
       "verdict": "HOLD",
-      "confidence": 40.0,
-      "reason": "narrow strong but YM -0.2% lagging \u2014 non-confirmation"
+      "confidence": 0.0,
+      "reason": "internals stale/unavailable"
     },
     {
       "name": "VIX",
       "pillar": "Macro",
-      "verdict": "LONG",
-      "confidence": 35.0,
-      "reason": "VIX 18.25 falling -1.21 \u2014 risk-on"
+      "verdict": "HOLD",
+      "confidence": 0.0,
+      "reason": "internals stale/unavailable"
     },
     {
       "name": "SlowPillars",
@@ -76,16 +76,16 @@
     {
       "name": "FVG_Context",
       "pillar": "FVG_Context",
-      "verdict": "LONG",
+      "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "FVG +setup: bull gap 7728.25-7732.75 @ VP HVN, in-trend \u2014 entry 7733.75 stop 7727.75 (far-side=trigger) \u2014 context, NON-VOTING (weight 0)"
+      "reason": "FVG DARK (VM down/off-hrs) \u2014 context only, non-voting"
     },
     {
       "name": "ICT_Context",
       "pillar": "ICT_Context",
       "verdict": "HOLD",
       "confidence": 0.0,
-      "reason": "ICT: bias LONG \u00b7 untapped sell-side 7593.25 \u00b7 swept 7576.0 + MSS confirmed \u2014 context, NON-VOTING (weight 0)"
+      "reason": "ICT DARK (VM down/off-hrs) \u2014 context only, non-voting"
     },
     {
       "name": "InsideBar_Context",
@@ -95,8 +95,30 @@
       "reason": "Inside Bar DARK (VM down/off-hrs) \u2014 context only, non-voting"
     }
   ],
-  "confluence_zones": [],
-  "vp_available": false,
+  "confluence_zones": [
+    {
+      "method": "VP",
+      "label": "VAL",
+      "price": 7667.4,
+      "dist": 5.15,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "FIB",
+      "label": "C4",
+      "price": 7668.24,
+      "dist": 5.99,
+      "vp_timeframe": "daily_swing"
+    },
+    {
+      "method": "TIME+PRICE",
+      "label": "coincidence",
+      "price": 7668.24,
+      "dist": 5.99,
+      "vp_timeframe": "daily_swing"
+    }
+  ],
+  "vp_available": true,
   "fib_available": true,
   "config_hash": "d00618625e98",
   "update_freq_seconds": 300,
@@ -107,57 +129,57 @@
   "timeframes": {
     "5m": {
       "timeframe": "5m",
-      "long_pct": 28.9,
-      "hold_pct": 71.1,
-      "short_pct": 0.0,
-      "price": 7646.5,
-      "internals_fresh": true,
+      "long_pct": 0.0,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7609,
+      "internals_fresh": false,
       "structure_fresh": true,
-      "structure_source": "IQFeed @ES# 5m (in-guest)",
+      "structure_source": "polygon ES daily FALLBACK (IQFeed 5m dark: prlctl rc=255: Unable to perform the operation because \"Windows 11\" is not started. This operation can be performed for running virtual machines only.)",
       "state": "live",
-      "bar_age_min": -171.9,
+      "bar_age_min": 0.0,
       "signals": [
         {
           "name": "Confluence",
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "price 7646.50 not at any VP/fib level (\u00b10.1%)"
+          "reason": "price 7609.00 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
-          "verdict": "SHORT",
-          "confidence": 40.0,
-          "reason": "ADD -269 mildly negative (TRIN 0.76)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
-          "confidence": 25.0,
-          "reason": "TICK -24 chop (<400) \u2014 no momentum edge"
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
-          "confidence": 75.0,
-          "reason": "price 7646.50 > VWAP 7617.51, > prior_close 7544.50, > OR-high 7624.75 (intraday)"
+          "verdict": "SHORT",
+          "confidence": 45.0,
+          "reason": "price 7609.00 < prior_close 7642.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
           "pillar": "SectorDivergence",
           "verdict": "HOLD",
-          "confidence": 40.0,
-          "reason": "narrow strong but YM -0.2% lagging \u2014 non-confirmation"
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
         },
         {
           "name": "VIX",
           "pillar": "Macro",
-          "verdict": "LONG",
-          "confidence": 35.0,
-          "reason": "VIX 18.25 falling -1.21 \u2014 risk-on"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
         },
         {
           "name": "SlowPillars",
@@ -174,167 +196,12 @@
     "15m": {
       "timeframe": "15m",
       "long_pct": 0.0,
-      "hold_pct": 66.6,
-      "short_pct": 33.4,
-      "price": 7646.5,
-      "internals_fresh": true,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7609,
+      "internals_fresh": false,
       "structure_fresh": true,
-      "structure_source": "IQFeed @ES# 15m (in-guest)",
-      "state": "live",
-      "bar_age_min": -161.9,
-      "signals": [
-        {
-          "name": "Confluence",
-          "pillar": "Confluence",
-          "verdict": "SHORT",
-          "confidence": 65.0,
-          "reason": "price 7646.50 at 2-method confluence (FIB+VP) near 7647.26 (resistance)"
-        },
-        {
-          "name": "Breadth",
-          "pillar": "Breadth",
-          "verdict": "SHORT",
-          "confidence": 40.0,
-          "reason": "ADD -269 mildly negative (TRIN 0.76)"
-        },
-        {
-          "name": "TickMomentum",
-          "pillar": "Internals",
-          "verdict": "HOLD",
-          "confidence": 25.0,
-          "reason": "TICK -24 chop (<400) \u2014 no momentum edge"
-        },
-        {
-          "name": "Structure",
-          "pillar": "Structure",
-          "verdict": "LONG",
-          "confidence": 75.0,
-          "reason": "price 7646.50 > VWAP 7618.15, > prior_close 7544.50, > OR-high 7624.75 (intraday)"
-        },
-        {
-          "name": "SectorDivergence",
-          "pillar": "SectorDivergence",
-          "verdict": "HOLD",
-          "confidence": 40.0,
-          "reason": "narrow strong but YM -0.2% lagging \u2014 non-confirmation"
-        },
-        {
-          "name": "VIX",
-          "pillar": "Macro",
-          "verdict": "LONG",
-          "confidence": 35.0,
-          "reason": "VIX 18.25 falling -1.21 \u2014 risk-on"
-        },
-        {
-          "name": "SlowPillars",
-          "pillar": "SlowPillars",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "no usable nightly-cache bias"
-        }
-      ],
-      "confluence_zones": [
-        {
-          "method": "VP",
-          "label": "VAH",
-          "price": 7647.75,
-          "dist": 1.25,
-          "vp_timeframe": "daily_swing"
-        },
-        {
-          "method": "FIB",
-          "label": "C4",
-          "price": 7647.26,
-          "dist": 0.76,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
-      "vp_available": true,
-      "fib_available": true
-    },
-    "60m": {
-      "timeframe": "60m",
-      "long_pct": 39.8,
-      "hold_pct": 60.2,
-      "short_pct": 0.0,
-      "price": 7646.5,
-      "internals_fresh": true,
-      "structure_fresh": true,
-      "structure_source": "IQFeed @ES# 60m (in-guest)",
-      "state": "live",
-      "bar_age_min": -116.9,
-      "signals": [
-        {
-          "name": "Confluence",
-          "pillar": "Confluence",
-          "verdict": "LONG",
-          "confidence": 30.0,
-          "reason": "price 7646.50 at 1-method confluence (FIB) near 7641.35 (support)"
-        },
-        {
-          "name": "Breadth",
-          "pillar": "Breadth",
-          "verdict": "SHORT",
-          "confidence": 40.0,
-          "reason": "ADD -269 mildly negative (TRIN 0.76)"
-        },
-        {
-          "name": "TickMomentum",
-          "pillar": "Internals",
-          "verdict": "HOLD",
-          "confidence": 25.0,
-          "reason": "TICK -24 chop (<400) \u2014 no momentum edge"
-        },
-        {
-          "name": "Structure",
-          "pillar": "Structure",
-          "verdict": "LONG",
-          "confidence": 50.0,
-          "reason": "price 7646.50 > VWAP 7628.43 & prior_close 7544.50 (intraday)"
-        },
-        {
-          "name": "SectorDivergence",
-          "pillar": "SectorDivergence",
-          "verdict": "HOLD",
-          "confidence": 40.0,
-          "reason": "narrow strong but YM -0.2% lagging \u2014 non-confirmation"
-        },
-        {
-          "name": "VIX",
-          "pillar": "Macro",
-          "verdict": "LONG",
-          "confidence": 35.0,
-          "reason": "VIX 18.25 falling -1.21 \u2014 risk-on"
-        },
-        {
-          "name": "SlowPillars",
-          "pillar": "SlowPillars",
-          "verdict": "HOLD",
-          "confidence": 0.0,
-          "reason": "no usable nightly-cache bias"
-        }
-      ],
-      "confluence_zones": [
-        {
-          "method": "FIB",
-          "label": "C13",
-          "price": 7641.35,
-          "dist": -5.15,
-          "vp_timeframe": "daily_swing"
-        }
-      ],
-      "vp_available": true,
-      "fib_available": true
-    },
-    "daily": {
-      "timeframe": "daily",
-      "long_pct": 8.9,
-      "hold_pct": 91.1,
-      "short_pct": 0.0,
-      "price": 7606.5,
-      "internals_fresh": true,
-      "structure_fresh": true,
-      "structure_source": "polygon ES daily",
+      "structure_source": "polygon ES daily FALLBACK (IQFeed 15m dark: prlctl rc=255: Unable to perform the operation because \"Windows 11\" is not started. This operation can be performed for running virtual machines only.)",
       "state": "live",
       "bar_age_min": 0.0,
       "signals": [
@@ -343,42 +210,42 @@
           "pillar": "Confluence",
           "verdict": "HOLD",
           "confidence": 0.0,
-          "reason": "price 7606.50 not at any VP/fib level (\u00b10.1%)"
+          "reason": "price 7609.00 not at any VP/fib level (\u00b10.1%)"
         },
         {
           "name": "Breadth",
           "pillar": "Breadth",
-          "verdict": "SHORT",
-          "confidence": 40.0,
-          "reason": "ADD -269 mildly negative (TRIN 0.76)"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
         },
         {
           "name": "TickMomentum",
           "pillar": "Internals",
           "verdict": "HOLD",
-          "confidence": 25.0,
-          "reason": "TICK -24 chop (<400) \u2014 no momentum edge"
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
         },
         {
           "name": "Structure",
           "pillar": "Structure",
-          "verdict": "LONG",
+          "verdict": "SHORT",
           "confidence": 45.0,
-          "reason": "price 7606.50 > prior_close 7555.00 (daily fallback)"
+          "reason": "price 7609.00 < prior_close 7642.25 (daily fallback)"
         },
         {
           "name": "SectorDivergence",
           "pillar": "SectorDivergence",
           "verdict": "HOLD",
-          "confidence": 40.0,
-          "reason": "narrow strong but YM -0.2% lagging \u2014 non-confirmation"
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
         },
         {
           "name": "VIX",
           "pillar": "Macro",
-          "verdict": "LONG",
-          "confidence": 35.0,
-          "reason": "VIX 18.25 falling -1.21 \u2014 risk-on"
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
         },
         {
           "name": "SlowPillars",
@@ -389,11 +256,160 @@
         }
       ],
       "confluence_zones": [],
-      "vp_available": false,
-      "fib_available": false
+      "vp_available": true,
+      "fib_available": true
+    },
+    "60m": {
+      "timeframe": "60m",
+      "long_pct": 0.0,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7609,
+      "internals_fresh": false,
+      "structure_fresh": true,
+      "structure_source": "polygon ES daily FALLBACK (IQFeed 60m dark: prlctl rc=255: Unable to perform the operation because \"Windows 11\" is not started. This operation can be performed for running virtual machines only.)",
+      "state": "live",
+      "bar_age_min": 0.0,
+      "signals": [
+        {
+          "name": "Confluence",
+          "pillar": "Confluence",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7609.00 not at any VP/fib level (\u00b10.1%)"
+        },
+        {
+          "name": "Breadth",
+          "pillar": "Breadth",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
+        },
+        {
+          "name": "TickMomentum",
+          "pillar": "Internals",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
+        },
+        {
+          "name": "Structure",
+          "pillar": "Structure",
+          "verdict": "SHORT",
+          "confidence": 45.0,
+          "reason": "price 7609.00 < prior_close 7642.25 (daily fallback)"
+        },
+        {
+          "name": "SectorDivergence",
+          "pillar": "SectorDivergence",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
+        },
+        {
+          "name": "VIX",
+          "pillar": "Macro",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
+        },
+        {
+          "name": "SlowPillars",
+          "pillar": "SlowPillars",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "no usable nightly-cache bias"
+        }
+      ],
+      "confluence_zones": [],
+      "vp_available": true,
+      "fib_available": true
+    },
+    "daily": {
+      "timeframe": "daily",
+      "long_pct": 0.0,
+      "hold_pct": 0.0,
+      "short_pct": 100.0,
+      "price": 7609,
+      "internals_fresh": false,
+      "structure_fresh": true,
+      "structure_source": "polygon ES daily",
+      "state": "live",
+      "bar_age_min": 0.0,
+      "signals": [
+        {
+          "name": "Confluence",
+          "pillar": "Confluence",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "price 7609.00 not at any VP/fib level (\u00b10.1%)"
+        },
+        {
+          "name": "Breadth",
+          "pillar": "Breadth",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
+        },
+        {
+          "name": "TickMomentum",
+          "pillar": "Internals",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable \u2014 cannot vote"
+        },
+        {
+          "name": "Structure",
+          "pillar": "Structure",
+          "verdict": "SHORT",
+          "confidence": 45.0,
+          "reason": "price 7609.00 < prior_close 7642.25 (daily fallback)"
+        },
+        {
+          "name": "SectorDivergence",
+          "pillar": "SectorDivergence",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
+        },
+        {
+          "name": "VIX",
+          "pillar": "Macro",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "internals stale/unavailable"
+        },
+        {
+          "name": "SlowPillars",
+          "pillar": "SlowPillars",
+          "verdict": "HOLD",
+          "confidence": 0.0,
+          "reason": "no usable nightly-cache bias"
+        }
+      ],
+      "confluence_zones": [],
+      "vp_available": true,
+      "fib_available": true
     }
   },
   "guidance": {
-    "active": false
+    "active": true,
+    "direction": "SHORT",
+    "threshold": 100,
+    "engine": "confluence",
+    "entry": 7662.25,
+    "stop": 7760.1,
+    "t1": 7496.13,
+    "t2": 7434.48,
+    "R": 97.85,
+    "rr": 1.7,
+    "stop_basis": "confluence",
+    "target_basis": "confluence",
+    "levels_source": "confluence engine",
+    "coarse": false,
+    "grade": "A",
+    "stop_trace": "confluence x3: vp 7732.12, swing-pivot 7746.25, fib-cluster 7760.11",
+    "t1_trace": "confluence x3: swing-pivot 7490.0, fib-cluster 7496.38, vp 7502.02",
+    "t2_trace": "confluence x2: vp 7430.11, fib-cluster 7438.85"
   }
 }
